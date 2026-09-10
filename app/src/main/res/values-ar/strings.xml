@@ -667,6 +667,7 @@
     <string name="settings_about_app">حول KeySnap</string>
     <string name="settings_about_app_summary">مفتوح المصدر · لا شيء يغادر هاتفك</string>
     <string name="settings_privacy_policy">سياسة الخصوصية</string>
+    <string name="about_contact">التواصل مع الدعم</string>
     <string name="settings_erase">مسح جميع البيانات</string>
     <string name="settings_erase_confirm_title">مسح جميع البيانات؟</string>
     <string name="settings_erase_action">مسح كل شيء</string>

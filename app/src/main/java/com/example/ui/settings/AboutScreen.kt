@@ -247,6 +247,32 @@ fun AboutDialog(onEraseAllData: () -> Unit, onDismiss: () -> Unit) {
                             Icon(Icons.Outlined.ChevronRight, null, tint = colors.onSurfaceVariant)
                         }
                         HorizontalDivider(color = colors.outline.copy(alpha = .45f))
+                        val supportEmail = stringResource(R.string.about_contact_email)
+                        Row(
+                            Modifier
+                                .fillMaxWidth()
+                                .heightIn(min = MinTouchTarget)
+                                // A device with no mail app resolves nothing; the row goes quiet
+                                // rather than crashing the About page.
+                                .clickable { runCatching { uriHandler.openUri("mailto:$supportEmail") } }
+                                .testTag("about_contact_button"),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Column(Modifier.weight(1f)) {
+                                Text(
+                                    stringResource(R.string.about_contact),
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = colors.onSurface,
+                                )
+                                Text(
+                                    supportEmail,
+                                    style = MonoLabel,
+                                    color = colors.onSurfaceVariant,
+                                )
+                            }
+                            Icon(Icons.Outlined.ChevronRight, null, tint = colors.onSurfaceVariant)
+                        }
+                        HorizontalDivider(color = colors.outline.copy(alpha = .45f))
                         Text(
                             stringResource(
                                 R.string.about_footer_line,

@@ -671,6 +671,7 @@
     <string name="settings_about_app">Informazioni su KeySnap</string>
     <string name="settings_about_app_summary">Open source · niente esce dal tuo telefono</string>
     <string name="settings_privacy_policy">Informativa sulla privacy</string>
+    <string name="about_contact">Contatta il supporto</string>
     <string name="settings_erase">Elimina tutti i dati</string>
     <string name="settings_erase_confirm_title">Eliminare tutti i dati?</string>
     <string name="settings_erase_action">Elimina tutto</string>

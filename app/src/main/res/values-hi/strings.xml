@@ -670,6 +670,7 @@
     <string name="settings_about_app">KeySnap के बारे में</string>
     <string name="settings_about_app_summary">ओपन सोर्स · कुछ भी आपके फ़ोन से बाहर नहीं जाता</string>
     <string name="settings_privacy_policy">प्राइवेसी पॉलिसी</string>
+    <string name="about_contact">सहायता से संपर्क करें</string>
     <string name="settings_erase">सारा डेटा मिटाएं</string>
     <string name="settings_erase_confirm_title">सारा डेटा मिटाएं?</string>
     <string name="settings_erase_action">सब कुछ मिटाएं</string>

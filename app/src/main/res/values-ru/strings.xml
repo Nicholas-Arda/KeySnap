@@ -670,6 +670,7 @@
     <string name="settings_about_app">О KeySnap</string>
     <string name="settings_about_app_summary">Открытый код · ничто не покидает телефон</string>
     <string name="settings_privacy_policy">Политика конфиденциальности</string>
+    <string name="about_contact">Связаться с поддержкой</string>
     <string name="settings_erase">Удалить все данные</string>
     <string name="settings_erase_confirm_title">Удалить все данные?</string>
     <string name="settings_erase_action">Удалить всё</string>

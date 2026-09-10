@@ -668,6 +668,7 @@
     <string name="settings_about_app">KeySnap hakkında</string>
     <string name="settings_about_app_summary">Açık kaynak · hiçbir şey telefonunuzdan çıkmaz</string>
     <string name="settings_privacy_policy">Gizlilik politikası</string>
+    <string name="about_contact">Destekle iletişime geç</string>
     <string name="settings_erase">Tüm verileri sil</string>
     <string name="settings_erase_confirm_title">Tüm veriler silinsin mi?</string>
     <string name="settings_erase_action">Her şeyi sil</string>

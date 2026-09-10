@@ -670,6 +670,7 @@
     <string name="settings_about_app">À propos de KeySnap</string>
     <string name="settings_about_app_summary">Open source · rien ne quitte votre téléphone</string>
     <string name="settings_privacy_policy">Politique de confidentialité</string>
+    <string name="about_contact">Contacter le support</string>
     <string name="settings_erase">Effacer toutes les données</string>
     <string name="settings_erase_confirm_title">Effacer toutes les données ?</string>
     <string name="settings_erase_action">Tout effacer</string>

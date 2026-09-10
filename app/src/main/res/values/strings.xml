@@ -696,6 +696,8 @@
     <string name="settings_about_app">About KeySnap</string>
     <string name="settings_about_app_summary">Open source · nothing leaves your phone</string>
     <string name="settings_privacy_policy">Privacy policy</string>
+    <string name="about_contact">Contact support</string>
+    <string name="about_contact_email" translatable="false">support@ardasenn.com</string>
     <string name="settings_erase">Erase all data</string>
     <string name="settings_erase_confirm_title">Erase all data?</string>
     <string name="settings_erase_action">Erase everything</string>
