@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Note : à l’intérieur de <string-array>, écrivez une apostrophe sous la forme ’ plutôt que
+     sous forme échappée. aapt2 dans cette version d’AGP échoue avec une NullPointerException
+     brute sur la forme échappée. -->
+<resources>
+    <string-array name="guide_generic_steps">
+        <item>Ouvrez l’application Paramètres</item>
+        <item>Allez dans « À propos du téléphone » ou « Informations logicielles »</item>
+        <item>Appuyez 7 fois de suite sur « Numéro de build »</item>
+        <item>Quand vous voyez « Vous êtes maintenant développeur », revenez aux Paramètres</item>
+        <item>Ouvrez « Options pour les développeurs » et activez le « Débogage sans fil »</item>
+    </string-array>
+    <string-array name="guide_samsung_steps">
+        <item>Ouvrez les Paramètres</item>
+        <item>Allez dans « À propos du téléphone » &gt; « Informations logicielles »</item>
+        <item>Appuyez 7 fois de suite sur « Numéro de build »</item>
+        <item>Revenez en arrière et ouvrez « Options pour les développeurs »</item>
+        <item>Activez le « Débogage sans fil »</item>
+    </string-array>
+    <string-array name="guide_xiaomi_steps">
+        <item>Ouvrez les Paramètres</item>
+        <item>Allez dans « À propos du téléphone »</item>
+        <item>Appuyez 7 fois sur « Toutes les caractéristiques » &gt; « Version MIUI » (ou « Version HyperOS »)</item>
+        <item>Revenez aux Paramètres principaux, ouvrez « Paramètres supplémentaires » &gt; « Options pour les développeurs »</item>
+        <item>Activez le « Débogage sans fil »</item>
+    </string-array>
+    <string-array name="guide_huawei_steps">
+        <item>Ouvrez les Paramètres</item>
+        <item>Allez dans « À propos du téléphone » &gt; « Version du logiciel »</item>
+        <item>Appuyez 7 fois de suite sur « Numéro de build »</item>
+        <item>Ouvrez « Options pour les développeurs » sous « Système et mises à jour » (ou l’écran d’accueil des Paramètres)</item>
+        <item>Activez le « Débogage sans fil »</item>
+    </string-array>
+    <string-array name="guide_coloros_steps">
+        <item>Ouvrez les Paramètres</item>
+        <item>Allez dans « À propos du téléphone » &gt; « Informations de version »</item>
+        <item>Appuyez 7 fois de suite sur « Numéro de build »</item>
+        <item>Revenez aux Paramètres principaux, ouvrez « Paramètres supplémentaires » &gt; « Options pour les développeurs »</item>
+        <item>Activez le « Débogage sans fil »</item>
+    </string-array>
+    <string-array name="guide_vivo_steps">
+        <item>Ouvrez les Paramètres</item>
+        <item>Allez dans « À propos du téléphone » (peut se trouver sous « Autres paramètres »)</item>
+        <item>Appuyez 7 fois de suite sur « Version du logiciel »</item>
+        <item>Revenez en arrière, ouvrez « Gestion du système » &gt; « Options pour les développeurs »</item>
+        <item>Activez le « Débogage sans fil »</item>
+    </string-array>
+    <string-array name="guide_pixel_steps">
+        <item>Ouvrez les Paramètres</item>
+        <item>Allez dans « À propos du téléphone »</item>
+        <item>Appuyez 7 fois de suite sur « Numéro de build »</item>
+        <item>Revenez aux Paramètres principaux, ouvrez « Système » &gt; « Options pour les développeurs »</item>
+        <item>Activez le « Débogage sans fil »</item>
+    </string-array>
+    <string-array name="wizard_can_do_lines">
+        <item>Lire chaque touche physique, sans latence</item>
+        <item>Exécuter les réglages et les commandes que vous écrivez</item>
+        <item>Continuer de fonctionner quand l\'appli est fermée</item>
+    </string-array>
+    <string-array name="wizard_never_does_lines">
+        <item>Priver les autres applis de leurs entrées</item>
+        <item>Lire l\'écran d\'une autre application</item>
+        <item>Envoyer quoi que ce soit que vous n\'avez pas mis dans un raccourci</item>
+    </string-array>
+    <string-array name="wizard_pairing_steps">
+        <item>Touchez le bouton ci-dessous pour ouvrir les paramètres du débogage sans fil.</item>
+        <item>Dans le menu, choisissez « Associer l’appareil avec un code d’association ».</item>
+        <item>Nous lirons le code d’association et nous connecterons automatiquement.</item>
+    </string-array>
+</resources>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Note: inside <string-array>, write an apostrophe as ’ rather than the escaped form.
+     aapt2 in this AGP fails with a bare NullPointerException on the escaped one. -->
+<resources>
+    <string-array name="guide_generic_steps">
+        <item>Open the Settings app</item>
+        <item>Go to \"About Phone\" or \"Software Information\"</item>
+        <item>Tap \"Build Number\" 7 times in a row</item>
+        <item>When you see \"You are now a developer\", go back to Settings</item>
+        <item>Open \"Developer Options\" and enable \"Wireless Debugging\"</item>
+    </string-array>
+    <string-array name="guide_samsung_steps">
+        <item>Open Settings</item>
+        <item>Go to \"About Phone\" &gt; \"Software Information\"</item>
+        <item>Tap \"Build Number\" 7 times in a row</item>
+        <item>Go back and open \"Developer Options\"</item>
+        <item>Enable \"Wireless Debugging\"</item>
+    </string-array>
+    <string-array name="guide_xiaomi_steps">
+        <item>Open Settings</item>
+        <item>Go to \"About Phone\"</item>
+        <item>Tap \"All Specs\" &gt; \"MIUI Version\" (or \"HyperOS Version\") 7 times</item>
+        <item>Go back to the main Settings, open \"Additional Settings\" &gt; \"Developer Options\"</item>
+        <item>Enable \"Wireless Debugging\"</item>
+    </string-array>
+    <string-array name="guide_huawei_steps">
+        <item>Open Settings</item>
+        <item>Go to \"About Phone\" &gt; \"Software Version\"</item>
+        <item>Tap \"Build Number\" 7 times in a row</item>
+        <item>Open \"Developer Options\" under \"System and Updates\" (or the Settings home screen)</item>
+        <item>Enable \"Wireless Debugging\"</item>
+    </string-array>
+    <string-array name="guide_coloros_steps">
+        <item>Open Settings</item>
+        <item>Go to \"About Phone\" &gt; \"Version Information\"</item>
+        <item>Tap \"Build Number\" 7 times in a row</item>
+        <item>Go back to the main Settings, open \"Additional Settings\" &gt; \"Developer Options\"</item>
+        <item>Enable \"Wireless Debugging\"</item>
+    </string-array>
+    <string-array name="guide_vivo_steps">
+        <item>Open Settings</item>
+        <item>Go to \"About Phone\" (may be under \"Other Settings\")</item>
+        <item>Tap \"Software Version\" 7 times in a row</item>
+        <item>Go back, open \"System Management\" &gt; \"Developer Options\"</item>
+        <item>Enable \"Wireless Debugging\"</item>
+    </string-array>
+    <string-array name="guide_pixel_steps">
+        <item>Open Settings</item>
+        <item>Go to \"About Phone\"</item>
+        <item>Tap \"Build Number\" 7 times in a row</item>
+        <item>Go back to the main Settings, open \"System\" &gt; \"Developer Options\"</item>
+        <item>Enable \"Wireless Debugging\"</item>
+    </string-array>
+    <string-array name="wizard_can_do_lines">
+        <item>Read every hardware key, with no delay</item>
+        <item>Run the settings changes and commands you write</item>
+        <item>Keep working while the app is closed</item>
+    </string-array>
+    <string-array name="wizard_never_does_lines">
+        <item>Take input away from other apps</item>
+        <item>Read another app&#8217;s screen</item>
+        <item>Send anything you didn&#8217;t put in a shortcut</item>
+    </string-array>
+    <string-array name="wizard_pairing_steps">
+        <item>Tap the button below to open Wireless Debugging settings.</item>
+        <item>From the menu, choose ‘Pair device with pairing code’.</item>
+        <item>We’ll read the pairing code and connect automatically.</item>
+    </string-array>
+    <string-array name="about_source_listing" translatable="false">
+        <item>$ git clone github.com/Nicholas-Arda/…</item>
+        <item>app/       ui, key capture, shortcuts</item>
+        <item>bridge/    the shell helper</item>
+        <item>LICENSE    GPL-3.0</item>
+    </string-array>
+</resources>

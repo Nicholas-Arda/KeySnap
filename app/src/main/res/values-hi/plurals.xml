@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="scripts_action_count">
+        <item quantity="one">%1$d क्रिया</item>
+        <item quantity="other">%1$d क्रियाएं</item>
+    </plurals>
+    <plurals name="home_suggestion_steps">
+        <item quantity="one">%1$d चरण</item>
+        <item quantity="other">%1$d चरण</item>
+    </plurals>
+    <plurals name="run_all">
+        <item quantity="one">%1$d क्रिया चलाई गई</item>
+        <item quantity="other">सभी %1$d क्रियाएं चलाई गईं</item>
+    </plurals>
+    <plurals name="settings_log_event_count">
+        <item quantity="one">%1$d इवेंट</item>
+        <item quantity="other">%1$d इवेंट</item>
+    </plurals>
+    <plurals name="saved_needs_config">
+        <item quantity="one">सेव हो गया। %1$d क्रिया को अभी भी कॉन्फ़िगर करना बाकी है।</item>
+        <item quantity="other">सेव हो गया। %1$d क्रियाओं को अभी भी कॉन्फ़िगर करना बाकी है।</item>
+    </plurals>
+</resources>

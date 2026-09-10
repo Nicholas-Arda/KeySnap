@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Note: inside <string-array>, write an apostrophe as ’ rather than the escaped form.
+     aapt2 in this AGP fails with a bare NullPointerException on the escaped one. -->
+<resources>
+    <string-array name="guide_generic_steps">
+        <item>Öffne die Einstellungen-App</item>
+        <item>Gehe zu „Telefoninfo“ oder „Softwareinformationen“</item>
+        <item>Tippe 7-mal hintereinander auf „Build-Nummer“</item>
+        <item>Wenn „Du bist jetzt Entwickler“ erscheint, gehe zurück zu den Einstellungen</item>
+        <item>Öffne „Entwickleroptionen“ und aktiviere „Kabelloses Debugging“</item>
+    </string-array>
+    <string-array name="guide_samsung_steps">
+        <item>Öffne die Einstellungen</item>
+        <item>Gehe zu „Telefoninfo“ &gt; „Softwareinformationen“</item>
+        <item>Tippe 7-mal hintereinander auf „Build-Nummer“</item>
+        <item>Gehe zurück und öffne „Entwickleroptionen“</item>
+        <item>Aktiviere „Kabelloses Debugging“</item>
+    </string-array>
+    <string-array name="guide_xiaomi_steps">
+        <item>Öffne die Einstellungen</item>
+        <item>Gehe zu „Telefoninfo“</item>
+        <item>Tippe 7-mal auf „Alle Spezifikationen“ &gt; „MIUI-Version“ (oder „HyperOS-Version“)</item>
+        <item>Gehe zurück zu den Haupteinstellungen, öffne „Weitere Einstellungen“ &gt; „Entwickleroptionen“</item>
+        <item>Aktiviere „Kabelloses Debugging“</item>
+    </string-array>
+    <string-array name="guide_huawei_steps">
+        <item>Öffne die Einstellungen</item>
+        <item>Gehe zu „Telefoninfo“ &gt; „Softwareversion“</item>
+        <item>Tippe 7-mal hintereinander auf „Build-Nummer“</item>
+        <item>Öffne „Entwickleroptionen“ unter „System und Updates“ (oder auf der Startseite der Einstellungen)</item>
+        <item>Aktiviere „Kabelloses Debugging“</item>
+    </string-array>
+    <string-array name="guide_coloros_steps">
+        <item>Öffne die Einstellungen</item>
+        <item>Gehe zu „Telefoninfo“ &gt; „Versionsinformationen“</item>
+        <item>Tippe 7-mal hintereinander auf „Build-Nummer“</item>
+        <item>Gehe zurück zu den Haupteinstellungen, öffne „Weitere Einstellungen“ &gt; „Entwickleroptionen“</item>
+        <item>Aktiviere „Kabelloses Debugging“</item>
+    </string-array>
+    <string-array name="guide_vivo_steps">
+        <item>Öffne die Einstellungen</item>
+        <item>Gehe zu „Telefoninfo“ (eventuell unter „Weitere Einstellungen“)</item>
+        <item>Tippe 7-mal hintereinander auf „Softwareversion“</item>
+        <item>Gehe zurück, öffne „Systemverwaltung“ &gt; „Entwickleroptionen“</item>
+        <item>Aktiviere „Kabelloses Debugging“</item>
+    </string-array>
+    <string-array name="guide_pixel_steps">
+        <item>Öffne die Einstellungen</item>
+        <item>Gehe zu „Telefoninfo“</item>
+        <item>Tippe 7-mal hintereinander auf „Build-Nummer“</item>
+        <item>Gehe zurück zu den Haupteinstellungen, öffne „System“ &gt; „Entwickleroptionen“</item>
+        <item>Aktiviere „Kabelloses Debugging“</item>
+    </string-array>
+    <string-array name="wizard_can_do_lines">
+        <item>Jede Hardwaretaste ohne Verzögerung lesen</item>
+        <item>Die Einstellungen und Befehle ausführen, die du schreibst</item>
+        <item>Weiterlaufen, während die App geschlossen ist</item>
+    </string-array>
+    <string-array name="wizard_never_does_lines">
+        <item>Anderen Apps die Eingabe entziehen</item>
+        <item>Den Bildschirm einer anderen App lesen</item>
+        <item>Etwas senden, das du nicht in einen Kurzbefehl gelegt hast</item>
+    </string-array>
+    <string-array name="wizard_pairing_steps">
+        <item>Tippe unten auf die Schaltfläche, um die Einstellungen für kabelloses Debugging zu öffnen.</item>
+        <item>Wähle im Menü ‘Gerät mit Kopplungscode koppeln’.</item>
+        <item>Wir lesen den Kopplungscode und verbinden automatisch.</item>
+    </string-array>
+</resources>

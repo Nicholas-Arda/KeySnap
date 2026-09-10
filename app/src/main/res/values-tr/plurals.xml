@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Turkish makes no singular/plural distinction after a number, so both quantities carry the
+     same wording: the numeral does the counting and the noun stays singular. The "one" item is
+     duplicated only because lint requires it for this locale. -->
+<resources>
+    <plurals name="scripts_action_count">
+        <item quantity="one">%1$d eylem</item>
+        <item quantity="other">%1$d eylem</item>
+    </plurals>
+    <plurals name="home_suggestion_steps">
+        <item quantity="one">%1$d adım</item>
+        <item quantity="other">%1$d adım</item>
+    </plurals>
+    <plurals name="run_all">
+        <item quantity="one">%1$d eylem çalıştı</item>
+        <item quantity="other">%1$d eylem çalıştı</item>
+    </plurals>
+    <plurals name="settings_log_event_count">
+        <item quantity="one">%1$d olay</item>
+        <item quantity="other">%1$d olay</item>
+    </plurals>
+    <plurals name="saved_needs_config">
+        <item quantity="one">Kaydedildi. %1$d eylemin ayarlanması gerekiyor.</item>
+        <item quantity="other">Kaydedildi. %1$d eylemin ayarlanması gerekiyor.</item>
+    </plurals>
+</resources>

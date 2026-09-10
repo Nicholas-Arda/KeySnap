@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+   Key filtering (canRequestFilterKeyEvents) is global and unaffected by packageNames — that is
+   what the app is actually for. Window content retrieval is scoped to the Settings app, the only
+   place the Wireless Debugging pairing dialog appears, so no other app's screen is ever readable.
+   typeViewTextChanged is deliberately absent: it would deliver every character typed anywhere.
+-->
+<accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
+    android:accessibilityEventTypes="typeWindowStateChanged|typeWindowContentChanged|typeWindowsChanged"
+    android:accessibilityFeedbackType="feedbackGeneric"
+    android:accessibilityFlags="flagRequestFilterKeyEvents|flagRetrieveInteractiveWindows|flagReportViewIds|flagIncludeNotImportantViews|flagDefault"
+    android:packageNames="com.android.settings"
+    android:canRequestFilterKeyEvents="true"
+    android:canRetrieveWindowContent="true"
+    android:description="@string/accessibility_service_description"
+    android:notificationTimeout="50" />

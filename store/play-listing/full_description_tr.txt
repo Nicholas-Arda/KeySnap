@@ -1,0 +1,35 @@
+Telefonundaki her tuşa yeni bir görev ver.
+
+Sesi Kıs'a çift bas, fener yansın. Sesi Aç'ı basılı tut, ekran görüntüsü alınsın. Güç tuşuna çift bas, kamera açılsın. KeySnap, zaten elinin altında olan fiziksel tuşları gün boyu yaptığın işlerin kısayoluna çevirir.
+
+HANGİ TUŞLARI EŞLEYEBİLİRSİN
+• Ses, güç, kamera ve asistan tuşları
+• Kulaklık ve Bluetooth kulaklık tuşları
+• Bluetooth klavye ve oyun kolu tuşları
+• Üreticinin eklediği ekstra tuşlar, üzerinde yazı olmayanlar bile
+Her tuş tek basış, çift basış veya uzun basış olabilir; bir kısayol birkaç adımı arka arkaya çalıştırabilir.
+
+90'DAN FAZLA EYLEM
+Fener, ekran görüntüsü, uygulama açma, oynat/duraklat, sonraki parça, ses, parlaklık, ekran döndürme, Rahatsız Etmeyin, Wi-Fi, Bluetooth, mobil veri, geri/ana ekran/son uygulamalar, ekrana dokunma ve kaydırma, metin yazma, kabuk komutu, HTTP isteği, bağlantı açma ve daha fazlası. Eylemler sırayla çalışır, yani tek basış birkaç iş birden yapabilir.
+
+SADECE SEN İSTEYİNCE
+Her kısayola koşul ekle: günün saati, haftanın günü, şarj durumu, pil seviyesi, Wi-Fi ağı, Bluetooth cihazı, kulaklık, karanlık mod, zil modu, açık olan uygulama, müzik çalıyor mu. Ya da tuşu tamamen atla: Otomasyon, koşulları sağlandığı anda kendi kendine çalışır.
+
+UZMAN MODU, ROOT YOK
+Android, güç tuşunu ve birçok üretici tuşunu normal uygulamalardan gizler. Uzman Modu, telefonunun kendi Kablosuz Hata Ayıklama özelliğini kullanarak küçük bir yardımcı başlatır; bu yardımcı her tuşu görür ve uygulama arka planda kapansa bile çalışmaya devam eder. Root gerekmez, sistemde hiçbir şey değişmez, kapattığında da tamamen silinir.
+
+TASARIMI GEREĞİ GİZLİ
+Hesap yok. Sunucu yok. Analitik yok. Kısayolların ve tuş basışların telefonundan hiç çıkmaz. Erişilebilirlik hizmeti yalnızca sistem Ayarlar uygulamasıyla sınırlıdır; yazdıklarını veya başka bir uygulamanın ekranını okuyamaz. GPL-3 altında açık kaynak.
+
+AÇIK, KOYU VEYA SEPYA
+Üç tema ve on dil.
+
+ÜCRETSİZ VE PRO
+Ücretsiz sürümde iki kısayol vardır ve reklam gösterilir. Pro, ikisini de kaldıran tek seferlik bir satın almadır. Abonelik yok.
+
+İZİNLER
+KeySnap bir izni ancak o izne ihtiyaç duyan özelliği kullandığında ister. Erişilebilirlik: tuş basışlarını görmek için. Konum: yalnızca "şu Wi-Fi ağına bağlıyken" koşulu için, çünkü Android ağ adını başka türlü göstermiyor; konumun hiçbir zaman okunmaz. Bluetooth, Rahatsız Etmeyin, kullanım erişimi ve sistem ayarlarını değiştirme izinlerinin her biri bir eylem grubunu açar. Kamera izni hiç istenmez; fener izinsiz çalışır.
+
+Android 11 veya üstü gerekir.
+
+Soru ve sorunlar için: support@ardasenn.com

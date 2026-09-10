@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Note: inside <string-array>, write an apostrophe as ’ rather than the escaped form.
+     aapt2 in this AGP fails with a bare NullPointerException on the escaped one. -->
+<resources>
+    <string-array name="guide_generic_steps">
+        <item>Abra o aplicativo Configurações</item>
+        <item>Vá em \"Sobre o telefone\" ou \"Informações do software\"</item>
+        <item>Toque em \"Número da versão\" 7 vezes seguidas</item>
+        <item>Quando aparecer \"Agora você é um desenvolvedor\", volte para Configurações</item>
+        <item>Abra \"Opções do desenvolvedor\" e ative \"Depuração sem fio\"</item>
+    </string-array>
+    <string-array name="guide_samsung_steps">
+        <item>Abra Configurações</item>
+        <item>Vá em \"Sobre o telefone\" &gt; \"Informações do software\"</item>
+        <item>Toque em \"Número da versão\" 7 vezes seguidas</item>
+        <item>Volte e abra \"Opções do desenvolvedor\"</item>
+        <item>Ative \"Depuração sem fio\"</item>
+    </string-array>
+    <string-array name="guide_xiaomi_steps">
+        <item>Abra Configurações</item>
+        <item>Vá em \"Sobre o telefone\"</item>
+        <item>Toque em \"Todas as especificações\" &gt; \"Versão do MIUI\" (ou \"Versão do HyperOS\") 7 vezes</item>
+        <item>Volte para as Configurações principais, abra \"Configurações adicionais\" &gt; \"Opções do desenvolvedor\"</item>
+        <item>Ative \"Depuração sem fio\"</item>
+    </string-array>
+    <string-array name="guide_huawei_steps">
+        <item>Abra Configurações</item>
+        <item>Vá em \"Sobre o telefone\" &gt; \"Versão do software\"</item>
+        <item>Toque em \"Número da versão\" 7 vezes seguidas</item>
+        <item>Abra \"Opções do desenvolvedor\" em \"Sistema e atualizações\" (ou na tela inicial de Configurações)</item>
+        <item>Ative \"Depuração sem fio\"</item>
+    </string-array>
+    <string-array name="guide_coloros_steps">
+        <item>Abra Configurações</item>
+        <item>Vá em \"Sobre o telefone\" &gt; \"Informações da versão\"</item>
+        <item>Toque em \"Número da versão\" 7 vezes seguidas</item>
+        <item>Volte para as Configurações principais, abra \"Configurações adicionais\" &gt; \"Opções do desenvolvedor\"</item>
+        <item>Ative \"Depuração sem fio\"</item>
+    </string-array>
+    <string-array name="guide_vivo_steps">
+        <item>Abra Configurações</item>
+        <item>Vá em \"Sobre o telefone\" (pode estar em \"Outras configurações\")</item>
+        <item>Toque em \"Versão do software\" 7 vezes seguidas</item>
+        <item>Volte, abra \"Gerenciamento do sistema\" &gt; \"Opções do desenvolvedor\"</item>
+        <item>Ative \"Depuração sem fio\"</item>
+    </string-array>
+    <string-array name="guide_pixel_steps">
+        <item>Abra Configurações</item>
+        <item>Vá em \"Sobre o telefone\"</item>
+        <item>Toque em \"Número da versão\" 7 vezes seguidas</item>
+        <item>Volte para as Configurações principais, abra \"Sistema\" &gt; \"Opções do desenvolvedor\"</item>
+        <item>Ative \"Depuração sem fio\"</item>
+    </string-array>
+    <string-array name="wizard_can_do_lines">
+        <item>Ler cada tecla física, sem atraso</item>
+        <item>Executar os ajustes e comandos que você escreve</item>
+        <item>Continuar funcionando com o app fechado</item>
+    </string-array>
+    <string-array name="wizard_never_does_lines">
+        <item>Tirar a entrada de outros apps</item>
+        <item>Ler a tela de outro aplicativo</item>
+        <item>Enviar algo que você não colocou em um atalho</item>
+    </string-array>
+    <string-array name="wizard_pairing_steps">
+        <item>Toque no botão abaixo para abrir as configurações de Depuração sem fio.</item>
+        <item>No menu, escolha ‘Parear dispositivo com código de pareamento’.</item>
+        <item>Vamos ler o código de pareamento e conectar automaticamente.</item>
+    </string-array>
+</resources>

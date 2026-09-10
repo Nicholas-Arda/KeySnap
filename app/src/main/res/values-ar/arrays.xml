@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Note: inside <string-array>, write an apostrophe as &#8217; rather than the escaped form.
+     aapt2 in this AGP fails with a bare NullPointerException on the escaped one. -->
+<resources>
+    <string-array name="guide_generic_steps">
+        <item>افتح تطبيق الإعدادات</item>
+        <item>انتقل إلى \"حول الهاتف\" أو \"معلومات البرنامج\"</item>
+        <item>اضغط على \"رقم الإصدار\" 7 مرات متتالية</item>
+        <item>عند ظهور \"أنت الآن مطوّر\"، ارجع إلى الإعدادات</item>
+        <item>افتح \"خيارات المطورين\" وفعّل \"تصحيح الأخطاء اللاسلكي\"</item>
+    </string-array>
+    <string-array name="guide_samsung_steps">
+        <item>افتح الإعدادات</item>
+        <item>انتقل إلى \"حول الهاتف\" &gt; \"معلومات البرنامج\"</item>
+        <item>اضغط على \"رقم الإصدار\" 7 مرات متتالية</item>
+        <item>ارجع وافتح \"خيارات المطورين\"</item>
+        <item>فعّل \"تصحيح الأخطاء اللاسلكي\"</item>
+    </string-array>
+    <string-array name="guide_xiaomi_steps">
+        <item>افتح الإعدادات</item>
+        <item>انتقل إلى \"حول الهاتف\"</item>
+        <item>اضغط على \"كل المواصفات\" &gt; \"إصدار MIUI\" (أو \"إصدار HyperOS\") 7 مرات</item>
+        <item>ارجع إلى الإعدادات الرئيسية، ثم افتح \"إعدادات إضافية\" &gt; \"خيارات المطورين\"</item>
+        <item>فعّل \"تصحيح الأخطاء اللاسلكي\"</item>
+    </string-array>
+    <string-array name="guide_huawei_steps">
+        <item>افتح الإعدادات</item>
+        <item>انتقل إلى \"حول الهاتف\" &gt; \"إصدار البرنامج\"</item>
+        <item>اضغط على \"رقم الإصدار\" 7 مرات متتالية</item>
+        <item>افتح \"خيارات المطورين\" ضمن \"النظام والتحديثات\" (أو الشاشة الرئيسية للإعدادات)</item>
+        <item>فعّل \"تصحيح الأخطاء اللاسلكي\"</item>
+    </string-array>
+    <string-array name="guide_coloros_steps">
+        <item>افتح الإعدادات</item>
+        <item>انتقل إلى \"حول الهاتف\" &gt; \"معلومات الإصدار\"</item>
+        <item>اضغط على \"رقم الإصدار\" 7 مرات متتالية</item>
+        <item>ارجع إلى الإعدادات الرئيسية، ثم افتح \"إعدادات إضافية\" &gt; \"خيارات المطورين\"</item>
+        <item>فعّل \"تصحيح الأخطاء اللاسلكي\"</item>
+    </string-array>
+    <string-array name="guide_vivo_steps">
+        <item>افتح الإعدادات</item>
+        <item>انتقل إلى \"حول الهاتف\" (قد تكون ضمن \"إعدادات أخرى\")</item>
+        <item>اضغط على \"إصدار البرنامج\" 7 مرات متتالية</item>
+        <item>ارجع، ثم افتح \"إدارة النظام\" &gt; \"خيارات المطورين\"</item>
+        <item>فعّل \"تصحيح الأخطاء اللاسلكي\"</item>
+    </string-array>
+    <string-array name="guide_pixel_steps">
+        <item>افتح الإعدادات</item>
+        <item>انتقل إلى \"حول الهاتف\"</item>
+        <item>اضغط على \"رقم الإصدار\" 7 مرات متتالية</item>
+        <item>ارجع إلى الإعدادات الرئيسية، ثم افتح \"النظام\" &gt; \"خيارات المطورين\"</item>
+        <item>فعّل \"تصحيح الأخطاء اللاسلكي\"</item>
+    </string-array>
+    <string-array name="wizard_can_do_lines">
+        <item>قراءة كل مفتاح فيزيائي دون تأخير</item>
+        <item>تنفيذ الإعدادات والأوامر التي تكتبها</item>
+        <item>الاستمرار في العمل والتطبيق مغلق</item>
+    </string-array>
+    <string-array name="wizard_never_does_lines">
+        <item>سلب الإدخال من التطبيقات الأخرى</item>
+        <item>قراءة شاشة تطبيق آخر</item>
+        <item>إرسال أي شيء لم تضعه أنت في اختصار</item>
+    </string-array>
+    <string-array name="wizard_pairing_steps">
+        <item>اضغط على الزر أدناه لفتح إعدادات تصحيح الأخطاء اللاسلكي.</item>
+        <item>من القائمة، اختر \"إقران الجهاز برمز إقران\".</item>
+        <item>سنقرأ رمز الإقران ونتصل تلقائيًا.</item>
+    </string-array>
+</resources>

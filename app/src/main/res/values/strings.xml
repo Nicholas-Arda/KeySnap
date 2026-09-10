@@ -1,0 +1,865 @@
+<resources>
+    <string name="app_name">KeySnap</string>
+    <!-- Shown on the system\'s accessibility settings screen. It must describe everything the
+         service actually does, including the scoped screen read, or it misrepresents the app. -->
+    <string name="accessibility_service_description">Detects physical key presses (Volume, Power, and other hardware buttons) so they can trigger your shortcuts. During Advanced Mode setup only, it also reads the pairing code from the system Wireless Debugging dialog. It cannot read any other app\'s screen.</string>
+    <string name="accessibility_disclosure_agree">Agree and open settings</string>
+
+    <!-- Action categories -->
+    <string name="action_category_input">Input</string>
+    <string name="action_category_apps">Apps</string>
+    <string name="action_category_flashlight">Flashlight</string>
+    <string name="action_category_navigation">Navigation</string>
+    <string name="action_category_volume">Volume</string>
+    <string name="action_category_display">Display</string>
+    <string name="action_category_media">Media</string>
+    <string name="action_category_connectivity">Connectivity</string>
+    <string name="action_category_keyboard">Keyboard</string>
+    <string name="action_category_device">Device</string>
+    <string name="action_category_sound">Sound</string>
+    <string name="action_category_automation">Automation</string>
+
+    <!-- Action parameter labels -->
+    <string name="param_strength">Strength</string>
+    <string name="param_key_code">Key code</string>
+    <string name="param_text">Text</string>
+    <string name="param_x" translatable="false">X</string>
+    <string name="param_y" translatable="false">Y</string>
+    <string name="param_taps">Taps</string>
+    <string name="param_interval_ms">Interval (ms)</string>
+    <string name="param_start_x">Start X</string>
+    <string name="param_start_y">Start Y</string>
+    <string name="param_end_x">End X</string>
+    <string name="param_end_y">End Y</string>
+    <string name="param_duration_ms">Duration (ms)</string>
+    <string name="param_point_a_x">Point A X</string>
+    <string name="param_point_a_y">Point A Y</string>
+    <string name="param_point_b_x">Point B X</string>
+    <string name="param_point_b_y">Point B Y</string>
+    <string name="param_direction">Direction</string>
+    <string name="param_app">App</string>
+    <string name="param_shortcut">Shortcut</string>
+    <string name="param_url" translatable="false">URL</string>
+    <string name="param_method">Method</string>
+    <string name="param_body">Body</string>
+    <string name="param_command">Command</string>
+    <string name="param_action">Action</string>
+    <string name="param_uri" translatable="false">URI</string>
+    <string name="param_extras">Extras (key=value;key2=value2)</string>
+    <string name="param_element">Element</string>
+    <string name="param_namespace">Namespace</string>
+    <string name="param_key">Key</string>
+    <string name="param_value">Value</string>
+    <string name="param_mode">Mode</string>
+    <string name="param_stream">Stream</string>
+    <string name="param_sound">Sound</string>
+    <string name="param_times">Times</string>
+
+    <!-- Actions: flashlight -->
+    <string name="action_toggle_flashlight">Toggle flashlight</string>
+    <string name="action_enable_flashlight">Enable flashlight</string>
+    <string name="action_disable_flashlight">Disable flashlight</string>
+    <string name="action_change_flashlight_brightness">Change flashlight brightness</string>
+
+    <!-- Actions: input -->
+    <string name="action_input_key_code">Input key code</string>
+    <string name="action_input_text">Input text</string>
+    <string name="action_tap_screen">Tap screen</string>
+    <string name="action_swipe_screen">Swipe screen</string>
+    <string name="action_pinch_screen">Pinch screen</string>
+
+    <!-- Actions: apps -->
+    <string name="action_launch_app">Launch app</string>
+    <string name="action_launch_app_shortcut">Launch app shortcut</string>
+    <string name="action_open_url">Open URL</string>
+    <string name="action_http_request">HTTP request</string>
+    <string name="action_shell_command">Shell command</string>
+    <string name="action_send_intent">Send intent</string>
+    <string name="action_interact_with_app_element">Interact with app element</string>
+    <string name="action_launch_voice_assistant">Launch voice assistant</string>
+    <string name="action_launch_device_assistant">Launch device assistant</string>
+    <string name="action_open_camera">Open camera</string>
+    <string name="action_open_settings">Open settings</string>
+    <string name="action_force_stop_app">Force stop app</string>
+    <string name="action_close_and_clear_app">Close and clear app from recents</string>
+    <string name="action_modify_setting">Modify setting</string>
+
+    <!-- Actions: navigation -->
+    <string name="action_expand_notification_drawer">Expand notification drawer</string>
+    <string name="action_toggle_notification_drawer">Toggle notification drawer</string>
+    <string name="action_expand_quick_settings">Expand quick settings</string>
+    <string name="action_toggle_quick_settings">Toggle quick settings</string>
+    <string name="action_collapse_status_bar">Collapse status bar</string>
+    <string name="action_go_back">Go back</string>
+    <string name="action_go_home">Go home</string>
+    <string name="action_open_recents">Open recents</string>
+    <string name="action_open_menu">Open menu</string>
+    <string name="action_go_last_app">Go to last app</string>
+    <string name="action_toggle_split_screen">Toggle split screen</string>
+    <string name="action_take_screenshot">Take screenshot</string>
+    <string name="action_move_cursor_to_end">Move cursor to end</string>
+
+    <!-- Actions: volume -->
+    <string name="action_volume_up">Volume up</string>
+    <string name="action_volume_down">Volume down</string>
+    <string name="action_volume_mute">Mute volume</string>
+    <string name="action_volume_unmute">Unmute volume</string>
+    <string name="action_volume_toggle_mute">Toggle mute</string>
+    <string name="action_show_volume_dialog">Show volume dialog</string>
+    <string name="action_cycle_ringer_mode">Cycle ringer mode</string>
+    <string name="action_change_ringer_mode">Change ringer mode</string>
+    <string name="action_change_volume_stream">Change volume stream</string>
+
+    <!-- Actions: display -->
+    <string name="action_screen_on">Screen on</string>
+    <string name="action_screen_off">Screen off</string>
+    <string name="action_toggle_screen">Toggle screen</string>
+    <string name="action_toggle_auto_rotate">Toggle auto-rotate</string>
+    <string name="action_portrait_mode">Portrait mode</string>
+    <string name="action_landscape_mode">Landscape mode</string>
+    <string name="action_cycle_rotations">Cycle rotations</string>
+    <string name="action_change_brightness">Change brightness</string>
+    <string name="action_toggle_auto_brightness">Toggle auto-brightness</string>
+    <string name="action_increase_brightness">Increase brightness</string>
+    <string name="action_decrease_brightness">Decrease brightness</string>
+
+    <!-- Actions: media -->
+    <string name="action_media_play">Play</string>
+    <string name="action_media_pause">Pause</string>
+    <string name="action_media_play_pause">Play / pause</string>
+    <string name="action_media_next">Next track</string>
+    <string name="action_media_previous">Previous track</string>
+    <string name="action_media_fast_forward">Fast forward</string>
+    <string name="action_media_rewind">Rewind</string>
+    <string name="action_media_stop">Stop</string>
+
+    <!-- Actions: connectivity -->
+    <string name="action_toggle_wifi">Toggle Wi-Fi</string>
+    <string name="action_enable_wifi">Enable Wi-Fi</string>
+    <string name="action_disable_wifi">Disable Wi-Fi</string>
+    <string name="action_toggle_bluetooth">Toggle Bluetooth</string>
+    <string name="action_enable_bluetooth">Enable Bluetooth</string>
+    <string name="action_disable_bluetooth">Disable Bluetooth</string>
+    <string name="action_toggle_mobile_data">Toggle mobile data</string>
+    <string name="action_toggle_nfc">Toggle NFC</string>
+    <string name="action_toggle_airplane_mode">Toggle airplane mode</string>
+    <string name="action_toggle_location">Toggle location</string>
+    <string name="action_toggle_hotspot">Toggle hotspot</string>
+
+    <!-- Actions: keyboard -->
+    <string name="action_show_keyboard">Show keyboard</string>
+    <string name="action_hide_keyboard">Hide keyboard</string>
+    <string name="action_toggle_keyboard">Toggle keyboard</string>
+    <string name="action_switch_keyboard">Switch keyboard</string>
+    <string name="action_show_keyboard_picker">Show keyboard picker</string>
+    <string name="action_text_cut">Cut</string>
+    <string name="action_text_copy">Copy</string>
+    <string name="action_text_paste">Paste</string>
+    <string name="action_select_word_at_cursor">Select word at cursor</string>
+
+    <!-- Actions: device -->
+    <string name="action_lock_device">Lock device</string>
+    <string name="action_secure_lock_device">Secure lock device</string>
+    <string name="action_power_dialog">Show power dialog</string>
+    <string name="action_toggle_dnd">Toggle do not disturb</string>
+    <string name="action_enable_dnd">Enable do not disturb</string>
+    <string name="action_disable_dnd">Disable do not disturb</string>
+    <string name="action_open_app_drawer">Open app drawer</string>
+    <string name="action_dismiss_all_notifications">Dismiss all notifications</string>
+    <string name="action_answer_call">Answer call</string>
+    <string name="action_end_call">End call</string>
+
+    <!-- Actions: sound -->
+    <string name="action_play_sound">Play sound</string>
+    <string name="action_text_to_speech">Text to speech</string>
+    <string name="action_vibrate">Vibrate</string>
+    <string name="action_stop_text_to_speech">Stop text to speech</string>
+
+    <!-- Actions: automation -->
+    <string name="action_delay">Delay</string>
+    <string name="action_repeat_previous">Repeat previous action</string>
+    <string name="action_toggle_mapping">Toggle all shortcuts</string>
+    <string name="action_pause_mapping">Pause all shortcuts</string>
+    <string name="action_resume_mapping">Resume all shortcuts</string>
+
+    <!-- Constraint categories -->
+    <string name="constraint_category_apps">Apps</string>
+    <string name="constraint_category_media">Media</string>
+    <string name="constraint_category_bluetooth" translatable="false">Bluetooth</string>
+    <string name="constraint_category_display">Display</string>
+    <string name="constraint_category_flashlight">Flashlight</string>
+    <string name="constraint_category_wifi" translatable="false">WiFi</string>
+    <string name="constraint_category_keyboard">Keyboard</string>
+    <string name="constraint_category_lock">Lock</string>
+    <string name="constraint_category_phone">Phone</string>
+    <string name="constraint_category_power">Power</string>
+    <string name="constraint_category_device">Device</string>
+    <string name="constraint_category_time">Time</string>
+    <string name="constraint_category_connectivity">Connectivity</string>
+    <string name="constraint_category_sound">Sound</string>
+
+    <!-- Constraints -->
+    <string name="constraint_app_in_foreground">App in foreground</string>
+    <string name="constraint_app_not_in_foreground">App not in foreground</string>
+    <string name="constraint_app_playing_media">App playing media</string>
+    <string name="constraint_app_not_playing_media">App not playing media</string>
+    <string name="constraint_no_media_playing">No media is playing</string>
+    <string name="constraint_media_is_playing">Media is playing</string>
+    <string name="constraint_bluetooth_on">Bluetooth is on</string>
+    <string name="constraint_bluetooth_off">Bluetooth is off</string>
+    <string name="constraint_screen_on">Screen is on</string>
+    <string name="constraint_screen_off">Screen is off</string>
+    <string name="constraint_screen_orientation">Screen orientation</string>
+    <string name="constraint_physical_orientation">Physical orientation</string>
+    <string name="constraint_flashlight_on">Flashlight is on</string>
+    <string name="constraint_flashlight_off">Flashlight is off</string>
+    <string name="constraint_wifi_on">WiFi is on</string>
+    <string name="constraint_wifi_off">WiFi is off</string>
+    <string name="constraint_connected_to_wifi_network">Connected to a WiFi network</string>
+    <string name="constraint_disconnected_from_wifi_network">Disconnected from a WiFi network</string>
+    <string name="constraint_input_method_chosen">Input method is chosen</string>
+    <string name="constraint_input_method_not_chosen">Input method is not chosen</string>
+    <string name="constraint_keyboard_showing">Keyboard is showing</string>
+    <string name="constraint_keyboard_not_showing">Keyboard is not showing</string>
+    <string name="constraint_device_locked">Device is locked</string>
+    <string name="constraint_device_unlocked">Device is unlocked</string>
+    <string name="constraint_lock_screen_showing">Lock screen is showing</string>
+    <string name="constraint_lock_screen_not_showing">Lock screen is not showing</string>
+    <string name="constraint_in_phone_call">In phone call</string>
+    <string name="constraint_not_in_phone_call">Not in phone call</string>
+    <string name="constraint_phone_ringing">Phone ringing</string>
+    <string name="constraint_charging">Charging</string>
+    <string name="constraint_discharging">Discharging</string>
+    <string name="constraint_hinge_closed">Hinge closed</string>
+    <string name="constraint_hinge_open">Hinge open</string>
+    <string name="constraint_time">Time</string>
+    <string name="constraint_bluetooth_device_connected">Bluetooth device is connected</string>
+    <string name="constraint_bluetooth_device_disconnected">Bluetooth device is disconnected</string>
+    <string name="constraint_dark_mode_on">Dark mode is on</string>
+    <string name="constraint_dark_mode_off">Dark mode is off</string>
+    <string name="constraint_battery_saver_on">Battery saver is on</string>
+    <string name="constraint_battery_saver_off">Battery saver is off</string>
+    <string name="constraint_charging_wired">Charging by cable</string>
+    <string name="constraint_charging_wireless">Charging wirelessly</string>
+    <string name="constraint_battery_above">Battery above a level</string>
+    <string name="constraint_battery_below">Battery below a level</string>
+    <string name="constraint_location_on">Location is on</string>
+    <string name="constraint_location_off">Location is off</string>
+    <string name="constraint_day_of_week">Day of the week</string>
+    <string name="constraint_mobile_data_on">Mobile data is on</string>
+    <string name="constraint_mobile_data_off">Mobile data is off</string>
+    <string name="constraint_airplane_mode_on">Airplane mode is on</string>
+    <string name="constraint_airplane_mode_off">Airplane mode is off</string>
+    <string name="constraint_ringer_normal">Ringer is on</string>
+    <string name="constraint_ringer_vibrate">Ringer is on vibrate</string>
+    <string name="constraint_ringer_silent">Ringer is silent</string>
+    <string name="constraint_dnd_on">Do Not Disturb is on</string>
+    <string name="constraint_dnd_off">Do Not Disturb is off</string>
+    <string name="constraint_headphones_connected">Headphones are connected</string>
+    <string name="constraint_headphones_disconnected">Headphones are disconnected</string>
+
+    <!-- Action editor: requirement badges -->
+    <string name="badge_expert_mode">Requires Advanced Mode</string>
+    <string name="badge_accessibility">Requires the Accessibility service</string>
+    <string name="badge_notification_policy">Requires Do Not Disturb access</string>
+    <string name="badge_write_settings">Requires permission to modify system settings</string>
+
+    <!-- Action editor: field labels -->
+    <string name="field_key_to_send">Key to send</string>
+    <string name="field_tap_here">Tap here</string>
+    <string name="field_time_between_taps">Time between taps</string>
+    <string name="field_swipe_from">Swipe from</string>
+    <string name="field_swipe_to">Swipe to</string>
+    <string name="field_duration">Duration</string>
+    <string name="field_first_finger">First finger</string>
+    <string name="field_second_finger">Second finger</string>
+    <string name="field_app_to_open">App to open</string>
+    <string name="field_app_to_stop">App to stop</string>
+    <string name="field_extras">Extras</string>
+    <string name="field_setting_key">Setting key</string>
+    <string name="field_level">Level</string>
+    <string name="field_brightness">Brightness</string>
+    <string name="field_text_to_speak">Text to speak</string>
+    <string name="field_wait">Wait</string>
+
+    <!-- Action editor: hints -->
+    <string name="hint_input_text">Typed into the focused field</string>
+    <string name="hint_url_example" translatable="false">https://example.com</string>
+    <string name="hint_webhook_url" translatable="false">https://example.com/webhook</string>
+    <string name="hint_http_body">Sent with the request</string>
+    <string name="hint_shell_command" translatable="false">settings put system screen_brightness 200</string>
+    <string name="hint_intent_action" translatable="false">android.intent.action.VIEW</string>
+    <string name="hint_optional">Optional</string>
+    <string name="hint_extras" translatable="false">key=value;key2=value2</string>
+    <string name="hint_screen_brightness" translatable="false">screen_brightness</string>
+    <string name="hint_brightness_value" translatable="false">200</string>
+    <string name="hint_sound_uri">content:// or file:// URI</string>
+
+    <!-- Action editor: helpers -->
+    <string name="helper_input_key_code">Sends a key press to whatever app is in the foreground.</string>
+    <string name="helper_http_request">Sends a web request — useful for triggering a webhook or a smart-home scene.</string>
+    <string name="helper_shell_command">Runs a terminal command on the device.</string>
+    <string name="helper_extras">Optional. Each pair is sent as a string extra.</string>
+    <string name="helper_send_intent">Broadcasts an Android intent — a message other apps can react to. For advanced users.</string>
+    <string name="helper_modify_setting">Writes an Android system setting directly.</string>
+    <string name="helper_repeat_previous">Runs the action above this one again.</string>
+
+    <!-- Action editor: choices -->
+    <string name="choice_pinch_in">Zoom out (pinch in)</string>
+    <string name="choice_pinch_out">Zoom in (spread out)</string>
+    <string name="summary_zoom_in">Zoom in</string>
+    <string name="summary_zoom_out">Zoom out</string>
+    <string name="choice_http_get" translatable="false">GET</string>
+    <string name="choice_http_post" translatable="false">POST</string>
+    <string name="choice_http_put" translatable="false">PUT</string>
+    <string name="choice_http_delete" translatable="false">DELETE</string>
+    <string name="choice_namespace_system">System</string>
+    <string name="choice_namespace_secure">Secure</string>
+    <string name="choice_namespace_global">Global</string>
+    <string name="choice_stream_ring">Ring</string>
+    <string name="choice_stream_media">Media</string>
+    <string name="choice_stream_alarm">Alarm</string>
+    <string name="choice_stream_notification">Notification</string>
+    <string name="choice_ringer_normal">Normal</string>
+    <string name="choice_ringer_vibrate">Vibrate</string>
+    <string name="choice_ringer_silent">Silent</string>
+
+    <!-- Trigger press types -->
+    <string name="press_single_title">Single press</string>
+    <string name="press_single_badge" translatable="false">1x</string>
+    <string name="press_single_description">Fires when the key is pressed once</string>
+    <string name="press_double_title">Double press</string>
+    <string name="press_double_badge" translatable="false">2x</string>
+    <string name="press_double_description">Fires when the key is pressed twice in a row</string>
+    <string name="press_long_title">Long press</string>
+    <string name="press_long_badge">Hold</string>
+    <string name="press_long_description">Fires when the key is held for the configured time</string>
+
+    <!-- Hardware key names -->
+    <string name="key_volume_down">Volume Down</string>
+    <string name="key_volume_up">Volume Up</string>
+    <string name="key_power">Power</string>
+    <string name="key_assist">Assistant (Assist)</string>
+    <string name="key_voice_assist">Voice Assistant</string>
+    <string name="key_headsethook">Headset / Media Key</string>
+    <string name="key_camera">Camera / Shutter</string>
+    <string name="key_back">Back</string>
+    <string name="key_home">Home</string>
+    <string name="key_menu">Menu</string>
+    <string name="key_mute">Mute</string>
+    <string name="key_media_play_pause">Play / Pause</string>
+    <string name="key_wakeup">Wake</string>
+    <string name="key_alert_slider">Alert Slider / Custom Switch</string>
+
+    <!-- Developer Options guides -->
+    <string name="guide_generic">Other</string>
+    <string name="guide_samsung" translatable="false">Samsung</string>
+    <string name="guide_xiaomi" translatable="false">Xiaomi / Redmi / POCO</string>
+    <string name="guide_huawei" translatable="false">Huawei / Honor</string>
+    <string name="guide_coloros" translatable="false">Oppo / OnePlus / realme</string>
+    <string name="guide_vivo" translatable="false">Vivo / iQOO</string>
+    <string name="guide_pixel">Google Pixel / Stock Android</string>
+
+    <!-- Suggested shortcuts -->
+    <string name="suggestion_flashlight">Flashlight</string>
+    <string name="suggestion_flashlight_subtitle">Torch on and off</string>
+    <string name="suggestion_play_pause">Play / Pause</string>
+    <string name="suggestion_play_pause_subtitle">Whatever is playing</string>
+    <string name="suggestion_screenshot">Screenshot</string>
+    <string name="suggestion_screenshot_subtitle">Capture the screen</string>
+    <string name="suggestion_dnd">Do Not Disturb</string>
+    <string name="suggestion_dnd_subtitle">Mute every alert</string>
+    <string name="suggestion_lock">Lock Device</string>
+    <string name="suggestion_lock_subtitle">Sleep the screen</string>
+    <string name="suggestion_camera">Open Camera</string>
+    <string name="suggestion_camera_subtitle">Straight to the shot</string>
+    <string name="suggestion_headphones_play">Headphones In</string>
+    <string name="suggestion_headphones_play_subtitle">Plug in, music starts</string>
+    <string name="suggestion_assistant">Assistant</string>
+    <string name="suggestion_assistant_subtitle">Talk to your assistant</string>
+    <string name="suggestion_bedtime">Bedtime</string>
+    <string name="suggestion_bedtime_subtitle">DND on, dim, lock</string>
+    <string name="suggestion_notifications">Notifications</string>
+    <string name="suggestion_notifications_subtitle">Pull down the shade</string>
+    <string name="suggestion_car_bluetooth">In the Car</string>
+    <string name="suggestion_car_bluetooth_subtitle">Car connects, music plays</string>
+    <string name="suggestion_sos">SOS Signal</string>
+    <string name="suggestion_sos_subtitle">Torch flashes ··· ––– ···</string>
+    <string name="suggestion_wifi">Wi-Fi</string>
+    <string name="suggestion_wifi_subtitle">Switch it on or off</string>
+    <string name="suggestion_low_battery">Low Battery</string>
+    <string name="suggestion_low_battery_subtitle">Under 15%: Bluetooth off, dim</string>
+    <string name="suggestion_auto_rotate">Auto-Rotate</string>
+    <string name="suggestion_auto_rotate_subtitle">Lock or free rotation</string>
+    <string name="suggestion_night_charge_dnd">Night Charging</string>
+    <string name="suggestion_night_charge_dnd_subtitle">On charger after 22:00, DND on</string>
+    <string name="suggestion_bluetooth">Bluetooth</string>
+    <string name="suggestion_bluetooth_subtitle">Switch it on or off</string>
+    <string name="suggestion_vibrate_mode">Vibrate Mode</string>
+    <string name="suggestion_vibrate_mode_subtitle">Ringer to vibrate</string>
+    <string name="suggestion_torch_off_screen_off">Torch Safety</string>
+    <string name="suggestion_torch_off_screen_off_subtitle">Screen off, torch off</string>
+    <string name="suggestion_battery_saver">Battery Saver</string>
+    <string name="suggestion_battery_saver_subtitle">Bluetooth and Wi-Fi off, dim</string>
+
+    <!-- Common -->
+    <string name="common_cancel">Cancel</string>
+    <string name="common_save">Save</string>
+    <string name="common_add">Add</string>
+    <string name="common_done">Done</string>
+    <string name="common_back">Back</string>
+    <string name="common_close">Close</string>
+    <string name="common_remove">Remove</string>
+    <string name="common_delete">Delete</string>
+    <string name="common_coming_soon">Coming soon</string>
+    <string name="picker_category_all">All</string>
+
+    <!-- Action config sheet -->
+    <string name="badge_tap_to_grant">%1$s · Tap to grant</string>
+    <string name="action_config_enter_key_code">Or enter a key code</string>
+    <string name="action_config_cancel_recording">Cancel recording</string>
+    <string name="action_config_record_key">Record a physical key</string>
+    <string name="action_config_choose_app">Choose an app</string>
+    <string name="action_config_enter_package">Or enter a package name</string>
+    <string name="action_config_pick_on_screen">Pick on screen</string>
+    <string name="action_config_allow_overlay">Allow drawing over apps to pick</string>
+    <string name="action_config_point_not_set">not set</string>
+
+    <!-- Constraint picker -->
+    <string name="constraint_picker_title">Choose a condition</string>
+    <string name="constraint_picker_search">Search conditions</string>
+    <string name="constraint_picker_no_match">No conditions match “%1$s”</string>
+    <string name="constraint_picker_empty_category">No conditions in this category yet</string>
+    <string name="constraint_picker_add_label">Add %1$s</string>
+
+    <!-- Constraint configuration sheet -->
+    <string name="constraint_picker_configure_title">Set up condition</string>
+    <string name="field_constraint_app">App</string>
+    <string name="field_orientation">Orientation</string>
+    <string name="orientation_portrait">Portrait</string>
+    <string name="orientation_landscape">Landscape</string>
+    <string name="field_wifi_ssid">Network name (SSID)</string>
+    <string name="hint_wifi_ssid_any">Leave empty for any network</string>
+    <string name="field_bluetooth_device">Device</string>
+    <string name="bluetooth_no_paired_devices">No paired devices. Pair one in Bluetooth settings first.</string>
+    <string name="field_battery_percent">Battery level</string>
+    <string name="field_time_start">From</string>
+    <string name="field_time_end">Until</string>
+    <string name="field_days">Days</string>
+    <string name="constraint_needs_usage_access">Needs Usage access so the app can see which app is in front.</string>
+    <string name="constraint_config_choose_app">Choose an app to continue</string>
+    <string name="constraint_needs_location">Android only reveals the network name to apps with the Location permission.</string>
+    <string name="constraint_grant_permission">Grant</string>
+    <string name="constraint_summary_any_wifi">Any network</string>
+    <string name="constraint_summary_time_range" translatable="false">%1$s – %2$s</string>
+    <string name="constraint_summary_percent" translatable="false">%1$d%%</string>
+
+    <!-- Action picker -->
+    <string name="action_picker_search">Search actions</string>
+    <string name="action_picker_no_match">No actions match “%1$s”</string>
+    <string name="action_picker_empty_category">No actions in this category yet</string>
+    <string name="action_picker_add_label">Add %1$s</string>
+
+    <!-- Script editor -->
+    <string name="editor_discard_changes">Discard changes</string>
+    <string name="editor_unsaved_title">Discard changes?</string>
+    <string name="editor_unsaved_body">Your changes to this shortcut have not been saved.</string>
+    <string name="editor_unsaved_discard">Discard</string>
+    <string name="editor_shortcut_name">Shortcut name</string>
+    <string name="editor_shortcut_settings">Shortcut settings</string>
+    <string name="editor_chain_when">When</string>
+    <string name="editor_chain_only_if">Only if</string>
+    <string name="editor_chain_do">Do</string>
+    <string name="editor_add_action">Add action</string>
+    <string name="editor_add_constraint">Add condition</string>
+    <string name="editor_always_runs">Always runs</string>
+    <string name="editor_remove_constraint">Remove %1$s</string>
+    <string name="editor_configure_action">Configure %1$s</string>
+    <string name="editor_more_options">More options for %1$s</string>
+    <string name="editor_tap_to_configure">Tap to configure</string>
+    <string name="editor_configure">Configure</string>
+    <string name="editor_move_up">Move up</string>
+    <string name="editor_move_down">Move down</string>
+    <string name="editor_test_run">Test run</string>
+
+    <!-- Common (2) -->
+    <string name="common_ok">OK</string>
+    <string name="common_yes">Yes</string>
+    <string name="common_no">No</string>
+    <string name="common_confirm">Confirm</string>
+    <string name="common_save_caps">SAVE</string>
+    <string name="common_cancel_caps">CANCEL</string>
+
+    <!-- Brand -->
+    <string name="app_name_display" translatable="false">KeySnap</string>
+    <string name="app_name_pro" translatable="false">KeySnap Pro</string>
+
+    <!-- Bottom navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_shortcuts">Shortcuts</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- Dialogs -->
+    <string name="dialog_expert_connected">ADVANCED MODE CONNECTED</string>
+    <string name="dialog_new_input_title">New input detected</string>
+    <string name="dialog_new_input_body">Code: %1$d. Give this input a short name.</string>
+    <string name="dialog_new_input_hint">e.g. Shortcut key</string>
+
+    <!-- App picker -->
+    <string name="app_picker_search">Search apps</string>
+    <string name="app_picker_loading">Reading installed apps…</string>
+    <string name="app_picker_no_match">No apps match “%1$s”</string>
+    <string name="app_picker_choose">Choose %1$s</string>
+    <string name="app_picker_selected">Selected</string>
+
+    <!-- Trigger picker -->
+    <string name="trigger_picker_title">Set key</string>
+    <string name="trigger_picker_subtitle">Choose a press type, then record a key.</string>
+    <string name="trigger_picker_no_key">No key yet</string>
+    <string name="trigger_picker_saved_key">Or pick a saved key</string>
+    <string name="trigger_picker_listening">Listening… tap to stop</string>
+    <string name="trigger_picker_tap_to_record">Tap, then press a physical key</string>
+    <string name="trigger_picker_save_combo">Save key</string>
+    <string name="trigger_picker_use_automation">Use an automation instead</string>
+    <string name="trigger_picker_use_key">Use %1$s</string>
+
+    <!-- Per-shortcut settings -->
+    <string name="script_settings_name">Name</string>
+    <string name="script_settings_enabled">Enabled</string>
+    <string name="script_settings_assign_key_first">Assign a key from the editor to configure press behavior.</string>
+    <string name="script_settings_trigger_type">Press type</string>
+    <string name="script_settings_double_press_window">Double-press window</string>
+    <string name="script_settings_long_press_threshold">Long-press threshold</string>
+    <string name="script_settings_using_global">Using global default (%1$dms)</string>
+    <string name="script_settings_custom_value">Custom for this shortcut</string>
+    <string name="script_settings_consume_input">Consume original input</string>
+    <string name="script_settings_consume_input_description">Prevent the key from reaching other apps where Android allows it.</string>
+    <string name="script_settings_not_global">Not global, only for this shortcut</string>
+    <string name="script_settings_reset_to_default">Reset to default (%1$s)</string>
+    <string name="script_settings_vibrate">Vibrate when it runs</string>
+    <string name="script_settings_vibrate_description">Feel a short buzz when this shortcut fires.</string>
+
+    <!-- Shortcuts list -->
+    <string name="scripts_title">My shortcuts</string>
+    <string name="scripts_paused_warning">All shortcuts are paused, so none of these will fire.</string>
+    <string name="scripts_new_shortcut">New shortcut</string>
+    <string name="scripts_empty_title">No shortcuts yet</string>
+    <string name="scripts_empty_body">A shortcut runs one or more actions when you press a physical key.</string>
+    <string name="scripts_tutorial_progress" translatable="false">%1$d/%2$d</string>
+    <string name="scripts_empty_go_home">Start from a suggestion on Home</string>
+    <string name="scripts_tutorial_title">Make your first shortcut</string>
+    <string name="scripts_tutorial_subtitle">Four steps, on repeat.</string>
+    <string name="scripts_tutorial_pause">Pause the demo</string>
+    <string name="scripts_tutorial_play">Play the demo</string>
+    <string name="scripts_tutorial_step_new">Tap New shortcut</string>
+    <string name="scripts_tutorial_step_key">Choose Key press and press your key</string>
+    <string name="scripts_tutorial_step_action">Add an action</string>
+    <string name="scripts_tutorial_step_done">Tap Done</string>
+    <string name="scripts_tutorial_cap_fab">The blue + button, top right</string>
+    <string name="scripts_tutorial_cap_keypress">In When, tap Key press</string>
+    <string name="scripts_tutorial_cap_press">Press the key on your phone</string>
+    <string name="scripts_tutorial_cap_save">Tap Save key</string>
+    <string name="scripts_tutorial_cap_add">In Do, tap Add action</string>
+    <string name="scripts_tutorial_cap_pick">Pick Flashlight</string>
+    <string name="scripts_tutorial_cap_lands">It lands under Do</string>
+    <string name="scripts_tutorial_cap_check">The check mark, top right</string>
+    <string name="scripts_tutorial_cap_runs">Volume Up now runs the flashlight</string>
+    <string name="scripts_tutorial_mini_page">Shortcuts page</string>
+    <string name="scripts_tutorial_listening">Listening…</string>
+    <string name="scripts_tutorial_key_recorded">Key recorded</string>
+    <string name="scripts_no_trigger">No key yet</string>
+    <string name="scripts_no_condition">No condition added</string>
+    <string name="scripts_no_actions">No actions yet</string>
+    <string name="scripts_unnamed">Shortcut</string>
+    <string name="scripts_delete_label">Delete %1$s</string>
+    <string name="scripts_toggle_state_on">On</string>
+    <string name="scripts_toggle_state_off">Off</string>
+    <string name="scripts_toggle_state_paused">On, but all shortcuts are paused</string>
+    <string name="scripts_delete_title">Delete shortcut?</string>
+    <string name="scripts_delete_body">“%1$s” will be deleted permanently. This cannot be undone.</string>
+    <string name="scripts_snackbar_home">Home</string>
+
+    <!-- Home -->
+    <string name="home_suggested_shortcuts">Suggested shortcuts</string>
+    <string name="home_suggestions_group_single">One key, one action</string>
+    <string name="home_suggestions_group_multi">One key, several steps</string>
+    <string name="home_suggestions_group_automation">Runs by itself</string>
+    <string name="home_your_shortcuts">Your shortcuts</string>
+    <string name="suggestion_saved">%1$s is ready · %2$s</string>
+    <string name="home_build_from_suggestion">Build a shortcut from %1$s</string>
+    <string name="home_suggestion_soon">Soon</string>
+    <string name="home_suggestion_automation">Automation</string>
+    <string name="home_pause_all">Pause all shortcuts</string>
+    <string name="home_resume_all">Resume all shortcuts</string>
+    <string name="home_status_live">Live</string>
+    <string name="home_status_paused">Paused</string>
+    <string name="home_system_status">System status</string>
+    <string name="home_collapse_status">Collapse system status</string>
+    <string name="home_expand_status">Expand system status</string>
+    <string name="home_accessibility_service">Accessibility service</string>
+    <string name="home_status_advanced">Advanced Mode</string>
+    <string name="home_status_active">Active</string>
+    <string name="home_status_offline">Offline</string>
+    <string name="home_status_running">Running</string>
+    <string name="home_status_off">Off</string>
+    <string name="home_triggers_session">Runs this session</string>
+    <string name="home_last_from">Last from %1$s</string>
+    <string name="home_open_label_settings">Open %1$s settings</string>
+    <string name="home_setup_title_off">Your shortcuts aren’t running yet</string>
+    <string name="home_setup_subtitle_off">Three steps, all in Android’s own settings. Here’s what to tap on each.</string>
+    <string name="home_setup_title_at_risk">Your shortcuts may stop working</string>
+    <string name="home_setup_subtitle_at_risk">Android can close the app in the background until these are on.</string>
+    <string name="home_setup_progress">%1$d/3</string>
+    <string name="home_setup_step_accessibility">Turn on the Accessibility service</string>
+    <string name="home_setup_why_accessibility">KeySnap reads your button presses through it. Nothing runs until this is on.</string>
+    <string name="home_setup_open_accessibility">Open Accessibility settings</string>
+    <string name="home_setup_step_background">Let KeySnap run in the background</string>
+    <string name="home_setup_why_background">Android closes apps it thinks are asleep. Tap Allow when Android asks — Deny leaves KeySnap stoppable.</string>
+    <string name="home_setup_allow_background">Allow background use</string>
+    <string name="home_setup_done_background">Allowed</string>
+    <string name="home_setup_step_notifications">Allow notifications</string>
+    <string name="home_setup_why_notifications">Setup only: pairing codes and service status. Tap Allow when Android asks — Don’t allow stops setup here.</string>
+    <string name="home_setup_ask_now">Ask me now</string>
+    <string name="home_setup_done_notifications">Allowed</string>
+    <string name="home_setup_all_done">All three are on. Your buttons work now.</string>
+    <string name="home_setup_state_done">Done</string>
+    <string name="home_setup_state_current">Current step</string>
+    <string name="home_setup_state_upcoming">Not started yet</string>
+    <string name="home_setup_why">Why?</string>
+    <string name="home_setup_why_expanded">Expanded</string>
+    <string name="home_setup_why_collapsed">Collapsed</string>
+    <string name="home_setup_whytext_accessibility">Android shows hardware buttons only to an accessibility service, so KeySnap uses one for exactly that: noticing a press and running your shortcut. It does not read other apps\' screens. During Advanced Mode setup it also reads the pairing code on the Wireless Debugging page, and nothing else.</string>
+    <string name="home_setup_whytext_background">Android closes apps it thinks are idle, and a closed app cannot run your shortcuts. This keeps KeySnap alive while your phone sleeps. In the background it does nothing but wait for a button.</string>
+    <string name="home_setup_whytext_notifications">Only during Advanced Mode setup: the pairing code and whether the service is running. No reminders, no promotions, nothing else, ever.</string>
+    <string name="home_setup_illo_downloaded_apps">Downloaded apps</string>
+    <string name="home_setup_illo_battery_dialog">Let KeySnap always run in background?</string>
+    <string name="home_setup_illo_battery_body">This may reduce battery life.</string>
+    <string name="home_setup_illo_battery_deny">Deny</string>
+    <string name="home_setup_illo_dialog">Allow KeySnap to send you notifications?</string>
+    <string name="home_setup_illo_deny">Don’t allow</string>
+    <string name="home_setup_illo_allow">Allow</string>
+    <string name="home_nudge_title">Make your first shortcut</string>
+    <string name="home_nudge_subtitle">Flashlight is one tap below.</string>
+    <string name="home_nudge_dismiss">Dismiss</string>
+    <string name="home_reward_cooldown">Reward on cooldown, %1$s left. Go Pro.</string>
+    <string name="home_reward_available">Watch an ad for one extra shortcut for 4 hours</string>
+    <string name="home_reward_badge_idle">+1</string>
+
+    <!-- Pro upsell -->
+    <string name="pro_card_subtitle">Free keeps %1$d shortcuts on. Pro keeps all of them on.</string>
+    <string name="pro_card_at_cap">Why the next shortcut won\'t stay on</string>
+    <string name="pro_active_shortcuts">Active shortcuts</string>
+    <string name="pro_progress_description">%1$d of %2$d active shortcuts</string>
+    <string name="pro_reward_remaining">%1$s left</string>
+    <string name="pro_reward_offer">+%1$d for %2$dh</string>
+    <string name="pro_unlock">Unlock Pro</string>
+    <string name="pro_unlock_with_price">Unlock Pro · %1$s</string>
+    <string name="pro_table_free">Free</string>
+    <string name="pro_table_pro">Pro</string>
+    <string name="pro_table_unlimited">Unlimited</string>
+    <string name="pro_table_free_limit_with_reward">%1$d (%2$d with a reward)</string>
+    <string name="pro_table_ads">Ads</string>
+    <string name="pro_table_shown">Shown</string>
+    <string name="pro_table_none">None</string>
+    <string name="pro_table_row_description">%1$s: Free %2$s, Pro %3$s</string>
+
+    <!-- Ads -->
+    <string name="ad_loading">Loading ad…</string>
+    <string name="ad_sponsored">Sponsored</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_subtitle">Defaults every new shortcut starts from.</string>
+    <string name="settings_group_keys">Keys</string>
+    <string name="settings_group_advanced">Advanced</string>
+    <string name="settings_group_app">App</string>
+    <string name="settings_defaults_panel">Defaults for new shortcuts</string>
+    <string name="settings_defaults_hint">Each shortcut can override these from its own settings.</string>
+    <string name="settings_double_press_description">Time allowed between taps. It also delays single-press actions.</string>
+    <string name="settings_long_press_description">How long a key must be held before a long-press action runs.</string>
+    <string name="settings_appearance_panel">Appearance</string>
+    <string name="settings_input_panel">Input behavior</string>
+    <string name="settings_haptics_panel">Haptics</string>
+    <string name="settings_haptic_feedback">Haptic feedback</string>
+    <string name="settings_haptic_feedback_on">Play a vibration when a shortcut runs.</string>
+    <string name="settings_haptic_unavailable">Vibration is not available on this device.</string>
+    <string name="settings_haptic_duration">Haptic duration</string>
+    <string name="settings_haptic_duration_description">Length of the confirmation vibration.</string>
+    <string name="settings_haptic_duration_disabled">Enable haptic feedback to adjust its duration.</string>
+    <string name="settings_expert_panel">Advanced Mode</string>
+    <string name="settings_detached_bridge">Read all hardware keys</string>
+    <string name="settings_bridge_running">On — Power, assistant and other restricted keys work, even when the app is closed.</string>
+    <string name="settings_bridge_stopped">Off — only the keys Android lets apps see.</string>
+    <string name="settings_run_setup">Run setup again</string>
+    <string name="settings_run_setup_description">Re-pair wireless debugging.</string>
+    <string name="settings_about_panel">About</string>
+    <string name="settings_about_app">About KeySnap</string>
+    <string name="settings_about_app_summary">Open source · nothing leaves your phone</string>
+    <string name="settings_privacy_policy">Privacy policy</string>
+    <string name="settings_erase">Erase all data</string>
+    <string name="settings_erase_confirm_title">Erase all data?</string>
+    <string name="settings_erase_action">Erase everything</string>
+    <string name="settings_erase_warning">This stops Advanced Mode, deletes the bridge from the device, and removes every shortcut and preference. It cannot be undone. The Accessibility service switches off too; turn it on again afterwards.</string>
+    <string name="settings_version">Version %1$s (%2$d)</string>
+    <string name="settings_input_monitor">Input monitor</string>
+    <string name="settings_show_log_action">Show the event log</string>
+    <string name="settings_hide_log_action">Hide the event log</string>
+    <string name="settings_log_count">%1$d of %2$d</string>
+    <string name="settings_log_waiting">Waiting for physical input…</string>
+    <string name="settings_log_clear">Clear</string>
+    <string name="settings_log_matched">Matched a shortcut</string>
+
+    <!-- Language picker -->
+    <string name="settings_language_panel">Language</string>
+    <string name="language_system">System default</string>
+    <string name="language_english" translatable="false">English</string>
+    <string name="language_turkish" translatable="false">Türkçe</string>
+    <string name="language_german" translatable="false">Deutsch</string>
+    <string name="language_spanish" translatable="false">Español</string>
+    <string name="language_french" translatable="false">Français</string>
+    <string name="language_arabic" translatable="false">العربية</string>
+    <string name="language_portuguese" translatable="false">Português (Brasil)</string>
+    <string name="language_russian" translatable="false">Русский</string>
+    <string name="language_italian" translatable="false">Italiano</string>
+    <string name="language_hindi" translatable="false">हिन्दी</string>
+
+    <!-- Appearance -->
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="theme_sepia">Sepia</string>
+
+    <!-- Sliders -->
+    <string name="slider_ms_unit" translatable="false">ms</string>
+    <string name="slider_milliseconds">%1$d milliseconds</string>
+    <string name="slider_restore_default">Restore %1$s to default</string>
+
+    <!-- Screen point picker overlay -->
+    <string name="picker_point_a">A: %1$d, %2$d</string>
+    <string name="picker_point_b">B: %1$d, %2$d</string>
+    <string name="picker_point">Point: %1$d, %2$d</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_finish">Finish setup</string>
+
+    <!-- About page -->
+    <string name="about_hero_title">Nothing you do here leaves your phone.</string>
+    <string name="about_hero_body">No servers. No account. No analytics. KeySnap has nowhere to send your shortcuts or your key presses — and the whole app is open source, so you don\'t have to take our word for it.</string>
+    <string name="about_no_server_title">There is no server</string>
+    <string name="about_no_server_body">KeySnap has no backend, no account and no crash reporting. What you map, what you press and which apps you use stay in this app\'s private storage. There is no code in it that uploads any of that, because there is nowhere for it to go.</string>
+    <string name="about_illo_no_server_caption">key presses · shortcuts · usage</string>
+    <string name="about_open_source_title">Open source, so you can check</string>
+    <string name="about_open_source_body">Every line of KeySnap is published under the GPLv3. Read what each permission is used for, build it yourself, or hand it to someone who can.</string>
+    <string name="about_view_source">View the source on GitHub</string>
+    <string name="about_source_url" translatable="false">https://github.com/Nicholas-Arda/KeySnap</string>
+    <string name="about_scope_title">The accessibility service only sees Settings</string>
+    <string name="about_scope_body">Android gives apps no other way to detect a hardware key. KeySnap\'s service is locked to the system Settings app and uses it for exactly one thing: reading the pairing code while you set up Advanced Mode. It cannot read your bank app, your messages, or anything you type — that is enforced by Android, not by a promise.</string>
+    <string name="about_scope_config" translatable="false">packageNames=\"com.android.settings\"</string>
+    <string name="about_bridge_title">Advanced Mode is your own phone\'s ADB</string>
+    <string name="about_bridge_body">It pairs with your phone\'s own Wireless Debugging over your local network — that connection never leaves your home. It runs shell commands only for the shortcuts you wrote. Switch it off and the helper is deleted; a reboot stops it too.</string>
+    <string name="about_illo_bridge_caption">off → the helper deletes itself</string>
+    <string name="about_traffic_title">Every connection the app makes</string>
+    <string name="about_traffic_device">Your own phone</string>
+    <string name="about_traffic_device_body">Wireless Debugging pairing. Local network only.</string>
+    <string name="about_traffic_yours">Addresses you typed yourself</string>
+    <string name="about_traffic_yours_body">An HTTP or Open URL action goes exactly where you wrote it, unchanged.</string>
+    <string name="about_traffic_google">Google ads and Google Play</string>
+    <string name="about_traffic_google_body">To show the ad in the free version and to check whether you bought Pro. Neither ever receives a key press or a shortcut.</string>
+    <string name="about_traffic_all">That is the whole list.</string>
+    <string name="about_erase_title">Take it all back whenever you like</string>
+    <string name="about_erase_body">Erase all data removes every shortcut, saved key, preference and bridge file, and stops Advanced Mode first so nothing is left running.</string>
+    <string name="about_footer_line" translatable="false">KeySnap %1$s (%2$d) · GPL-3.0</string>
+
+    <!-- Setup wizard -->
+    <string name="wizard_title">Turn on Advanced Mode</string>
+    <string name="wizard_subtitle">Setup wizard</string>
+    <string name="wizard_continue">Continue</string>
+    <string name="wizard_finish_pairing">Finish pairing</string>
+    <string name="wizard_step_intro">Intro</string>
+    <string name="wizard_step_pairing">Pairing</string>
+    <string name="wizard_step_done">Done</string>
+    <string name="wizard_what_is_expert">What is Advanced Mode?</string>
+    <string name="wizard_expert_explainer">KeySnap pairs with your phone\'s own Wireless Debugging, then reads keys straight from the kernel — Power, assistant, camera, the buttons Android hides from apps.</string>
+    <string name="wizard_can">can</string>
+    <string name="wizard_never">never</string>
+    <string name="wizard_expert_off_note">Off deletes it · reboot stops it</string>
+    <string name="wizard_no_dev_options">No Developer Options yet?</string>
+    <string name="wizard_no_dev_options_sub">Steps for your phone, on the next screen</string>
+    <string name="wizard_illo_kernel_line" translatable="false">KEY_POWER DOWN</string>
+    <string name="wizard_illo_action">↳ Flashlight on</string>
+    <string name="wizard_how_to_dev_options">How to enable Developer Options?</string>
+    <string name="wizard_auto_pairing">Automatic ADB pairing</string>
+    <string name="wizard_auto_pairing_explainer">No need to type the pairing code manually — we read it in the background and connect automatically. If it fails, you can enter it from the notification.</string>
+    <string name="wizard_open_settings">Open settings and start pairing</string>
+    <string name="wizard_expert_running">Advanced Mode is running</string>
+    <string name="wizard_expert_running_body">All Android hardware keys (Power, assistant, Volume, Camera, etc.) are being listened to at the Linux kernel level.</string>
+    <string name="wizard_connection_error">Connection error</string>
+    <string name="wizard_connection_error_body">Advanced Mode could not start. The pairing code or port may be wrong, or the ADB service may have refused the connection — go back and check the details.</string>
+    <string name="wizard_connecting">Connecting…</string>
+    <string name="wizard_connecting_body">Advanced Mode is starting. This takes a few seconds — keep this screen open.</string>
+    <string name="wizard_kernel_stream">Live kernel event stream</string>
+    <string name="wizard_kernel_placeholder" translatable="false">/dev/input/event0: EV_KEY KEY_POWER DOWN (listening…)</string>
+    <string name="wizard_test_flash">Test flash trigger</string>
+
+    <!-- Pairing status -->
+    <string name="pairing_idle">Waiting for pairing…</string>
+    <string name="pairing_not_started">Tap the button above to start pairing</string>
+    <string name="pairing_searching">Searching for the pairing screen…</string>
+    <string name="pairing_captured">Pairing code captured…</string>
+    <string name="pairing_in_progress">Pairing…</string>
+    <string name="pairing_paired">Paired — connecting…</string>
+    <string name="pairing_connecting">Connecting…</string>
+    <string name="pairing_connected">Connected</string>
+    <string name="pairing_error">Connection failed — try again</string>
+
+    <!-- Advanced Mode setup notification -->
+    <string name="notif_channel_setup">Advanced Mode setup</string>
+    <string name="notif_channel_setup_description">Shown while the app is pairing with wireless ADB and starting the bridge</string>
+    <string name="notif_setup_title">Setting up Advanced Mode</string>
+    <string name="notif_setup_text">Pairing with wireless debugging and starting the bridge.</string>
+
+    <!-- Input monitor event rows and trigger labels -->
+    <string name="event_key_down">PRESSED (DOWN)</string>
+    <string name="event_key_up">RELEASED (UP)</string>
+    <string name="trigger_label_single">Single press (%1$dms wait elapsed)</string>
+    <string name="trigger_label_double">Double press (%1$dms window)</string>
+    <string name="trigger_label_long">Long press (%1$dms)</string>
+    <string name="source_accessibility">Accessibility</string>
+    <string name="source_activity">Activity (foreground)</string>
+
+    <!-- View-model messages -->
+    <string name="default_shortcut_name">Shortcut #%1$d</string>
+    <string name="run_nothing_ran">Nothing ran. Check the action settings.</string>
+    <string name="run_partial">Ran %1$d of %2$d actions</string>
+    <string name="editor_needs_action">Add at least one action before saving.</string>
+    <string name="editor_needs_trigger">Choose a key before saving.</string>
+    <string name="saved_needs_trigger">Saved. Assign a key so it can run.</string>
+    <string name="saved_named">Saved \"%1$s\"</string>
+    <string name="saved_needs_condition">Saved. Add a condition that changes on its own, like Charging or Bluetooth device connected, so it can run.</string>
+    <string name="free_limit_saved_off">Free plan: %1$d active shortcuts. Saved as off — watch an ad or go Pro to turn it on.</string>
+    <string name="free_limit_reached">Free plan limit reached. Go Pro for unlimited shortcuts.</string>
+    <string name="free_limit_toggle_blocked">Free plan: %1$d active shortcuts. Watch an ad or go Pro to turn this one on too.</string>
+
+    <!-- Privacy policy dialog chrome. The policy body itself stays in PrivacyPolicy.kt: it has to
+         match the English document published for Play word for word. -->
+    <string name="privacy_policy_title">Privacy policy</string>
+    <string name="privacy_last_updated">Last updated %1$s</string>
+    <string name="privacy_contact_heading">Contact</string>
+
+    <!-- Wireless ADB pairing notification -->
+    <string name="notif_channel_pairing">ADB Pairing Helper</string>
+    <string name="notif_channel_pairing_description">Wireless ADB pairing code entry and error notifications</string>
+    <string name="notif_pairing_title">Waiting for ADB pairing</string>
+    <string name="notif_pairing_default">Just enter the 6-digit code; the port will be found automatically.</string>
+    <string name="notif_pairing_input_label">6-digit pairing code</string>
+    <string name="notif_pairing_enter_code">Enter Code</string>
+    <string name="notif_pairing_no_port">ADB connect port not found. Check Wireless Debugging.</string>
+    <string name="notif_pairing_failed">Pairing failed. Re-enter the 6-digit code.</string>
+    <string name="notif_pairing_bad_code">The code must be exactly 6 digits. Please try again.</string>
+
+    <!-- Theme toggle -->
+
+    <!-- Trigger kind picker -->
+    <string name="trigger_kind_key">Key press</string>
+    <string name="trigger_kind_automation">Automation</string>
+    <string name="automation_card_subtitle">Runs when the conditions below become true</string>
+</resources>

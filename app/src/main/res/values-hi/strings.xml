@@ -1,0 +1,822 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">KeySnap</string>
+    <string name="accessibility_service_description">भौतिक बटन दबाने (वॉल्यूम, पावर और अन्य हार्डवेयर बटन) का पता लगाता है, ताकि वे आपके शॉर्टकट को ट्रिगर कर सकें। केवल उन्नत मोड सेटअप के दौरान, यह सिस्टम की वायरलेस डिबगिंग विंडो से पेयरिंग कोड भी पढ़ता है। यह किसी अन्य ऐप की स्क्रीन नहीं पढ़ सकता।</string>
+    <string name="accessibility_disclosure_agree">सहमत हूँ, सेटिंग्स खोलें</string>
+
+    <!-- क्रिया श्रेणियां -->
+    <string name="action_category_input">इनपुट</string>
+    <string name="action_category_apps">ऐप्स</string>
+    <string name="action_category_flashlight">टॉर्च</string>
+    <string name="action_category_navigation">नेविगेशन</string>
+    <string name="action_category_volume">वॉल्यूम</string>
+    <string name="action_category_display">डिस्प्ले</string>
+    <string name="action_category_media">मीडिया</string>
+    <string name="action_category_connectivity">कनेक्टिविटी</string>
+    <string name="action_category_keyboard">कीबोर्ड</string>
+    <string name="action_category_device">डिवाइस</string>
+    <string name="action_category_sound">ध्वनि</string>
+    <string name="action_category_automation">ऑटोमेशन</string>
+
+    <!-- क्रिया पैरामीटर लेबल -->
+    <string name="param_strength">तीव्रता</string>
+    <string name="param_key_code">की कोड</string>
+    <string name="param_text">टेक्स्ट</string>
+    <string name="param_taps">टैप</string>
+    <string name="param_interval_ms">अंतराल (ms)</string>
+    <string name="param_start_x">शुरुआती X</string>
+    <string name="param_start_y">शुरुआती Y</string>
+    <string name="param_end_x">अंतिम X</string>
+    <string name="param_end_y">अंतिम Y</string>
+    <string name="param_duration_ms">अवधि (ms)</string>
+    <string name="param_point_a_x">बिंदु A X</string>
+    <string name="param_point_a_y">बिंदु A Y</string>
+    <string name="param_point_b_x">बिंदु B X</string>
+    <string name="param_point_b_y">बिंदु B Y</string>
+    <string name="param_direction">दिशा</string>
+    <string name="param_app">ऐप</string>
+    <string name="param_shortcut">शॉर्टकट</string>
+    <string name="param_method">मेथड</string>
+    <string name="param_body">बॉडी</string>
+    <string name="param_command">कमांड</string>
+    <string name="param_action">एक्शन</string>
+    <string name="param_extras">अतिरिक्त जानकारी (key=value;key2=value2)</string>
+    <string name="param_element">एलिमेंट</string>
+    <string name="param_namespace">नेमस्पेस</string>
+    <string name="param_key">कुंजी</string>
+    <string name="param_value">मान</string>
+    <string name="param_mode">मोड</string>
+    <string name="param_stream">स्ट्रीम</string>
+    <string name="param_sound">ध्वनि</string>
+    <string name="param_times">बार</string>
+
+    <!-- क्रियाएं: टॉर्च -->
+    <string name="action_toggle_flashlight">टॉर्च चालू/बंद करें</string>
+    <string name="action_enable_flashlight">टॉर्च चालू करें</string>
+    <string name="action_disable_flashlight">टॉर्च बंद करें</string>
+    <string name="action_change_flashlight_brightness">टॉर्च की ब्राइटनेस बदलें</string>
+
+    <!-- क्रियाएं: इनपुट -->
+    <string name="action_input_key_code">की कोड इनपुट करें</string>
+    <string name="action_input_text">टेक्स्ट इनपुट करें</string>
+    <string name="action_tap_screen">स्क्रीन पर टैप करें</string>
+    <string name="action_swipe_screen">स्क्रीन पर स्वाइप करें</string>
+    <string name="action_pinch_screen">स्क्रीन पर पिंच करें</string>
+
+    <!-- क्रियाएं: ऐप्स -->
+    <string name="action_launch_app">ऐप खोलें</string>
+    <string name="action_launch_app_shortcut">ऐप शॉर्टकट खोलें</string>
+    <string name="action_open_url">URL खोलें</string>
+    <string name="action_http_request">HTTP रिक्वेस्ट</string>
+    <string name="action_shell_command">शेल कमांड</string>
+    <string name="action_send_intent">इंटेंट भेजें</string>
+    <string name="action_interact_with_app_element">ऐप एलिमेंट के साथ इंटरैक्ट करें</string>
+    <string name="action_launch_voice_assistant">वॉइस असिस्टेंट खोलें</string>
+    <string name="action_launch_device_assistant">डिवाइस असिस्टेंट खोलें</string>
+    <string name="action_open_camera">कैमरा खोलें</string>
+    <string name="action_open_settings">सेटिंग खोलें</string>
+    <string name="action_force_stop_app">ऐप फ़ोर्स स्टॉप करें</string>
+    <string name="action_close_and_clear_app">ऐप बंद करके हाल की सूची से हटाएं</string>
+    <string name="action_modify_setting">सेटिंग बदलें</string>
+
+    <!-- क्रियाएं: नेविगेशन -->
+    <string name="action_expand_notification_drawer">सूचना पैनल खोलें</string>
+    <string name="action_toggle_notification_drawer">सूचना पैनल खोलें/बंद करें</string>
+    <string name="action_expand_quick_settings">क्विक सेटिंग खोलें</string>
+    <string name="action_toggle_quick_settings">क्विक सेटिंग खोलें/बंद करें</string>
+    <string name="action_collapse_status_bar">स्टेटस बार बंद करें</string>
+    <string name="action_go_back">वापस जाएं</string>
+    <string name="action_go_home">होम पर जाएं</string>
+    <string name="action_open_recents">हाल की सूची खोलें</string>
+    <string name="action_open_menu">मेनू खोलें</string>
+    <string name="action_go_last_app">पिछले ऐप पर जाएं</string>
+    <string name="action_toggle_split_screen">स्प्लिट स्क्रीन चालू/बंद करें</string>
+    <string name="action_take_screenshot">स्क्रीनशॉट लें</string>
+    <string name="action_move_cursor_to_end">कर्सर को अंत में ले जाएं</string>
+
+    <!-- क्रियाएं: वॉल्यूम -->
+    <string name="action_volume_up">वॉल्यूम बढ़ाएं</string>
+    <string name="action_volume_down">वॉल्यूम घटाएं</string>
+    <string name="action_volume_mute">वॉल्यूम म्यूट करें</string>
+    <string name="action_volume_unmute">वॉल्यूम अनम्यूट करें</string>
+    <string name="action_volume_toggle_mute">म्यूट चालू/बंद करें</string>
+    <string name="action_show_volume_dialog">वॉल्यूम डायलॉग दिखाएं</string>
+    <string name="action_cycle_ringer_mode">रिंगर मोड क्रम से बदलें</string>
+    <string name="action_change_ringer_mode">रिंगर मोड बदलें</string>
+    <string name="action_change_volume_stream">वॉल्यूम स्ट्रीम बदलें</string>
+
+    <!-- क्रियाएं: डिस्प्ले -->
+    <string name="action_screen_on">स्क्रीन चालू करें</string>
+    <string name="action_screen_off">स्क्रीन बंद करें</string>
+    <string name="action_toggle_screen">स्क्रीन चालू/बंद करें</string>
+    <string name="action_toggle_auto_rotate">ऑटो-रोटेट चालू/बंद करें</string>
+    <string name="action_portrait_mode">पोर्ट्रेट मोड</string>
+    <string name="action_landscape_mode">लैंडस्केप मोड</string>
+    <string name="action_cycle_rotations">रोटेशन क्रम से बदलें</string>
+    <string name="action_change_brightness">ब्राइटनेस बदलें</string>
+    <string name="action_toggle_auto_brightness">ऑटो-ब्राइटनेस चालू/बंद करें</string>
+    <string name="action_increase_brightness">ब्राइटनेस बढ़ाएं</string>
+    <string name="action_decrease_brightness">ब्राइटनेस घटाएं</string>
+
+    <!-- क्रियाएं: मीडिया -->
+    <string name="action_media_play">प्ले करें</string>
+    <string name="action_media_pause">पॉज़ करें</string>
+    <string name="action_media_play_pause">प्ले / पॉज़</string>
+    <string name="action_media_next">अगला ट्रैक</string>
+    <string name="action_media_previous">पिछला ट्रैक</string>
+    <string name="action_media_fast_forward">फ़ास्ट फ़ॉरवर्ड</string>
+    <string name="action_media_rewind">रिवाइंड</string>
+    <string name="action_media_stop">स्टॉप करें</string>
+
+    <!-- क्रियाएं: कनेक्टिविटी -->
+    <string name="action_toggle_wifi">Wi-Fi चालू/बंद करें</string>
+    <string name="action_enable_wifi">Wi-Fi चालू करें</string>
+    <string name="action_disable_wifi">Wi-Fi बंद करें</string>
+    <string name="action_toggle_bluetooth">Bluetooth चालू/बंद करें</string>
+    <string name="action_enable_bluetooth">Bluetooth चालू करें</string>
+    <string name="action_disable_bluetooth">Bluetooth बंद करें</string>
+    <string name="action_toggle_mobile_data">मोबाइल डेटा चालू/बंद करें</string>
+    <string name="action_toggle_nfc">NFC चालू/बंद करें</string>
+    <string name="action_toggle_airplane_mode">एयरप्लेन मोड चालू/बंद करें</string>
+    <string name="action_toggle_location">लोकेशन चालू/बंद करें</string>
+    <string name="action_toggle_hotspot">हॉटस्पॉट चालू/बंद करें</string>
+
+    <!-- क्रियाएं: कीबोर्ड -->
+    <string name="action_show_keyboard">कीबोर्ड दिखाएं</string>
+    <string name="action_hide_keyboard">कीबोर्ड छिपाएं</string>
+    <string name="action_toggle_keyboard">कीबोर्ड चालू/बंद करें</string>
+    <string name="action_switch_keyboard">कीबोर्ड बदलें</string>
+    <string name="action_show_keyboard_picker">कीबोर्ड चयनकर्ता दिखाएं</string>
+    <string name="action_text_cut">कट करें</string>
+    <string name="action_text_copy">कॉपी करें</string>
+    <string name="action_text_paste">पेस्ट करें</string>
+    <string name="action_select_word_at_cursor">कर्सर पर मौजूद शब्द चुनें</string>
+
+    <!-- क्रियाएं: डिवाइस -->
+    <string name="action_lock_device">डिवाइस लॉक करें</string>
+    <string name="action_secure_lock_device">डिवाइस सुरक्षित रूप से लॉक करें</string>
+    <string name="action_power_dialog">पावर डायलॉग दिखाएं</string>
+    <string name="action_toggle_dnd">डू नॉट डिस्टर्ब चालू/बंद करें</string>
+    <string name="action_enable_dnd">डू नॉट डिस्टर्ब चालू करें</string>
+    <string name="action_disable_dnd">डू नॉट डिस्टर्ब बंद करें</string>
+    <string name="action_open_app_drawer">ऐप ड्रॉअर खोलें</string>
+    <string name="action_dismiss_all_notifications">सभी सूचनाएं हटाएं</string>
+    <string name="action_answer_call">कॉल रिसीव करें</string>
+    <string name="action_end_call">कॉल समाप्त करें</string>
+
+    <!-- क्रियाएं: ध्वनि -->
+    <string name="action_play_sound">ध्वनि चलाएं</string>
+    <string name="action_text_to_speech">टेक्स्ट टू स्पीच</string>
+    <string name="action_vibrate">वाइब्रेट करें</string>
+    <string name="action_stop_text_to_speech">टेक्स्ट टू स्पीच रोकें</string>
+
+    <!-- क्रियाएं: ऑटोमेशन -->
+    <string name="action_delay">देरी</string>
+    <string name="action_repeat_previous">पिछली क्रिया दोहराएं</string>
+    <string name="action_toggle_mapping">सभी शॉर्टकट चालू/बंद करें</string>
+    <string name="action_pause_mapping">सभी शॉर्टकट रोकें</string>
+    <string name="action_resume_mapping">सभी शॉर्टकट फिर से शुरू करें</string>
+
+    <!-- शर्त श्रेणियां -->
+    <string name="constraint_category_apps">ऐप्स</string>
+    <string name="constraint_category_media">मीडिया</string>
+    <string name="constraint_category_display">डिस्प्ले</string>
+    <string name="constraint_category_flashlight">टॉर्च</string>
+    <string name="constraint_category_keyboard">कीबोर्ड</string>
+    <string name="constraint_category_lock">लॉक</string>
+    <string name="constraint_category_phone">फ़ोन</string>
+    <string name="constraint_category_power">पावर</string>
+    <string name="constraint_category_device">डिवाइस</string>
+    <string name="constraint_category_time">समय</string>
+    <string name="constraint_category_connectivity">कनेक्टिविटी</string>
+    <string name="constraint_category_sound">साउंड</string>
+
+    <!-- शर्तें -->
+    <string name="constraint_app_in_foreground">ऐप फोरग्राउंड में है</string>
+    <string name="constraint_app_not_in_foreground">ऐप फोरग्राउंड में नहीं है</string>
+    <string name="constraint_app_playing_media">ऐप मीडिया चला रहा है</string>
+    <string name="constraint_app_not_playing_media">ऐप मीडिया नहीं चला रहा है</string>
+    <string name="constraint_no_media_playing">कोई मीडिया नहीं चल रहा</string>
+    <string name="constraint_media_is_playing">मीडिया चल रहा है</string>
+    <string name="constraint_bluetooth_on">Bluetooth चालू है</string>
+    <string name="constraint_bluetooth_off">Bluetooth बंद है</string>
+    <string name="constraint_screen_on">स्क्रीन चालू है</string>
+    <string name="constraint_screen_off">स्क्रीन बंद है</string>
+    <string name="constraint_screen_orientation">स्क्रीन ओरिएंटेशन</string>
+    <string name="constraint_physical_orientation">फ़िज़िकल ओरिएंटेशन</string>
+    <string name="constraint_flashlight_on">टॉर्च चालू है</string>
+    <string name="constraint_flashlight_off">टॉर्च बंद है</string>
+    <string name="constraint_wifi_on">WiFi चालू है</string>
+    <string name="constraint_wifi_off">WiFi बंद है</string>
+    <string name="constraint_connected_to_wifi_network">किसी WiFi नेटवर्क से जुड़ा है</string>
+    <string name="constraint_disconnected_from_wifi_network">किसी WiFi नेटवर्क से जुड़ा नहीं है</string>
+    <string name="constraint_input_method_chosen">इनपुट मेथड चुना गया है</string>
+    <string name="constraint_input_method_not_chosen">इनपुट मेथड नहीं चुना गया है</string>
+    <string name="constraint_keyboard_showing">कीबोर्ड दिख रहा है</string>
+    <string name="constraint_keyboard_not_showing">कीबोर्ड नहीं दिख रहा है</string>
+    <string name="constraint_device_locked">डिवाइस लॉक है</string>
+    <string name="constraint_device_unlocked">डिवाइस अनलॉक है</string>
+    <string name="constraint_lock_screen_showing">लॉक स्क्रीन दिख रही है</string>
+    <string name="constraint_lock_screen_not_showing">लॉक स्क्रीन नहीं दिख रही है</string>
+    <string name="constraint_in_phone_call">फ़ोन कॉल में</string>
+    <string name="constraint_not_in_phone_call">फ़ोन कॉल में नहीं</string>
+    <string name="constraint_phone_ringing">फ़ोन बज रहा है</string>
+    <string name="constraint_charging">चार्ज हो रहा है</string>
+    <string name="constraint_discharging">चार्ज नहीं हो रहा है</string>
+    <string name="constraint_hinge_closed">हिंज बंद है</string>
+    <string name="constraint_hinge_open">हिंज खुला है</string>
+    <string name="constraint_time">समय</string>
+    <string name="constraint_bluetooth_device_connected">Bluetooth डिवाइस जुड़ा है</string>
+    <string name="constraint_bluetooth_device_disconnected">Bluetooth डिवाइस जुड़ा नहीं है</string>
+    <string name="constraint_dark_mode_on">डार्क मोड चालू है</string>
+    <string name="constraint_dark_mode_off">डार्क मोड बंद है</string>
+    <string name="constraint_battery_saver_on">बैटरी सेवर चालू है</string>
+    <string name="constraint_battery_saver_off">बैटरी सेवर बंद है</string>
+    <string name="constraint_charging_wired">केबल से चार्ज हो रहा है</string>
+    <string name="constraint_charging_wireless">वायरलेस चार्ज हो रहा है</string>
+    <string name="constraint_battery_above">बैटरी एक लेवल से ऊपर है</string>
+    <string name="constraint_battery_below">बैटरी एक लेवल से नीचे है</string>
+    <string name="constraint_location_on">लोकेशन चालू है</string>
+    <string name="constraint_location_off">लोकेशन बंद है</string>
+    <string name="constraint_day_of_week">हफ़्ते का दिन</string>
+    <string name="constraint_mobile_data_on">मोबाइल डेटा चालू है</string>
+    <string name="constraint_mobile_data_off">मोबाइल डेटा बंद है</string>
+    <string name="constraint_airplane_mode_on">एयरप्लेन मोड चालू है</string>
+    <string name="constraint_airplane_mode_off">एयरप्लेन मोड बंद है</string>
+    <string name="constraint_ringer_normal">रिंगर चालू है</string>
+    <string name="constraint_ringer_vibrate">रिंगर वाइब्रेट पर है</string>
+    <string name="constraint_ringer_silent">रिंगर साइलेंट है</string>
+    <string name="constraint_dnd_on">डू नॉट डिस्टर्ब चालू है</string>
+    <string name="constraint_dnd_off">डू नॉट डिस्टर्ब बंद है</string>
+    <string name="constraint_headphones_connected">हेडफ़ोन जुड़े हैं</string>
+    <string name="constraint_headphones_disconnected">हेडफ़ोन जुड़े नहीं हैं</string>
+
+    <!-- क्रिया एडिटर: ज़रूरी बैज -->
+    <string name="badge_expert_mode">उन्नत मोड ज़रूरी है</string>
+    <string name="badge_accessibility">सुलभता सेवा ज़रूरी है</string>
+    <string name="badge_notification_policy">डू नॉट डिस्टर्ब एक्सेस ज़रूरी है</string>
+    <string name="badge_write_settings">सिस्टम सेटिंग बदलने की अनुमति आवश्यक है</string>
+
+    <!-- क्रिया एडिटर: फ़ील्ड लेबल -->
+    <string name="field_key_to_send">भेजने के लिए बटन</string>
+    <string name="field_tap_here">यहां टैप करें</string>
+    <string name="field_time_between_taps">टैप के बीच का समय</string>
+    <string name="field_swipe_from">यहां से स्वाइप करें</string>
+    <string name="field_swipe_to">यहां तक स्वाइप करें</string>
+    <string name="field_duration">अवधि</string>
+    <string name="field_first_finger">पहली उंगली</string>
+    <string name="field_second_finger">दूसरी उंगली</string>
+    <string name="field_app_to_open">खोलने के लिए ऐप</string>
+    <string name="field_app_to_stop">रोकने के लिए ऐप</string>
+    <string name="field_extras">अतिरिक्त जानकारी</string>
+    <string name="field_setting_key">सेटिंग कुंजी</string>
+    <string name="field_level">लेवल</string>
+    <string name="field_brightness">ब्राइटनेस</string>
+    <string name="field_text_to_speak">बोलने के लिए टेक्स्ट</string>
+    <string name="field_wait">प्रतीक्षा</string>
+
+    <!-- क्रिया एडिटर: हिंट -->
+    <string name="hint_input_text">फोकस किए गए फ़ील्ड में टाइप होगा</string>
+    <string name="hint_http_body">रिक्वेस्ट के साथ भेजा जाएगा</string>
+    <string name="hint_optional">वैकल्पिक</string>
+    <string name="hint_sound_uri">content:// या file:// URI</string>
+
+    <!-- क्रिया एडिटर: हेल्पर टेक्स्ट -->
+    <string name="helper_input_key_code">फोरग्राउंड में मौजूद ऐप को की-प्रेस भेजता है।</string>
+    <string name="helper_http_request">एक वेब रिक्वेस्ट भेजता है — किसी वेबहुक या स्मार्ट-होम सीन को ट्रिगर करने के लिए उपयोगी।</string>
+    <string name="helper_shell_command">डिवाइस पर एक टर्मिनल कमांड चलाता है।</string>
+    <string name="helper_extras">वैकल्पिक। हर जोड़ी को एक स्ट्रिंग एक्स्ट्रा के रूप में भेजा जाता है।</string>
+    <string name="helper_send_intent">एक Android इंटेंट प्रसारित करता है — एक ऐसा मैसेज जिस पर दूसरे ऐप प्रतिक्रिया दे सकते हैं। एडवांस्ड यूज़र के लिए।</string>
+    <string name="helper_modify_setting">सीधे एक Android सिस्टम सेटिंग में बदलाव करता है।</string>
+    <string name="helper_repeat_previous">इसके ऊपर वाली क्रिया को फिर से चलाता है।</string>
+
+    <!-- क्रिया एडिटर: विकल्प -->
+    <string name="choice_pinch_in">ज़ूम आउट (पिंच इन)</string>
+    <string name="choice_pinch_out">ज़ूम इन (स्प्रेड आउट)</string>
+    <string name="summary_zoom_in">ज़ूम इन</string>
+    <string name="summary_zoom_out">ज़ूम आउट</string>
+    <string name="choice_namespace_system">System</string>
+    <string name="choice_namespace_secure">Secure</string>
+    <string name="choice_namespace_global">Global</string>
+    <string name="choice_stream_ring">रिंग</string>
+    <string name="choice_stream_media">मीडिया</string>
+    <string name="choice_stream_alarm">अलार्म</string>
+    <string name="choice_stream_notification">सूचना</string>
+    <string name="choice_ringer_normal">नॉर्मल</string>
+    <string name="choice_ringer_vibrate">वाइब्रेट</string>
+    <string name="choice_ringer_silent">साइलेंट</string>
+
+    <!-- ट्रिगर प्रेस टाइप -->
+    <string name="press_single_title">सिंगल प्रेस</string>
+    <string name="press_single_description">जब बटन एक बार दबाया जाए तो चलता है</string>
+    <string name="press_double_title">डबल प्रेस</string>
+    <string name="press_double_description">जब बटन लगातार दो बार दबाया जाए तो चलता है</string>
+    <string name="press_long_title">लॉन्ग प्रेस</string>
+    <string name="press_long_badge">होल्ड</string>
+    <string name="press_long_description">जब बटन तय किए गए समय तक दबाए रखा जाए तो चलता है</string>
+
+    <!-- हार्डवेयर बटन के नाम -->
+    <string name="key_volume_down">वॉल्यूम डाउन</string>
+    <string name="key_volume_up">वॉल्यूम अप</string>
+    <string name="key_power">पावर</string>
+    <string name="key_assist">असिस्टेंट (Assist)</string>
+    <string name="key_voice_assist">वॉइस असिस्टेंट</string>
+    <string name="key_headsethook">हेडसेट / मीडिया बटन</string>
+    <string name="key_camera">कैमरा / शटर</string>
+    <string name="key_back">बैक</string>
+    <string name="key_home">होम</string>
+    <string name="key_menu">मेनू</string>
+    <string name="key_mute">म्यूट</string>
+    <string name="key_media_play_pause">प्ले / पॉज़</string>
+    <string name="key_wakeup">वेक</string>
+    <string name="key_alert_slider">अलर्ट स्लाइडर / कस्टम स्विच</string>
+
+    <!-- डेवलपर विकल्प गाइड -->
+    <string name="guide_generic">अन्य</string>
+    <string name="guide_pixel">Google Pixel / स्टॉक Android</string>
+
+    <!-- सुझाए गए शॉर्टकट -->
+    <string name="suggestion_flashlight">टॉर्च</string>
+    <string name="suggestion_flashlight_subtitle">टॉर्च चालू और बंद</string>
+    <string name="suggestion_play_pause">प्ले / पॉज़</string>
+    <string name="suggestion_play_pause_subtitle">जो भी चल रहा हो</string>
+    <string name="suggestion_screenshot">स्क्रीनशॉट</string>
+    <string name="suggestion_screenshot_subtitle">स्क्रीन कैप्चर करें</string>
+    <string name="suggestion_dnd">डू नॉट डिस्टर्ब</string>
+    <string name="suggestion_dnd_subtitle">हर अलर्ट म्यूट करें</string>
+    <string name="suggestion_lock">डिवाइस लॉक करें</string>
+    <string name="suggestion_lock_subtitle">स्क्रीन को स्लीप करें</string>
+    <string name="suggestion_camera">कैमरा खोलें</string>
+    <string name="suggestion_camera_subtitle">सीधे फ़ोटो खींचने के लिए</string>
+    <string name="suggestion_headphones_play">हेडफ़ोन लगाने पर</string>
+    <string name="suggestion_headphones_play_subtitle">लगाते ही संगीत शुरू</string>
+    <string name="suggestion_assistant">असिस्टेंट</string>
+    <string name="suggestion_assistant_subtitle">अपने असिस्टेंट से बात करें</string>
+    <string name="suggestion_bedtime">सोने का समय</string>
+    <string name="suggestion_bedtime_subtitle">DND चालू, धीमी रोशनी, लॉक</string>
+    <string name="suggestion_notifications">नोटिफ़िकेशन</string>
+    <string name="suggestion_notifications_subtitle">पैनल नीचे खींचें</string>
+    <string name="suggestion_car_bluetooth">कार में</string>
+    <string name="suggestion_car_bluetooth_subtitle">कार जुड़ते ही संगीत चले</string>
+    <string name="suggestion_sos">SOS सिग्नल</string>
+    <string name="suggestion_sos_subtitle">टॉर्च चमके ··· ––– ···</string>
+    <string name="suggestion_wifi">Wi-Fi</string>
+    <string name="suggestion_wifi_subtitle">चालू या बंद करें</string>
+    <string name="suggestion_low_battery">कम बैटरी</string>
+    <string name="suggestion_low_battery_subtitle">15% से नीचे: ब्लूटूथ बंद, धीमी रोशनी</string>
+    <string name="suggestion_auto_rotate">ऑटो-रोटेट</string>
+    <string name="suggestion_auto_rotate_subtitle">रोटेशन लॉक या फ्री करें</string>
+    <string name="suggestion_night_charge_dnd">रात की चार्जिंग</string>
+    <string name="suggestion_night_charge_dnd_subtitle">22:00 के बाद चार्जर पर: DND चालू</string>
+    <string name="suggestion_bluetooth">ब्लूटूथ</string>
+    <string name="suggestion_bluetooth_subtitle">चालू या बंद करें</string>
+    <string name="suggestion_vibrate_mode">वाइब्रेट मोड</string>
+    <string name="suggestion_vibrate_mode_subtitle">रिंगर को वाइब्रेट पर</string>
+    <string name="suggestion_torch_off_screen_off">टॉर्च सुरक्षा</string>
+    <string name="suggestion_torch_off_screen_off_subtitle">स्क्रीन बंद, टॉर्च बंद</string>
+    <string name="suggestion_battery_saver">बैटरी सेवर</string>
+    <string name="suggestion_battery_saver_subtitle">ब्लूटूथ और Wi-Fi बंद, धीमी रोशनी</string>
+
+    <!-- सामान्य -->
+    <string name="common_cancel">रद्द करें</string>
+    <string name="common_save">सेव करें</string>
+    <string name="common_add">जोड़ें</string>
+    <string name="common_done">हो गया</string>
+    <string name="common_back">वापस</string>
+    <string name="common_close">बंद करें</string>
+    <string name="common_remove">हटाएं</string>
+    <string name="common_delete">डिलीट करें</string>
+    <string name="common_coming_soon">जल्द आ रहा है</string>
+    <string name="picker_category_all">सभी</string>
+
+    <!-- क्रिया कॉन्फ़िग शीट -->
+    <string name="badge_tap_to_grant">%1$s · अनुमति देने के लिए टैप करें</string>
+    <string name="action_config_enter_key_code">या एक की कोड डालें</string>
+    <string name="action_config_cancel_recording">रिकॉर्डिंग रद्द करें</string>
+    <string name="action_config_record_key">एक भौतिक बटन रिकॉर्ड करें</string>
+    <string name="action_config_choose_app">एक ऐप चुनें</string>
+    <string name="action_config_enter_package">या एक पैकेज नाम डालें</string>
+    <string name="action_config_pick_on_screen">स्क्रीन पर चुनें</string>
+    <string name="action_config_allow_overlay">चुनने के लिए अन्य ऐप पर दिखाने की अनुमति दें</string>
+    <string name="action_config_point_not_set">सेट नहीं है</string>
+
+    <!-- शर्त चयनकर्ता -->
+    <string name="constraint_picker_title">एक शर्त चुनें</string>
+    <string name="constraint_picker_search">शर्तें खोजें</string>
+    <string name="constraint_picker_no_match">\"%1$s\" से कोई शर्त मेल नहीं खाती</string>
+    <string name="constraint_picker_empty_category">इस कैटेगरी में अभी कोई शर्त नहीं है</string>
+    <string name="constraint_picker_add_label">%1$s जोड़ें</string>
+
+    <!-- शर्त सेटअप शीट -->
+    <string name="constraint_picker_configure_title">शर्त सेट करें</string>
+    <string name="field_constraint_app">ऐप</string>
+    <string name="field_orientation">ओरिएंटेशन</string>
+    <string name="orientation_portrait">पोर्ट्रेट</string>
+    <string name="orientation_landscape">लैंडस्केप</string>
+    <string name="field_wifi_ssid">नेटवर्क का नाम (SSID)</string>
+    <string name="hint_wifi_ssid_any">किसी भी नेटवर्क के लिए खाली छोड़ें</string>
+    <string name="field_bluetooth_device">डिवाइस</string>
+    <string name="bluetooth_no_paired_devices">कोई पेयर किया हुआ डिवाइस नहीं है। पहले Bluetooth सेटिंग में एक डिवाइस पेयर करें।</string>
+    <string name="field_battery_percent">बैटरी लेवल</string>
+    <string name="field_time_start">से</string>
+    <string name="field_time_end">तक</string>
+    <string name="field_days">दिन</string>
+    <string name="constraint_needs_usage_access">यह देखने के लिए कि कौन सा ऐप सामने है, उपयोग एक्सेस चाहिए।</string>
+    <string name="constraint_config_choose_app">जारी रखने के लिए कोई ऐप चुनें</string>
+    <string name="constraint_needs_location">Android नेटवर्क का नाम केवल लोकेशन अनुमति वाले ऐप्स को दिखाता है।</string>
+    <string name="constraint_grant_permission">अनुमति दें</string>
+    <string name="constraint_summary_any_wifi">कोई भी नेटवर्क</string>
+    <string name="constraint_summary_time_range" translatable="false">%1$s – %2$s</string>
+    <string name="constraint_summary_percent" translatable="false">%1$d%%</string>
+
+    <!-- क्रिया चयनकर्ता -->
+    <string name="action_picker_search">क्रियाएं खोजें</string>
+    <string name="action_picker_no_match">\"%1$s\" से कोई क्रिया मेल नहीं खाती</string>
+    <string name="action_picker_empty_category">इस कैटेगरी में अभी कोई क्रिया नहीं है</string>
+    <string name="action_picker_add_label">%1$s जोड़ें</string>
+
+    <!-- शॉर्टकट एडिटर -->
+    <string name="editor_discard_changes">बदलाव रद्द करें</string>
+    <string name="editor_unsaved_title">बदलाव रद्द करें?</string>
+    <string name="editor_unsaved_body">इस शॉर्टकट में किए गए आपके बदलाव सेव नहीं हुए हैं।</string>
+    <string name="editor_unsaved_discard">रद्द करें</string>
+    <string name="editor_shortcut_name">शॉर्टकट का नाम</string>
+    <string name="editor_shortcut_settings">शॉर्टकट सेटिंग</string>
+    <string name="editor_chain_when">जब</string>
+    <string name="editor_chain_only_if">केवल अगर</string>
+    <string name="editor_chain_do">करें</string>
+    <string name="editor_add_action">क्रिया जोड़ें</string>
+    <string name="editor_add_constraint">शर्त जोड़ें</string>
+    <string name="editor_always_runs">हमेशा चलता है</string>
+    <string name="editor_remove_constraint">%1$s हटाएं</string>
+    <string name="editor_configure_action">%1$s कॉन्फ़िगर करें</string>
+    <string name="editor_more_options">%1$s के लिए और विकल्प</string>
+    <string name="editor_tap_to_configure">कॉन्फ़िगर करने के लिए टैप करें</string>
+    <string name="editor_configure">कॉन्फ़िगर करें</string>
+    <string name="editor_move_up">ऊपर ले जाएं</string>
+    <string name="editor_move_down">नीचे ले जाएं</string>
+    <string name="editor_test_run">टेस्ट रन</string>
+
+    <!-- सामान्य (2) -->
+    <string name="common_ok">ठीक है</string>
+    <string name="common_yes">हां</string>
+    <string name="common_no">नहीं</string>
+    <string name="common_confirm">पुष्टि करें</string>
+    <string name="common_save_caps">सेव करें</string>
+    <string name="common_cancel_caps">रद्द करें</string>
+
+    <!-- नीचे का नेविगेशन -->
+    <string name="nav_home">होम</string>
+    <string name="nav_shortcuts">शॉर्टकट</string>
+    <string name="nav_settings">सेटिंग</string>
+
+    <!-- डायलॉग -->
+    <string name="dialog_expert_connected">उन्नत मोड कनेक्ट हो गया</string>
+    <string name="dialog_new_input_title">नया इनपुट मिला</string>
+    <string name="dialog_new_input_body">कोड: %1$d। इस इनपुट को एक छोटा नाम दें।</string>
+    <string name="dialog_new_input_hint">जैसे: शॉर्टकट बटन</string>
+
+    <!-- ऐप चयनकर्ता -->
+    <string name="app_picker_search">ऐप खोजें</string>
+    <string name="app_picker_loading">इंस्टॉल किए गए ऐप पढ़े जा रहे हैं…</string>
+    <string name="app_picker_no_match">\"%1$s\" से कोई ऐप मेल नहीं खाता</string>
+    <string name="app_picker_choose">%1$s चुनें</string>
+    <string name="app_picker_selected">चयनित</string>
+
+    <!-- ऑटोमेशन ट्रिगर चयनकर्ता -->
+
+    <!-- इवेंट ट्रिगर -->
+
+    <!-- ट्रिगर चयनकर्ता -->
+    <string name="trigger_picker_title">बटन सेट करें</string>
+    <string name="trigger_picker_subtitle">एक प्रेस टाइप चुनें, फिर एक बटन रिकॉर्ड करें।</string>
+    <string name="trigger_picker_no_key">अभी कोई बटन नहीं</string>
+    <string name="trigger_picker_saved_key">या एक सेव किया हुआ बटन चुनें</string>
+    <string name="trigger_picker_listening">सुन रहा है… रोकने के लिए टैप करें</string>
+    <string name="trigger_picker_tap_to_record">टैप करें, फिर एक भौतिक बटन दबाएं</string>
+    <string name="trigger_picker_save_combo">बटन सेव करें</string>
+    <string name="trigger_picker_use_automation">इसके बजाय एक ऑटोमेशन इस्तेमाल करें</string>
+    <string name="trigger_picker_use_key">%1$s इस्तेमाल करें</string>
+
+    <!-- प्रति-शॉर्टकट सेटिंग -->
+    <string name="script_settings_name">नाम</string>
+    <string name="script_settings_enabled">चालू</string>
+    <string name="script_settings_assign_key_first">प्रेस व्यवहार कॉन्फ़िगर करने के लिए एडिटर से एक बटन असाइन करें।</string>
+    <string name="script_settings_trigger_type">प्रेस टाइप</string>
+    <string name="script_settings_double_press_window">डबल-प्रेस विंडो</string>
+    <string name="script_settings_long_press_threshold">लॉन्ग-प्रेस थ्रेशोल्ड</string>
+    <string name="script_settings_using_global">ग्लोबल डिफ़ॉल्ट इस्तेमाल हो रहा है (%1$dms)</string>
+    <string name="script_settings_custom_value">इस शॉर्टकट के लिए कस्टम</string>
+    <string name="script_settings_consume_input">ओरिजिनल इनपुट रोकें</string>
+    <string name="script_settings_consume_input_description">जहां Android अनुमति देता है, वहां बटन को अन्य ऐप तक पहुंचने से रोकें।</string>
+    <string name="script_settings_not_global">ग्लोबल नहीं, सिर्फ़ इस शॉर्टकट के लिए</string>
+    <string name="script_settings_vibrate">चलने पर वाइब्रेट करें</string>
+    <string name="script_settings_vibrate_description">जब यह शॉर्टकट चलेगा तो एक छोटा कंपन महसूस होगा।</string>
+    <string name="script_settings_reset_to_default">डिफ़ॉल्ट पर रीसेट करें (%1$s)</string>
+
+    <!-- शॉर्टकट सूची -->
+    <string name="scripts_title">मेरे शॉर्टकट</string>
+    <string name="scripts_paused_warning">सभी शॉर्टकट रोके गए हैं, इसलिए इनमें से कोई नहीं चलेगा।</string>
+    <string name="scripts_new_shortcut">नया शॉर्टकट</string>
+    <string name="scripts_empty_title">अभी कोई शॉर्टकट नहीं है</string>
+    <string name="scripts_empty_body">एक शॉर्टकट तब एक या ज़्यादा क्रियाएं चलाता है जब आप कोई भौतिक बटन दबाते हैं।</string>
+    <string name="scripts_empty_go_home">होम पर दिए किसी सुझाव से शुरू करें</string>
+    <string name="scripts_tutorial_title">अपना पहला शॉर्टकट बनाएं</string>
+    <string name="scripts_tutorial_subtitle">चार चरण, बार-बार।</string>
+    <string name="scripts_tutorial_pause">डेमो रोकें</string>
+    <string name="scripts_tutorial_play">डेमो चलाएं</string>
+    <string name="scripts_tutorial_step_new">नया शॉर्टकट पर टैप करें</string>
+    <string name="scripts_tutorial_step_key">बटन दबाना चुनें और अपना बटन दबाएं</string>
+    <string name="scripts_tutorial_step_action">एक क्रिया जोड़ें</string>
+    <string name="scripts_tutorial_step_done">हो गया पर टैप करें</string>
+    <string name="scripts_tutorial_cap_fab">ऊपर दाईं ओर का नीला + बटन</string>
+    <string name="scripts_tutorial_cap_keypress">जब में, बटन दबाना पर टैप करें</string>
+    <string name="scripts_tutorial_cap_press">अपने फ़ोन का बटन दबाएं</string>
+    <string name="scripts_tutorial_cap_save">बटन सेव करें पर टैप करें</string>
+    <string name="scripts_tutorial_cap_add">करें में, क्रिया जोड़ें पर टैप करें</string>
+    <string name="scripts_tutorial_cap_pick">टॉर्च चुनें</string>
+    <string name="scripts_tutorial_cap_lands">यह करें के नीचे आ जाती है</string>
+    <string name="scripts_tutorial_cap_check">ऊपर दाईं ओर का चेक मार्क</string>
+    <string name="scripts_tutorial_cap_runs">वॉल्यूम अप अब टॉर्च चलाता है</string>
+    <string name="scripts_tutorial_mini_page">शॉर्टकट पेज</string>
+    <string name="scripts_tutorial_listening">सुन रहा है…</string>
+    <string name="scripts_tutorial_key_recorded">बटन रिकॉर्ड हो गया</string>
+    <string name="scripts_no_trigger">अभी कोई बटन नहीं</string>
+    <string name="scripts_no_condition">कोई शर्त नहीं जोड़ी गई</string>
+    <string name="scripts_no_actions">अभी कोई क्रिया नहीं है</string>
+    <string name="scripts_unnamed">शॉर्टकट</string>
+    <string name="scripts_delete_label">%1$s डिलीट करें</string>
+    <string name="scripts_toggle_state_on">चालू</string>
+    <string name="scripts_toggle_state_off">बंद</string>
+    <string name="scripts_toggle_state_paused">चालू, लेकिन सभी शॉर्टकट रुके हुए हैं</string>
+    <string name="scripts_delete_title">शॉर्टकट डिलीट करें?</string>
+    <string name="scripts_delete_body">\"%1$s\" हमेशा के लिए डिलीट हो जाएगा। इसे वापस नहीं लाया जा सकता।</string>
+    <string name="scripts_snackbar_home">होम</string>
+
+    <!-- होम -->
+    <string name="home_suggested_shortcuts">सुझाए गए शॉर्टकट</string>
+    <string name="home_suggestions_group_single">एक बटन, एक एक्शन</string>
+    <string name="home_suggestions_group_multi">एक बटन, कई चरण</string>
+    <string name="home_suggestions_group_automation">अपने आप चलता है</string>
+    <string name="home_your_shortcuts">आपके शॉर्टकट</string>
+    <string name="suggestion_saved">%1$s तैयार है · %2$s</string>
+    <string name="home_build_from_suggestion">%1$s से एक शॉर्टकट बनाएं</string>
+    <string name="home_suggestion_soon">जल्द ही</string>
+    <string name="home_suggestion_automation">ऑटोमेशन</string>
+    <string name="home_pause_all">सभी शॉर्टकट रोकें</string>
+    <string name="home_resume_all">सभी शॉर्टकट फिर से शुरू करें</string>
+    <string name="home_status_live">लाइव</string>
+    <string name="home_status_paused">रुका हुआ</string>
+    <string name="home_system_status">सिस्टम स्टेटस</string>
+    <string name="home_collapse_status">सिस्टम स्टेटस छोटा करें</string>
+    <string name="home_expand_status">सिस्टम स्टेटस बड़ा करें</string>
+    <string name="home_accessibility_service">सुलभता सेवा</string>
+    <string name="home_status_advanced">उन्नत मोड</string>
+    <string name="home_status_active">सक्रिय</string>
+    <string name="home_status_offline">ऑफ़लाइन</string>
+    <string name="home_status_running">चल रहा है</string>
+    <string name="home_status_off">बंद</string>
+    <string name="home_triggers_session">इस सेशन में रन</string>
+    <string name="home_last_from">%1$s से आखिरी</string>
+    <string name="home_open_label_settings">%1$s सेटिंग खोलें</string>
+    <string name="home_setup_title_off">आपके शॉर्टकट अभी चल नहीं रहे</string>
+    <string name="home_setup_subtitle_off">तीन चरण, सभी Android की अपनी सेटिंग में। हर चरण में क्या टैप करना है, यहाँ बताया गया है।</string>
+    <string name="home_setup_title_at_risk">आपके शॉर्टकट काम करना बंद कर सकते हैं</string>
+    <string name="home_setup_subtitle_at_risk">जब तक ये चालू नहीं होते, Android ऐप को बैकग्राउंड में बंद कर सकता है।</string>
+    <string name="home_setup_progress">%1$d/3</string>
+    <string name="home_setup_step_accessibility">सुलभता सेवा चालू करें</string>
+    <string name="home_setup_why_accessibility">KeySnap इसी के ज़रिए आपके बटन दबाने को पढ़ता है। जब तक यह चालू नहीं है, कुछ नहीं चलेगा।</string>
+    <string name="home_setup_open_accessibility">सुलभता सेटिंग खोलें</string>
+    <string name="home_setup_step_background">KeySnap को बैकग्राउंड में चलने दें</string>
+    <string name="home_setup_why_background">Android उन ऐप्स को बंद कर देता है जिन्हें वह सोया हुआ समझता है। Android पूछे तो “अनुमति दें” पर टैप करें — “अस्वीकार करें” से KeySnap बंद होता रहेगा।</string>
+    <string name="home_setup_allow_background">बैकग्राउंड में चलने दें</string>
+    <string name="home_setup_done_background">अनुमति दी गई</string>
+    <string name="home_setup_step_notifications">सूचनाओं की अनुमति दें</string>
+    <string name="home_setup_why_notifications">सिर्फ़ सेटअप के लिए: पेयरिंग कोड और सेवा की स्थिति। Android पूछे तो “अनुमति दें” पर टैप करें — “अनुमति न दें” यहीं सेटअप रोक देगा।</string>
+    <string name="home_setup_ask_now">अभी पूछें</string>
+    <string name="home_setup_done_notifications">अनुमति है</string>
+    <string name="home_setup_all_done">तीनों चालू हैं। आपके बटन अब काम करते हैं।</string>
+    <string name="home_setup_state_done">पूरा हुआ</string>
+    <string name="home_setup_state_current">मौजूदा चरण</string>
+    <string name="home_setup_state_upcoming">अभी शुरू नहीं हुआ</string>
+    <string name="home_setup_illo_downloaded_apps">डाउनलोड किए गए ऐप्स</string>
+    <string name="home_setup_why">क्यों?</string>
+    <string name="home_setup_why_expanded">खुला हुआ</string>
+    <string name="home_setup_why_collapsed">बंद किया हुआ</string>
+    <string name="home_setup_whytext_accessibility">Android हार्डवेयर बटन सिर्फ़ एक ऐक्सेसिबिलिटी सेवा को दिखाता है, इसलिए KeySnap ठीक इसी काम के लिए एक सेवा इस्तेमाल करता है: बटन दबना पहचानना और आपका शॉर्टकट चलाना। यह दूसरे ऐप्स की स्क्रीन नहीं पढ़ता। सिर्फ़ उन्नत मोड सेटअप के दौरान यह वायरलेस डिबगिंग पेज पर दिख रहा पेयरिंग कोड भी पढ़ता है, और कुछ नहीं।</string>
+    <string name="home_setup_whytext_background">Android उन ऐप्स को बंद कर देता है जिन्हें वह निष्क्रिय समझता है, और बंद ऐप आपके शॉर्टकट नहीं चला सकता। इससे आपका फ़ोन सोते समय भी KeySnap चलता रहता है। बैकग्राउंड में यह बटन दबने का इंतज़ार करने के अलावा कुछ नहीं करता।</string>
+    <string name="home_setup_whytext_notifications">सिर्फ़ उन्नत मोड सेटअप के दौरान: पेयरिंग कोड और सेवा चल रही है या नहीं। कोई रिमाइंडर नहीं, कोई प्रचार नहीं, और कभी कुछ और नहीं।</string>
+    <string name="home_setup_illo_battery_dialog">KeySnap को हमेशा बैकग्राउंड में चलने दें?</string>
+    <string name="home_setup_illo_battery_body">इससे बैटरी जल्दी खर्च हो सकती है।</string>
+    <string name="home_setup_illo_battery_deny">अस्वीकार करें</string>
+    <string name="home_setup_illo_dialog">KeySnap को आपको सूचनाएँ भेजने दें?</string>
+    <string name="home_setup_illo_deny">अनुमति न दें</string>
+    <string name="home_setup_illo_allow">अनुमति दें</string>
+    <string name="home_nudge_title">अपना पहला शॉर्टकट बनाएँ</string>
+    <string name="home_nudge_subtitle">टॉर्च नीचे ही है, एक टैप दूर।</string>
+    <string name="home_nudge_dismiss">बंद करें</string>
+    <string name="home_reward_cooldown">रिवॉर्ड कूलडाउन पर है, %1$s बचा है। Pro लें।</string>
+    <string name="home_reward_available">4 घंटे के लिए एक अतिरिक्त शॉर्टकट पाने के लिए विज्ञापन देखें</string>
+    <string name="home_reward_badge_idle">+1</string>
+
+    <!-- Pro अपसेल -->
+    <string name="pro_card_subtitle">मुफ़्त वर्शन %1$d शॉर्टकट चालू रखता है। Pro सभी को चालू रखता है।</string>
+    <string name="pro_card_at_cap">अगला शॉर्टकट चालू क्यों नहीं रहेगा</string>
+    <string name="pro_active_shortcuts">सक्रिय शॉर्टकट</string>
+    <string name="pro_progress_description">%2$d में से %1$d सक्रिय शॉर्टकट</string>
+    <string name="pro_reward_remaining">%1$s बचा</string>
+    <string name="pro_reward_offer">%2$d घंटे के लिए +%1$d</string>
+    <string name="pro_unlock">Pro अनलॉक करें</string>
+    <string name="pro_unlock_with_price">Pro अनलॉक करें · %1$s</string>
+    <string name="pro_table_free">फ़्री</string>
+    <string name="pro_table_pro">Pro</string>
+    <string name="pro_table_unlimited">अनलिमिटेड</string>
+    <string name="pro_table_free_limit_with_reward">%1$d (रिवॉर्ड के साथ %2$d)</string>
+    <string name="pro_table_ads">विज्ञापन</string>
+    <string name="pro_table_shown">दिखाए जाते हैं</string>
+    <string name="pro_table_none">कोई नहीं</string>
+    <string name="pro_table_row_description">%1$s: फ़्री %2$s, Pro %3$s</string>
+
+    <!-- विज्ञापन -->
+    <string name="ad_loading">विज्ञापन लोड हो रहा है…</string>
+    <string name="ad_sponsored">प्रायोजित</string>
+
+    <!-- सेटिंग -->
+    <string name="settings_title">सेटिंग</string>
+    <string name="settings_subtitle">हर नया शॉर्टकट इन्हीं डिफ़ॉल्ट से शुरू होता है।</string>
+    <string name="settings_group_keys">बटन</string>
+    <string name="settings_group_advanced">उन्नत</string>
+    <string name="settings_group_app">ऐप</string>
+    <string name="settings_defaults_panel">नए शॉर्टकट के लिए डिफ़ॉल्ट</string>
+    <string name="settings_defaults_hint">हर शॉर्टकट अपनी सेटिंग से इन्हें बदल सकता है।</string>
+    <string name="settings_double_press_description">टैप के बीच दी जाने वाली समय-सीमा। यह सिंगल-प्रेस क्रियाओं को भी देरी से चलाता है।</string>
+    <string name="settings_long_press_description">लॉन्ग-प्रेस क्रिया चलने से पहले बटन को कितनी देर दबाए रखना होगा।</string>
+    <string name="settings_appearance_panel">दिखावट</string>
+    <string name="settings_input_panel">इनपुट व्यवहार</string>
+    <string name="settings_haptics_panel">हैप्टिक्स</string>
+    <string name="settings_haptic_feedback">हैप्टिक फ़ीडबैक</string>
+    <string name="settings_haptic_feedback_on">जब कोई शॉर्टकट चले तो वाइब्रेशन चलाएं।</string>
+    <string name="settings_haptic_unavailable">इस डिवाइस पर वाइब्रेशन उपलब्ध नहीं है।</string>
+    <string name="settings_haptic_duration">हैप्टिक अवधि</string>
+    <string name="settings_haptic_duration_description">पुष्टि वाइब्रेशन की अवधि।</string>
+    <string name="settings_haptic_duration_disabled">अवधि सेट करने के लिए हैप्टिक फ़ीडबैक चालू करें।</string>
+    <string name="settings_expert_panel">उन्नत मोड</string>
+    <string name="settings_detached_bridge">सभी हार्डवेयर बटन पढ़ें</string>
+    <string name="settings_bridge_running">चालू — पावर, असिस्टेंट और अन्य प्रतिबंधित बटन काम करते हैं, ऐप बंद होने पर भी।</string>
+    <string name="settings_bridge_stopped">बंद — केवल वे बटन जिनकी Android ऐप्स को अनुमति देता है।</string>
+    <string name="settings_run_setup">सेटअप फिर से चलाएं</string>
+    <string name="settings_run_setup_description">वायरलेस डिबगिंग को फिर से जोड़ें।</string>
+    <string name="settings_about_panel">ऐप के बारे में</string>
+    <string name="settings_about_app">KeySnap के बारे में</string>
+    <string name="settings_about_app_summary">ओपन सोर्स · कुछ भी आपके फ़ोन से बाहर नहीं जाता</string>
+    <string name="settings_privacy_policy">प्राइवेसी पॉलिसी</string>
+    <string name="settings_erase">सारा डेटा मिटाएं</string>
+    <string name="settings_erase_confirm_title">सारा डेटा मिटाएं?</string>
+    <string name="settings_erase_action">सब कुछ मिटाएं</string>
+    <string name="settings_erase_warning">इससे उन्नत मोड बंद हो जाएगा, डिवाइस से ब्रिज डिलीट हो जाएगा, और हर शॉर्टकट व प्राथमिकता हट जाएगी। इसे वापस नहीं लाया जा सकता। सुलभता सेवा भी बंद हो जाती है; बाद में उसे फिर से चालू करें।</string>
+    <string name="settings_version">वर्शन %1$s (%2$d)</string>
+    <string name="settings_input_monitor">इनपुट मॉनिटर</string>
+    <string name="settings_show_log_action">इवेंट लॉग दिखाएं</string>
+    <string name="settings_hide_log_action">इवेंट लॉग छिपाएं</string>
+    <string name="settings_log_count">%2$d में से %1$d</string>
+    <string name="settings_log_waiting">भौतिक इनपुट का इंतज़ार हो रहा है…</string>
+    <string name="settings_log_clear">साफ़ करें</string>
+    <string name="settings_log_matched">एक शॉर्टकट से मेल खाया</string>
+
+    <!-- भाषा चयनकर्ता -->
+    <string name="settings_language_panel">भाषा</string>
+    <string name="language_system">सिस्टम डिफ़ॉल्ट</string>
+
+    <!-- दिखावट -->
+    <string name="theme_light">लाइट</string>
+    <string name="theme_dark">डार्क</string>
+    <string name="theme_sepia">सीपिया</string>
+
+    <!-- स्लाइडर -->
+    <string name="slider_milliseconds">%1$d मिलीसेकंड</string>
+    <string name="slider_restore_default">%1$s को डिफ़ॉल्ट पर लाएं</string>
+
+    <!-- स्क्रीन पॉइंट पिकर ओवरले -->
+    <string name="picker_point_a">A: %1$d, %2$d</string>
+    <string name="picker_point_b">B: %1$d, %2$d</string>
+    <string name="picker_point">बिंदु: %1$d, %2$d</string>
+
+    <!-- ऑनबोर्डिंग -->
+    <string name="onboarding_finish">सेटअप पूरा करें</string>
+
+    <!-- सेटअप विज़ार्ड -->
+    <string name="about_hero_title">यहाँ आप जो भी करते हैं, वह आपके फ़ोन से बाहर नहीं जाता।</string>
+    <string name="about_hero_body">कोई सर्वर नहीं। कोई खाता नहीं। कोई एनालिटिक्स नहीं। KeySnap के पास आपके शॉर्टकट या की-प्रेस भेजने के लिए कोई जगह ही नहीं है — और पूरा ऐप ओपन सोर्स है, इसलिए आपको हमारी बात मानने की ज़रूरत नहीं।</string>
+    <string name="about_no_server_title">कोई सर्वर है ही नहीं</string>
+    <string name="about_no_server_body">KeySnap का कोई बैकएंड, खाता या क्रैश रिपोर्टिंग नहीं है। आप क्या मैप करते हैं, क्या दबाते हैं और कौन से ऐप इस्तेमाल करते हैं, यह सब इसी ऐप के निजी स्टोरेज में रहता है। इसे अपलोड करने वाला कोई कोड नहीं है, क्योंकि भेजने के लिए कोई जगह ही नहीं है।</string>
+    <string name="about_illo_no_server_caption">की-प्रेस · शॉर्टकट · उपयोग</string>
+    <string name="about_open_source_title">ओपन सोर्स, ताकि आप खुद जाँच सकें</string>
+    <string name="about_open_source_body">KeySnap की हर लाइन GPLv3 के तहत प्रकाशित है। पढ़िए कि हर अनुमति किस काम आती है, खुद बिल्ड कीजिए, या किसी जानकार को दिखाइए।</string>
+    <string name="about_view_source">GitHub पर सोर्स कोड देखें</string>
+    <string name="about_scope_title">सुलभता सेवा सिर्फ़ सेटिंग्स देखती है</string>
+    <string name="about_scope_body">हार्डवेयर की पहचानने का Android कोई और रास्ता ऐप्स को नहीं देता। KeySnap की सेवा सिस्टम सेटिंग्स ऐप तक सीमित है और उसे सिर्फ़ एक काम के लिए इस्तेमाल करती है: उन्नत मोड सेट करते समय पेयरिंग कोड पढ़ना। यह आपका बैंकिंग ऐप, आपके संदेश या आपका टाइप किया हुआ कुछ भी नहीं पढ़ सकती — यह Android खुद लागू करता है, यह कोई वादा नहीं है।</string>
+    <string name="about_bridge_title">उन्नत मोड आपके अपने फ़ोन का ADB है</string>
+    <string name="about_bridge_body">यह आपके लोकल नेटवर्क पर आपके फ़ोन की अपनी वायरलेस डिबगिंग से जुड़ता है — वह कनेक्शन आपके घर से बाहर नहीं जाता। शेल कमांड सिर्फ़ उन्हीं शॉर्टकट के लिए चलाता है जो आपने लिखे हैं। बंद करते ही ब्रिज डिलीट हो जाता है; रीबूट भी उसे रोक देता है।</string>
+    <string name="about_illo_bridge_caption">बंद → ब्रिज खुद मिट जाता है</string>
+    <string name="about_traffic_title">ऐप जो भी कनेक्शन बनाता है</string>
+    <string name="about_traffic_device">आपका अपना फ़ोन</string>
+    <string name="about_traffic_device_body">वायरलेस डिबगिंग पेयरिंग। सिर्फ़ लोकल नेटवर्क।</string>
+    <string name="about_traffic_yours">आपके खुद लिखे हुए पते</string>
+    <string name="about_traffic_yours_body">HTTP या URL खोलें एक्शन ठीक वहीं जाता है जहाँ आपने लिखा, बिना बदलाव के।</string>
+    <string name="about_traffic_google">Google विज्ञापन और Google Play</string>
+    <string name="about_traffic_google_body">मुफ़्त संस्करण में विज्ञापन दिखाने और यह जाँचने के लिए कि आपने Pro खरीदा है या नहीं। इनमें से किसी को भी कोई की-प्रेस या शॉर्टकट कभी नहीं मिलता।</string>
+    <string name="about_traffic_all">पूरी सूची बस इतनी है।</string>
+    <string name="about_erase_title">जब चाहें, सब वापस ले लें</string>
+    <string name="about_erase_body">सारा डेटा मिटाएं हर शॉर्टकट, सेव की गई की, प्राथमिकता और ब्रिज फ़ाइल हटा देता है, और पहले उन्नत मोड बंद करता है ताकि पीछे कुछ चलता न रह जाए।</string>
+
+    <string name="wizard_title">उन्नत मोड चालू करें</string>
+    <string name="wizard_subtitle">सेटअप विज़ार्ड</string>
+    <string name="wizard_continue">जारी रखें</string>
+    <string name="wizard_finish_pairing">पेयरिंग पूरी करें</string>
+    <string name="wizard_step_intro">परिचय</string>
+    <string name="wizard_step_pairing">पेयरिंग</string>
+    <string name="wizard_step_done">हो गया</string>
+    <string name="wizard_what_is_expert">उन्नत मोड क्या है?</string>
+    <string name="wizard_expert_explainer">KeySnap आपके फ़ोन की अपनी वायरलेस डिबगिंग से जुड़ता है और कीज़ सीधे कर्नेल से पढ़ता है — पावर, असिस्टेंट, कैमरा; वे बटन जिन्हें Android ऐप्स से छिपाता है।</string>
+    <string name="wizard_expert_off_note">बंद करने पर मिट जाता है · रीबूट रोक देता है</string>
+    <string name="wizard_can">कर सकता है</string>
+    <string name="wizard_never">कभी नहीं</string>
+    <string name="wizard_no_dev_options">डेवलपर विकल्प अभी नहीं हैं?</string>
+    <string name="wizard_no_dev_options_sub">आपके फ़ोन के लिए चरण अगली स्क्रीन पर</string>
+    <string name="wizard_illo_action">↳ टॉर्च चालू</string>
+    <string name="wizard_how_to_dev_options">डेवलपर विकल्प कैसे चालू करें?</string>
+    <string name="wizard_auto_pairing">ऑटोमेटिक ADB पेयरिंग</string>
+    <string name="wizard_auto_pairing_explainer">पेयरिंग कोड खुद टाइप करने की ज़रूरत नहीं — हम इसे बैकग्राउंड में पढ़कर अपने आप कनेक्ट कर देते हैं। अगर यह विफल हो जाए, तो आप इसे सूचना से डाल सकते हैं।</string>
+    <string name="wizard_open_settings">सेटिंग खोलें और पेयरिंग शुरू करें</string>
+    <string name="wizard_expert_running">उन्नत मोड चल रहा है</string>
+    <string name="wizard_expert_running_body">सभी Android हार्डवेयर बटन (पावर, असिस्टेंट, वॉल्यूम, कैमरा, आदि) को Linux कर्नेल स्तर पर सुना जा रहा है।</string>
+    <string name="wizard_connection_error">कनेक्शन त्रुटि</string>
+    <string name="wizard_connection_error_body">उन्नत मोड शुरू नहीं हो सका। पेयरिंग कोड या पोर्ट गलत हो सकता है, या ADB सेवा ने कनेक्शन ठुकरा दिया हो सकता है — वापस जाकर विवरण जांचें।</string>
+    <string name="wizard_connecting">कनेक्ट हो रहा है…</string>
+    <string name="wizard_connecting_body">उन्नत मोड शुरू हो रहा है। इसमें कुछ सेकंड लगते हैं — यह स्क्रीन खुली रखें।</string>
+    <string name="wizard_kernel_stream">लाइव कर्नेल इवेंट स्ट्रीम</string>
+    <string name="wizard_test_flash">टॉर्च ट्रिगर टेस्ट करें</string>
+
+    <!-- पेयरिंग स्टेटस -->
+    <string name="pairing_idle">पेयरिंग का इंतज़ार हो रहा है…</string>
+    <string name="pairing_not_started">पेयरिंग शुरू करने के लिए ऊपर दिए बटन पर टैप करें</string>
+    <string name="pairing_searching">पेयरिंग स्क्रीन खोजी जा रही है…</string>
+    <string name="pairing_captured">पेयरिंग कोड मिल गया…</string>
+    <string name="pairing_in_progress">पेयरिंग हो रही है…</string>
+    <string name="pairing_paired">पेयर हो गया — कनेक्ट हो रहा है…</string>
+    <string name="pairing_connecting">कनेक्ट हो रहा है…</string>
+    <string name="pairing_connected">कनेक्टेड</string>
+    <string name="pairing_error">कनेक्शन विफल — फिर कोशिश करें</string>
+
+    <!-- उन्नत मोड सेटअप सूचना -->
+    <string name="notif_channel_setup">उन्नत मोड सेटअप</string>
+    <string name="notif_channel_setup_description">जब ऐप वायरलेस ADB से पेयर हो रहा हो और ब्रिज शुरू कर रहा हो, तब दिखाई जाती है</string>
+    <string name="notif_setup_title">उन्नत मोड सेट किया जा रहा है</string>
+    <string name="notif_setup_text">वायरलेस डिबगिंग से पेयर हो रहा है और ब्रिज शुरू किया जा रहा है।</string>
+
+    <!-- इनपुट मॉनिटर इवेंट रो और ट्रिगर लेबल -->
+    <string name="event_key_down">दबाया गया (DOWN)</string>
+    <string name="event_key_up">छोड़ा गया (UP)</string>
+    <string name="trigger_label_single">सिंगल प्रेस (%1$dms इंतज़ार बीता)</string>
+    <string name="trigger_label_double">डबल प्रेस (%1$dms विंडो)</string>
+    <string name="trigger_label_long">लॉन्ग प्रेस (%1$dms)</string>
+    <string name="source_accessibility">सुलभता</string>
+    <string name="source_activity">एक्टिविटी (फोरग्राउंड)</string>
+
+    <!-- व्यू-मॉडल मैसेज -->
+    <string name="default_shortcut_name">शॉर्टकट #%1$d</string>
+    <string name="run_nothing_ran">कुछ नहीं चला। क्रिया की सेटिंग जांचें।</string>
+    <string name="run_partial">%2$d में से %1$d क्रियाएं चलीं</string>
+    <string name="editor_needs_action">सेव करने से पहले कम से कम एक क्रिया जोड़ें।</string>
+    <string name="editor_needs_trigger">सेव करने से पहले एक बटन चुनें।</string>
+    <string name="saved_needs_trigger">सेव हो गया। इसे चलाने के लिए एक बटन असाइन करें।</string>
+    <string name="saved_named">\"%1$s\" सेव हो गया</string>
+    <string name="saved_needs_condition">सेव हो गया। इसे चलाने के लिए ऐसी शर्त जोड़ें जो अपने आप बदलती हो, जैसे चार्ज हो रहा है या ब्लूटूथ डिवाइस कनेक्टेड।</string>
+    <string name="free_limit_saved_off">फ़्री प्लान: %1$d सक्रिय शॉर्टकट। बंद के रूप में सेव किया गया — इसे चालू करने के लिए विज्ञापन देखें या Pro लें।</string>
+    <string name="free_limit_reached">फ़्री प्लान की सीमा पूरी हो गई। अनलिमिटेड शॉर्टकट के लिए Pro लें।</string>
+    <string name="free_limit_toggle_blocked">फ़्री प्लान: %1$d सक्रिय शॉर्टकट। इसे भी चालू करने के लिए विज्ञापन देखें या Pro लें।</string>
+
+    <!-- प्राइवेसी पॉलिसी डायलॉग का ढांचा। पॉलिसी का मुख्य टेक्स्ट PrivacyPolicy.kt में अंग्रेज़ी में ही रहता है:
+         इसे Play के लिए प्रकाशित अंग्रेज़ी दस्तावेज़ से हूबहू मेल खाना ज़रूरी है। -->
+    <string name="privacy_policy_title">प्राइवेसी पॉलिसी</string>
+    <string name="privacy_last_updated">आखिरी बार %1$s को अपडेट किया गया</string>
+    <string name="privacy_contact_heading">संपर्क</string>
+
+    <!-- वायरलेस ADB पेयरिंग सूचना -->
+    <string name="notif_channel_pairing">ADB पेयरिंग हेल्पर</string>
+    <string name="notif_channel_pairing_description">वायरलेस ADB पेयरिंग कोड डालने और त्रुटि की सूचनाएं</string>
+    <string name="notif_pairing_title">ADB पेयरिंग का इंतज़ार हो रहा है</string>
+    <string name="notif_pairing_default">बस 6 अंकों का कोड डालें; पोर्ट अपने आप मिल जाएगा।</string>
+    <string name="notif_pairing_input_label">6 अंकों का पेयरिंग कोड</string>
+    <string name="notif_pairing_enter_code">कोड डालें</string>
+    <string name="notif_pairing_no_port">ADB कनेक्ट पोर्ट नहीं मिला। वायरलेस डिबगिंग जांचें।</string>
+    <string name="notif_pairing_failed">पेयरिंग विफल रही। 6 अंकों का कोड फिर से डालें।</string>
+    <string name="notif_pairing_bad_code">कोड में ठीक 6 अंक होने चाहिए। कृपया फिर से कोशिश करें।</string>
+
+    <!-- थीम टॉगल -->
+
+    <!-- ट्रिगर टाइप चयनकर्ता -->
+    <string name="trigger_kind_key">बटन दबाना</string>
+    <string name="trigger_kind_automation">ऑटोमेशन</string>
+    <string name="automation_card_subtitle">नीचे की शर्तें पूरी होते ही चलता है</string>
+</resources>

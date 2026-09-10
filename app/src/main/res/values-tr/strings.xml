@@ -1,0 +1,820 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">KeySnap</string>
+    <string name="accessibility_service_description">Fiziksel tuş basışlarını (Ses, Güç ve diğer donanım düğmeleri) algılar; böylece kısayollarınızı tetikleyebilirler. Yalnızca Uzman Modu kurulumu sırasında, sistemin Kablosuz Hata Ayıklama penceresindeki eşleştirme kodunu da okur. Başka hiçbir uygulamanın ekranını okuyamaz.</string>
+    <string name="accessibility_disclosure_agree">Kabul et ve ayarları aç</string>
+
+    <!-- Eylem kategorileri -->
+    <string name="action_category_input">Giriş</string>
+    <string name="action_category_apps">Uygulamalar</string>
+    <string name="action_category_flashlight">Fener</string>
+    <string name="action_category_navigation">Gezinme</string>
+    <string name="action_category_volume">Ses düzeyi</string>
+    <string name="action_category_display">Ekran</string>
+    <string name="action_category_media">Medya</string>
+    <string name="action_category_connectivity">Bağlantı</string>
+    <string name="action_category_keyboard">Klavye</string>
+    <string name="action_category_device">Cihaz</string>
+    <string name="action_category_sound">Ses</string>
+    <string name="action_category_automation">Otomasyon</string>
+
+    <!-- Eylem parametre etiketleri -->
+    <string name="param_strength">Güç</string>
+    <string name="param_key_code">Tuş kodu</string>
+    <string name="param_text">Metin</string>
+    <string name="param_taps">Dokunuş</string>
+    <string name="param_interval_ms">Aralık (ms)</string>
+    <string name="param_start_x">Başlangıç X</string>
+    <string name="param_start_y">Başlangıç Y</string>
+    <string name="param_end_x">Bitiş X</string>
+    <string name="param_end_y">Bitiş Y</string>
+    <string name="param_duration_ms">Süre (ms)</string>
+    <string name="param_point_a_x">A Noktası X</string>
+    <string name="param_point_a_y">A Noktası Y</string>
+    <string name="param_point_b_x">B Noktası X</string>
+    <string name="param_point_b_y">B Noktası Y</string>
+    <string name="param_direction">Yön</string>
+    <string name="param_app">Uygulama</string>
+    <string name="param_shortcut">Kısayol</string>
+    <string name="param_method">Yöntem</string>
+    <string name="param_body">Gövde</string>
+    <string name="param_command">Komut</string>
+    <string name="param_action">Eylem</string>
+    <string name="param_extras">Ekstralar (anahtar=değer;anahtar2=değer2)</string>
+    <string name="param_element">Öğe</string>
+    <string name="param_namespace">Ad alanı</string>
+    <string name="param_key">Anahtar</string>
+    <string name="param_value">Değer</string>
+    <string name="param_mode">Mod</string>
+    <string name="param_stream">Kanal</string>
+    <string name="param_sound">Ses</string>
+    <string name="param_times">Kez</string>
+
+    <!-- Eylemler: fener -->
+    <string name="action_toggle_flashlight">Feneri aç/kapat</string>
+    <string name="action_enable_flashlight">Feneri aç</string>
+    <string name="action_disable_flashlight">Feneri kapat</string>
+    <string name="action_change_flashlight_brightness">Fener parlaklığını değiştir</string>
+
+    <!-- Eylemler: giriş -->
+    <string name="action_input_key_code">Tuş kodu gönder</string>
+    <string name="action_input_text">Metin yaz</string>
+    <string name="action_tap_screen">Ekrana dokun</string>
+    <string name="action_swipe_screen">Ekranı kaydır</string>
+    <string name="action_pinch_screen">Ekranı sıkıştır</string>
+
+    <!-- Eylemler: uygulamalar -->
+    <string name="action_launch_app">Uygulama başlat</string>
+    <string name="action_launch_app_shortcut">Uygulama kısayolu başlat</string>
+    <string name="action_open_url">URL aç</string>
+    <string name="action_http_request">HTTP isteği</string>
+    <string name="action_shell_command">Kabuk komutu</string>
+    <string name="action_send_intent">Intent gönder</string>
+    <string name="action_interact_with_app_element">Uygulama öğesiyle etkileşim</string>
+    <string name="action_launch_voice_assistant">Sesli asistanı başlat</string>
+    <string name="action_launch_device_assistant">Cihaz asistanını başlat</string>
+    <string name="action_open_camera">Kamerayı aç</string>
+    <string name="action_open_settings">Ayarları aç</string>
+    <string name="action_force_stop_app">Uygulamayı zorla durdur</string>
+    <string name="action_close_and_clear_app">Uygulamayı kapat ve son kullanılanlardan sil</string>
+    <string name="action_modify_setting">Sistem ayarı değiştir</string>
+
+    <!-- Eylemler: gezinme -->
+    <string name="action_expand_notification_drawer">Bildirim panelini aç</string>
+    <string name="action_toggle_notification_drawer">Bildirim panelini aç/kapat</string>
+    <string name="action_expand_quick_settings">Hızlı ayarları aç</string>
+    <string name="action_toggle_quick_settings">Hızlı ayarları aç/kapat</string>
+    <string name="action_collapse_status_bar">Durum çubuğunu kapat</string>
+    <string name="action_go_back">Geri git</string>
+    <string name="action_go_home">Ana ekrana git</string>
+    <string name="action_open_recents">Son kullanılanları aç</string>
+    <string name="action_open_menu">Menüyü aç</string>
+    <string name="action_go_last_app">Son uygulamaya geç</string>
+    <string name="action_toggle_split_screen">Bölünmüş ekranı aç/kapat</string>
+    <string name="action_take_screenshot">Ekran görüntüsü al</string>
+    <string name="action_move_cursor_to_end">İmleci sona taşı</string>
+
+    <!-- Eylemler: ses -->
+    <string name="action_volume_up">Sesi artır</string>
+    <string name="action_volume_down">Sesi azalt</string>
+    <string name="action_volume_mute">Sesi kapat</string>
+    <string name="action_volume_unmute">Sesi aç</string>
+    <string name="action_volume_toggle_mute">Sessizi aç/kapat</string>
+    <string name="action_show_volume_dialog">Ses penceresini göster</string>
+    <string name="action_cycle_ringer_mode">Zil modunu değiştir</string>
+    <string name="action_change_ringer_mode">Zil modunu seç</string>
+    <string name="action_change_volume_stream">Ses kanalını ayarla</string>
+
+    <!-- Eylemler: ekran -->
+    <string name="action_screen_on">Ekranı aç</string>
+    <string name="action_screen_off">Ekranı kapat</string>
+    <string name="action_toggle_screen">Ekranı aç/kapat</string>
+    <string name="action_toggle_auto_rotate">Otomatik döndürmeyi aç/kapat</string>
+    <string name="action_portrait_mode">Dikey mod</string>
+    <string name="action_landscape_mode">Yatay mod</string>
+    <string name="action_cycle_rotations">Ekran yönünü sırayla değiştir</string>
+    <string name="action_change_brightness">Parlaklığı ayarla</string>
+    <string name="action_toggle_auto_brightness">Otomatik parlaklığı aç/kapat</string>
+    <string name="action_increase_brightness">Parlaklığı artır</string>
+    <string name="action_decrease_brightness">Parlaklığı azalt</string>
+
+    <!-- Eylemler: medya -->
+    <string name="action_media_play">Oynat</string>
+    <string name="action_media_pause">Duraklat</string>
+    <string name="action_media_play_pause">Oynat / duraklat</string>
+    <string name="action_media_next">Sonraki parça</string>
+    <string name="action_media_previous">Önceki parça</string>
+    <string name="action_media_fast_forward">İleri sar</string>
+    <string name="action_media_rewind">Geri sar</string>
+    <string name="action_media_stop">Durdur</string>
+
+    <!-- Eylemler: bağlantı -->
+    <string name="action_toggle_wifi">Wi-Fi\'yi aç/kapat</string>
+    <string name="action_enable_wifi">Wi-Fi\'yi aç</string>
+    <string name="action_disable_wifi">Wi-Fi\'yi kapat</string>
+    <string name="action_toggle_bluetooth">Bluetooth\'u aç/kapat</string>
+    <string name="action_enable_bluetooth">Bluetooth\'u aç</string>
+    <string name="action_disable_bluetooth">Bluetooth\'u kapat</string>
+    <string name="action_toggle_mobile_data">Mobil veriyi aç/kapat</string>
+    <string name="action_toggle_nfc">NFC\'yi aç/kapat</string>
+    <string name="action_toggle_airplane_mode">Uçak modunu aç/kapat</string>
+    <string name="action_toggle_location">Konumu aç/kapat</string>
+    <string name="action_toggle_hotspot">Hotspot\'u aç/kapat</string>
+
+    <!-- Eylemler: klavye -->
+    <string name="action_show_keyboard">Klavyeyi göster</string>
+    <string name="action_hide_keyboard">Klavyeyi gizle</string>
+    <string name="action_toggle_keyboard">Klavyeyi aç/kapat</string>
+    <string name="action_switch_keyboard">Klavye değiştir</string>
+    <string name="action_show_keyboard_picker">Klavye seçiciyi göster</string>
+    <string name="action_text_cut">Kes</string>
+    <string name="action_text_copy">Kopyala</string>
+    <string name="action_text_paste">Yapıştır</string>
+    <string name="action_select_word_at_cursor">İmleçteki kelimeyi seç</string>
+
+    <!-- Eylemler: cihaz -->
+    <string name="action_lock_device">Cihazı kilitle</string>
+    <string name="action_secure_lock_device">Cihazı güvenli kilitle</string>
+    <string name="action_power_dialog">Güç menüsünü göster</string>
+    <string name="action_toggle_dnd">Rahatsız Etmeyin\'i aç/kapat</string>
+    <string name="action_enable_dnd">Rahatsız Etmeyin\'i aç</string>
+    <string name="action_disable_dnd">Rahatsız Etmeyin\'i kapat</string>
+    <string name="action_open_app_drawer">Uygulama çekmecesini aç</string>
+    <string name="action_dismiss_all_notifications">Tüm bildirimleri temizle</string>
+    <string name="action_answer_call">Aramayı cevapla</string>
+    <string name="action_end_call">Aramayı sonlandır</string>
+
+    <!-- Eylemler: ses efekti -->
+    <string name="action_play_sound">Ses çal</string>
+    <string name="action_text_to_speech">Metni seslendir</string>
+    <string name="action_vibrate">Titret</string>
+    <string name="action_stop_text_to_speech">Seslendirmeyi durdur</string>
+
+    <!-- Eylemler: otomasyon -->
+    <string name="action_delay">Bekle</string>
+    <string name="action_repeat_previous">Önceki eylemi tekrarla</string>
+    <string name="action_toggle_mapping">Tüm kısayolları aç/kapat</string>
+    <string name="action_pause_mapping">Tüm kısayolları duraklat</string>
+    <string name="action_resume_mapping">Tüm kısayolları sürdür</string>
+
+    <!-- Koşul kategorileri -->
+    <string name="constraint_category_apps">Uygulamalar</string>
+    <string name="constraint_category_media">Medya</string>
+    <string name="constraint_category_display">Ekran</string>
+    <string name="constraint_category_flashlight">Fener</string>
+    <string name="constraint_category_keyboard">Klavye</string>
+    <string name="constraint_category_lock">Kilit</string>
+    <string name="constraint_category_phone">Telefon</string>
+    <string name="constraint_category_power">Güç</string>
+    <string name="constraint_category_device">Cihaz</string>
+    <string name="constraint_category_time">Zaman</string>
+    <string name="constraint_category_connectivity">Bağlantı</string>
+    <string name="constraint_category_sound">Ses</string>
+
+    <!-- Koşullar -->
+    <string name="constraint_app_in_foreground">Uygulama ön planda</string>
+    <string name="constraint_app_not_in_foreground">Uygulama ön planda değil</string>
+    <string name="constraint_app_playing_media">Uygulama medya oynatıyor</string>
+    <string name="constraint_app_not_playing_media">Uygulama medya oynatmıyor</string>
+    <string name="constraint_no_media_playing">Hiçbir medya oynatılmıyor</string>
+    <string name="constraint_media_is_playing">Medya oynatılıyor</string>
+    <string name="constraint_bluetooth_on">Bluetooth açık</string>
+    <string name="constraint_bluetooth_off">Bluetooth kapalı</string>
+    <string name="constraint_screen_on">Ekran açık</string>
+    <string name="constraint_screen_off">Ekran kapalı</string>
+    <string name="constraint_screen_orientation">Ekran yönü</string>
+    <string name="constraint_physical_orientation">Fiziksel yön</string>
+    <string name="constraint_flashlight_on">Fener açık</string>
+    <string name="constraint_flashlight_off">Fener kapalı</string>
+    <string name="constraint_wifi_on">WiFi açık</string>
+    <string name="constraint_wifi_off">WiFi kapalı</string>
+    <string name="constraint_connected_to_wifi_network">Bir WiFi ağına bağlı</string>
+    <string name="constraint_disconnected_from_wifi_network">WiFi ağı bağlantısı kesik</string>
+    <string name="constraint_input_method_chosen">Giriş yöntemi seçili</string>
+    <string name="constraint_input_method_not_chosen">Giriş yöntemi seçili değil</string>
+    <string name="constraint_keyboard_showing">Klavye açık</string>
+    <string name="constraint_keyboard_not_showing">Klavye kapalı</string>
+    <string name="constraint_device_locked">Cihaz kilitli</string>
+    <string name="constraint_device_unlocked">Cihaz kilidi açık</string>
+    <string name="constraint_lock_screen_showing">Kilit ekranı görünüyor</string>
+    <string name="constraint_lock_screen_not_showing">Kilit ekranı görünmüyor</string>
+    <string name="constraint_in_phone_call">Görüşme sırasında</string>
+    <string name="constraint_not_in_phone_call">Görüşme yokken</string>
+    <string name="constraint_phone_ringing">Telefon çalıyor</string>
+    <string name="constraint_charging">Şarj oluyor</string>
+    <string name="constraint_discharging">Şarj olmuyor</string>
+    <string name="constraint_hinge_closed">Menteşe kapalı</string>
+    <string name="constraint_hinge_open">Menteşe açık</string>
+    <string name="constraint_time">Zaman</string>
+    <string name="constraint_bluetooth_device_connected">Bluetooth cihazı bağlı</string>
+    <string name="constraint_bluetooth_device_disconnected">Bluetooth cihazı bağlı değil</string>
+    <string name="constraint_dark_mode_on">Koyu tema açık</string>
+    <string name="constraint_dark_mode_off">Koyu tema kapalı</string>
+    <string name="constraint_battery_saver_on">Pil tasarrufu açık</string>
+    <string name="constraint_battery_saver_off">Pil tasarrufu kapalı</string>
+    <string name="constraint_charging_wired">Kabloyla şarj oluyor</string>
+    <string name="constraint_charging_wireless">Kablosuz şarj oluyor</string>
+    <string name="constraint_battery_above">Pil belirli bir seviyenin üstünde</string>
+    <string name="constraint_battery_below">Pil belirli bir seviyenin altında</string>
+    <string name="constraint_location_on">Konum açık</string>
+    <string name="constraint_location_off">Konum kapalı</string>
+    <string name="constraint_day_of_week">Haftanın günü</string>
+    <string name="constraint_mobile_data_on">Mobil veri açık</string>
+    <string name="constraint_mobile_data_off">Mobil veri kapalı</string>
+    <string name="constraint_airplane_mode_on">Uçak modu açık</string>
+    <string name="constraint_airplane_mode_off">Uçak modu kapalı</string>
+    <string name="constraint_ringer_normal">Zil sesi açık</string>
+    <string name="constraint_ringer_vibrate">Zil titreşimde</string>
+    <string name="constraint_ringer_silent">Zil sessizde</string>
+    <string name="constraint_dnd_on">Rahatsız Etmeyin açık</string>
+    <string name="constraint_dnd_off">Rahatsız Etmeyin kapalı</string>
+    <string name="constraint_headphones_connected">Kulaklık bağlı</string>
+    <string name="constraint_headphones_disconnected">Kulaklık bağlı değil</string>
+
+    <!-- Eylem düzenleyici: gereksinim rozetleri -->
+    <string name="badge_expert_mode">Uzman Modu gerektirir</string>
+    <string name="badge_accessibility">Erişilebilirlik hizmeti gerektirir</string>
+    <string name="badge_notification_policy">Rahatsız Etmeyin erişimi gerektirir</string>
+    <string name="badge_write_settings">Sistem ayarlarını değiştirme izni gerektirir</string>
+
+    <!-- Eylem düzenleyici: alan etiketleri -->
+    <string name="field_key_to_send">Gönderilecek tuş</string>
+    <string name="field_tap_here">Buraya dokun</string>
+    <string name="field_time_between_taps">Dokunuşlar arası süre</string>
+    <string name="field_swipe_from">Başlangıç noktası</string>
+    <string name="field_swipe_to">Bitiş noktası</string>
+    <string name="field_duration">Süre</string>
+    <string name="field_first_finger">Birinci parmak</string>
+    <string name="field_second_finger">İkinci parmak</string>
+    <string name="field_app_to_open">Açılacak uygulama</string>
+    <string name="field_app_to_stop">Durdurulacak uygulama</string>
+    <string name="field_extras">Ekstralar</string>
+    <string name="field_setting_key">Ayar anahtarı</string>
+    <string name="field_level">Seviye</string>
+    <string name="field_brightness">Parlaklık</string>
+    <string name="field_text_to_speak">Seslendirilecek metin</string>
+    <string name="field_wait">Bekleme</string>
+
+    <!-- Eylem düzenleyici: ipuçları -->
+    <string name="hint_input_text">Odaktaki alana yazılır</string>
+    <string name="hint_http_body">İstekle birlikte gönderilir</string>
+    <string name="hint_optional">İsteğe bağlı</string>
+    <string name="hint_sound_uri">content:// veya file:// adresi</string>
+
+    <!-- Eylem düzenleyici: açıklamalar -->
+    <string name="helper_input_key_code">Ön plandaki uygulamaya bir tuş basışı gönderir.</string>
+    <string name="helper_http_request">Bir web isteği gönderir — webhook veya akıllı ev senaryosu tetiklemek için kullanışlıdır.</string>
+    <string name="helper_shell_command">Cihazda bir terminal komutu çalıştırır.</string>
+    <string name="helper_extras">İsteğe bağlı. Her çift metin ekstrası olarak gönderilir.</string>
+    <string name="helper_send_intent">Android intent yayınlar — diğer uygulamaların tepki verebileceği bir mesaj. İleri düzey kullanıcılar için.</string>
+    <string name="helper_modify_setting">Bir Android sistem ayarını doğrudan yazar.</string>
+    <string name="helper_repeat_previous">Bunun üstündeki eylemi tekrar çalıştırır.</string>
+
+    <!-- Eylem düzenleyici: seçenekler -->
+    <string name="choice_pinch_in">Uzaklaştır (içe sıkıştır)</string>
+    <string name="choice_pinch_out">Yakınlaştır (dışa aç)</string>
+    <string name="summary_zoom_in">Yakınlaştır</string>
+    <string name="summary_zoom_out">Uzaklaştır</string>
+    <string name="choice_namespace_system">System</string>
+    <string name="choice_namespace_secure">Secure</string>
+    <string name="choice_namespace_global">Global</string>
+    <string name="choice_stream_ring">Zil</string>
+    <string name="choice_stream_media">Medya</string>
+    <string name="choice_stream_alarm">Alarm</string>
+    <string name="choice_stream_notification">Bildirim</string>
+    <string name="choice_ringer_normal">Normal</string>
+    <string name="choice_ringer_vibrate">Titreşim</string>
+    <string name="choice_ringer_silent">Sessiz</string>
+
+    <!-- Basma türleri -->
+    <string name="press_single_title">Tek basış</string>
+    <string name="press_single_description">Tuşa bir kez basıldığında çalışır</string>
+    <string name="press_double_title">Çift basış</string>
+    <string name="press_double_description">Tuşa arka arkaya iki kez basıldığında çalışır</string>
+    <string name="press_long_title">Uzun basış</string>
+    <string name="press_long_badge">Basılı tut</string>
+    <string name="press_long_description">Tuş ayarlanan süre kadar basılı tutulduğunda çalışır</string>
+
+    <!-- Donanım tuşu adları -->
+    <string name="key_volume_down">Ses Kısma</string>
+    <string name="key_volume_up">Ses Açma</string>
+    <string name="key_power">Güç</string>
+    <string name="key_assist">Asistan (Assist)</string>
+    <string name="key_voice_assist">Sesli Asistan</string>
+    <string name="key_headsethook">Kulaklık / Medya Tuşu</string>
+    <string name="key_camera">Kamera / Deklanşör</string>
+    <string name="key_back">Geri</string>
+    <string name="key_home">Ana Ekran</string>
+    <string name="key_menu">Menü</string>
+    <string name="key_mute">Sessiz</string>
+    <string name="key_media_play_pause">Oynat / Duraklat</string>
+    <string name="key_wakeup">Uyandır</string>
+    <string name="key_alert_slider">Uyarı Anahtarı / Özel Düğme</string>
+
+    <!-- Geliştirici Seçenekleri rehberi -->
+    <string name="guide_generic">Diğer</string>
+    <string name="guide_pixel">Google Pixel / Saf Android</string>
+
+    <!-- Önerilen kısayollar -->
+    <string name="suggestion_flashlight">Fener</string>
+    <string name="suggestion_flashlight_subtitle">Feneri aç ve kapat</string>
+    <string name="suggestion_play_pause">Oynat / Duraklat</string>
+    <string name="suggestion_play_pause_subtitle">Ne çalıyorsa</string>
+    <string name="suggestion_screenshot">Ekran Görüntüsü</string>
+    <string name="suggestion_screenshot_subtitle">Ekranı yakala</string>
+    <string name="suggestion_dnd">Rahatsız Etmeyin</string>
+    <string name="suggestion_dnd_subtitle">Tüm uyarıları sustur</string>
+    <string name="suggestion_lock">Cihazı Kilitle</string>
+    <string name="suggestion_lock_subtitle">Ekranı uyut</string>
+    <string name="suggestion_camera">Kamerayı Aç</string>
+    <string name="suggestion_camera_subtitle">Doğrudan çekime</string>
+    <string name="suggestion_headphones_play">Kulaklık Takılınca</string>
+    <string name="suggestion_headphones_play_subtitle">Takınca müzik başlar</string>
+    <string name="suggestion_assistant">Asistan</string>
+    <string name="suggestion_assistant_subtitle">Asistanla konuş</string>
+    <string name="suggestion_bedtime">Uyku Modu</string>
+    <string name="suggestion_bedtime_subtitle">DND aç, karart, kilitle</string>
+    <string name="suggestion_notifications">Bildirimler</string>
+    <string name="suggestion_notifications_subtitle">Bildirim panelini aç</string>
+    <string name="suggestion_car_bluetooth">Arabada</string>
+    <string name="suggestion_car_bluetooth_subtitle">Araba bağlanınca müzik çalar</string>
+    <string name="suggestion_sos">SOS Sinyali</string>
+    <string name="suggestion_sos_subtitle">Fener ··· ––– ··· yanıp söner</string>
+    <string name="suggestion_wifi">Wi-Fi</string>
+    <string name="suggestion_wifi_subtitle">Aç veya kapat</string>
+    <string name="suggestion_low_battery">Düşük Pil</string>
+    <string name="suggestion_low_battery_subtitle">%15 altı: Bluetooth kapat, karart</string>
+    <string name="suggestion_auto_rotate">Otomatik Döndürme</string>
+    <string name="suggestion_auto_rotate_subtitle">Döndürmeyi kilitle veya serbest bırak</string>
+    <string name="suggestion_night_charge_dnd">Gece Şarjı</string>
+    <string name="suggestion_night_charge_dnd_subtitle">22:00 sonrası şarjda DND aç</string>
+    <string name="suggestion_bluetooth">Bluetooth</string>
+    <string name="suggestion_bluetooth_subtitle">Aç veya kapat</string>
+    <string name="suggestion_vibrate_mode">Titreşim Modu</string>
+    <string name="suggestion_vibrate_mode_subtitle">Zil sesini titreşime al</string>
+    <string name="suggestion_torch_off_screen_off">Fener Güvenliği</string>
+    <string name="suggestion_torch_off_screen_off_subtitle">Ekran kapanınca fener kapanır</string>
+    <string name="suggestion_battery_saver">Pil Tasarrufu</string>
+    <string name="suggestion_battery_saver_subtitle">Bluetooth ve Wi-Fi kapat, karart</string>
+
+    <!-- Ortak -->
+    <string name="common_cancel">İptal</string>
+    <string name="common_save">Kaydet</string>
+    <string name="common_add">Ekle</string>
+    <string name="common_done">Tamam</string>
+    <string name="common_back">Geri</string>
+    <string name="common_close">Kapat</string>
+    <string name="common_remove">Kaldır</string>
+    <string name="common_delete">Sil</string>
+    <string name="common_coming_soon">Yakında</string>
+    <string name="picker_category_all">Tümü</string>
+    <string name="common_ok">Tamam</string>
+    <string name="common_yes">Evet</string>
+    <string name="common_no">Hayır</string>
+    <string name="common_confirm">Onayla</string>
+    <string name="common_save_caps">KAYDET</string>
+    <string name="common_cancel_caps">İPTAL</string>
+
+    <!-- Eylem ayar sayfası -->
+    <string name="badge_tap_to_grant">%1$s · İzin vermek için dokunun</string>
+    <string name="action_config_enter_key_code">Ya da bir tuş kodu girin</string>
+    <string name="action_config_cancel_recording">Kaydı iptal et</string>
+    <string name="action_config_record_key">Fiziksel bir tuş kaydet</string>
+    <string name="action_config_choose_app">Bir uygulama seçin</string>
+    <string name="action_config_enter_package">Ya da bir paket adı girin</string>
+    <string name="action_config_pick_on_screen">Ekrandan seç</string>
+    <string name="action_config_allow_overlay">Seçmek için diğer uygulamaların üzerine çizme izni verin</string>
+    <string name="action_config_point_not_set">seçilmedi</string>
+
+    <!-- Koşul seçici -->
+    <string name="constraint_picker_title">Bir koşul seçin</string>
+    <string name="constraint_picker_search">Koşul ara</string>
+    <string name="constraint_picker_no_match">\"%1$s\" ile eşleşen koşul yok</string>
+    <string name="constraint_picker_empty_category">Bu kategoride henüz koşul yok</string>
+    <string name="constraint_picker_add_label">%1$s ekle</string>
+
+    <!-- Koşul yapılandırma sayfası -->
+    <string name="constraint_picker_configure_title">Koşulu ayarla</string>
+    <string name="field_constraint_app">Uygulama</string>
+    <string name="field_orientation">Yön</string>
+    <string name="orientation_portrait">Dikey</string>
+    <string name="orientation_landscape">Yatay</string>
+    <string name="field_wifi_ssid">Ağ adı (SSID)</string>
+    <string name="hint_wifi_ssid_any">Herhangi bir ağ için boş bırakın</string>
+    <string name="field_bluetooth_device">Cihaz</string>
+    <string name="bluetooth_no_paired_devices">Eşleştirilmiş cihaz yok. Önce Bluetooth ayarlarından bir cihaz eşleştirin.</string>
+    <string name="field_battery_percent">Pil seviyesi</string>
+    <string name="field_time_start">Başlangıç</string>
+    <string name="field_time_end">Bitiş</string>
+    <string name="field_days">Günler</string>
+    <string name="constraint_needs_usage_access">Hangi uygulamanın önde olduğunu görebilmesi için Kullanım erişimi gerekir.</string>
+    <string name="constraint_config_choose_app">Devam etmek için bir uygulama seçin</string>
+    <string name="constraint_needs_location">Android, ağ adını yalnızca Konum iznine sahip uygulamalara gösterir.</string>
+    <string name="constraint_grant_permission">İzin ver</string>
+    <string name="constraint_summary_any_wifi">Herhangi bir ağ</string>
+    <string name="constraint_summary_time_range" translatable="false">%1$s – %2$s</string>
+    <string name="constraint_summary_percent" translatable="false">%1$d%%</string>
+
+    <!-- Eylem seçici -->
+    <string name="action_picker_search">Eylem ara</string>
+    <string name="action_picker_no_match">\"%1$s\" ile eşleşen eylem yok</string>
+    <string name="action_picker_empty_category">Bu kategoride henüz eylem yok</string>
+    <string name="action_picker_add_label">%1$s ekle</string>
+
+    <!-- Kısayol düzenleyici -->
+    <string name="editor_discard_changes">Değişiklikleri at</string>
+    <string name="editor_unsaved_title">Değişiklikler atılsın mı?</string>
+    <string name="editor_unsaved_body">Bu kısayolda yaptığınız değişiklikler kaydedilmedi.</string>
+    <string name="editor_unsaved_discard">At</string>
+    <string name="editor_shortcut_name">Kısayol adı</string>
+    <string name="editor_shortcut_settings">Kısayol ayarları</string>
+    <string name="editor_chain_when">Şu olduğunda</string>
+    <string name="editor_chain_only_if">Yalnızca şu durumda</string>
+    <string name="editor_chain_do">Yap</string>
+    <string name="editor_add_action">Eylem ekle</string>
+    <string name="editor_add_constraint">Koşul ekle</string>
+    <string name="editor_always_runs">Her zaman çalışır</string>
+    <string name="editor_remove_constraint">%1$s koşulunu kaldır</string>
+    <string name="editor_configure_action">%1$s eylemini ayarla</string>
+    <string name="editor_more_options">%1$s için diğer seçenekler</string>
+    <string name="editor_tap_to_configure">Ayarlamak için dokunun</string>
+    <string name="editor_configure">Ayarla</string>
+    <string name="editor_move_up">Yukarı taşı</string>
+    <string name="editor_move_down">Aşağı taşı</string>
+    <string name="editor_test_run">Deneme çalıştır</string>
+
+    <!-- Alt gezinme -->
+    <string name="nav_home">Ana sayfa</string>
+    <string name="nav_shortcuts">Kısayollar</string>
+    <string name="nav_settings">Ayarlar</string>
+
+    <!-- İletişim kutuları -->
+    <string name="dialog_expert_connected">UZMAN MODU BAĞLANDI</string>
+    <string name="dialog_new_input_title">Yeni giriş algılandı</string>
+    <string name="dialog_new_input_body">Kod: %1$d. Bu girişe kısa bir ad verin.</string>
+    <string name="dialog_new_input_hint">örn. Kısayol tuşu</string>
+
+    <!-- Uygulama seçici -->
+    <string name="app_picker_search">Uygulama ara</string>
+    <string name="app_picker_loading">Yüklü uygulamalar okunuyor…</string>
+    <string name="app_picker_no_match">\"%1$s\" ile eşleşen uygulama yok</string>
+    <string name="app_picker_choose">%1$s uygulamasını seç</string>
+    <string name="app_picker_selected">Seçili</string>
+
+    <!-- Otomasyon tetikleyici seçici -->
+
+    <!-- Olay tetikleyicileri -->
+
+    <!-- Tetikleyici seçici -->
+    <string name="trigger_picker_title">Tuş belirle</string>
+    <string name="trigger_picker_subtitle">Bir basma türü seçin, sonra tuşu kaydedin.</string>
+    <string name="trigger_picker_no_key">Henüz tuş yok</string>
+    <string name="trigger_picker_saved_key">Ya da kayıtlı bir tuş seçin</string>
+    <string name="trigger_picker_listening">Dinleniyor… durdurmak için dokunun</string>
+    <string name="trigger_picker_tap_to_record">Dokunun, sonra fiziksel bir tuşa basın</string>
+    <string name="trigger_picker_save_combo">Tuşu kaydet</string>
+    <string name="trigger_picker_use_automation">Bunun yerine otomasyon kullan</string>
+    <string name="trigger_picker_use_key">%1$s tuşunu kullan</string>
+
+    <!-- Kısayol ayarları -->
+    <string name="script_settings_name">Ad</string>
+    <string name="script_settings_enabled">Etkin</string>
+    <string name="script_settings_assign_key_first">Basma davranışını ayarlamak için düzenleyiciden bir tuş atayın.</string>
+    <string name="script_settings_trigger_type">Basma türü</string>
+    <string name="script_settings_double_press_window">Çift basış aralığı</string>
+    <string name="script_settings_long_press_threshold">Uzun basış eşiği</string>
+    <string name="script_settings_using_global">Genel varsayılan kullanılıyor (%1$dms)</string>
+    <string name="script_settings_custom_value">Bu kısayol için özel</string>
+    <string name="script_settings_consume_input">Özgün girişi tüket</string>
+    <string name="script_settings_consume_input_description">Android izin verdiği yerlerde tuşun diğer uygulamalara ulaşmasını engeller.</string>
+    <string name="script_settings_not_global">Genel değil, yalnızca bu kısayol için</string>
+    <string name="script_settings_vibrate">Çalışınca titret</string>
+    <string name="script_settings_vibrate_description">Bu kısayol çalıştığında kısa bir titreşim hisset.</string>
+    <string name="script_settings_reset_to_default">Varsayılana dön (%1$s)</string>
+
+    <!-- Kısayol listesi -->
+    <string name="scripts_title">Kısayollarım</string>
+    <string name="scripts_paused_warning">Tüm kısayollar duraklatıldı, bunların hiçbiri çalışmaz.</string>
+    <string name="scripts_new_shortcut">Yeni kısayol</string>
+    <string name="scripts_empty_title">Henüz kısayol yok</string>
+    <string name="scripts_empty_body">Bir kısayol, fiziksel bir tuşa bastığınızda bir veya daha fazla eylem çalıştırır.</string>
+    <string name="scripts_empty_go_home">Ana sayfadaki bir öneriden başlayın</string>
+    <string name="scripts_tutorial_title">İlk kısayolunuzu oluşturun</string>
+    <string name="scripts_tutorial_subtitle">Dört adım, tekrar tekrar.</string>
+    <string name="scripts_tutorial_pause">Tanıtımı duraklat</string>
+    <string name="scripts_tutorial_play">Tanıtımı oynat</string>
+    <string name="scripts_tutorial_step_new">Yeni kısayol\'a dokunun</string>
+    <string name="scripts_tutorial_step_key">Tuş Basışı\'nı seçip tuşunuza basın</string>
+    <string name="scripts_tutorial_step_action">Bir eylem ekleyin</string>
+    <string name="scripts_tutorial_step_done">Tamam\'a dokunun</string>
+    <string name="scripts_tutorial_cap_fab">Sağ üstteki mavi + düğmesi</string>
+    <string name="scripts_tutorial_cap_keypress">Şu olduğunda bölümünde Tuş Basışı\'na dokunun</string>
+    <string name="scripts_tutorial_cap_press">Telefonunuzdaki tuşa basın</string>
+    <string name="scripts_tutorial_cap_save">Tuşu kaydet\'e dokunun</string>
+    <string name="scripts_tutorial_cap_add">Yap bölümünde Eylem ekle\'ye dokunun</string>
+    <string name="scripts_tutorial_cap_pick">Fener\'i seçin</string>
+    <string name="scripts_tutorial_cap_lands">Yap bölümüne eklenir</string>
+    <string name="scripts_tutorial_cap_check">Sağ üstteki onay işareti</string>
+    <string name="scripts_tutorial_cap_runs">Ses Açma artık feneri çalıştırıyor</string>
+    <string name="scripts_tutorial_mini_page">Kısayollar sayfası</string>
+    <string name="scripts_tutorial_listening">Dinleniyor…</string>
+    <string name="scripts_tutorial_key_recorded">Tuş kaydedildi</string>
+    <string name="scripts_no_trigger">Henüz tuş yok</string>
+    <string name="scripts_no_condition">Koşul eklenmedi</string>
+    <string name="scripts_no_actions">Henüz eylem yok</string>
+    <string name="scripts_unnamed">Kısayol</string>
+    <string name="scripts_delete_label">%1$s kısayolunu sil</string>
+    <string name="scripts_toggle_state_on">Açık</string>
+    <string name="scripts_toggle_state_off">Kapalı</string>
+    <string name="scripts_toggle_state_paused">Açık, ancak tüm kısayollar duraklatıldı</string>
+    <string name="scripts_delete_title">Kısayol silinsin mi?</string>
+    <string name="scripts_delete_body">\"%1$s\" kalıcı olarak silinecek. Bu işlem geri alınamaz.</string>
+    <string name="scripts_snackbar_home">Ana sayfa</string>
+
+    <!-- Ana sayfa -->
+    <string name="home_suggested_shortcuts">Önerilen kısayollar</string>
+    <string name="home_suggestions_group_single">Tek tuş, tek eylem</string>
+    <string name="home_suggestions_group_multi">Tek tuş, birkaç adım</string>
+    <string name="home_suggestions_group_automation">Kendi kendine çalışır</string>
+    <string name="home_your_shortcuts">Kısayolların</string>
+    <string name="suggestion_saved">%1$s hazır · %2$s</string>
+    <string name="home_build_from_suggestion">%1$s için kısayol oluştur</string>
+    <string name="home_suggestion_soon">Yakında</string>
+    <string name="home_suggestion_automation">Otomasyon</string>
+    <string name="home_pause_all">Tüm kısayolları duraklat</string>
+    <string name="home_resume_all">Tüm kısayolları sürdür</string>
+    <string name="home_status_live">Aktif</string>
+    <string name="home_status_paused">Duraklatıldı</string>
+    <string name="home_system_status">Sistem durumu</string>
+    <string name="home_collapse_status">Sistem durumunu daralt</string>
+    <string name="home_expand_status">Sistem durumunu genişlet</string>
+    <string name="home_accessibility_service">Erişilebilirlik hizmeti</string>
+    <string name="home_status_advanced">Uzman Modu</string>
+    <string name="home_status_active">Etkin</string>
+    <string name="home_status_offline">Kapalı</string>
+    <string name="home_status_running">Çalışıyor</string>
+    <string name="home_status_off">Kapalı</string>
+    <string name="home_triggers_session">Bu oturumdaki çalıştırmalar</string>
+    <string name="home_last_from">Son kaynak: %1$s</string>
+    <string name="home_open_label_settings">%1$s ayarlarını aç</string>
+    <string name="home_setup_title_off">Kısayollarınız henüz çalışmıyor</string>
+    <string name="home_setup_subtitle_off">Üç adım, hepsi Android’in kendi ayarlarında. Her adımda neye dokunacağınız burada.</string>
+    <string name="home_setup_title_at_risk">Kısayollarınız çalışmayı durdurabilir</string>
+    <string name="home_setup_subtitle_at_risk">Bunlar açılana kadar Android uygulamayı arka planda kapatabilir.</string>
+    <string name="home_setup_progress">%1$d/3</string>
+    <string name="home_setup_step_accessibility">Erişilebilirlik hizmetini açın</string>
+    <string name="home_setup_why_accessibility">KeySnap tuşlara basışlarınızı bunun üzerinden okur. Bu açılmadan hiçbir şey çalışmaz.</string>
+    <string name="home_setup_open_accessibility">Erişilebilirlik ayarlarını aç</string>
+    <string name="home_setup_step_background">KeySnap’in arka planda çalışmasına izin verin</string>
+    <string name="home_setup_why_background">Android, uyuduğunu düşündüğü uygulamaları kapatır. Android sorduğunda İzin ver’e dokunun — Reddet, KeySnap’i kapanmaya açık bırakır.</string>
+    <string name="home_setup_allow_background">Arka planda çalışmasına izin ver</string>
+    <string name="home_setup_done_background">İzin verildi</string>
+    <string name="home_setup_step_notifications">Bildirimlere izin verin</string>
+    <string name="home_setup_why_notifications">Yalnızca kurulum için: eşleştirme kodu ve servis durumu. Android sorduğunda İzin ver’e dokunun — İzin verme, kurulumu burada durdurur.</string>
+    <string name="home_setup_ask_now">Şimdi sor</string>
+    <string name="home_setup_done_notifications">İzin verildi</string>
+    <string name="home_setup_all_done">Üçü de açık. Tuşlarınız artık çalışıyor.</string>
+    <string name="home_setup_state_done">Tamamlandı</string>
+    <string name="home_setup_state_current">Şu anki adım</string>
+    <string name="home_setup_state_upcoming">Henüz başlamadı</string>
+    <string name="home_setup_illo_downloaded_apps">İndirilen uygulamalar</string>
+    <string name="home_setup_why">Neden?</string>
+    <string name="home_setup_why_expanded">Genişletildi</string>
+    <string name="home_setup_why_collapsed">Daraltıldı</string>
+    <string name="home_setup_whytext_accessibility">Android, donanım tuşlarını yalnızca bir erişilebilirlik servisine gösterir; KeySnap de tam olarak bunun için bir tane kullanır: bir basışı fark etmek ve kısayolunuzu çalıştırmak. Başka uygulamaların ekranlarını okumaz. Yalnızca Uzman Modu kurulumu sırasında, Kablosuz Hata Ayıklama sayfasındaki eşleştirme kodunu da okur, başka hiçbir şeyi değil.</string>
+    <string name="home_setup_whytext_background">Android, boşta olduğunu düşündüğü uygulamaları kapatır; kapanmış bir uygulama da kısayollarınızı çalıştıramaz. Bu, telefonunuz uyurken KeySnap’i ayakta tutar. Arka planda bir tuşa basılmasını beklemekten başka bir şey yapmaz.</string>
+    <string name="home_setup_whytext_notifications">Yalnızca Uzman Modu kurulumu sırasında: eşleştirme kodu ve servisin çalışıp çalışmadığı. Hatırlatma yok, tanıtım yok, başka hiçbir şey yok.</string>
+    <string name="home_setup_illo_battery_dialog">KeySnap arka planda her zaman çalışsın mı?</string>
+    <string name="home_setup_illo_battery_body">Bu, pil ömrünü kısaltabilir.</string>
+    <string name="home_setup_illo_battery_deny">Reddet</string>
+    <string name="home_setup_illo_dialog">KeySnap size bildirim göndersin mi?</string>
+    <string name="home_setup_illo_deny">İzin verme</string>
+    <string name="home_setup_illo_allow">İzin ver</string>
+    <string name="home_nudge_title">İlk kısayolunuzu oluşturun</string>
+    <string name="home_nudge_subtitle">Fener hemen aşağıda, tek dokunuş.</string>
+    <string name="home_nudge_dismiss">Kapat</string>
+    <string name="home_reward_cooldown">Ödül bekleme süresinde, %1$s kaldı. Pro\'ya geçin.</string>
+    <string name="home_reward_available">4 saat boyunca bir ek kısayol için reklam izleyin</string>
+    <string name="home_reward_badge_idle">+1</string>
+
+    <!-- Pro tanıtımı -->
+    <string name="pro_card_subtitle">Ücretsiz sürüm %1$d kısayolu açık tutar. Pro hepsini açık tutar.</string>
+    <string name="pro_card_at_cap">Sıradaki kısayol neden açık kalmıyor?</string>
+    <string name="pro_active_shortcuts">Etkin kısayollar</string>
+    <string name="pro_progress_description">%2$d etkin kısayoldan %1$d tanesi</string>
+    <string name="pro_reward_remaining">%1$s kaldı</string>
+    <string name="pro_reward_offer">%2$d saat için +%1$d</string>
+    <string name="pro_unlock">Pro\'yu aç</string>
+    <string name="pro_unlock_with_price">Pro\'yu aç · %1$s</string>
+    <string name="pro_table_free">Ücretsiz</string>
+    <string name="pro_table_pro">Pro</string>
+    <string name="pro_table_unlimited">Sınırsız</string>
+    <string name="pro_table_free_limit_with_reward">%1$d (ödülle %2$d)</string>
+    <string name="pro_table_ads">Reklamlar</string>
+    <string name="pro_table_shown">Var</string>
+    <string name="pro_table_none">Yok</string>
+    <string name="pro_table_row_description">%1$s: Ücretsiz %2$s, Pro %3$s</string>
+
+    <!-- Reklamlar -->
+    <string name="ad_loading">Reklam yükleniyor…</string>
+    <string name="ad_sponsored">Sponsorlu</string>
+
+    <!-- Ayarlar -->
+    <string name="settings_title">Ayarlar</string>
+    <string name="settings_subtitle">Her yeni kısayolun başlangıç varsayılanları.</string>
+    <string name="settings_group_keys">Tuşlar</string>
+    <string name="settings_group_advanced">Uzman</string>
+    <string name="settings_group_app">Uygulama</string>
+    <string name="settings_defaults_panel">Yeni kısayol varsayılanları</string>
+    <string name="settings_defaults_hint">Her kısayol bunları kendi ayarlarından değiştirebilir.</string>
+    <string name="settings_double_press_description">İki dokunuş arasında izin verilen süre. Tek basış eylemlerini de geciktirir.</string>
+    <string name="settings_long_press_description">Uzun basış eylemi çalışmadan önce tuşun ne kadar basılı tutulacağı.</string>
+    <string name="settings_appearance_panel">Görünüm</string>
+    <string name="settings_input_panel">Giriş davranışı</string>
+    <string name="settings_haptics_panel">Titreşim</string>
+    <string name="settings_haptic_feedback">Dokunsal geri bildirim</string>
+    <string name="settings_haptic_feedback_on">Bir kısayol çalıştığında titret.</string>
+    <string name="settings_haptic_unavailable">Bu cihazda titreşim yok.</string>
+    <string name="settings_haptic_duration">Titreşim süresi</string>
+    <string name="settings_haptic_duration_description">Onay titreşiminin uzunluğu.</string>
+    <string name="settings_haptic_duration_disabled">Süresini ayarlamak için dokunsal geri bildirimi açın.</string>
+    <string name="settings_expert_panel">Uzman Modu</string>
+    <string name="settings_detached_bridge">Tüm donanım tuşlarını oku</string>
+    <string name="settings_bridge_running">Açık — Güç, asistan ve diğer kısıtlı tuşlar, uygulama kapalıyken bile çalışır.</string>
+    <string name="settings_bridge_stopped">Kapalı — yalnızca Android\'in uygulamalara izin verdiği tuşlar.</string>
+    <string name="settings_run_setup">Kurulumu tekrar çalıştır</string>
+    <string name="settings_run_setup_description">Kablosuz hata ayıklamayı yeniden eşleştirin.</string>
+    <string name="settings_about_panel">Hakkında</string>
+    <string name="settings_about_app">KeySnap hakkında</string>
+    <string name="settings_about_app_summary">Açık kaynak · hiçbir şey telefonunuzdan çıkmaz</string>
+    <string name="settings_privacy_policy">Gizlilik politikası</string>
+    <string name="settings_erase">Tüm verileri sil</string>
+    <string name="settings_erase_confirm_title">Tüm veriler silinsin mi?</string>
+    <string name="settings_erase_action">Her şeyi sil</string>
+    <string name="settings_erase_warning">Bu işlem Uzman Modu\'nu durdurur, köprüyü cihazdan siler ve tüm kısayolları ve tercihleri kaldırır. Geri alınamaz. Erişilebilirlik hizmeti de kapanır; sonrasında tekrar açın.</string>
+    <string name="settings_version">Sürüm %1$s (%2$d)</string>
+    <string name="settings_input_monitor">Giriş izleyici</string>
+    <string name="settings_show_log_action">Olay günlüğünü göster</string>
+    <string name="settings_hide_log_action">Olay günlüğünü gizle</string>
+    <string name="settings_log_count">%2$d kaydın %1$d tanesi</string>
+    <string name="settings_log_waiting">Fiziksel giriş bekleniyor…</string>
+    <string name="settings_log_clear">Temizle</string>
+    <string name="settings_log_matched">Bir kısayolla eşleşti</string>
+
+    <!-- Dil seçici -->
+    <string name="settings_language_panel">Dil</string>
+    <string name="language_system">Sistem varsayılanı</string>
+
+    <!-- Görünüm -->
+    <string name="theme_light">Açık</string>
+    <string name="theme_dark">Koyu</string>
+    <string name="theme_sepia">Sepya</string>
+
+    <!-- Kaydırıcılar -->
+    <string name="slider_milliseconds">%1$d milisaniye</string>
+    <string name="slider_restore_default">%1$s ayarını varsayılana döndür</string>
+
+    <!-- Ekran noktası seçici -->
+    <string name="picker_point_a">A: %1$d, %2$d</string>
+    <string name="picker_point_b">B: %1$d, %2$d</string>
+    <string name="picker_point">Nokta: %1$d, %2$d</string>
+
+    <!-- İlk kurulum -->
+    <string name="onboarding_finish">Kurulumu bitir</string>
+
+    <!-- Kurulum sihirbazı -->
+    <string name="about_hero_title">Burada yaptığınız hiçbir şey telefonunuzdan çıkmaz.</string>
+    <string name="about_hero_body">Sunucu yok. Hesap yok. Analitik yok. KeySnap\'in kısayollarınızı veya tuş basışlarınızı gönderebileceği bir yer yok — üstelik uygulamanın tamamı açık kaynak, yani sözümüze güvenmek zorunda değilsiniz.</string>
+    <string name="about_no_server_title">Sunucu diye bir şey yok</string>
+    <string name="about_no_server_body">KeySnap\'in arka ucu, hesabı ve çökme raporlaması yoktur. Neyi eşlediğiniz, neye bastığınız ve hangi uygulamaları kullandığınız bu uygulamanın özel deposunda kalır. Bunları yükleyen bir kod yok, çünkü gidecek bir yer de yok.</string>
+    <string name="about_illo_no_server_caption">tuş basışları · kısayollar · kullanım</string>
+    <string name="about_open_source_title">Açık kaynak, isterseniz kendiniz bakın</string>
+    <string name="about_open_source_body">KeySnap\'in her satırı GPLv3 altında yayımlanıyor. Her iznin ne için kullanıldığını okuyun, kendiniz derleyin ya da bilen birine bakmasını söyleyin.</string>
+    <string name="about_view_source">Kaynak kodu GitHub\'da aç</string>
+    <string name="about_scope_title">Erişilebilirlik hizmeti yalnızca Ayarlar\'ı görür</string>
+    <string name="about_scope_body">Android, bir uygulamanın donanım tuşunu algılaması için başka yol vermiyor. KeySnap\'in hizmeti sistem Ayarlar uygulamasıyla sınırlıdır ve tek bir iş yapar: Uzman Modu kurulurken eşleştirme kodunu okumak. Banka uygulamanızı, mesajlarınızı veya yazdığınız hiçbir şeyi okuyamaz — bunu bir söz değil, Android\'in kendisi engeller.</string>
+    <string name="about_bridge_title">Uzman Modu, kendi telefonunuzun ADB\'sidir</string>
+    <string name="about_bridge_body">Telefonunuzun kendi Kablosuz Hata Ayıklama özelliğiyle yerel ağınız üzerinden eşleşir — bu bağlantı evinizden dışarı çıkmaz. Kabuk komutlarını yalnızca sizin yazdığınız kısayollar için çalıştırır. Kapattığınızda köprü silinir; yeniden başlatmak da durdurur.</string>
+    <string name="about_illo_bridge_caption">kapalı → köprü kendini siler</string>
+    <string name="about_traffic_title">Uygulamanın kurduğu tüm bağlantılar</string>
+    <string name="about_traffic_device">Kendi telefonunuz</string>
+    <string name="about_traffic_device_body">Kablosuz Hata Ayıklama eşleştirmesi. Yalnızca yerel ağ.</string>
+    <string name="about_traffic_yours">Kendi yazdığınız adresler</string>
+    <string name="about_traffic_yours_body">Bir HTTP veya URL açma eylemi, tam olarak yazdığınız yere, değiştirilmeden gider.</string>
+    <string name="about_traffic_google">Google reklamları ve Google Play</string>
+    <string name="about_traffic_google_body">Ücretsiz sürümde reklamı göstermek ve Pro satın alıp almadığınızı sormak için. İkisi de bir tuş basışını veya kısayolu almaz.</string>
+    <string name="about_traffic_all">Listenin tamamı bu.</string>
+    <string name="about_erase_title">İstediğiniz an hepsini geri alın</string>
+    <string name="about_erase_body">Tüm verileri sil; her kısayolu, kayıtlı tuşu, tercihi ve köprü dosyasını kaldırır ve önce Uzman Modu\'nu durdurur, böylece arkada çalışan hiçbir şey kalmaz.</string>
+
+    <string name="wizard_title">Uzman Modu\'nu aç</string>
+    <string name="wizard_subtitle">Kurulum Sihirbazı</string>
+    <string name="wizard_continue">Devam</string>
+    <string name="wizard_finish_pairing">Eşleştirmeyi bitir</string>
+    <string name="wizard_step_intro">Giriş</string>
+    <string name="wizard_step_pairing">Eşleştirme</string>
+    <string name="wizard_step_done">Bitti</string>
+    <string name="wizard_what_is_expert">Uzman Modu nedir?</string>
+    <string name="wizard_expert_explainer">KeySnap, telefonunuzun kendi Kablosuz Hata Ayıklama özelliğiyle eşleşir ve tuşları doğrudan çekirdekten okur — Güç, asistan, kamera; Android\'in uygulamalardan gizlediği düğmeler.</string>
+    <string name="wizard_expert_off_note">Kapatınca silinir · yeniden başlatınca durur</string>
+    <string name="wizard_can">yapabilir</string>
+    <string name="wizard_never">asla</string>
+    <string name="wizard_no_dev_options">Geliştirici Seçenekleri yok mu?</string>
+    <string name="wizard_no_dev_options_sub">Telefonunuza göre adımlar sonraki ekranda</string>
+    <string name="wizard_illo_action">↳ Fener açıldı</string>
+    <string name="wizard_how_to_dev_options">Geliştirici Seçenekleri nasıl açılır?</string>
+    <string name="wizard_auto_pairing">Otomatik ADB eşleştirme</string>
+    <string name="wizard_auto_pairing_explainer">Eşleştirme kodunu elle yazmanıza gerek yok — arka planda okuyup otomatik bağlanıyoruz. Başarısız olursa kodu bildirimden girebilirsiniz.</string>
+    <string name="wizard_open_settings">Ayarları aç ve eşleştirmeyi başlat</string>
+    <string name="wizard_expert_running">Uzman Modu çalışıyor</string>
+    <string name="wizard_expert_running_body">Tüm Android donanım tuşları (Güç, asistan, Ses, Kamera vb.) Linux çekirdeği seviyesinde dinleniyor.</string>
+    <string name="wizard_connection_error">Bağlantı hatası</string>
+    <string name="wizard_connection_error_body">Uzman Modu başlatılamadı. Eşleştirme kodu veya bağlantı noktası yanlış olabilir ya da ADB servisi bağlantıyı reddetmiş olabilir — geri dönüp bilgileri kontrol edin.</string>
+    <string name="wizard_connecting">Bağlanılıyor…</string>
+    <string name="wizard_connecting_body">Uzman Modu başlatılıyor. Bu birkaç saniye sürer — bu ekranı açık tutun.</string>
+    <string name="wizard_kernel_stream">Canlı çekirdek olay akışı</string>
+    <string name="wizard_test_flash">Fener tetiklemesini dene</string>
+
+    <!-- Eşleştirme durumu -->
+    <string name="pairing_idle">Eşleştirme bekleniyor…</string>
+    <string name="pairing_not_started">Eşleştirmeyi başlatmak için yukarıdaki düğmeye dokunun</string>
+    <string name="pairing_searching">Eşleştirme ekranı aranıyor…</string>
+    <string name="pairing_captured">Eşleştirme kodu alındı…</string>
+    <string name="pairing_in_progress">Eşleştiriliyor…</string>
+    <string name="pairing_paired">Eşleşti — bağlanılıyor…</string>
+    <string name="pairing_connecting">Bağlanılıyor…</string>
+    <string name="pairing_connected">Bağlandı</string>
+    <string name="pairing_error">Bağlantı başarısız — tekrar deneyin</string>
+
+    <!-- Uzman Modu kurulum bildirimi -->
+    <string name="notif_channel_setup">Uzman Modu kurulumu</string>
+    <string name="notif_channel_setup_description">Uygulama kablosuz ADB ile eşleşirken ve köprüyü başlatırken gösterilir</string>
+    <string name="notif_setup_title">Uzman Modu kuruluyor</string>
+    <string name="notif_setup_text">Kablosuz hata ayıklamayla eşleşiliyor ve köprü başlatılıyor.</string>
+
+    <!-- Giriş izleyici satırları ve tetikleyici etiketleri -->
+    <string name="event_key_down">BASILDI (DOWN)</string>
+    <string name="event_key_up">BIRAKILDI (UP)</string>
+    <string name="trigger_label_single">Tek basış (%1$dms bekleme doldu)</string>
+    <string name="trigger_label_double">Çift basış (%1$dms aralık)</string>
+    <string name="trigger_label_long">Uzun basış (%1$dms)</string>
+    <string name="source_accessibility">Erişilebilirlik</string>
+    <string name="source_activity">Uygulama (ön planda)</string>
+
+    <!-- Görünüm modeli mesajları -->
+    <string name="default_shortcut_name">Kısayol #%1$d</string>
+    <string name="run_nothing_ran">Hiçbir şey çalışmadı. Eylem ayarlarını kontrol edin.</string>
+    <string name="run_partial">%2$d eylemin %1$d tanesi çalıştı</string>
+    <string name="editor_needs_action">Kaydetmeden önce en az bir eylem ekleyin.</string>
+    <string name="editor_needs_trigger">Kaydetmeden önce bir tuş seçin.</string>
+    <string name="saved_needs_trigger">Kaydedildi. Çalışabilmesi için bir tuş atayın.</string>
+    <string name="saved_named">\"%1$s\" kaydedildi</string>
+    <string name="saved_needs_condition">Kaydedildi. Çalışabilmesi için kendiliğinden değişen bir koşul ekleyin, örneğin Şarjda veya Bluetooth cihazı bağlı.</string>
+    <string name="free_limit_saved_off">Ücretsiz plan: %1$d etkin kısayol. Kapalı olarak kaydedildi — açmak için reklam izleyin veya Pro\'ya geçin.</string>
+    <string name="free_limit_reached">Ücretsiz plan sınırına ulaşıldı. Sınırsız kısayol için Pro\'ya geçin.</string>
+    <string name="free_limit_toggle_blocked">Ücretsiz plan: %1$d etkin kısayol. Bunu da açmak için reklam izleyin veya Pro\'ya geçin.</string>
+
+    <!-- Gizlilik politikası penceresi. Politika metninin kendisi İngilizce kalır: Play için
+         yayımlanan belgeyle birebir aynı olmak zorundadır. -->
+    <string name="privacy_policy_title">Gizlilik politikası</string>
+    <string name="privacy_last_updated">Son güncelleme %1$s</string>
+    <string name="privacy_contact_heading">İletişim</string>
+
+    <!-- Kablosuz ADB eşleştirme bildirimi -->
+    <string name="notif_channel_pairing">ADB Eşleştirme Yardımcısı</string>
+    <string name="notif_channel_pairing_description">Kablosuz ADB eşleştirme kodu girişi ve hata bildirimleri</string>
+    <string name="notif_pairing_title">ADB eşleştirmesi bekleniyor</string>
+    <string name="notif_pairing_default">Sadece 6 haneli kodu girin; bağlantı noktası otomatik bulunacak.</string>
+    <string name="notif_pairing_input_label">6 haneli eşleştirme kodu</string>
+    <string name="notif_pairing_enter_code">Kodu Gir</string>
+    <string name="notif_pairing_no_port">ADB bağlantı noktası bulunamadı. Kablosuz Hata Ayıklama\'yı kontrol edin.</string>
+    <string name="notif_pairing_failed">Eşleştirme başarısız. 6 haneli kodu tekrar girin.</string>
+    <string name="notif_pairing_bad_code">Kod tam olarak 6 haneli olmalı. Lütfen tekrar deneyin.</string>
+
+    <!-- Tema düğmesi -->
+
+    <!-- Tetikleyici türü seçici -->
+    <string name="trigger_kind_key">Tuş Basışı</string>
+    <string name="trigger_kind_automation">Otomasyon</string>
+    <string name="automation_card_subtitle">Aşağıdaki koşullar sağlandığı anda çalışır</string>
+</resources>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Arabic uses all six CLDR plural categories: zero, one, two (dual), few (3-10, sound plural),
+     many (11-99, singular with tanween) and other (100+). Supplying only one and other made every
+     count from 2 upward fall through to the singular. -->
+<resources>
+    <plurals name="scripts_action_count">
+        <item quantity="zero">%1$d إجراء</item>
+        <item quantity="one">%1$d إجراء</item>
+        <item quantity="two">%1$d إجراءان</item>
+        <item quantity="few">%1$d إجراءات</item>
+        <item quantity="many">%1$d إجراءً</item>
+        <item quantity="other">%1$d إجراء</item>
+    </plurals>
+    <plurals name="home_suggestion_steps">
+        <item quantity="zero">%1$d خطوة</item>
+        <item quantity="one">%1$d خطوة</item>
+        <item quantity="two">%1$d خطوتان</item>
+        <item quantity="few">%1$d خطوات</item>
+        <item quantity="many">%1$d خطوةً</item>
+        <item quantity="other">%1$d خطوة</item>
+    </plurals>
+    <plurals name="run_all">
+        <item quantity="zero">تم تشغيل %1$d إجراء</item>
+        <item quantity="one">تم تشغيل %1$d إجراء</item>
+        <item quantity="two">تم تشغيل %1$d إجراءين</item>
+        <item quantity="few">تم تشغيل %1$d إجراءات</item>
+        <item quantity="many">تم تشغيل %1$d إجراءً</item>
+        <item quantity="other">تم تشغيل %1$d إجراء</item>
+    </plurals>
+    <plurals name="settings_log_event_count">
+        <item quantity="zero">%1$d حدث</item>
+        <item quantity="one">%1$d حدث</item>
+        <item quantity="two">%1$d حدثان</item>
+        <item quantity="few">%1$d أحداث</item>
+        <item quantity="many">%1$d حدثًا</item>
+        <item quantity="other">%1$d حدث</item>
+    </plurals>
+    <plurals name="saved_needs_config">
+        <item quantity="zero">تم الحفظ. لا يزال %1$d إجراء بحاجة إلى الإعداد.</item>
+        <item quantity="one">تم الحفظ. لا يزال %1$d إجراء بحاجة إلى الإعداد.</item>
+        <item quantity="two">تم الحفظ. لا يزال %1$d إجراءان بحاجة إلى الإعداد.</item>
+        <item quantity="few">تم الحفظ. لا تزال %1$d إجراءات بحاجة إلى الإعداد.</item>
+        <item quantity="many">تم الحفظ. لا يزال %1$d إجراءً بحاجة إلى الإعداد.</item>
+        <item quantity="other">تم الحفظ. لا يزال %1$d إجراء بحاجة إلى الإعداد.</item>
+    </plurals>
+</resources>

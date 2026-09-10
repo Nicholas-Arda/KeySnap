@@ -1,0 +1,819 @@
+<resources>
+    <string name="app_name">KeySnap</string>
+    <!-- Shown on the system's accessibility settings screen. It must describe everything the
+         service actually does, including the scoped screen read, or it misrepresents the app. -->
+    <string name="accessibility_service_description">يكتشف ضغطات المفاتيح الفعلية (الصوت والطاقة وأزرار الأجهزة الأخرى) لتشغيل اختصاراتك. أثناء إعداد الوضع المتقدم فقط، يقرأ أيضًا رمز الإقران من نافذة تصحيح الأخطاء اللاسلكي في النظام. لا يمكنه قراءة شاشة أي تطبيق آخر.</string>
+    <string name="accessibility_disclosure_agree">موافق، افتح الإعدادات</string>
+
+    <!-- Action categories -->
+    <string name="action_category_input">الإدخال</string>
+    <string name="action_category_apps">التطبيقات</string>
+    <string name="action_category_flashlight">الفلاش</string>
+    <string name="action_category_navigation">التنقل</string>
+    <string name="action_category_volume">مستوى الصوت</string>
+    <string name="action_category_display">الشاشة</string>
+    <string name="action_category_media">الوسائط</string>
+    <string name="action_category_connectivity">الاتصال</string>
+    <string name="action_category_keyboard">لوحة المفاتيح</string>
+    <string name="action_category_device">الجهاز</string>
+    <string name="action_category_sound">الصوت</string>
+    <string name="action_category_automation">الأتمتة</string>
+
+    <!-- Action parameter labels -->
+    <string name="param_strength">الشدة</string>
+    <string name="param_key_code">رمز المفتاح</string>
+    <string name="param_text">النص</string>
+    <string name="param_taps">النقرات</string>
+    <string name="param_interval_ms">الفاصل الزمني (مللي ثانية)</string>
+    <string name="param_start_x">بداية X</string>
+    <string name="param_start_y">بداية Y</string>
+    <string name="param_end_x">نهاية X</string>
+    <string name="param_end_y">نهاية Y</string>
+    <string name="param_duration_ms">المدة (مللي ثانية)</string>
+    <string name="param_point_a_x">النقطة A X</string>
+    <string name="param_point_a_y">النقطة A Y</string>
+    <string name="param_point_b_x">النقطة B X</string>
+    <string name="param_point_b_y">النقطة B Y</string>
+    <string name="param_direction">الاتجاه</string>
+    <string name="param_app">التطبيق</string>
+    <string name="param_shortcut">الاختصار</string>
+    <string name="param_method">الطريقة</string>
+    <string name="param_body">المحتوى</string>
+    <string name="param_command">الأمر</string>
+    <string name="param_action">الإجراء</string>
+    <string name="param_extras">إضافات (key=value;key2=value2)</string>
+    <string name="param_element">العنصر</string>
+    <string name="param_namespace">نطاق الاسم</string>
+    <string name="param_key">المفتاح</string>
+    <string name="param_value">القيمة</string>
+    <string name="param_mode">الوضع</string>
+    <string name="param_stream">مسار الصوت</string>
+    <string name="param_sound">الصوت</string>
+    <string name="param_times">عدد المرات</string>
+
+    <!-- Actions: flashlight -->
+    <string name="action_toggle_flashlight">تبديل الفلاش</string>
+    <string name="action_enable_flashlight">تشغيل الفلاش</string>
+    <string name="action_disable_flashlight">إيقاف الفلاش</string>
+    <string name="action_change_flashlight_brightness">تغيير سطوع الفلاش</string>
+
+    <!-- Actions: input -->
+    <string name="action_input_key_code">إدخال رمز مفتاح</string>
+    <string name="action_input_text">إدخال نص</string>
+    <string name="action_tap_screen">النقر على الشاشة</string>
+    <string name="action_swipe_screen">التمرير على الشاشة</string>
+    <string name="action_pinch_screen">القرص على الشاشة</string>
+
+    <!-- Actions: apps -->
+    <string name="action_launch_app">تشغيل تطبيق</string>
+    <string name="action_launch_app_shortcut">تشغيل اختصار تطبيق</string>
+    <string name="action_open_url">فتح رابط</string>
+    <string name="action_http_request">طلب HTTP</string>
+    <string name="action_shell_command">أمر طرفي (Shell)</string>
+    <string name="action_send_intent">إرسال Intent</string>
+    <string name="action_interact_with_app_element">التفاعل مع عنصر في التطبيق</string>
+    <string name="action_launch_voice_assistant">تشغيل المساعد الصوتي</string>
+    <string name="action_launch_device_assistant">تشغيل مساعد الجهاز</string>
+    <string name="action_open_camera">فتح الكاميرا</string>
+    <string name="action_open_settings">فتح الإعدادات</string>
+    <string name="action_force_stop_app">إيقاف تطبيق قسرًا</string>
+    <string name="action_close_and_clear_app">إغلاق التطبيق ومسحه من التطبيقات الأخيرة</string>
+    <string name="action_modify_setting">تعديل إعداد</string>
+
+    <!-- Actions: navigation -->
+    <string name="action_expand_notification_drawer">توسيع درج الإشعارات</string>
+    <string name="action_toggle_notification_drawer">تبديل درج الإشعارات</string>
+    <string name="action_expand_quick_settings">توسيع الإعدادات السريعة</string>
+    <string name="action_toggle_quick_settings">تبديل الإعدادات السريعة</string>
+    <string name="action_collapse_status_bar">طي شريط الحالة</string>
+    <string name="action_go_back">رجوع</string>
+    <string name="action_go_home">الانتقال إلى الشاشة الرئيسية</string>
+    <string name="action_open_recents">فتح التطبيقات الأخيرة</string>
+    <string name="action_open_menu">فتح القائمة</string>
+    <string name="action_go_last_app">الانتقال إلى آخر تطبيق</string>
+    <string name="action_toggle_split_screen">تبديل تقسيم الشاشة</string>
+    <string name="action_take_screenshot">التقاط لقطة شاشة</string>
+    <string name="action_move_cursor_to_end">نقل المؤشر إلى النهاية</string>
+
+    <!-- Actions: volume -->
+    <string name="action_volume_up">رفع مستوى الصوت</string>
+    <string name="action_volume_down">خفض مستوى الصوت</string>
+    <string name="action_volume_mute">كتم الصوت</string>
+    <string name="action_volume_unmute">إلغاء كتم الصوت</string>
+    <string name="action_volume_toggle_mute">تبديل كتم الصوت</string>
+    <string name="action_show_volume_dialog">إظهار مربع حوار الصوت</string>
+    <string name="action_cycle_ringer_mode">تبديل وضع الرنين دوريًا</string>
+    <string name="action_change_ringer_mode">تغيير وضع الرنين</string>
+    <string name="action_change_volume_stream">تغيير مسار الصوت</string>
+
+    <!-- Actions: display -->
+    <string name="action_screen_on">تشغيل الشاشة</string>
+    <string name="action_screen_off">إيقاف الشاشة</string>
+    <string name="action_toggle_screen">تبديل الشاشة</string>
+    <string name="action_toggle_auto_rotate">تبديل التدوير التلقائي</string>
+    <string name="action_portrait_mode">الوضع العمودي</string>
+    <string name="action_landscape_mode">الوضع الأفقي</string>
+    <string name="action_cycle_rotations">تدوير الشاشة دوريًا</string>
+    <string name="action_change_brightness">تغيير السطوع</string>
+    <string name="action_toggle_auto_brightness">تبديل السطوع التلقائي</string>
+    <string name="action_increase_brightness">زيادة السطوع</string>
+    <string name="action_decrease_brightness">خفض السطوع</string>
+
+    <!-- Actions: media -->
+    <string name="action_media_play">تشغيل</string>
+    <string name="action_media_pause">إيقاف مؤقت</string>
+    <string name="action_media_play_pause">تشغيل / إيقاف مؤقت</string>
+    <string name="action_media_next">المقطع التالي</string>
+    <string name="action_media_previous">المقطع السابق</string>
+    <string name="action_media_fast_forward">تقديم سريع</string>
+    <string name="action_media_rewind">إرجاع</string>
+    <string name="action_media_stop">إيقاف</string>
+
+    <!-- Actions: connectivity -->
+    <string name="action_toggle_wifi">تبديل الواي فاي</string>
+    <string name="action_enable_wifi">تشغيل الواي فاي</string>
+    <string name="action_disable_wifi">إيقاف الواي فاي</string>
+    <string name="action_toggle_bluetooth">تبديل البلوتوث</string>
+    <string name="action_enable_bluetooth">تشغيل البلوتوث</string>
+    <string name="action_disable_bluetooth">إيقاف البلوتوث</string>
+    <string name="action_toggle_mobile_data">تبديل بيانات الجوال</string>
+    <string name="action_toggle_nfc">تبديل NFC</string>
+    <string name="action_toggle_airplane_mode">تبديل وضع الطيران</string>
+    <string name="action_toggle_location">تبديل الموقع</string>
+    <string name="action_toggle_hotspot">تبديل نقطة الاتصال</string>
+
+    <!-- Actions: keyboard -->
+    <string name="action_show_keyboard">إظهار لوحة المفاتيح</string>
+    <string name="action_hide_keyboard">إخفاء لوحة المفاتيح</string>
+    <string name="action_toggle_keyboard">تبديل لوحة المفاتيح</string>
+    <string name="action_switch_keyboard">تبديل نوع لوحة المفاتيح</string>
+    <string name="action_show_keyboard_picker">إظهار منتقي لوحة المفاتيح</string>
+    <string name="action_text_cut">قص</string>
+    <string name="action_text_copy">نسخ</string>
+    <string name="action_text_paste">لصق</string>
+    <string name="action_select_word_at_cursor">تحديد الكلمة عند المؤشر</string>
+
+    <!-- Actions: device -->
+    <string name="action_lock_device">قفل الجهاز</string>
+    <string name="action_secure_lock_device">قفل الجهاز بأمان</string>
+    <string name="action_power_dialog">إظهار قائمة الطاقة</string>
+    <string name="action_toggle_dnd">تبديل عدم الإزعاج</string>
+    <string name="action_enable_dnd">تشغيل عدم الإزعاج</string>
+    <string name="action_disable_dnd">إيقاف عدم الإزعاج</string>
+    <string name="action_open_app_drawer">فتح درج التطبيقات</string>
+    <string name="action_dismiss_all_notifications">إزالة جميع الإشعارات</string>
+    <string name="action_answer_call">الرد على المكالمة</string>
+    <string name="action_end_call">إنهاء المكالمة</string>
+
+    <!-- Actions: sound -->
+    <string name="action_play_sound">تشغيل صوت</string>
+    <string name="action_text_to_speech">تحويل النص إلى كلام</string>
+    <string name="action_vibrate">اهتزاز</string>
+    <string name="action_stop_text_to_speech">إيقاف تحويل النص إلى كلام</string>
+
+    <!-- Actions: automation -->
+    <string name="action_delay">تأخير</string>
+    <string name="action_repeat_previous">تكرار الإجراء السابق</string>
+    <string name="action_toggle_mapping">تبديل جميع الاختصارات</string>
+    <string name="action_pause_mapping">إيقاف جميع الاختصارات مؤقتًا</string>
+    <string name="action_resume_mapping">استئناف جميع الاختصارات</string>
+
+    <!-- Constraint categories -->
+    <string name="constraint_category_apps">التطبيقات</string>
+    <string name="constraint_category_media">الوسائط</string>
+    <string name="constraint_category_display">الشاشة</string>
+    <string name="constraint_category_flashlight">الفلاش</string>
+    <string name="constraint_category_keyboard">لوحة المفاتيح</string>
+    <string name="constraint_category_lock">القفل</string>
+    <string name="constraint_category_phone">الهاتف</string>
+    <string name="constraint_category_power">الطاقة</string>
+    <string name="constraint_category_device">الجهاز</string>
+    <string name="constraint_category_time">الوقت</string>
+    <string name="constraint_category_connectivity">الاتصال</string>
+    <string name="constraint_category_sound">الصوت</string>
+
+    <!-- Constraints -->
+    <string name="constraint_app_in_foreground">التطبيق في المقدمة</string>
+    <string name="constraint_app_not_in_foreground">التطبيق ليس في المقدمة</string>
+    <string name="constraint_app_playing_media">التطبيق يشغّل وسائط</string>
+    <string name="constraint_app_not_playing_media">التطبيق لا يشغّل وسائط</string>
+    <string name="constraint_no_media_playing">لا توجد وسائط قيد التشغيل</string>
+    <string name="constraint_media_is_playing">الوسائط قيد التشغيل</string>
+    <string name="constraint_bluetooth_on">البلوتوث مفعّل</string>
+    <string name="constraint_bluetooth_off">البلوتوث معطّل</string>
+    <string name="constraint_screen_on">الشاشة مضاءة</string>
+    <string name="constraint_screen_off">الشاشة مطفأة</string>
+    <string name="constraint_screen_orientation">اتجاه الشاشة</string>
+    <string name="constraint_physical_orientation">الاتجاه الفعلي للجهاز</string>
+    <string name="constraint_flashlight_on">الفلاش مضاء</string>
+    <string name="constraint_flashlight_off">الفلاش مطفأ</string>
+    <string name="constraint_wifi_on">الواي فاي مفعّل</string>
+    <string name="constraint_wifi_off">الواي فاي معطّل</string>
+    <string name="constraint_connected_to_wifi_network">متصل بشبكة واي فاي</string>
+    <string name="constraint_disconnected_from_wifi_network">غير متصل بشبكة واي فاي</string>
+    <string name="constraint_input_method_chosen">تم اختيار طريقة الإدخال</string>
+    <string name="constraint_input_method_not_chosen">لم يتم اختيار طريقة الإدخال</string>
+    <string name="constraint_keyboard_showing">لوحة المفاتيح ظاهرة</string>
+    <string name="constraint_keyboard_not_showing">لوحة المفاتيح غير ظاهرة</string>
+    <string name="constraint_device_locked">الجهاز مقفل</string>
+    <string name="constraint_device_unlocked">الجهاز غير مقفل</string>
+    <string name="constraint_lock_screen_showing">شاشة القفل ظاهرة</string>
+    <string name="constraint_lock_screen_not_showing">شاشة القفل غير ظاهرة</string>
+    <string name="constraint_in_phone_call">في مكالمة هاتفية</string>
+    <string name="constraint_not_in_phone_call">ليس في مكالمة هاتفية</string>
+    <string name="constraint_phone_ringing">الهاتف يرن</string>
+    <string name="constraint_charging">قيد الشحن</string>
+    <string name="constraint_discharging">غير متصل بالشحن</string>
+    <string name="constraint_hinge_closed">المفصلة مغلقة</string>
+    <string name="constraint_hinge_open">المفصلة مفتوحة</string>
+    <string name="constraint_time">الوقت</string>
+    <string name="constraint_bluetooth_device_connected">جهاز بلوتوث متصل</string>
+    <string name="constraint_bluetooth_device_disconnected">جهاز بلوتوث غير متصل</string>
+    <string name="constraint_dark_mode_on">الوضع الداكن مفعّل</string>
+    <string name="constraint_dark_mode_off">الوضع الداكن معطّل</string>
+    <string name="constraint_battery_saver_on">توفير شحن البطارية مفعّل</string>
+    <string name="constraint_battery_saver_off">توفير شحن البطارية معطّل</string>
+    <string name="constraint_charging_wired">يتم الشحن بالكابل</string>
+    <string name="constraint_charging_wireless">يتم الشحن لاسلكيًا</string>
+    <string name="constraint_battery_above">البطارية فوق مستوى معيّن</string>
+    <string name="constraint_battery_below">البطارية تحت مستوى معيّن</string>
+    <string name="constraint_location_on">الموقع مفعّل</string>
+    <string name="constraint_location_off">الموقع معطّل</string>
+    <string name="constraint_day_of_week">يوم الأسبوع</string>
+    <string name="constraint_mobile_data_on">بيانات الجوال مفعّلة</string>
+    <string name="constraint_mobile_data_off">بيانات الجوال معطّلة</string>
+    <string name="constraint_airplane_mode_on">وضع الطيران مفعّل</string>
+    <string name="constraint_airplane_mode_off">وضع الطيران معطّل</string>
+    <string name="constraint_ringer_normal">الرنين مفعّل</string>
+    <string name="constraint_ringer_vibrate">الرنين على الاهتزاز</string>
+    <string name="constraint_ringer_silent">الرنين صامت</string>
+    <string name="constraint_dnd_on">عدم الإزعاج مفعّل</string>
+    <string name="constraint_dnd_off">عدم الإزعاج معطّل</string>
+    <string name="constraint_headphones_connected">سماعات الرأس متصلة</string>
+    <string name="constraint_headphones_disconnected">سماعات الرأس غير متصلة</string>
+
+    <!-- Action editor: requirement badges -->
+    <string name="badge_expert_mode">يتطلب الوضع المتقدم</string>
+    <string name="badge_accessibility">يتطلب خدمة إمكانية الوصول</string>
+    <string name="badge_notification_policy">يتطلب إذن الوصول إلى عدم الإزعاج</string>
+    <string name="badge_write_settings">يتطلب إذنًا لتعديل إعدادات النظام</string>
+
+    <!-- Action editor: field labels -->
+    <string name="field_key_to_send">المفتاح المراد إرساله</string>
+    <string name="field_tap_here">اضغط هنا</string>
+    <string name="field_time_between_taps">الوقت بين النقرات</string>
+    <string name="field_swipe_from">التمرير من</string>
+    <string name="field_swipe_to">التمرير إلى</string>
+    <string name="field_duration">المدة</string>
+    <string name="field_first_finger">الإصبع الأول</string>
+    <string name="field_second_finger">الإصبع الثاني</string>
+    <string name="field_app_to_open">التطبيق المراد فتحه</string>
+    <string name="field_app_to_stop">التطبيق المراد إيقافه</string>
+    <string name="field_extras">إضافات</string>
+    <string name="field_setting_key">مفتاح الإعداد</string>
+    <string name="field_level">المستوى</string>
+    <string name="field_brightness">السطوع</string>
+    <string name="field_text_to_speak">النص المراد نطقه</string>
+    <string name="field_wait">الانتظار</string>
+
+    <!-- Action editor: hints -->
+    <string name="hint_input_text">يُكتب في الحقل المحدد حاليًا</string>
+    <string name="hint_http_body">يُرسل مع الطلب</string>
+    <string name="hint_optional">اختياري</string>
+    <string name="hint_sound_uri">رابط content:// أو file://</string>
+
+    <!-- Action editor: helpers -->
+    <string name="helper_input_key_code">يرسل ضغطة مفتاح إلى التطبيق الظاهر حاليًا في المقدمة.</string>
+    <string name="helper_http_request">يرسل طلب ويب — مفيد لتشغيل رابط ويب هوك أو مشهد منزل ذكي.</string>
+    <string name="helper_shell_command">يشغّل أمرًا طرفيًا (terminal) على الجهاز.</string>
+    <string name="helper_extras">اختياري. يُرسل كل زوج كإضافة نصية (string extra).</string>
+    <string name="helper_send_intent">يبث Intent خاص بأندرويد — رسالة يمكن للتطبيقات الأخرى التفاعل معها. للمستخدمين المتقدمين.</string>
+    <string name="helper_modify_setting">يكتب إعداد نظام أندرويد مباشرة.</string>
+    <string name="helper_repeat_previous">يشغّل الإجراء الموجود فوق هذا مرة أخرى.</string>
+
+    <!-- Action editor: choices -->
+    <string name="choice_pinch_in">تصغير (قرص إلى الداخل)</string>
+    <string name="choice_pinch_out">تكبير (فرد إلى الخارج)</string>
+    <string name="summary_zoom_in">تكبير</string>
+    <string name="summary_zoom_out">تصغير</string>
+    <string name="choice_namespace_system">System</string>
+    <string name="choice_namespace_secure">Secure</string>
+    <string name="choice_namespace_global">Global</string>
+    <string name="choice_stream_ring">الرنين</string>
+    <string name="choice_stream_media">الوسائط</string>
+    <string name="choice_stream_alarm">المنبه</string>
+    <string name="choice_stream_notification">الإشعارات</string>
+    <string name="choice_ringer_normal">عادي</string>
+    <string name="choice_ringer_vibrate">اهتزاز</string>
+    <string name="choice_ringer_silent">صامت</string>
+
+    <!-- Trigger press types -->
+    <string name="press_single_title">ضغطة واحدة</string>
+    <string name="press_single_description">يعمل عند الضغط على المفتاح مرة واحدة</string>
+    <string name="press_double_title">ضغطة مزدوجة</string>
+    <string name="press_double_description">يعمل عند الضغط على المفتاح مرتين متتاليتين</string>
+    <string name="press_long_title">ضغطة مطولة</string>
+    <string name="press_long_badge">اضغط مطولًا</string>
+    <string name="press_long_description">يعمل عند الاستمرار في الضغط على المفتاح للمدة المحددة</string>
+
+    <!-- Hardware key names -->
+    <string name="key_volume_down">خفض الصوت</string>
+    <string name="key_volume_up">رفع الصوت</string>
+    <string name="key_power">الطاقة</string>
+    <string name="key_assist">المساعد (Assist)</string>
+    <string name="key_voice_assist">المساعد الصوتي</string>
+    <string name="key_headsethook">سماعة الرأس / مفتاح الوسائط</string>
+    <string name="key_camera">الكاميرا / زر الالتقاط</string>
+    <string name="key_back">رجوع</string>
+    <string name="key_home">الرئيسية</string>
+    <string name="key_menu">القائمة</string>
+    <string name="key_mute">كتم الصوت</string>
+    <string name="key_media_play_pause">تشغيل / إيقاف مؤقت</string>
+    <string name="key_wakeup">تنشيط</string>
+    <string name="key_alert_slider">مفتاح التنبيه / المفتاح المخصص</string>
+
+    <!-- Developer Options guides -->
+    <string name="guide_generic">أخرى</string>
+    <string name="guide_pixel">Google Pixel / أندرويد الأصلي</string>
+
+    <!-- Suggested shortcuts -->
+    <string name="suggestion_flashlight">الفلاش</string>
+    <string name="suggestion_flashlight_subtitle">تشغيل الفلاش وإيقافه</string>
+    <string name="suggestion_play_pause">تشغيل / إيقاف مؤقت</string>
+    <string name="suggestion_play_pause_subtitle">أيًا كان ما يعمل حاليًا</string>
+    <string name="suggestion_screenshot">لقطة شاشة</string>
+    <string name="suggestion_screenshot_subtitle">التقاط الشاشة</string>
+    <string name="suggestion_dnd">عدم الإزعاج</string>
+    <string name="suggestion_dnd_subtitle">كتم جميع التنبيهات</string>
+    <string name="suggestion_lock">قفل الجهاز</string>
+    <string name="suggestion_lock_subtitle">إطفاء الشاشة</string>
+    <string name="suggestion_camera">فتح الكاميرا</string>
+    <string name="suggestion_camera_subtitle">مباشرة إلى اللقطة</string>
+    <string name="suggestion_headphones_play">توصيل السماعات</string>
+    <string name="suggestion_headphones_play_subtitle">وصّلها لتبدأ الموسيقى</string>
+    <string name="suggestion_assistant">المساعد</string>
+    <string name="suggestion_assistant_subtitle">تحدّث إلى مساعدك</string>
+    <string name="suggestion_bedtime">وقت النوم</string>
+    <string name="suggestion_bedtime_subtitle">عدم الإزعاج، تعتيم، قفل</string>
+    <string name="suggestion_notifications">الإشعارات</string>
+    <string name="suggestion_notifications_subtitle">اسحب لوحة الإشعارات</string>
+    <string name="suggestion_car_bluetooth">في السيارة</string>
+    <string name="suggestion_car_bluetooth_subtitle">تتصل السيارة فتعمل الموسيقى</string>
+    <string name="suggestion_sos">إشارة استغاثة</string>
+    <string name="suggestion_sos_subtitle">يومض الفلاش ··· ––– ···</string>
+    <string name="suggestion_wifi">Wi-Fi</string>
+    <string name="suggestion_wifi_subtitle">تشغيل أو إيقاف</string>
+    <string name="suggestion_low_battery">بطارية منخفضة</string>
+    <string name="suggestion_low_battery_subtitle">أقل من 15%: إيقاف البلوتوث، تعتيم</string>
+    <string name="suggestion_auto_rotate">التدوير التلقائي</string>
+    <string name="suggestion_auto_rotate_subtitle">قفل التدوير أو تحريره</string>
+    <string name="suggestion_night_charge_dnd">شحن ليلي</string>
+    <string name="suggestion_night_charge_dnd_subtitle">على الشاحن بعد 22:00: عدم الإزعاج</string>
+    <string name="suggestion_bluetooth">بلوتوث</string>
+    <string name="suggestion_bluetooth_subtitle">تشغيل أو إيقاف</string>
+    <string name="suggestion_vibrate_mode">وضع الاهتزاز</string>
+    <string name="suggestion_vibrate_mode_subtitle">الرنين إلى اهتزاز</string>
+    <string name="suggestion_torch_off_screen_off">أمان الفلاش</string>
+    <string name="suggestion_torch_off_screen_off_subtitle">انطفأت الشاشة، انطفأ الفلاش</string>
+    <string name="suggestion_battery_saver">توفير البطارية</string>
+    <string name="suggestion_battery_saver_subtitle">إيقاف البلوتوث وWi-Fi، تعتيم</string>
+
+    <!-- Common -->
+    <string name="common_cancel">إلغاء</string>
+    <string name="common_save">حفظ</string>
+    <string name="common_add">إضافة</string>
+    <string name="common_done">تم</string>
+    <string name="common_back">رجوع</string>
+    <string name="common_close">إغلاق</string>
+    <string name="common_remove">إزالة</string>
+    <string name="common_delete">حذف</string>
+    <string name="common_coming_soon">قريبًا</string>
+    <string name="picker_category_all">الكل</string>
+
+    <!-- Action config sheet -->
+    <string name="badge_tap_to_grant">%1$s · اضغط للمنح</string>
+    <string name="action_config_enter_key_code">أو أدخل رمز مفتاح</string>
+    <string name="action_config_cancel_recording">إلغاء التسجيل</string>
+    <string name="action_config_record_key">تسجيل مفتاح فعلي</string>
+    <string name="action_config_choose_app">اختر تطبيقًا</string>
+    <string name="action_config_enter_package">أو أدخل اسم الحزمة</string>
+    <string name="action_config_pick_on_screen">اختر من الشاشة</string>
+    <string name="action_config_allow_overlay">السماح بالرسم فوق التطبيقات للاختيار</string>
+    <string name="action_config_point_not_set">غير محدد</string>
+
+    <!-- Constraint picker -->
+    <string name="constraint_picker_title">اختر شرطًا</string>
+    <string name="constraint_picker_search">البحث في الشروط</string>
+    <string name="constraint_picker_no_match">لا توجد شروط مطابقة لـ \"%1$s\"</string>
+    <string name="constraint_picker_empty_category">لا توجد شروط في هذه الفئة بعد</string>
+    <string name="constraint_picker_add_label">إضافة %1$s</string>
+
+    <!-- لوحة إعداد الشرط -->
+    <string name="constraint_picker_configure_title">إعداد الشرط</string>
+    <string name="field_constraint_app">التطبيق</string>
+    <string name="field_orientation">الاتجاه</string>
+    <string name="orientation_portrait">عمودي</string>
+    <string name="orientation_landscape">أفقي</string>
+    <string name="field_wifi_ssid">اسم الشبكة (SSID)</string>
+    <string name="hint_wifi_ssid_any">اتركه فارغًا لأي شبكة</string>
+    <string name="field_bluetooth_device">الجهاز</string>
+    <string name="bluetooth_no_paired_devices">لا توجد أجهزة مقترنة. اقرن جهازًا أولًا من إعدادات البلوتوث.</string>
+    <string name="field_battery_percent">مستوى البطارية</string>
+    <string name="field_time_start">من</string>
+    <string name="field_time_end">إلى</string>
+    <string name="field_days">الأيام</string>
+    <string name="constraint_needs_usage_access">يحتاج إلى إذن الوصول إلى بيانات الاستخدام ليتمكن التطبيق من معرفة التطبيق الظاهر في المقدمة.</string>
+    <string name="constraint_config_choose_app">اختر تطبيقًا للمتابعة</string>
+    <string name="constraint_needs_location">لا يكشف Android اسم الشبكة إلا للتطبيقات التي لديها إذن الموقع.</string>
+    <string name="constraint_grant_permission">منح</string>
+    <string name="constraint_summary_any_wifi">أي شبكة</string>
+    <string name="constraint_summary_time_range" translatable="false">%1$s – %2$s</string>
+    <string name="constraint_summary_percent" translatable="false">%1$d%%</string>
+
+    <!-- Action picker -->
+    <string name="action_picker_search">البحث في الإجراءات</string>
+    <string name="action_picker_no_match">لا توجد إجراءات مطابقة لـ \"%1$s\"</string>
+    <string name="action_picker_empty_category">لا توجد إجراءات في هذه الفئة بعد</string>
+    <string name="action_picker_add_label">إضافة %1$s</string>
+
+    <!-- Script editor -->
+    <string name="editor_discard_changes">تجاهل التغييرات</string>
+    <string name="editor_unsaved_title">تجاهل التغييرات؟</string>
+    <string name="editor_unsaved_body">لم يتم حفظ التغييرات التي أجريتها على هذا الاختصار.</string>
+    <string name="editor_unsaved_discard">تجاهل</string>
+    <string name="editor_shortcut_name">اسم الاختصار</string>
+    <string name="editor_shortcut_settings">إعدادات الاختصار</string>
+    <string name="editor_chain_when">عند</string>
+    <string name="editor_chain_only_if">فقط إذا</string>
+    <string name="editor_chain_do">نفّذ</string>
+    <string name="editor_add_action">إضافة إجراء</string>
+    <string name="editor_add_constraint">إضافة شرط</string>
+    <string name="editor_always_runs">يعمل دائمًا</string>
+    <string name="editor_remove_constraint">إزالة %1$s</string>
+    <string name="editor_configure_action">إعداد %1$s</string>
+    <string name="editor_more_options">خيارات إضافية لـ %1$s</string>
+    <string name="editor_tap_to_configure">اضغط للإعداد</string>
+    <string name="editor_configure">إعداد</string>
+    <string name="editor_move_up">تحريك لأعلى</string>
+    <string name="editor_move_down">تحريك لأسفل</string>
+    <string name="editor_test_run">تشغيل تجريبي</string>
+
+    <!-- Common (2) -->
+    <string name="common_ok">موافق</string>
+    <string name="common_yes">نعم</string>
+    <string name="common_no">لا</string>
+    <string name="common_confirm">تأكيد</string>
+    <string name="common_save_caps">حفظ</string>
+    <string name="common_cancel_caps">إلغاء</string>
+
+    <!-- Bottom navigation -->
+    <string name="nav_home">الرئيسية</string>
+    <string name="nav_shortcuts">الاختصارات</string>
+    <string name="nav_settings">الإعدادات</string>
+
+    <!-- Dialogs -->
+    <string name="dialog_expert_connected">الوضع المتقدم متصل</string>
+    <string name="dialog_new_input_title">تم اكتشاف إدخال جديد</string>
+    <string name="dialog_new_input_body">الرمز: %1$d. أعطِ هذا الإدخال اسمًا مختصرًا.</string>
+    <string name="dialog_new_input_hint">مثال: مفتاح الاختصار</string>
+
+    <!-- App picker -->
+    <string name="app_picker_search">البحث في التطبيقات</string>
+    <string name="app_picker_loading">جارٍ قراءة التطبيقات المثبتة…</string>
+    <string name="app_picker_no_match">لا توجد تطبيقات مطابقة لـ \"%1$s\"</string>
+    <string name="app_picker_choose">اختيار %1$s</string>
+    <string name="app_picker_selected">محدد</string>
+
+    <!-- Trigger picker -->
+    <string name="trigger_picker_title">تعيين المفتاح</string>
+    <string name="trigger_picker_subtitle">اختر نوع الضغطة، ثم سجّل مفتاحًا.</string>
+    <string name="trigger_picker_no_key">لا يوجد مفتاح بعد</string>
+    <string name="trigger_picker_saved_key">أو اختر مفتاحًا محفوظًا</string>
+    <string name="trigger_picker_listening">جارٍ الاستماع… اضغط للإيقاف</string>
+    <string name="trigger_picker_tap_to_record">اضغط، ثم اضغط على مفتاح فعلي</string>
+    <string name="trigger_picker_save_combo">حفظ المفتاح</string>
+    <string name="trigger_picker_use_automation">استخدم أتمتة بدلًا من ذلك</string>
+    <string name="trigger_picker_use_key">استخدام %1$s</string>
+
+    <!-- Per-shortcut settings -->
+    <string name="script_settings_name">الاسم</string>
+    <string name="script_settings_enabled">مفعّل</string>
+    <string name="script_settings_assign_key_first">عيّن مفتاحًا من المحرر لإعداد سلوك الضغط.</string>
+    <string name="script_settings_trigger_type">نوع الضغطة</string>
+    <string name="script_settings_double_press_window">فترة الضغطة المزدوجة</string>
+    <string name="script_settings_long_press_threshold">حد الضغطة المطولة</string>
+    <string name="script_settings_using_global">استخدام الافتراضي العام (%1$d مللي ثانية)</string>
+    <string name="script_settings_custom_value">مخصص لهذا الاختصار</string>
+    <string name="script_settings_consume_input">استهلاك الإدخال الأصلي</string>
+    <string name="script_settings_consume_input_description">منع وصول المفتاح إلى التطبيقات الأخرى حيثما يسمح أندرويد بذلك.</string>
+    <string name="script_settings_not_global">غير عام، خاص بهذا الاختصار فقط</string>
+    <string name="script_settings_vibrate">اهتزاز عند التشغيل</string>
+    <string name="script_settings_vibrate_description">اهتزاز قصير عند تشغيل هذا الاختصار.</string>
+    <string name="script_settings_reset_to_default">إعادة التعيين إلى الافتراضي (%1$s)</string>
+
+    <!-- Shortcuts list -->
+    <string name="scripts_title">اختصاراتي</string>
+    <string name="scripts_paused_warning">جميع الاختصارات متوقفة مؤقتًا، لذا لن يعمل أي منها.</string>
+    <string name="scripts_new_shortcut">اختصار جديد</string>
+    <string name="scripts_empty_title">لا توجد اختصارات بعد</string>
+    <string name="scripts_empty_body">يشغّل الاختصار إجراءً واحدًا أو أكثر عند الضغط على مفتاح فعلي.</string>
+    <string name="scripts_empty_go_home">ابدأ من اقتراح في الرئيسية</string>
+    <string name="scripts_tutorial_title">أنشئ اختصارك الأول</string>
+    <string name="scripts_tutorial_subtitle">أربع خطوات، بشكل متكرر.</string>
+    <string name="scripts_tutorial_pause">إيقاف العرض مؤقتًا</string>
+    <string name="scripts_tutorial_play">تشغيل العرض</string>
+    <string name="scripts_tutorial_step_new">اضغط على اختصار جديد</string>
+    <string name="scripts_tutorial_step_key">اختر ضغطة مفتاح واضغط مفتاحك</string>
+    <string name="scripts_tutorial_step_action">أضف إجراءً</string>
+    <string name="scripts_tutorial_step_done">اضغط على تم</string>
+    <string name="scripts_tutorial_cap_fab">زر + الأزرق في الأعلى يمينًا</string>
+    <string name="scripts_tutorial_cap_keypress">في قسم عند، اضغط على ضغطة مفتاح</string>
+    <string name="scripts_tutorial_cap_press">اضغط المفتاح على هاتفك</string>
+    <string name="scripts_tutorial_cap_save">اضغط على حفظ المفتاح</string>
+    <string name="scripts_tutorial_cap_add">في قسم نفّذ، اضغط على إضافة إجراء</string>
+    <string name="scripts_tutorial_cap_pick">اختر الفلاش</string>
+    <string name="scripts_tutorial_cap_lands">يظهر ضمن قسم نفّذ</string>
+    <string name="scripts_tutorial_cap_check">علامة الصح في الأعلى</string>
+    <string name="scripts_tutorial_cap_runs">رفع الصوت يشغّل الفلاش الآن</string>
+    <string name="scripts_tutorial_mini_page">صفحة الاختصارات</string>
+    <string name="scripts_tutorial_listening">جارٍ الاستماع…</string>
+    <string name="scripts_tutorial_key_recorded">تم تسجيل المفتاح</string>
+    <string name="scripts_no_trigger">لا يوجد مفتاح بعد</string>
+    <string name="scripts_no_condition">لم تتم إضافة شرط</string>
+    <string name="scripts_no_actions">لا توجد إجراءات بعد</string>
+    <string name="scripts_unnamed">اختصار</string>
+    <string name="scripts_delete_label">حذف %1$s</string>
+    <string name="scripts_toggle_state_on">قيد التشغيل</string>
+    <string name="scripts_toggle_state_off">متوقف</string>
+    <string name="scripts_toggle_state_paused">قيد التشغيل، لكن جميع الاختصارات متوقفة مؤقتًا</string>
+    <string name="scripts_delete_title">حذف الاختصار؟</string>
+    <string name="scripts_delete_body">سيتم حذف \"%1$s\" نهائيًا. لا يمكن التراجع عن هذا الإجراء.</string>
+    <string name="scripts_snackbar_home">الرئيسية</string>
+
+    <!-- Home -->
+    <string name="home_suggested_shortcuts">اختصارات مقترحة</string>
+    <string name="home_suggestions_group_single">مفتاح واحد، إجراء واحد</string>
+    <string name="home_suggestions_group_multi">مفتاح واحد، عدة خطوات</string>
+    <string name="home_suggestions_group_automation">يعمل تلقائيًا</string>
+    <string name="home_your_shortcuts">اختصاراتك</string>
+    <string name="suggestion_saved">%1$s جاهز · %2$s</string>
+    <string name="home_build_from_suggestion">إنشاء اختصار من %1$s</string>
+    <string name="home_suggestion_soon">قريبًا</string>
+    <string name="home_suggestion_automation">أتمتة</string>
+    <string name="home_pause_all">إيقاف جميع الاختصارات مؤقتًا</string>
+    <string name="home_resume_all">استئناف جميع الاختصارات</string>
+    <string name="home_status_live">نشط</string>
+    <string name="home_status_paused">متوقف مؤقتًا</string>
+    <string name="home_system_status">حالة النظام</string>
+    <string name="home_collapse_status">طي حالة النظام</string>
+    <string name="home_expand_status">توسيع حالة النظام</string>
+    <string name="home_accessibility_service">خدمة إمكانية الوصول</string>
+    <string name="home_status_advanced">الوضع المتقدم</string>
+    <string name="home_status_active">نشط</string>
+    <string name="home_status_offline">غير نشط</string>
+    <string name="home_status_running">قيد التشغيل</string>
+    <string name="home_status_off">متوقف</string>
+    <string name="home_triggers_session">عمليات التشغيل في هذه الجلسة</string>
+    <string name="home_last_from">آخر مشغّل من %1$s</string>
+    <string name="home_open_label_settings">فتح إعدادات %1$s</string>
+    <string name="home_setup_title_off">اختصاراتك لا تعمل بعد</string>
+    <string name="home_setup_subtitle_off">ثلاث خطوات، كلها في إعدادات Android نفسها. إليك ما تضغط عليه في كل خطوة.</string>
+    <string name="home_setup_title_at_risk">قد تتوقف اختصاراتك عن العمل</string>
+    <string name="home_setup_subtitle_at_risk">قد يغلق Android التطبيق في الخلفية ما لم تفعّل هذه الخطوات.</string>
+    <string name="home_setup_progress">%1$d/3</string>
+    <string name="home_setup_step_accessibility">شغّل خدمة إمكانية الوصول</string>
+    <string name="home_setup_why_accessibility">من خلالها يقرأ KeySnap ضغطات أزرارك. لا يعمل شيء قبل تشغيلها.</string>
+    <string name="home_setup_open_accessibility">فتح إعدادات إمكانية الوصول</string>
+    <string name="home_setup_step_background">اسمح لـ KeySnap بالعمل في الخلفية</string>
+    <string name="home_setup_why_background">يغلق Android التطبيقات التي يظنها نائمة. اضغط «سماح» عندما يسأل — «رفض» يترك KeySnap عرضة للإغلاق.</string>
+    <string name="home_setup_allow_background">السماح بالعمل في الخلفية</string>
+    <string name="home_setup_done_background">مسموح</string>
+    <string name="home_setup_step_notifications">اسمح بالإشعارات</string>
+    <string name="home_setup_why_notifications">للإعداد فقط: رمز الإقران وحالة الخدمة. اضغط «سماح» عندما يسأل Android — «عدم السماح» يوقف الإعداد هنا.</string>
+    <string name="home_setup_ask_now">اسألني الآن</string>
+    <string name="home_setup_done_notifications">مسموح</string>
+    <string name="home_setup_all_done">الثلاثة مفعّلة. أزرارك تعمل الآن.</string>
+    <string name="home_setup_state_done">مكتملة</string>
+    <string name="home_setup_state_current">الخطوة الحالية</string>
+    <string name="home_setup_state_upcoming">لم تبدأ بعد</string>
+    <string name="home_setup_illo_downloaded_apps">التطبيقات المُنزّلة</string>
+    <string name="home_setup_why">لماذا؟</string>
+    <string name="home_setup_why_expanded">موسَّع</string>
+    <string name="home_setup_why_collapsed">مطوي</string>
+    <string name="home_setup_whytext_accessibility">لا يُظهر Android أزرار الجهاز إلا لخدمة إمكانية وصول، ولهذا يستخدم KeySnap واحدة لهذا الغرض تحديدًا: ملاحظة الضغطة وتشغيل اختصارك. وهو لا يقرأ شاشات التطبيقات الأخرى. وأثناء إعداد الوضع المتقدم فقط يقرأ أيضًا رمز الإقران في صفحة تصحيح الأخطاء اللاسلكي، ولا شيء غير ذلك.</string>
+    <string name="home_setup_whytext_background">يغلق Android التطبيقات التي يظنها خاملة، والتطبيق المغلق لا يستطيع تشغيل اختصاراتك. هذا يُبقي KeySnap حيًا بينما ينام هاتفك. وفي الخلفية لا يفعل شيئًا سوى انتظار ضغطة زر.</string>
+    <string name="home_setup_whytext_notifications">أثناء إعداد الوضع المتقدم فقط: رمز الإقران وما إذا كانت الخدمة تعمل. لا تذكيرات ولا عروض ولا أي شيء آخر، أبدًا.</string>
+    <string name="home_setup_illo_battery_dialog">السماح لـ KeySnap بالعمل دائمًا في الخلفية؟</string>
+    <string name="home_setup_illo_battery_body">قد يقلل هذا من عمر البطارية.</string>
+    <string name="home_setup_illo_battery_deny">رفض</string>
+    <string name="home_setup_illo_dialog">السماح لـ KeySnap بإرسال إشعارات إليك؟</string>
+    <string name="home_setup_illo_deny">عدم السماح</string>
+    <string name="home_setup_illo_allow">سماح</string>
+    <string name="home_nudge_title">أنشئ اختصارك الأول</string>
+    <string name="home_nudge_subtitle">المصباح أسفل هذا مباشرة، بضغطة واحدة.</string>
+    <string name="home_nudge_dismiss">إغلاق</string>
+    <string name="home_reward_cooldown">المكافأة في فترة تهدئة، تبقّى %1$s. احصل على Pro.</string>
+    <string name="home_reward_available">شاهد إعلانًا للحصول على اختصار إضافي واحد لمدة 4 ساعات</string>
+    <string name="home_reward_badge_idle">+1</string>
+
+    <!-- Pro upsell -->
+    <string name="pro_card_subtitle">الحد المجاني: %1$d اختصارات مفعّلة. Pro يبقيها كلها مفعّلة.</string>
+    <string name="pro_card_at_cap">لماذا لن يبقى الاختصار التالي مفعّلًا</string>
+    <string name="pro_active_shortcuts">الاختصارات النشطة</string>
+    <string name="pro_progress_description">%1$d من %2$d اختصارات نشطة</string>
+    <string name="pro_reward_remaining">تبقّى %1$s</string>
+    <string name="pro_reward_offer">+%1$d لمدة %2$d ساعة</string>
+    <string name="pro_unlock">فتح Pro</string>
+    <string name="pro_unlock_with_price">فتح Pro · %1$s</string>
+    <string name="pro_table_free">مجاني</string>
+    <string name="pro_table_pro">Pro</string>
+    <string name="pro_table_unlimited">غير محدود</string>
+    <string name="pro_table_free_limit_with_reward">%1$d (%2$d مع مكافأة)</string>
+    <string name="pro_table_ads">الإعلانات</string>
+    <string name="pro_table_shown">تُعرض</string>
+    <string name="pro_table_none">بدون</string>
+    <string name="pro_table_row_description">%1$s: مجاني %2$s، Pro %3$s</string>
+
+    <!-- Ads -->
+    <string name="ad_loading">جارٍ تحميل الإعلان…</string>
+    <string name="ad_sponsored">إعلان ممول</string>
+
+    <!-- Settings -->
+    <string name="settings_title">الإعدادات</string>
+    <string name="settings_subtitle">الإعدادات الافتراضية لكل اختصار جديد.</string>
+    <string name="settings_group_keys">المفاتيح</string>
+    <string name="settings_group_advanced">متقدم</string>
+    <string name="settings_group_app">التطبيق</string>
+    <string name="settings_defaults_panel">الإعدادات الافتراضية للاختصارات الجديدة</string>
+    <string name="settings_defaults_hint">يمكن لكل اختصار تجاوز هذه القيم من إعداداته الخاصة.</string>
+    <string name="settings_double_press_description">الوقت المسموح به بين النقرات. كما يؤخر إجراءات الضغطة الواحدة.</string>
+    <string name="settings_long_press_description">مدة الاستمرار في الضغط على المفتاح قبل تشغيل إجراء الضغطة المطولة.</string>
+    <string name="settings_appearance_panel">المظهر</string>
+    <string name="settings_input_panel">سلوك الإدخال</string>
+    <string name="settings_haptics_panel">الاستجابة الاهتزازية</string>
+    <string name="settings_haptic_feedback">الاستجابة الاهتزازية</string>
+    <string name="settings_haptic_feedback_on">تشغيل اهتزاز عند تشغيل اختصار.</string>
+    <string name="settings_haptic_unavailable">الاهتزاز غير متوفر على هذا الجهاز.</string>
+    <string name="settings_haptic_duration">مدة الاهتزاز</string>
+    <string name="settings_haptic_duration_description">مدة اهتزاز التأكيد.</string>
+    <string name="settings_haptic_duration_disabled">فعّل الاستجابة الاهتزازية لضبط مدتها.</string>
+    <string name="settings_expert_panel">الوضع المتقدم</string>
+    <string name="settings_detached_bridge">قراءة جميع أزرار الجهاز</string>
+    <string name="settings_bridge_running">مُفعَّل — يعمل زر الطاقة والمساعد وغيرها من الأزرار المقيّدة، حتى عند إغلاق التطبيق.</string>
+    <string name="settings_bridge_stopped">مُعطَّل — أزرار يسمح بها أندرويد للتطبيقات فقط.</string>
+    <string name="settings_run_setup">إعادة تشغيل الإعداد</string>
+    <string name="settings_run_setup_description">إعادة إقران تصحيح الأخطاء اللاسلكي.</string>
+    <string name="settings_about_panel">حول التطبيق</string>
+    <string name="settings_about_app">حول KeySnap</string>
+    <string name="settings_about_app_summary">مفتوح المصدر · لا شيء يغادر هاتفك</string>
+    <string name="settings_privacy_policy">سياسة الخصوصية</string>
+    <string name="settings_erase">مسح جميع البيانات</string>
+    <string name="settings_erase_confirm_title">مسح جميع البيانات؟</string>
+    <string name="settings_erase_action">مسح كل شيء</string>
+    <string name="settings_erase_warning">يؤدي هذا إلى إيقاف الوضع المتقدم، وحذف الجسر من الجهاز، وإزالة كل اختصار وإعداد. لا يمكن التراجع عن هذا الإجراء. كما يتم إيقاف خدمة إمكانية الوصول؛ فعّلها مرة أخرى بعد ذلك.</string>
+    <string name="settings_version">الإصدار %1$s (%2$d)</string>
+    <string name="settings_input_monitor">مراقب الإدخال</string>
+    <string name="settings_show_log_action">إظهار سجل الأحداث</string>
+    <string name="settings_hide_log_action">إخفاء سجل الأحداث</string>
+    <string name="settings_log_count">%1$d من %2$d</string>
+    <string name="settings_log_waiting">في انتظار إدخال فعلي…</string>
+    <string name="settings_log_clear">مسح</string>
+    <string name="settings_log_matched">طابق اختصارًا</string>
+
+    <!-- Language picker -->
+    <string name="settings_language_panel">اللغة</string>
+    <string name="language_system">افتراضي النظام</string>
+
+    <!-- Appearance -->
+    <string name="theme_light">فاتح</string>
+    <string name="theme_dark">داكن</string>
+    <string name="theme_sepia">سيبيا</string>
+
+    <!-- Sliders -->
+    <string name="slider_milliseconds">%1$d مللي ثانية</string>
+    <string name="slider_restore_default">إعادة %1$s إلى الافتراضي</string>
+
+    <!-- Screen point picker overlay -->
+    <string name="picker_point_a">A: %1$d، %2$d</string>
+    <string name="picker_point_b">B: %1$d، %2$d</string>
+    <string name="picker_point">النقطة: %1$d، %2$d</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_finish">إنهاء الإعداد</string>
+
+    <!-- Setup wizard -->
+    <string name="about_hero_title">لا شيء مما تفعله هنا يغادر هاتفك.</string>
+    <string name="about_hero_body">لا خوادم. لا حساب. لا تحليلات. ليس لدى KeySnap مكان يرسل إليه اختصاراتك أو ضغطات مفاتيحك — والتطبيق بأكمله مفتوح المصدر، فلا داعي لتصديق كلامنا.</string>
+    <string name="about_no_server_title">لا وجود لأي خادم</string>
+    <string name="about_no_server_body">ليس لدى KeySnap خلفية برمجية ولا حساب ولا تقارير أعطال. ما تربطه وما تضغطه والتطبيقات التي تستخدمها تبقى في التخزين الخاص بهذا التطبيق. لا توجد فيه شفرة ترفع أياً من ذلك، لأنه لا يوجد مكان يذهب إليه.</string>
+    <string name="about_illo_no_server_caption">ضغطات · اختصارات · استخدام</string>
+    <string name="about_open_source_title">مفتوح المصدر، حتى تتحقق بنفسك</string>
+    <string name="about_open_source_body">كل سطر في KeySnap منشور بترخيص GPLv3. اقرأ فيمَ يُستخدَم كل إذن، أو ابنِ التطبيق بنفسك، أو سلّمه لمن يستطيع ذلك.</string>
+    <string name="about_view_source">عرض الشفرة المصدرية على GitHub</string>
+    <string name="about_scope_title">خدمة إمكانية الوصول ترى الإعدادات فقط</string>
+    <string name="about_scope_body">لا يمنح أندرويد التطبيقات أي وسيلة أخرى لاكتشاف مفتاح فيزيائي. خدمة KeySnap محصورة بتطبيق الإعدادات في النظام وتستخدمه لأمر واحد فقط: قراءة رمز الإقران أثناء إعداد الوضع المتقدم. لا تستطيع قراءة تطبيق مصرفك أو رسائلك أو ما تكتبه — وهذا يفرضه أندرويد نفسه، لا وعدٌ منّا.</string>
+    <string name="about_bridge_title">الوضع المتقدم هو ADB هاتفك أنت</string>
+    <string name="about_bridge_body">يقترن بتصحيح الأخطاء اللاسلكي في هاتفك عبر شبكتك المحلية — وهذا الاتصال لا يغادر منزلك أبداً. ولا ينفّذ أوامر الصدفة إلا للاختصارات التي كتبتها أنت. أوقِفه فيُحذف الجسر؛ وإعادة التشغيل توقفه أيضاً.</string>
+    <string name="about_illo_bridge_caption">إيقاف ← الجسر يحذف نفسه</string>
+    <string name="about_traffic_title">كل اتصال يجريه التطبيق</string>
+    <string name="about_traffic_device">هاتفك أنت</string>
+    <string name="about_traffic_device_body">إقران تصحيح الأخطاء اللاسلكي. الشبكة المحلية فقط.</string>
+    <string name="about_traffic_yours">العناوين التي كتبتها بنفسك</string>
+    <string name="about_traffic_yours_body">أي إجراء HTTP أو فتح رابط يذهب تماماً إلى حيث كتبته، دون تغيير.</string>
+    <string name="about_traffic_google">إعلانات Google و Google Play</string>
+    <string name="about_traffic_google_body">لعرض الإعلان في النسخة المجانية وللتحقق مما إذا كنت قد اشتريت Pro. ولا يتلقى أي منهما ضغطة مفتاح أو اختصاراً على الإطلاق.</string>
+    <string name="about_traffic_all">هذه هي القائمة كاملة.</string>
+    <string name="about_erase_title">استعِد كل شيء متى شئت</string>
+    <string name="about_erase_body">مسح جميع البيانات يزيل كل اختصار ومفتاح محفوظ وإعداد وملف من ملفات الجسر، ويوقف الوضع المتقدم أولاً حتى لا يبقى شيء يعمل.</string>
+
+    <string name="wizard_title">تشغيل الوضع المتقدم</string>
+    <string name="wizard_subtitle">معالج الإعداد</string>
+    <string name="wizard_continue">متابعة</string>
+    <string name="wizard_finish_pairing">إنهاء الإقران</string>
+    <string name="wizard_step_intro">مقدمة</string>
+    <string name="wizard_step_pairing">الإقران</string>
+    <string name="wizard_step_done">تم</string>
+    <string name="wizard_what_is_expert">ما هو الوضع المتقدم؟</string>
+    <string name="wizard_expert_explainer">يقترن KeySnap بتصحيح الأخطاء اللاسلكي في هاتفك، ثم يقرأ المفاتيح مباشرة من النواة — الطاقة والمساعد والكاميرا؛ الأزرار التي يخفيها أندرويد عن التطبيقات.</string>
+    <string name="wizard_expert_off_note">الإيقاف يحذفه · وإعادة التشغيل توقفه</string>
+    <string name="wizard_can">يمكنه</string>
+    <string name="wizard_never">أبداً</string>
+    <string name="wizard_no_dev_options">لا توجد خيارات المطوّر بعد؟</string>
+    <string name="wizard_no_dev_options_sub">خطوات هاتفك في الشاشة التالية</string>
+    <string name="wizard_illo_action">← تشغيل المصباح</string>
+    <string name="wizard_how_to_dev_options">كيف تفعّل خيارات المطورين؟</string>
+    <string name="wizard_auto_pairing">إقران ADB تلقائي</string>
+    <string name="wizard_auto_pairing_explainer">لا حاجة لكتابة رمز الإقران يدويًا — نقرأه في الخلفية ونتصل تلقائيًا. إذا فشل ذلك، يمكنك إدخاله من الإشعار.</string>
+    <string name="wizard_open_settings">فتح الإعدادات وبدء الإقران</string>
+    <string name="wizard_expert_running">الوضع المتقدم قيد التشغيل</string>
+    <string name="wizard_expert_running_body">يتم الاستماع إلى جميع مفاتيح أجهزة أندرويد (الطاقة، المساعد، الصوت، الكاميرا، وغيرها) على مستوى نواة لينكس.</string>
+    <string name="wizard_connection_error">خطأ في الاتصال</string>
+    <string name="wizard_connection_error_body">تعذّر بدء الوضع المتقدم. قد يكون رمز الإقران أو المنفذ غير صحيح، أو قد تكون خدمة ADB رفضت الاتصال — ارجع وتحقق من التفاصيل.</string>
+    <string name="wizard_connecting">جارٍ الاتصال…</string>
+    <string name="wizard_connecting_body">يجري بدء الوضع المتقدم. تستغرق هذه الخطوة بضع ثوانٍ — أبقِ هذه الشاشة مفتوحة.</string>
+    <string name="wizard_kernel_stream">تدفق أحداث النواة المباشر</string>
+    <string name="wizard_test_flash">اختبار مشغّل الفلاش</string>
+
+    <!-- Pairing status -->
+    <string name="pairing_idle">في انتظار الإقران…</string>
+    <string name="pairing_not_started">اضغط على الزر أعلاه لبدء الإقران</string>
+    <string name="pairing_searching">جارٍ البحث عن شاشة الإقران…</string>
+    <string name="pairing_captured">تم التقاط رمز الإقران…</string>
+    <string name="pairing_in_progress">جارٍ الإقران…</string>
+    <string name="pairing_paired">تم الإقران — جارٍ الاتصال…</string>
+    <string name="pairing_connecting">جارٍ الاتصال…</string>
+    <string name="pairing_connected">متصل</string>
+    <string name="pairing_error">فشل الاتصال — حاول مرة أخرى</string>
+
+    <!-- Expert Mode setup notification -->
+    <string name="notif_channel_setup">إعداد الوضع المتقدم</string>
+    <string name="notif_channel_setup_description">يظهر أثناء إقران التطبيق مع ADB اللاسلكي وبدء تشغيل الجسر</string>
+    <string name="notif_setup_title">جارٍ إعداد الوضع المتقدم</string>
+    <string name="notif_setup_text">جارٍ الإقران مع تصحيح الأخطاء اللاسلكي وبدء تشغيل الجسر.</string>
+
+    <!-- Input monitor event rows and trigger labels -->
+    <string name="event_key_down">مضغوط (DOWN)</string>
+    <string name="event_key_up">تم الإفلات (UP)</string>
+    <string name="trigger_label_single">ضغطة واحدة (انقضى انتظار %1$d مللي ثانية)</string>
+    <string name="trigger_label_double">ضغطة مزدوجة (فترة %1$d مللي ثانية)</string>
+    <string name="trigger_label_long">ضغطة مطولة (%1$d مللي ثانية)</string>
+    <string name="source_accessibility">إمكانية الوصول</string>
+    <string name="source_activity">النشاط (المقدمة)</string>
+
+    <!-- View-model messages -->
+    <string name="default_shortcut_name">اختصار رقم %1$d</string>
+    <string name="run_nothing_ran">لم يعمل أي شيء. تحقق من إعدادات الإجراء.</string>
+    <string name="run_partial">تم تشغيل %1$d من %2$d إجراءات</string>
+    <string name="editor_needs_action">أضف إجراءً واحدًا على الأقل قبل الحفظ.</string>
+    <string name="editor_needs_trigger">اختر مفتاحًا قبل الحفظ.</string>
+    <string name="saved_needs_trigger">تم الحفظ. عيّن مفتاحًا ليتمكن من العمل.</string>
+    <string name="saved_named">تم حفظ «%1$s»</string>
+    <string name="saved_needs_condition">تم الحفظ. أضف شرطًا يتغير من تلقاء نفسه، مثل «قيد الشحن» أو «جهاز بلوتوث متصل»، ليتمكن من العمل.</string>
+    <string name="free_limit_saved_off">الخطة المجانية: %1$d اختصارات نشطة. تم الحفظ متوقفًا — شاهد إعلانًا أو احصل على Pro لتفعيله.</string>
+    <string name="free_limit_reached">تم بلوغ حد الخطة المجانية. احصل على Pro لعدد غير محدود من الاختصارات.</string>
+    <string name="free_limit_toggle_blocked">الخطة المجانية: %1$d اختصارات نشطة. شاهد إعلانًا أو احصل على Pro لتفعيل هذا أيضًا.</string>
+
+    <!-- Privacy policy dialog chrome. The policy body itself stays in PrivacyPolicy.kt: it has to
+         match the English document published for Play word for word. -->
+    <string name="privacy_policy_title">سياسة الخصوصية</string>
+    <string name="privacy_last_updated">آخر تحديث %1$s</string>
+    <string name="privacy_contact_heading">التواصل</string>
+
+    <!-- Wireless ADB pairing notification -->
+    <string name="notif_channel_pairing">مساعد إقران ADB</string>
+    <string name="notif_channel_pairing_description">إشعارات إدخال رمز إقران ADB اللاسلكي والأخطاء</string>
+    <string name="notif_pairing_title">في انتظار إقران ADB</string>
+    <string name="notif_pairing_default">أدخل فقط الرمز المكوّن من 6 أرقام؛ سيتم العثور على المنفذ تلقائيًا.</string>
+    <string name="notif_pairing_input_label">رمز الإقران المكوّن من 6 أرقام</string>
+    <string name="notif_pairing_enter_code">إدخال الرمز</string>
+    <string name="notif_pairing_no_port">لم يتم العثور على منفذ اتصال ADB. تحقق من تصحيح الأخطاء اللاسلكي.</string>
+    <string name="notif_pairing_failed">فشل الإقران. أعد إدخال الرمز المكوّن من 6 أرقام.</string>
+    <string name="notif_pairing_bad_code">يجب أن يتكون الرمز من 6 أرقام بالضبط. حاول مرة أخرى.</string>
+
+    <!-- Theme toggle -->
+
+    <!-- Trigger kind picker -->
+    <string name="trigger_kind_key">ضغطة مفتاح</string>
+    <string name="trigger_kind_automation">أتمتة</string>
+    <string name="automation_card_subtitle">يعمل عندما تتحقق الشروط أدناه</string>
+</resources>

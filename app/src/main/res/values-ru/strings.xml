@@ -1,0 +1,822 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">KeySnap</string>
+    <string name="accessibility_service_description">Обнаруживает нажатия физических клавиш (громкость, питание и другие аппаратные кнопки), чтобы они могли запускать ваши сценарии. Только во время настройки Расширенного режима приложение также считывает код сопряжения из системного диалога беспроводной отладки. Оно не может читать экран какого-либо другого приложения.</string>
+    <string name="accessibility_disclosure_agree">Согласиться и открыть настройки</string>
+
+    <!-- Категории действий -->
+    <string name="action_category_input">Ввод</string>
+    <string name="action_category_apps">Приложения</string>
+    <string name="action_category_flashlight">Фонарик</string>
+    <string name="action_category_navigation">Навигация</string>
+    <string name="action_category_volume">Громкость</string>
+    <string name="action_category_display">Экран</string>
+    <string name="action_category_media">Медиа</string>
+    <string name="action_category_connectivity">Подключение</string>
+    <string name="action_category_keyboard">Клавиатура</string>
+    <string name="action_category_device">Устройство</string>
+    <string name="action_category_sound">Звук</string>
+    <string name="action_category_automation">Автоматизация</string>
+
+    <!-- Метки параметров действий -->
+    <string name="param_strength">Сила</string>
+    <string name="param_key_code">Код клавиши</string>
+    <string name="param_text">Текст</string>
+    <string name="param_taps">Количество нажатий</string>
+    <string name="param_interval_ms">Интервал (мс)</string>
+    <string name="param_start_x">Начало X</string>
+    <string name="param_start_y">Начало Y</string>
+    <string name="param_end_x">Конец X</string>
+    <string name="param_end_y">Конец Y</string>
+    <string name="param_duration_ms">Длительность (мс)</string>
+    <string name="param_point_a_x">Точка A, X</string>
+    <string name="param_point_a_y">Точка A, Y</string>
+    <string name="param_point_b_x">Точка B, X</string>
+    <string name="param_point_b_y">Точка B, Y</string>
+    <string name="param_direction">Направление</string>
+    <string name="param_app">Приложение</string>
+    <string name="param_shortcut">Сценарий</string>
+    <string name="param_method">Метод</string>
+    <string name="param_body">Тело запроса</string>
+    <string name="param_command">Команда</string>
+    <string name="param_action">Действие</string>
+    <string name="param_extras">Доп. параметры (ключ=значение;ключ2=значение2)</string>
+    <string name="param_element">Элемент</string>
+    <string name="param_namespace">Пространство имён</string>
+    <string name="param_key">Ключ</string>
+    <string name="param_value">Значение</string>
+    <string name="param_mode">Режим</string>
+    <string name="param_stream">Канал</string>
+    <string name="param_sound">Звук</string>
+    <string name="param_times">Количество раз</string>
+
+    <!-- Действия: фонарик -->
+    <string name="action_toggle_flashlight">Переключить фонарик</string>
+    <string name="action_enable_flashlight">Включить фонарик</string>
+    <string name="action_disable_flashlight">Выключить фонарик</string>
+    <string name="action_change_flashlight_brightness">Изменить яркость фонарика</string>
+
+    <!-- Действия: ввод -->
+    <string name="action_input_key_code">Отправить код клавиши</string>
+    <string name="action_input_text">Ввести текст</string>
+    <string name="action_tap_screen">Нажать на экран</string>
+    <string name="action_swipe_screen">Провести по экрану</string>
+    <string name="action_pinch_screen">Свести/развести пальцы на экране</string>
+
+    <!-- Действия: приложения -->
+    <string name="action_launch_app">Запустить приложение</string>
+    <string name="action_launch_app_shortcut">Запустить ярлык приложения</string>
+    <string name="action_open_url">Открыть URL</string>
+    <string name="action_http_request">HTTP-запрос</string>
+    <string name="action_shell_command">Команда shell</string>
+    <string name="action_send_intent">Отправить intent</string>
+    <string name="action_interact_with_app_element">Взаимодействовать с элементом приложения</string>
+    <string name="action_launch_voice_assistant">Запустить голосового ассистента</string>
+    <string name="action_launch_device_assistant">Запустить ассистента устройства</string>
+    <string name="action_open_camera">Открыть камеру</string>
+    <string name="action_open_settings">Открыть настройки</string>
+    <string name="action_force_stop_app">Принудительно остановить приложение</string>
+    <string name="action_close_and_clear_app">Закрыть и убрать приложение из недавних</string>
+    <string name="action_modify_setting">Изменить настройку</string>
+
+    <!-- Действия: навигация -->
+    <string name="action_expand_notification_drawer">Развернуть шторку уведомлений</string>
+    <string name="action_toggle_notification_drawer">Переключить шторку уведомлений</string>
+    <string name="action_expand_quick_settings">Развернуть быстрые настройки</string>
+    <string name="action_toggle_quick_settings">Переключить быстрые настройки</string>
+    <string name="action_collapse_status_bar">Свернуть строку состояния</string>
+    <string name="action_go_back">Назад</string>
+    <string name="action_go_home">На главный экран</string>
+    <string name="action_open_recents">Открыть недавние приложения</string>
+    <string name="action_open_menu">Открыть меню</string>
+    <string name="action_go_last_app">Перейти к последнему приложению</string>
+    <string name="action_toggle_split_screen">Переключить разделение экрана</string>
+    <string name="action_take_screenshot">Сделать снимок экрана</string>
+    <string name="action_move_cursor_to_end">Переместить курсор в конец</string>
+
+    <!-- Действия: громкость -->
+    <string name="action_volume_up">Увеличить громкость</string>
+    <string name="action_volume_down">Уменьшить громкость</string>
+    <string name="action_volume_mute">Отключить звук</string>
+    <string name="action_volume_unmute">Включить звук</string>
+    <string name="action_volume_toggle_mute">Переключить отключение звука</string>
+    <string name="action_show_volume_dialog">Показать диалог громкости</string>
+    <string name="action_cycle_ringer_mode">Переключить режим звонка по кругу</string>
+    <string name="action_change_ringer_mode">Изменить режим звонка</string>
+    <string name="action_change_volume_stream">Изменить канал громкости</string>
+
+    <!-- Действия: экран -->
+    <string name="action_screen_on">Включить экран</string>
+    <string name="action_screen_off">Выключить экран</string>
+    <string name="action_toggle_screen">Переключить экран</string>
+    <string name="action_toggle_auto_rotate">Переключить автоповорот</string>
+    <string name="action_portrait_mode">Портретная ориентация</string>
+    <string name="action_landscape_mode">Альбомная ориентация</string>
+    <string name="action_cycle_rotations">Переключать повороты по кругу</string>
+    <string name="action_change_brightness">Изменить яркость</string>
+    <string name="action_toggle_auto_brightness">Переключить автояркость</string>
+    <string name="action_increase_brightness">Увеличить яркость</string>
+    <string name="action_decrease_brightness">Уменьшить яркость</string>
+
+    <!-- Действия: медиа -->
+    <string name="action_media_play">Воспроизвести</string>
+    <string name="action_media_pause">Пауза</string>
+    <string name="action_media_play_pause">Воспроизведение / пауза</string>
+    <string name="action_media_next">Следующий трек</string>
+    <string name="action_media_previous">Предыдущий трек</string>
+    <string name="action_media_fast_forward">Перемотка вперёд</string>
+    <string name="action_media_rewind">Перемотка назад</string>
+    <string name="action_media_stop">Стоп</string>
+
+    <!-- Действия: подключение -->
+    <string name="action_toggle_wifi">Переключить Wi-Fi</string>
+    <string name="action_enable_wifi">Включить Wi-Fi</string>
+    <string name="action_disable_wifi">Выключить Wi-Fi</string>
+    <string name="action_toggle_bluetooth">Переключить Bluetooth</string>
+    <string name="action_enable_bluetooth">Включить Bluetooth</string>
+    <string name="action_disable_bluetooth">Выключить Bluetooth</string>
+    <string name="action_toggle_mobile_data">Переключить мобильный интернет</string>
+    <string name="action_toggle_nfc">Переключить NFC</string>
+    <string name="action_toggle_airplane_mode">Переключить режим полёта</string>
+    <string name="action_toggle_location">Переключить геолокацию</string>
+    <string name="action_toggle_hotspot">Переключить точку доступа</string>
+
+    <!-- Действия: клавиатура -->
+    <string name="action_show_keyboard">Показать клавиатуру</string>
+    <string name="action_hide_keyboard">Скрыть клавиатуру</string>
+    <string name="action_toggle_keyboard">Переключить клавиатуру</string>
+    <string name="action_switch_keyboard">Сменить клавиатуру</string>
+    <string name="action_show_keyboard_picker">Показать выбор клавиатуры</string>
+    <string name="action_text_cut">Вырезать</string>
+    <string name="action_text_copy">Копировать</string>
+    <string name="action_text_paste">Вставить</string>
+    <string name="action_select_word_at_cursor">Выделить слово у курсора</string>
+
+    <!-- Действия: устройство -->
+    <string name="action_lock_device">Заблокировать устройство</string>
+    <string name="action_secure_lock_device">Безопасно заблокировать устройство</string>
+    <string name="action_power_dialog">Показать диалог питания</string>
+    <string name="action_toggle_dnd">Переключить режим «Не беспокоить»</string>
+    <string name="action_enable_dnd">Включить режим «Не беспокоить»</string>
+    <string name="action_disable_dnd">Выключить режим «Не беспокоить»</string>
+    <string name="action_open_app_drawer">Открыть список приложений</string>
+    <string name="action_dismiss_all_notifications">Закрыть все уведомления</string>
+    <string name="action_answer_call">Ответить на звонок</string>
+    <string name="action_end_call">Завершить звонок</string>
+
+    <!-- Действия: звук -->
+    <string name="action_play_sound">Воспроизвести звук</string>
+    <string name="action_text_to_speech">Синтез речи</string>
+    <string name="action_vibrate">Вибрация</string>
+    <string name="action_stop_text_to_speech">Остановить синтез речи</string>
+
+    <!-- Действия: автоматизация -->
+    <string name="action_delay">Задержка</string>
+    <string name="action_repeat_previous">Повторить предыдущее действие</string>
+    <string name="action_toggle_mapping">Переключить все сценарии</string>
+    <string name="action_pause_mapping">Приостановить все сценарии</string>
+    <string name="action_resume_mapping">Возобновить все сценарии</string>
+
+    <!-- Категории условий -->
+    <string name="constraint_category_apps">Приложения</string>
+    <string name="constraint_category_media">Медиа</string>
+    <string name="constraint_category_display">Экран</string>
+    <string name="constraint_category_flashlight">Фонарик</string>
+    <string name="constraint_category_keyboard">Клавиатура</string>
+    <string name="constraint_category_lock">Блокировка</string>
+    <string name="constraint_category_phone">Телефон</string>
+    <string name="constraint_category_power">Питание</string>
+    <string name="constraint_category_device">Устройство</string>
+    <string name="constraint_category_time">Время</string>
+    <string name="constraint_category_connectivity">Связь</string>
+    <string name="constraint_category_sound">Звук</string>
+
+    <!-- Условия -->
+    <string name="constraint_app_in_foreground">Приложение на переднем плане</string>
+    <string name="constraint_app_not_in_foreground">Приложение не на переднем плане</string>
+    <string name="constraint_app_playing_media">Приложение воспроизводит медиа</string>
+    <string name="constraint_app_not_playing_media">Приложение не воспроизводит медиа</string>
+    <string name="constraint_no_media_playing">Медиа не воспроизводится</string>
+    <string name="constraint_media_is_playing">Медиа воспроизводится</string>
+    <string name="constraint_bluetooth_on">Bluetooth включён</string>
+    <string name="constraint_bluetooth_off">Bluetooth выключен</string>
+    <string name="constraint_screen_on">Экран включён</string>
+    <string name="constraint_screen_off">Экран выключен</string>
+    <string name="constraint_screen_orientation">Ориентация экрана</string>
+    <string name="constraint_physical_orientation">Физическая ориентация</string>
+    <string name="constraint_flashlight_on">Фонарик включён</string>
+    <string name="constraint_flashlight_off">Фонарик выключен</string>
+    <string name="constraint_wifi_on">Wi-Fi включён</string>
+    <string name="constraint_wifi_off">Wi-Fi выключен</string>
+    <string name="constraint_connected_to_wifi_network">Подключено к сети Wi-Fi</string>
+    <string name="constraint_disconnected_from_wifi_network">Отключено от сети Wi-Fi</string>
+    <string name="constraint_input_method_chosen">Метод ввода выбран</string>
+    <string name="constraint_input_method_not_chosen">Метод ввода не выбран</string>
+    <string name="constraint_keyboard_showing">Клавиатура открыта</string>
+    <string name="constraint_keyboard_not_showing">Клавиатура скрыта</string>
+    <string name="constraint_device_locked">Устройство заблокировано</string>
+    <string name="constraint_device_unlocked">Устройство разблокировано</string>
+    <string name="constraint_lock_screen_showing">Экран блокировки показан</string>
+    <string name="constraint_lock_screen_not_showing">Экран блокировки не показан</string>
+    <string name="constraint_in_phone_call">Идёт телефонный звонок</string>
+    <string name="constraint_not_in_phone_call">Нет телефонного звонка</string>
+    <string name="constraint_phone_ringing">Телефон звонит</string>
+    <string name="constraint_charging">Идёт зарядка</string>
+    <string name="constraint_discharging">Разряжается</string>
+    <string name="constraint_hinge_closed">Складное устройство закрыто</string>
+    <string name="constraint_hinge_open">Складное устройство открыто</string>
+    <string name="constraint_time">Время</string>
+    <string name="constraint_bluetooth_device_connected">Bluetooth-устройство подключено</string>
+    <string name="constraint_bluetooth_device_disconnected">Bluetooth-устройство отключено</string>
+    <string name="constraint_dark_mode_on">Тёмная тема включена</string>
+    <string name="constraint_dark_mode_off">Тёмная тема выключена</string>
+    <string name="constraint_battery_saver_on">Режим энергосбережения включён</string>
+    <string name="constraint_battery_saver_off">Режим энергосбережения выключен</string>
+    <string name="constraint_charging_wired">Идёт зарядка по кабелю</string>
+    <string name="constraint_charging_wireless">Идёт беспроводная зарядка</string>
+    <string name="constraint_battery_above">Заряд батареи выше уровня</string>
+    <string name="constraint_battery_below">Заряд батареи ниже уровня</string>
+    <string name="constraint_location_on">Геолокация включена</string>
+    <string name="constraint_location_off">Геолокация выключена</string>
+    <string name="constraint_day_of_week">День недели</string>
+    <string name="constraint_mobile_data_on">Мобильный интернет включён</string>
+    <string name="constraint_mobile_data_off">Мобильный интернет выключен</string>
+    <string name="constraint_airplane_mode_on">Режим полёта включён</string>
+    <string name="constraint_airplane_mode_off">Режим полёта выключен</string>
+    <string name="constraint_ringer_normal">Звонок включён</string>
+    <string name="constraint_ringer_vibrate">Звонок в режиме вибрации</string>
+    <string name="constraint_ringer_silent">Звонок без звука</string>
+    <string name="constraint_dnd_on">Режим «Не беспокоить» включён</string>
+    <string name="constraint_dnd_off">Режим «Не беспокоить» выключен</string>
+    <string name="constraint_headphones_connected">Наушники подключены</string>
+    <string name="constraint_headphones_disconnected">Наушники отключены</string>
+
+    <!-- Редактор действий: значки требований -->
+    <string name="badge_expert_mode">Требует Расширенный режим</string>
+    <string name="badge_accessibility">Требует службу специальных возможностей</string>
+    <string name="badge_notification_policy">Требует доступ к режиму «Не беспокоить»</string>
+    <string name="badge_write_settings">Требуется разрешение на изменение системных настроек</string>
+
+    <!-- Редактор действий: метки полей -->
+    <string name="field_key_to_send">Клавиша для отправки</string>
+    <string name="field_tap_here">Нажмите здесь</string>
+    <string name="field_time_between_taps">Время между нажатиями</string>
+    <string name="field_swipe_from">Провести от</string>
+    <string name="field_swipe_to">Провести до</string>
+    <string name="field_duration">Длительность</string>
+    <string name="field_first_finger">Первый палец</string>
+    <string name="field_second_finger">Второй палец</string>
+    <string name="field_app_to_open">Приложение для запуска</string>
+    <string name="field_app_to_stop">Приложение для остановки</string>
+    <string name="field_extras">Доп. параметры</string>
+    <string name="field_setting_key">Ключ настройки</string>
+    <string name="field_level">Уровень</string>
+    <string name="field_brightness">Яркость</string>
+    <string name="field_text_to_speak">Текст для озвучивания</string>
+    <string name="field_wait">Ожидание</string>
+
+    <!-- Редактор действий: подсказки -->
+    <string name="hint_input_text">Вводится в поле, находящееся в фокусе</string>
+    <string name="hint_http_body">Отправляется вместе с запросом</string>
+    <string name="hint_optional">Необязательно</string>
+    <string name="hint_sound_uri">URI вида content:// или file://</string>
+
+    <!-- Редактор действий: пояснения -->
+    <string name="helper_input_key_code">Отправляет нажатие клавиши в приложение на переднем плане.</string>
+    <string name="helper_http_request">Отправляет веб-запрос — удобно для вызова вебхука или сценария умного дома.</string>
+    <string name="helper_shell_command">Выполняет команду терминала на устройстве.</string>
+    <string name="helper_extras">Необязательно. Каждая пара отправляется как строковый параметр.</string>
+    <string name="helper_send_intent">Отправляет широковещательный intent Android — сообщение, на которое могут реагировать другие приложения. Для опытных пользователей.</string>
+    <string name="helper_modify_setting">Напрямую записывает системную настройку Android.</string>
+    <string name="helper_repeat_previous">Снова выполняет действие, указанное выше.</string>
+
+    <!-- Редактор действий: варианты -->
+    <string name="choice_pinch_in">Уменьшить масштаб (сжать пальцы)</string>
+    <string name="choice_pinch_out">Увеличить масштаб (развести пальцы)</string>
+    <string name="summary_zoom_in">Увеличить масштаб</string>
+    <string name="summary_zoom_out">Уменьшить масштаб</string>
+    <string name="choice_namespace_system">System</string>
+    <string name="choice_namespace_secure">Secure</string>
+    <string name="choice_namespace_global">Global</string>
+    <string name="choice_stream_ring">Звонок</string>
+    <string name="choice_stream_media">Медиа</string>
+    <string name="choice_stream_alarm">Будильник</string>
+    <string name="choice_stream_notification">Уведомления</string>
+    <string name="choice_ringer_normal">Обычный</string>
+    <string name="choice_ringer_vibrate">Вибрация</string>
+    <string name="choice_ringer_silent">Без звука</string>
+
+    <!-- Типы нажатий триггера -->
+    <string name="press_single_title">Одно нажатие</string>
+    <string name="press_single_description">Срабатывает при однократном нажатии клавиши</string>
+    <string name="press_double_title">Двойное нажатие</string>
+    <string name="press_double_description">Срабатывает при двух нажатиях клавиши подряд</string>
+    <string name="press_long_title">Долгое нажатие</string>
+    <string name="press_long_badge">Удержание</string>
+    <string name="press_long_description">Срабатывает, когда клавиша удерживается заданное время</string>
+
+    <!-- Названия аппаратных клавиш -->
+    <string name="key_volume_down">Громкость вниз</string>
+    <string name="key_volume_up">Громкость вверх</string>
+    <string name="key_power">Питание</string>
+    <string name="key_assist">Ассистент (Assist)</string>
+    <string name="key_voice_assist">Голосовой ассистент</string>
+    <string name="key_headsethook">Гарнитура / медиаклавиша</string>
+    <string name="key_camera">Камера / затвор</string>
+    <string name="key_back">Назад</string>
+    <string name="key_home">Домой</string>
+    <string name="key_menu">Меню</string>
+    <string name="key_mute">Без звука</string>
+    <string name="key_media_play_pause">Воспроизведение / пауза</string>
+    <string name="key_wakeup">Пробуждение</string>
+    <string name="key_alert_slider">Слайдер оповещений / пользовательский переключатель</string>
+
+    <!-- Инструкции по режиму разработчика -->
+    <string name="guide_generic">Другое</string>
+    <string name="guide_pixel">Google Pixel / чистый Android</string>
+
+    <!-- Предлагаемые сценарии -->
+    <string name="suggestion_flashlight">Фонарик</string>
+    <string name="suggestion_flashlight_subtitle">Включить и выключить фонарик</string>
+    <string name="suggestion_play_pause">Воспроизведение / пауза</string>
+    <string name="suggestion_play_pause_subtitle">То, что сейчас играет</string>
+    <string name="suggestion_screenshot">Снимок экрана</string>
+    <string name="suggestion_screenshot_subtitle">Захватить экран</string>
+    <string name="suggestion_dnd">Не беспокоить</string>
+    <string name="suggestion_dnd_subtitle">Заглушить все уведомления</string>
+    <string name="suggestion_lock">Заблокировать устройство</string>
+    <string name="suggestion_lock_subtitle">Выключить экран</string>
+    <string name="suggestion_camera">Открыть камеру</string>
+    <string name="suggestion_camera_subtitle">Сразу к съёмке</string>
+    <string name="suggestion_headphones_play">Наушники подключены</string>
+    <string name="suggestion_headphones_play_subtitle">Подключите — заиграет музыка</string>
+    <string name="suggestion_assistant">Ассистент</string>
+    <string name="suggestion_assistant_subtitle">Поговорить с ассистентом</string>
+    <string name="suggestion_bedtime">Время сна</string>
+    <string name="suggestion_bedtime_subtitle">Не беспокоить, затемнить, заблокировать</string>
+    <string name="suggestion_notifications">Уведомления</string>
+    <string name="suggestion_notifications_subtitle">Открыть шторку</string>
+    <string name="suggestion_car_bluetooth">В машине</string>
+    <string name="suggestion_car_bluetooth_subtitle">Машина подключилась — играет музыка</string>
+    <string name="suggestion_sos">Сигнал SOS</string>
+    <string name="suggestion_sos_subtitle">Фонарик мигает ··· ––– ···</string>
+    <string name="suggestion_wifi">Wi-Fi</string>
+    <string name="suggestion_wifi_subtitle">Включить или выключить</string>
+    <string name="suggestion_low_battery">Низкий заряд</string>
+    <string name="suggestion_low_battery_subtitle">Ниже 15%: Bluetooth выкл., затемнить</string>
+    <string name="suggestion_auto_rotate">Автоповорот</string>
+    <string name="suggestion_auto_rotate_subtitle">Заблокировать или разрешить поворот</string>
+    <string name="suggestion_night_charge_dnd">Ночная зарядка</string>
+    <string name="suggestion_night_charge_dnd_subtitle">На зарядке после 22:00: Не беспокоить</string>
+    <string name="suggestion_bluetooth">Bluetooth</string>
+    <string name="suggestion_bluetooth_subtitle">Включить или выключить</string>
+    <string name="suggestion_vibrate_mode">Режим вибрации</string>
+    <string name="suggestion_vibrate_mode_subtitle">Звонок на вибрацию</string>
+    <string name="suggestion_torch_off_screen_off">Защита фонарика</string>
+    <string name="suggestion_torch_off_screen_off_subtitle">Экран погас — фонарик выключен</string>
+    <string name="suggestion_battery_saver">Экономия заряда</string>
+    <string name="suggestion_battery_saver_subtitle">Bluetooth и Wi-Fi выкл., затемнить</string>
+
+    <!-- Общее -->
+    <string name="common_cancel">Отмена</string>
+    <string name="common_save">Сохранить</string>
+    <string name="common_add">Добавить</string>
+    <string name="common_done">Готово</string>
+    <string name="common_back">Назад</string>
+    <string name="common_close">Закрыть</string>
+    <string name="common_remove">Убрать</string>
+    <string name="common_delete">Удалить</string>
+    <string name="common_coming_soon">Скоро</string>
+    <string name="picker_category_all">Все</string>
+
+    <!-- Панель настройки действия -->
+    <string name="badge_tap_to_grant">%1$s · Нажмите, чтобы предоставить</string>
+    <string name="action_config_enter_key_code">Или введите код клавиши</string>
+    <string name="action_config_cancel_recording">Отменить запись</string>
+    <string name="action_config_record_key">Записать физическую клавишу</string>
+    <string name="action_config_choose_app">Выберите приложение</string>
+    <string name="action_config_enter_package">Или введите имя пакета</string>
+    <string name="action_config_pick_on_screen">Выбрать на экране</string>
+    <string name="action_config_allow_overlay">Разрешить показ поверх других приложений для выбора</string>
+    <string name="action_config_point_not_set">не задано</string>
+
+    <!-- Выбор условия -->
+    <string name="constraint_picker_title">Выберите условие</string>
+    <string name="constraint_picker_search">Поиск условий</string>
+    <string name="constraint_picker_no_match">Нет условий, соответствующих \"%1$s\"</string>
+    <string name="constraint_picker_empty_category">В этой категории пока нет условий</string>
+    <string name="constraint_picker_add_label">Добавить %1$s</string>
+
+    <!-- Панель настройки условия -->
+    <string name="constraint_picker_configure_title">Настроить условие</string>
+    <string name="field_constraint_app">Приложение</string>
+    <string name="field_orientation">Ориентация</string>
+    <string name="orientation_portrait">Портретная</string>
+    <string name="orientation_landscape">Альбомная</string>
+    <string name="field_wifi_ssid">Имя сети (SSID)</string>
+    <string name="hint_wifi_ssid_any">Оставьте пустым для любой сети</string>
+    <string name="field_bluetooth_device">Устройство</string>
+    <string name="bluetooth_no_paired_devices">Нет сопряжённых устройств. Сначала выполните сопряжение в настройках Bluetooth.</string>
+    <string name="field_battery_percent">Уровень заряда</string>
+    <string name="field_time_start">С</string>
+    <string name="field_time_end">До</string>
+    <string name="field_days">Дни</string>
+    <string name="constraint_needs_usage_access">Нужен доступ к данным об использовании, чтобы приложение видело, какое приложение на переднем плане.</string>
+    <string name="constraint_config_choose_app">Выберите приложение, чтобы продолжить</string>
+    <string name="constraint_needs_location">Android показывает имя сети только приложениям с разрешением на геолокацию.</string>
+    <string name="constraint_grant_permission">Предоставить</string>
+    <string name="constraint_summary_any_wifi">Любая сеть</string>
+    <string name="constraint_summary_time_range" translatable="false">%1$s – %2$s</string>
+    <string name="constraint_summary_percent" translatable="false">%1$d%%</string>
+
+    <!-- Выбор действия -->
+    <string name="action_picker_search">Поиск действий</string>
+    <string name="action_picker_no_match">Нет действий, соответствующих \"%1$s\"</string>
+    <string name="action_picker_empty_category">В этой категории пока нет действий</string>
+    <string name="action_picker_add_label">Добавить %1$s</string>
+
+    <!-- Редактор сценария -->
+    <string name="editor_discard_changes">Отменить изменения</string>
+    <string name="editor_unsaved_title">Отменить изменения?</string>
+    <string name="editor_unsaved_body">Ваши изменения в этом сценарии не сохранены.</string>
+    <string name="editor_unsaved_discard">Отменить</string>
+    <string name="editor_shortcut_name">Название сценария</string>
+    <string name="editor_shortcut_settings">Настройки сценария</string>
+    <string name="editor_chain_when">Когда</string>
+    <string name="editor_chain_only_if">Только если</string>
+    <string name="editor_chain_do">Выполнить</string>
+    <string name="editor_add_action">Добавить действие</string>
+    <string name="editor_add_constraint">Добавить условие</string>
+    <string name="editor_always_runs">Выполняется всегда</string>
+    <string name="editor_remove_constraint">Удалить %1$s</string>
+    <string name="editor_configure_action">Настроить %1$s</string>
+    <string name="editor_more_options">Дополнительные параметры для %1$s</string>
+    <string name="editor_tap_to_configure">Нажмите, чтобы настроить</string>
+    <string name="editor_configure">Настроить</string>
+    <string name="editor_move_up">Переместить вверх</string>
+    <string name="editor_move_down">Переместить вниз</string>
+    <string name="editor_test_run">Тестовый запуск</string>
+
+    <!-- Общее (2) -->
+    <string name="common_ok">ОК</string>
+    <string name="common_yes">Да</string>
+    <string name="common_no">Нет</string>
+    <string name="common_confirm">Подтвердить</string>
+    <string name="common_save_caps">СОХРАНИТЬ</string>
+    <string name="common_cancel_caps">ОТМЕНА</string>
+
+    <!-- Нижняя навигация -->
+    <string name="nav_home">Главная</string>
+    <string name="nav_shortcuts">Сценарии</string>
+    <string name="nav_settings">Настройки</string>
+
+    <!-- Диалоги -->
+    <string name="dialog_expert_connected">РАСШИРЕННЫЙ РЕЖИМ ПОДКЛЮЧЁН</string>
+    <string name="dialog_new_input_title">Обнаружен новый ввод</string>
+    <string name="dialog_new_input_body">Код: %1$d. Дайте этому вводу короткое имя.</string>
+    <string name="dialog_new_input_hint">например, кнопка сценария</string>
+
+    <!-- Выбор приложения -->
+    <string name="app_picker_search">Поиск приложений</string>
+    <string name="app_picker_loading">Чтение установленных приложений…</string>
+    <string name="app_picker_no_match">Нет приложений, соответствующих \"%1$s\"</string>
+    <string name="app_picker_choose">Выбрать %1$s</string>
+    <string name="app_picker_selected">Выбрано</string>
+
+    <!-- Выбор триггера автоматизации -->
+
+    <!-- Триггеры событий -->
+
+    <!-- Выбор триггера -->
+    <string name="trigger_picker_title">Задать клавишу</string>
+    <string name="trigger_picker_subtitle">Выберите тип нажатия, затем запишите клавишу.</string>
+    <string name="trigger_picker_no_key">Клавиша ещё не задана</string>
+    <string name="trigger_picker_saved_key">Или выберите сохранённую клавишу</string>
+    <string name="trigger_picker_listening">Слушаем… нажмите, чтобы остановить</string>
+    <string name="trigger_picker_tap_to_record">Коснитесь, затем нажмите физическую клавишу</string>
+    <string name="trigger_picker_save_combo">Сохранить клавишу</string>
+    <string name="trigger_picker_use_automation">Использовать вместо этого автоматизацию</string>
+    <string name="trigger_picker_use_key">Использовать %1$s</string>
+
+    <!-- Настройки отдельного сценария -->
+    <string name="script_settings_name">Название</string>
+    <string name="script_settings_enabled">Включено</string>
+    <string name="script_settings_assign_key_first">Назначьте клавишу в редакторе, чтобы настроить поведение нажатия.</string>
+    <string name="script_settings_trigger_type">Тип нажатия</string>
+    <string name="script_settings_double_press_window">Окно двойного нажатия</string>
+    <string name="script_settings_long_press_threshold">Порог долгого нажатия</string>
+    <string name="script_settings_using_global">Используется глобальное значение по умолчанию (%1$d мс)</string>
+    <string name="script_settings_custom_value">Своё значение для этого сценария</string>
+    <string name="script_settings_consume_input">Перехватывать исходное нажатие</string>
+    <string name="script_settings_consume_input_description">Не даёт клавише доходить до других приложений там, где это допускает Android.</string>
+    <string name="script_settings_not_global">Не глобально, только для этого сценария</string>
+    <string name="script_settings_vibrate">Вибрация при запуске</string>
+    <string name="script_settings_vibrate_description">Короткая вибрация при срабатывании этого сценария.</string>
+    <string name="script_settings_reset_to_default">Сбросить к значению по умолчанию (%1$s)</string>
+
+    <!-- Список сценариев -->
+    <string name="scripts_title">Мои сценарии</string>
+    <string name="scripts_paused_warning">Все сценарии приостановлены, поэтому ни один из них не сработает.</string>
+    <string name="scripts_new_shortcut">Новый сценарий</string>
+    <string name="scripts_empty_title">Пока нет сценариев</string>
+    <string name="scripts_empty_body">Сценарий выполняет одно или несколько действий при нажатии физической клавиши.</string>
+    <string name="scripts_empty_go_home">Начните с одного из предложений на главном экране</string>
+    <string name="scripts_tutorial_title">Создайте свой первый сценарий</string>
+    <string name="scripts_tutorial_subtitle">Четыре шага, по кругу.</string>
+    <string name="scripts_tutorial_pause">Приостановить демонстрацию</string>
+    <string name="scripts_tutorial_play">Воспроизвести демонстрацию</string>
+    <string name="scripts_tutorial_step_new">Нажмите «Новый сценарий»</string>
+    <string name="scripts_tutorial_step_key">Выберите «Нажатие клавиши» и нажмите свою клавишу</string>
+    <string name="scripts_tutorial_step_action">Добавьте действие</string>
+    <string name="scripts_tutorial_step_done">Нажмите «Готово»</string>
+    <string name="scripts_tutorial_cap_fab">Синяя кнопка + вверху справа</string>
+    <string name="scripts_tutorial_cap_keypress">В разделе «Когда» нажмите «Нажатие клавиши»</string>
+    <string name="scripts_tutorial_cap_press">Нажмите клавишу на телефоне</string>
+    <string name="scripts_tutorial_cap_save">Нажмите «Сохранить клавишу»</string>
+    <string name="scripts_tutorial_cap_add">В разделе «Выполнить» нажмите «Добавить действие»</string>
+    <string name="scripts_tutorial_cap_pick">Выберите «Фонарик»</string>
+    <string name="scripts_tutorial_cap_lands">Оно появится в разделе «Выполнить»</string>
+    <string name="scripts_tutorial_cap_check">Галочка вверху справа</string>
+    <string name="scripts_tutorial_cap_runs">«Громкость вверх» теперь включает фонарик</string>
+    <string name="scripts_tutorial_mini_page">Страница сценариев</string>
+    <string name="scripts_tutorial_listening">Слушаем…</string>
+    <string name="scripts_tutorial_key_recorded">Клавиша записана</string>
+    <string name="scripts_no_trigger">Клавиша ещё не задана</string>
+    <string name="scripts_no_condition">Условие не добавлено</string>
+    <string name="scripts_no_actions">Пока нет действий</string>
+    <string name="scripts_unnamed">Сценарий</string>
+    <string name="scripts_delete_label">Удалить %1$s</string>
+    <string name="scripts_toggle_state_on">Включено</string>
+    <string name="scripts_toggle_state_off">Выключено</string>
+    <string name="scripts_toggle_state_paused">Включено, но все сценарии приостановлены</string>
+    <string name="scripts_delete_title">Удалить сценарий?</string>
+    <string name="scripts_delete_body">\"%1$s\" будет удалён без возможности восстановления.</string>
+    <string name="scripts_snackbar_home">Главная</string>
+
+    <!-- Главный экран -->
+    <string name="home_suggested_shortcuts">Предлагаемые сценарии</string>
+    <string name="home_suggestions_group_single">Одна клавиша, одно действие</string>
+    <string name="home_suggestions_group_multi">Одна клавиша, несколько шагов</string>
+    <string name="home_suggestions_group_automation">Работает само</string>
+    <string name="home_your_shortcuts">Ваши сценарии</string>
+    <string name="suggestion_saved">%1$s готов · %2$s</string>
+    <string name="home_build_from_suggestion">Создать сценарий из %1$s</string>
+    <string name="home_suggestion_soon">Скоро</string>
+    <string name="home_suggestion_automation">Автоматизация</string>
+    <string name="home_pause_all">Приостановить все сценарии</string>
+    <string name="home_resume_all">Возобновить все сценарии</string>
+    <string name="home_status_live">Активно</string>
+    <string name="home_status_paused">Приостановлено</string>
+    <string name="home_system_status">Состояние системы</string>
+    <string name="home_collapse_status">Свернуть состояние системы</string>
+    <string name="home_expand_status">Развернуть состояние системы</string>
+    <string name="home_accessibility_service">Служба специальных возможностей</string>
+    <string name="home_status_advanced">Расширенный режим</string>
+    <string name="home_status_active">Активна</string>
+    <string name="home_status_offline">Отключена</string>
+    <string name="home_status_running">Запущен</string>
+    <string name="home_status_off">Выключен</string>
+    <string name="home_triggers_session">Запусков за сеанс</string>
+    <string name="home_last_from">Последнее от %1$s</string>
+    <string name="home_open_label_settings">Открыть настройки %1$s</string>
+    <string name="home_setup_title_off">Ваши сценарии ещё не работают</string>
+    <string name="home_setup_subtitle_off">Три шага, все в настройках Android. Здесь написано, что нажать в каждом.</string>
+    <string name="home_setup_title_at_risk">Ваши сценарии могут перестать работать</string>
+    <string name="home_setup_subtitle_at_risk">Пока это выключено, Android может закрыть приложение в фоне.</string>
+    <string name="home_setup_progress">%1$d/3</string>
+    <string name="home_setup_step_accessibility">Включите службу специальных возможностей</string>
+    <string name="home_setup_why_accessibility">Через неё KeySnap считывает нажатия кнопок. Пока она выключена, ничего не работает.</string>
+    <string name="home_setup_open_accessibility">Открыть настройки специальных возможностей</string>
+    <string name="home_setup_step_background">Разрешите KeySnap работать в фоне</string>
+    <string name="home_setup_why_background">Android закрывает приложения, которые считает спящими. Нажмите «Разрешить», когда он спросит, — с «Запретить» система сможет закрывать KeySnap.</string>
+    <string name="home_setup_allow_background">Разрешить работу в фоне</string>
+    <string name="home_setup_done_background">Разрешено</string>
+    <string name="home_setup_step_notifications">Разрешите уведомления</string>
+    <string name="home_setup_why_notifications">Только для настройки: код сопряжения и статус службы. Нажмите «Разрешить», когда Android спросит, — «Запретить» остановит настройку здесь.</string>
+    <string name="home_setup_ask_now">Спросить сейчас</string>
+    <string name="home_setup_done_notifications">Разрешены</string>
+    <string name="home_setup_all_done">Все три включены. Ваши кнопки работают.</string>
+    <string name="home_setup_state_done">Выполнено</string>
+    <string name="home_setup_state_current">Текущий шаг</string>
+    <string name="home_setup_state_upcoming">Ещё не начат</string>
+    <string name="home_setup_illo_downloaded_apps">Скачанные приложения</string>
+    <string name="home_setup_why">Почему?</string>
+    <string name="home_setup_why_expanded">Развёрнуто</string>
+    <string name="home_setup_why_collapsed">Свёрнуто</string>
+    <string name="home_setup_whytext_accessibility">Android показывает аппаратные кнопки только службе специальных возможностей, поэтому KeySnap использует её именно для этого: заметить нажатие и запустить ваш сценарий. Экраны других приложений она не читает. Только во время настройки Расширенного режима она также считывает код сопряжения на странице беспроводной отладки — и больше ничего.</string>
+    <string name="home_setup_whytext_background">Android закрывает приложения, которые считает бездействующими, а закрытое приложение не может выполнять ваши сценарии. Это оставляет KeySnap работать, пока телефон спит. В фоне он только ждёт нажатия кнопки.</string>
+    <string name="home_setup_whytext_notifications">Только во время настройки Расширенного режима: код сопряжения и состояние службы. Никаких напоминаний, никакой рекламы, ничего больше — никогда.</string>
+    <string name="home_setup_illo_battery_dialog">Разрешить KeySnap всегда работать в фоне?</string>
+    <string name="home_setup_illo_battery_body">Это может сократить время работы батареи.</string>
+    <string name="home_setup_illo_battery_deny">Запретить</string>
+    <string name="home_setup_illo_dialog">Разрешить KeySnap отправлять вам уведомления?</string>
+    <string name="home_setup_illo_deny">Запретить</string>
+    <string name="home_setup_illo_allow">Разрешить</string>
+    <string name="home_nudge_title">Создайте свой первый сценарий</string>
+    <string name="home_nudge_subtitle">Фонарик — прямо под этим, в одно касание.</string>
+    <string name="home_nudge_dismiss">Закрыть</string>
+    <string name="home_reward_cooldown">Награда на перезарядке, осталось %1$s. Перейдите на Pro.</string>
+    <string name="home_reward_available">Посмотрите рекламу, чтобы получить один дополнительный сценарий на 4 часа</string>
+    <string name="home_reward_badge_idle">+1</string>
+
+    <!-- Продвижение Pro -->
+    <string name="pro_card_subtitle">Бесплатно — не более %1$d включённых сценариев. Pro — все сразу.</string>
+    <string name="pro_card_at_cap">Почему следующий сценарий не остаётся включённым</string>
+    <string name="pro_active_shortcuts">Активные сценарии</string>
+    <string name="pro_progress_description">%1$d из %2$d активных сценариев</string>
+    <string name="pro_reward_remaining">Осталось %1$s</string>
+    <string name="pro_reward_offer">+%1$d на %2$d ч</string>
+    <string name="pro_unlock">Открыть Pro</string>
+    <string name="pro_unlock_with_price">Открыть Pro · %1$s</string>
+    <string name="pro_table_free">Бесплатно</string>
+    <string name="pro_table_pro">Pro</string>
+    <string name="pro_table_unlimited">Без ограничений</string>
+    <string name="pro_table_free_limit_with_reward">%1$d (%2$d с наградой)</string>
+    <string name="pro_table_ads">Реклама</string>
+    <string name="pro_table_shown">Есть</string>
+    <string name="pro_table_none">Нет</string>
+    <string name="pro_table_row_description">%1$s: Бесплатно %2$s, Pro %3$s</string>
+
+    <!-- Реклама -->
+    <string name="ad_loading">Загрузка рекламы…</string>
+    <string name="ad_sponsored">Реклама</string>
+
+    <!-- Настройки -->
+    <string name="settings_title">Настройки</string>
+    <string name="settings_subtitle">Значения по умолчанию для каждого нового сценария.</string>
+    <string name="settings_group_keys">Клавиши</string>
+    <string name="settings_group_advanced">Расширенные</string>
+    <string name="settings_group_app">Приложение</string>
+    <string name="settings_defaults_panel">Значения по умолчанию для новых сценариев</string>
+    <string name="settings_defaults_hint">Каждый сценарий может переопределить их в собственных настройках.</string>
+    <string name="settings_double_press_description">Время, допустимое между нажатиями. Также задерживает выполнение действий одиночного нажатия.</string>
+    <string name="settings_long_press_description">Как долго нужно удерживать клавишу, прежде чем сработает действие долгого нажатия.</string>
+    <string name="settings_appearance_panel">Внешний вид</string>
+    <string name="settings_input_panel">Поведение ввода</string>
+    <string name="settings_haptics_panel">Виброотклик</string>
+    <string name="settings_haptic_feedback">Виброотклик</string>
+    <string name="settings_haptic_feedback_on">Вибрировать при запуске сценария.</string>
+    <string name="settings_haptic_unavailable">Вибрация недоступна на этом устройстве.</string>
+    <string name="settings_haptic_duration">Длительность вибрации</string>
+    <string name="settings_haptic_duration_description">Продолжительность подтверждающей вибрации.</string>
+    <string name="settings_haptic_duration_disabled">Включите виброотклик, чтобы настроить его длительность.</string>
+    <string name="settings_expert_panel">Расширенный режим</string>
+    <string name="settings_detached_bridge">Читать все аппаратные клавиши</string>
+    <string name="settings_bridge_running">Включено — клавиша питания, ассистента и другие ограниченные клавиши работают, даже когда приложение закрыто.</string>
+    <string name="settings_bridge_stopped">Выключено — только клавиши, доступные приложениям в Android.</string>
+    <string name="settings_run_setup">Запустить настройку заново</string>
+    <string name="settings_run_setup_description">Повторно сопрячь беспроводную отладку.</string>
+    <string name="settings_about_panel">О приложении</string>
+    <string name="settings_about_app">О KeySnap</string>
+    <string name="settings_about_app_summary">Открытый код · ничто не покидает телефон</string>
+    <string name="settings_privacy_policy">Политика конфиденциальности</string>
+    <string name="settings_erase">Удалить все данные</string>
+    <string name="settings_erase_confirm_title">Удалить все данные?</string>
+    <string name="settings_erase_action">Удалить всё</string>
+    <string name="settings_erase_warning">Это остановит Расширенный режим, удалит мост с устройства и уберёт все сценарии и настройки. Отменить это нельзя. Служба специальных возможностей тоже отключится; включите её снова после этого.</string>
+    <string name="settings_version">Версия %1$s (%2$d)</string>
+    <string name="settings_input_monitor">Монитор ввода</string>
+    <string name="settings_show_log_action">Показать журнал событий</string>
+    <string name="settings_hide_log_action">Скрыть журнал событий</string>
+    <string name="settings_log_count">%1$d из %2$d</string>
+    <string name="settings_log_waiting">Ожидание физического ввода…</string>
+    <string name="settings_log_clear">Очистить</string>
+    <string name="settings_log_matched">Совпало со сценарием</string>
+
+    <!-- Выбор языка -->
+    <string name="settings_language_panel">Язык</string>
+    <string name="language_system">Системный язык</string>
+
+    <!-- Внешний вид -->
+    <string name="theme_light">Светлая</string>
+    <string name="theme_dark">Тёмная</string>
+    <string name="theme_sepia">Сепия</string>
+
+    <!-- Ползунки -->
+    <string name="slider_milliseconds">%1$d миллисекунд</string>
+    <string name="slider_restore_default">Восстановить %1$s по умолчанию</string>
+
+    <!-- Оверлей выбора точки на экране -->
+    <string name="picker_point_a">A: %1$d, %2$d</string>
+    <string name="picker_point_b">B: %1$d, %2$d</string>
+    <string name="picker_point">Точка: %1$d, %2$d</string>
+
+    <!-- Первый запуск -->
+    <string name="onboarding_finish">Завершить настройку</string>
+
+    <!-- Мастер настройки -->
+    <string name="about_hero_title">Ничто из того, что вы здесь делаете, не покидает ваш телефон.</string>
+    <string name="about_hero_body">Никаких серверов. Никакого аккаунта. Никакой аналитики. KeySnap некуда отправлять ваши сценарии или нажатия клавиш — и всё приложение открыто, так что верить нам на слово не нужно.</string>
+    <string name="about_no_server_title">Сервера не существует</string>
+    <string name="about_no_server_body">У KeySnap нет бэкенда, аккаунта и отчётов о сбоях. То, что вы назначаете, что нажимаете и какими приложениями пользуетесь, остаётся в личном хранилище этого приложения. Кода, который всё это выгружает, здесь нет — потому что выгружать некуда.</string>
+    <string name="about_illo_no_server_caption">нажатия · сценарии · использование</string>
+    <string name="about_open_source_title">Открытый код, чтобы вы могли проверить</string>
+    <string name="about_open_source_body">Каждая строка KeySnap опубликована под GPLv3. Прочитайте, для чего используется каждое разрешение, соберите приложение сами или отдайте тому, кто умеет.</string>
+    <string name="about_view_source">Посмотреть исходный код на GitHub</string>
+    <string name="about_scope_title">Служба специальных возможностей видит только Настройки</string>
+    <string name="about_scope_body">Android не даёт приложениям другого способа заметить аппаратную клавишу. Служба KeySnap ограничена системным приложением «Настройки» и используется ровно для одного: прочитать код сопряжения, пока вы настраиваете Расширенный режим. Она не может читать ваше банковское приложение, ваши сообщения или то, что вы набираете, — это обеспечивает сам Android, а не обещание.</string>
+    <string name="about_bridge_title">Расширенный режим — это ADB вашего же телефона</string>
+    <string name="about_bridge_body">Он подключается к беспроводной отладке вашего телефона по локальной сети — это соединение никогда не выходит из дома. Команды оболочки он выполняет только для написанных вами сценариев. Выключите его — мост будет удалён; перезагрузка тоже его останавливает.</string>
+    <string name="about_illo_bridge_caption">выкл. → мост удаляет себя</string>
+    <string name="about_traffic_title">Все соединения, которые создаёт приложение</string>
+    <string name="about_traffic_device">Ваш собственный телефон</string>
+    <string name="about_traffic_device_body">Сопряжение по беспроводной отладке. Только локальная сеть.</string>
+    <string name="about_traffic_yours">Адреса, которые вы ввели сами</string>
+    <string name="about_traffic_yours_body">Действие HTTP или «Открыть URL» уходит ровно туда, как вы его написали, без изменений.</string>
+    <string name="about_traffic_google">Реклама Google и Google Play</string>
+    <string name="about_traffic_google_body">Чтобы показать рекламу в бесплатной версии и узнать, куплена ли версия Pro. Ни один из них никогда не получает нажатие клавиши или сценарий.</string>
+    <string name="about_traffic_all">Это весь список.</string>
+    <string name="about_erase_title">Заберите всё обратно в любой момент</string>
+    <string name="about_erase_body">«Удалить все данные» убирает каждый сценарий, сохранённую клавишу, настройку и файл моста, а сначала останавливает Расширенный режим, чтобы ничего не осталось работать.</string>
+
+    <string name="wizard_title">Включить Расширенный режим</string>
+    <string name="wizard_subtitle">Мастер настройки</string>
+    <string name="wizard_continue">Продолжить</string>
+    <string name="wizard_finish_pairing">Завершить сопряжение</string>
+    <string name="wizard_step_intro">Введение</string>
+    <string name="wizard_step_pairing">Сопряжение</string>
+    <string name="wizard_step_done">Готово</string>
+    <string name="wizard_what_is_expert">Что такое Расширенный режим?</string>
+    <string name="wizard_expert_explainer">KeySnap подключается к беспроводной отладке вашего же телефона и читает клавиши прямо из ядра — питание, ассистент, камера; кнопки, которые Android скрывает от приложений.</string>
+    <string name="wizard_expert_off_note">Выключение удаляет · перезагрузка останавливает</string>
+    <string name="wizard_can">может</string>
+    <string name="wizard_never">никогда</string>
+    <string name="wizard_no_dev_options">Ещё нет параметров разработчика?</string>
+    <string name="wizard_no_dev_options_sub">Шаги для вашего телефона — на следующем экране</string>
+    <string name="wizard_illo_action">↳ Фонарик включён</string>
+    <string name="wizard_how_to_dev_options">Как включить режим разработчика?</string>
+    <string name="wizard_auto_pairing">Автоматическое сопряжение ADB</string>
+    <string name="wizard_auto_pairing_explainer">Не нужно вводить код сопряжения вручную — мы считываем его в фоновом режиме и подключаемся автоматически. Если это не удастся, вы сможете ввести его из уведомления.</string>
+    <string name="wizard_open_settings">Открыть настройки и начать сопряжение</string>
+    <string name="wizard_expert_running">Расширенный режим запущен</string>
+    <string name="wizard_expert_running_body">Все аппаратные клавиши Android (питание, ассистент, громкость, камера и т. д.) отслеживаются на уровне ядра Linux.</string>
+    <string name="wizard_connection_error">Ошибка подключения</string>
+    <string name="wizard_connection_error_body">Не удалось запустить Расширенный режим. Возможно, код сопряжения или порт неверны, либо служба ADB отклонила подключение — вернитесь назад и проверьте данные.</string>
+    <string name="wizard_connecting">Подключение…</string>
+    <string name="wizard_connecting_body">Расширенный режим запускается. Это занимает несколько секунд — не закрывайте этот экран.</string>
+    <string name="wizard_kernel_stream">Поток событий ядра в реальном времени</string>
+    <string name="wizard_test_flash">Тестовый запуск фонарика</string>
+
+    <!-- Статус сопряжения -->
+    <string name="pairing_idle">Ожидание сопряжения…</string>
+    <string name="pairing_not_started">Нажмите кнопку выше, чтобы начать сопряжение</string>
+    <string name="pairing_searching">Поиск экрана сопряжения…</string>
+    <string name="pairing_captured">Код сопряжения получен…</string>
+    <string name="pairing_in_progress">Сопряжение…</string>
+    <string name="pairing_paired">Сопряжено — подключение…</string>
+    <string name="pairing_connecting">Подключение…</string>
+    <string name="pairing_connected">Подключено</string>
+    <string name="pairing_error">Не удалось подключиться — попробуйте снова</string>
+
+    <!-- Уведомление настройки Расширенного режима -->
+    <string name="notif_channel_setup">Настройка Расширенного режима</string>
+    <string name="notif_channel_setup_description">Показывается, пока приложение сопрягается с беспроводным ADB и запускает мост</string>
+    <string name="notif_setup_title">Настройка Расширенного режима</string>
+    <string name="notif_setup_text">Сопряжение с беспроводной отладкой и запуск моста.</string>
+
+    <!-- Строки событий монитора ввода и метки триггеров -->
+    <string name="event_key_down">НАЖАТА (DOWN)</string>
+    <string name="event_key_up">ОТПУЩЕНА (UP)</string>
+    <string name="trigger_label_single">Одно нажатие (прошло %1$d мс ожидания)</string>
+    <string name="trigger_label_double">Двойное нажатие (окно %1$d мс)</string>
+    <string name="trigger_label_long">Долгое нажатие (%1$d мс)</string>
+    <string name="source_accessibility">Специальные возможности</string>
+    <string name="source_activity">Приложение (на переднем плане)</string>
+
+    <!-- Сообщения view-model -->
+    <string name="default_shortcut_name">Сценарий №%1$d</string>
+    <string name="run_nothing_ran">Ничего не выполнилось. Проверьте настройки действия.</string>
+    <string name="run_partial">Выполнено %1$d из %2$d действий</string>
+    <string name="editor_needs_action">Добавьте хотя бы одно действие перед сохранением.</string>
+    <string name="editor_needs_trigger">Выберите клавишу перед сохранением.</string>
+    <string name="saved_needs_trigger">Сохранено. Назначьте клавишу, чтобы он мог сработать.</string>
+    <string name="saved_named">Сохранено: «%1$s»</string>
+    <string name="saved_needs_condition">Сохранено. Добавьте условие, которое меняется само, например «Заряжается» или «Bluetooth-устройство подключено», чтобы сценарий мог сработать.</string>
+    <string name="free_limit_saved_off">Бесплатный план: %1$d активных сценариев. Сохранено выключенным — посмотрите рекламу или перейдите на Pro, чтобы включить его.</string>
+    <string name="free_limit_reached">Достигнут лимит бесплатного плана. Перейдите на Pro для неограниченного количества сценариев.</string>
+    <string name="free_limit_toggle_blocked">Бесплатный план: %1$d активных сценариев. Посмотрите рекламу или перейдите на Pro, чтобы включить и этот тоже.</string>
+
+    <!-- Privacy policy dialog chrome. The policy body itself stays in PrivacyPolicy.kt: it has to
+         match the English document published for Play word for word. -->
+    <string name="privacy_policy_title">Политика конфиденциальности</string>
+    <string name="privacy_last_updated">Последнее обновление: %1$s</string>
+    <string name="privacy_contact_heading">Контакты</string>
+
+    <!-- Уведомление сопряжения беспроводного ADB -->
+    <string name="notif_channel_pairing">Помощник сопряжения ADB</string>
+    <string name="notif_channel_pairing_description">Ввод кода сопряжения по беспроводному ADB и уведомления об ошибках</string>
+    <string name="notif_pairing_title">Ожидание сопряжения ADB</string>
+    <string name="notif_pairing_default">Просто введите 6-значный код; порт будет найден автоматически.</string>
+    <string name="notif_pairing_input_label">6-значный код сопряжения</string>
+    <string name="notif_pairing_enter_code">Ввести код</string>
+    <string name="notif_pairing_no_port">Порт подключения ADB не найден. Проверьте беспроводную отладку.</string>
+    <string name="notif_pairing_failed">Сопряжение не удалось. Введите 6-значный код заново.</string>
+    <string name="notif_pairing_bad_code">Код должен состоять ровно из 6 цифр. Попробуйте снова.</string>
+
+    <!-- Переключатель темы -->
+
+    <!-- Выбор типа триггера -->
+    <string name="trigger_kind_key">Нажатие клавиши</string>
+    <string name="trigger_kind_automation">Автоматизация</string>
+    <string name="automation_card_subtitle">Срабатывает, когда условия ниже становятся истинными</string>
+</resources>

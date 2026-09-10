@@ -1,0 +1,824 @@
+<resources>
+    <string name="app_name">KeySnap</string>
+    <string name="accessibility_service_description">Rileva le pressioni dei tasti fisici (Volume, Accensione e altri pulsanti hardware) in modo che possano attivare le tue scorciatoie. Solo durante la configurazione della Modalità avanzata, legge anche il codice di accoppiamento dalla finestra di sistema del Debug wireless. Non può leggere lo schermo di nessun\'altra app.</string>
+    <string name="accessibility_disclosure_agree">Accetto, apri le impostazioni</string>
+
+    <!-- Categorie di azioni -->
+    <string name="action_category_input">Input</string>
+    <string name="action_category_apps">App</string>
+    <string name="action_category_flashlight">Torcia</string>
+    <string name="action_category_navigation">Navigazione</string>
+    <string name="action_category_volume">Volume</string>
+    <string name="action_category_display">Schermo</string>
+    <string name="action_category_media">Media</string>
+    <string name="action_category_connectivity">Connettività</string>
+    <string name="action_category_keyboard">Tastiera</string>
+    <string name="action_category_device">Dispositivo</string>
+    <string name="action_category_sound">Suono</string>
+    <string name="action_category_automation">Automazione</string>
+
+    <!-- Etichette dei parametri delle azioni -->
+    <string name="param_strength">Intensità</string>
+    <string name="param_key_code">Codice tasto</string>
+    <string name="param_text">Testo</string>
+    <string name="param_taps">Tocchi</string>
+    <string name="param_interval_ms">Intervallo (ms)</string>
+    <string name="param_start_x">X iniziale</string>
+    <string name="param_start_y">Y iniziale</string>
+    <string name="param_end_x">X finale</string>
+    <string name="param_end_y">Y finale</string>
+    <string name="param_duration_ms">Durata (ms)</string>
+    <string name="param_point_a_x">Punto A X</string>
+    <string name="param_point_a_y">Punto A Y</string>
+    <string name="param_point_b_x">Punto B X</string>
+    <string name="param_point_b_y">Punto B Y</string>
+    <string name="param_direction">Direzione</string>
+    <string name="param_app">App</string>
+    <string name="param_shortcut">Scorciatoia</string>
+    <string name="param_method">Metodo</string>
+    <string name="param_body">Corpo</string>
+    <string name="param_command">Comando</string>
+    <string name="param_action">Azione</string>
+    <string name="param_extras">Extra (chiave=valore;chiave2=valore2)</string>
+    <string name="param_element">Elemento</string>
+    <string name="param_namespace">Namespace</string>
+    <string name="param_key">Chiave</string>
+    <string name="param_value">Valore</string>
+    <string name="param_mode">Modalità</string>
+    <string name="param_stream">Canale</string>
+    <string name="param_sound">Suono</string>
+    <string name="param_times">Volte</string>
+
+    <!-- Azioni: torcia -->
+    <string name="action_toggle_flashlight">Attiva/disattiva torcia</string>
+    <string name="action_enable_flashlight">Attiva torcia</string>
+    <string name="action_disable_flashlight">Disattiva torcia</string>
+    <string name="action_change_flashlight_brightness">Cambia luminosità torcia</string>
+
+    <!-- Azioni: input -->
+    <string name="action_input_key_code">Invia codice tasto</string>
+    <string name="action_input_text">Scrivi testo</string>
+    <string name="action_tap_screen">Tocca schermo</string>
+    <string name="action_swipe_screen">Scorri schermo</string>
+    <string name="action_pinch_screen">Pizzica schermo</string>
+
+    <!-- Azioni: app -->
+    <string name="action_launch_app">Avvia app</string>
+    <string name="action_launch_app_shortcut">Avvia scorciatoia app</string>
+    <string name="action_open_url">Apri URL</string>
+    <string name="action_http_request">Richiesta HTTP</string>
+    <string name="action_shell_command">Comando shell</string>
+    <string name="action_send_intent">Invia intent</string>
+    <string name="action_interact_with_app_element">Interagisci con elemento dell\'app</string>
+    <string name="action_launch_voice_assistant">Avvia assistente vocale</string>
+    <string name="action_launch_device_assistant">Avvia assistente del dispositivo</string>
+    <string name="action_open_camera">Apri fotocamera</string>
+    <string name="action_open_settings">Apri impostazioni</string>
+    <string name="action_force_stop_app">Forza arresto app</string>
+    <string name="action_close_and_clear_app">Chiudi e rimuovi app dai recenti</string>
+    <string name="action_modify_setting">Modifica impostazione</string>
+
+    <!-- Azioni: navigazione -->
+    <string name="action_expand_notification_drawer">Espandi pannello notifiche</string>
+    <string name="action_toggle_notification_drawer">Attiva/disattiva pannello notifiche</string>
+    <string name="action_expand_quick_settings">Espandi impostazioni rapide</string>
+    <string name="action_toggle_quick_settings">Attiva/disattiva impostazioni rapide</string>
+    <string name="action_collapse_status_bar">Chiudi barra di stato</string>
+    <string name="action_go_back">Torna indietro</string>
+    <string name="action_go_home">Vai alla schermata Home</string>
+    <string name="action_open_recents">Apri app recenti</string>
+    <string name="action_open_menu">Apri menu</string>
+    <string name="action_go_last_app">Vai all\'ultima app</string>
+    <string name="action_toggle_split_screen">Attiva/disattiva schermo diviso</string>
+    <string name="action_take_screenshot">Cattura screenshot</string>
+    <string name="action_move_cursor_to_end">Sposta cursore alla fine</string>
+
+    <!-- Azioni: volume -->
+    <string name="action_volume_up">Alza volume</string>
+    <string name="action_volume_down">Abbassa volume</string>
+    <string name="action_volume_mute">Disattiva audio</string>
+    <string name="action_volume_unmute">Riattiva audio</string>
+    <string name="action_volume_toggle_mute">Attiva/disattiva silenzioso</string>
+    <string name="action_show_volume_dialog">Mostra finestra volume</string>
+    <string name="action_cycle_ringer_mode">Cambia modalità suoneria in sequenza</string>
+    <string name="action_change_ringer_mode">Imposta modalità suoneria</string>
+    <string name="action_change_volume_stream">Cambia canale audio</string>
+
+    <!-- Azioni: schermo -->
+    <string name="action_screen_on">Accendi schermo</string>
+    <string name="action_screen_off">Spegni schermo</string>
+    <string name="action_toggle_screen">Attiva/disattiva schermo</string>
+    <string name="action_toggle_auto_rotate">Attiva/disattiva rotazione automatica</string>
+    <string name="action_portrait_mode">Modalità verticale</string>
+    <string name="action_landscape_mode">Modalità orizzontale</string>
+    <string name="action_cycle_rotations">Cambia orientamento in sequenza</string>
+    <string name="action_change_brightness">Cambia luminosità</string>
+    <string name="action_toggle_auto_brightness">Attiva/disattiva luminosità automatica</string>
+    <string name="action_increase_brightness">Aumenta luminosità</string>
+    <string name="action_decrease_brightness">Diminuisci luminosità</string>
+
+    <!-- Azioni: media -->
+    <string name="action_media_play">Riproduci</string>
+    <string name="action_media_pause">Pausa</string>
+    <string name="action_media_play_pause">Riproduci / pausa</string>
+    <string name="action_media_next">Traccia successiva</string>
+    <string name="action_media_previous">Traccia precedente</string>
+    <string name="action_media_fast_forward">Avanti veloce</string>
+    <string name="action_media_rewind">Indietro veloce</string>
+    <string name="action_media_stop">Interrompi</string>
+
+    <!-- Azioni: connettività -->
+    <string name="action_toggle_wifi">Attiva/disattiva Wi-Fi</string>
+    <string name="action_enable_wifi">Attiva Wi-Fi</string>
+    <string name="action_disable_wifi">Disattiva Wi-Fi</string>
+    <string name="action_toggle_bluetooth">Attiva/disattiva Bluetooth</string>
+    <string name="action_enable_bluetooth">Attiva Bluetooth</string>
+    <string name="action_disable_bluetooth">Disattiva Bluetooth</string>
+    <string name="action_toggle_mobile_data">Attiva/disattiva dati mobili</string>
+    <string name="action_toggle_nfc">Attiva/disattiva NFC</string>
+    <string name="action_toggle_airplane_mode">Attiva/disattiva modalità aereo</string>
+    <string name="action_toggle_location">Attiva/disattiva posizione</string>
+    <string name="action_toggle_hotspot">Attiva/disattiva hotspot</string>
+
+    <!-- Azioni: tastiera -->
+    <string name="action_show_keyboard">Mostra tastiera</string>
+    <string name="action_hide_keyboard">Nascondi tastiera</string>
+    <string name="action_toggle_keyboard">Attiva/disattiva tastiera</string>
+    <string name="action_switch_keyboard">Cambia tastiera</string>
+    <string name="action_show_keyboard_picker">Mostra selettore tastiera</string>
+    <string name="action_text_cut">Taglia</string>
+    <string name="action_text_copy">Copia</string>
+    <string name="action_text_paste">Incolla</string>
+    <string name="action_select_word_at_cursor">Seleziona parola al cursore</string>
+
+    <!-- Azioni: dispositivo -->
+    <string name="action_lock_device">Blocca dispositivo</string>
+    <string name="action_secure_lock_device">Blocca dispositivo in modo sicuro</string>
+    <string name="action_power_dialog">Mostra menu di accensione</string>
+    <string name="action_toggle_dnd">Attiva/disattiva non disturbare</string>
+    <string name="action_enable_dnd">Attiva non disturbare</string>
+    <string name="action_disable_dnd">Disattiva non disturbare</string>
+    <string name="action_open_app_drawer">Apri elenco app</string>
+    <string name="action_dismiss_all_notifications">Cancella tutte le notifiche</string>
+    <string name="action_answer_call">Rispondi alla chiamata</string>
+    <string name="action_end_call">Termina chiamata</string>
+
+    <!-- Azioni: suono -->
+    <string name="action_play_sound">Riproduci suono</string>
+    <string name="action_text_to_speech">Sintesi vocale</string>
+    <string name="action_vibrate">Vibra</string>
+    <string name="action_stop_text_to_speech">Interrompi sintesi vocale</string>
+
+    <!-- Azioni: automazione -->
+    <string name="action_delay">Attesa</string>
+    <string name="action_repeat_previous">Ripeti azione precedente</string>
+    <string name="action_toggle_mapping">Attiva/disattiva tutte le scorciatoie</string>
+    <string name="action_pause_mapping">Metti in pausa tutte le scorciatoie</string>
+    <string name="action_resume_mapping">Riprendi tutte le scorciatoie</string>
+
+    <!-- Categorie di condizioni -->
+    <string name="constraint_category_apps">App</string>
+    <string name="constraint_category_media">Media</string>
+    <string name="constraint_category_display">Schermo</string>
+    <string name="constraint_category_flashlight">Torcia</string>
+    <string name="constraint_category_keyboard">Tastiera</string>
+    <string name="constraint_category_lock">Blocco</string>
+    <string name="constraint_category_phone">Telefono</string>
+    <string name="constraint_category_power">Alimentazione</string>
+    <string name="constraint_category_device">Dispositivo</string>
+    <string name="constraint_category_time">Ora</string>
+    <string name="constraint_category_connectivity">Connettività</string>
+    <string name="constraint_category_sound">Suono</string>
+
+    <!-- Condizioni -->
+    <string name="constraint_app_in_foreground">App in primo piano</string>
+    <string name="constraint_app_not_in_foreground">App non in primo piano</string>
+    <string name="constraint_app_playing_media">App in riproduzione media</string>
+    <string name="constraint_app_not_playing_media">App non in riproduzione media</string>
+    <string name="constraint_no_media_playing">Nessun media in riproduzione</string>
+    <string name="constraint_media_is_playing">Media in riproduzione</string>
+    <string name="constraint_bluetooth_on">Bluetooth attivo</string>
+    <string name="constraint_bluetooth_off">Bluetooth disattivato</string>
+    <string name="constraint_screen_on">Schermo acceso</string>
+    <string name="constraint_screen_off">Schermo spento</string>
+    <string name="constraint_screen_orientation">Orientamento schermo</string>
+    <string name="constraint_physical_orientation">Orientamento fisico</string>
+    <string name="constraint_flashlight_on">Torcia accesa</string>
+    <string name="constraint_flashlight_off">Torcia spenta</string>
+    <string name="constraint_wifi_on">Wi-Fi attivo</string>
+    <string name="constraint_wifi_off">Wi-Fi disattivato</string>
+    <string name="constraint_connected_to_wifi_network">Connesso a una rete Wi-Fi</string>
+    <string name="constraint_disconnected_from_wifi_network">Disconnesso da una rete Wi-Fi</string>
+    <string name="constraint_input_method_chosen">Metodo di input selezionato</string>
+    <string name="constraint_input_method_not_chosen">Metodo di input non selezionato</string>
+    <string name="constraint_keyboard_showing">Tastiera visibile</string>
+    <string name="constraint_keyboard_not_showing">Tastiera non visibile</string>
+    <string name="constraint_device_locked">Dispositivo bloccato</string>
+    <string name="constraint_device_unlocked">Dispositivo sbloccato</string>
+    <string name="constraint_lock_screen_showing">Schermata di blocco visibile</string>
+    <string name="constraint_lock_screen_not_showing">Schermata di blocco non visibile</string>
+    <string name="constraint_in_phone_call">In chiamata</string>
+    <string name="constraint_not_in_phone_call">Non in chiamata</string>
+    <string name="constraint_phone_ringing">Il telefono squilla</string>
+    <string name="constraint_charging">In carica</string>
+    <string name="constraint_discharging">Non in carica</string>
+    <string name="constraint_hinge_closed">Cerniera chiusa</string>
+    <string name="constraint_hinge_open">Cerniera aperta</string>
+    <string name="constraint_time">Ora</string>
+    <string name="constraint_bluetooth_device_connected">Dispositivo Bluetooth connesso</string>
+    <string name="constraint_bluetooth_device_disconnected">Dispositivo Bluetooth disconnesso</string>
+    <string name="constraint_dark_mode_on">Tema scuro attivo</string>
+    <string name="constraint_dark_mode_off">Tema scuro disattivato</string>
+    <string name="constraint_battery_saver_on">Risparmio energetico attivo</string>
+    <string name="constraint_battery_saver_off">Risparmio energetico disattivato</string>
+    <string name="constraint_charging_wired">In carica via cavo</string>
+    <string name="constraint_charging_wireless">In carica wireless</string>
+    <string name="constraint_battery_above">Batteria sopra un livello</string>
+    <string name="constraint_battery_below">Batteria sotto un livello</string>
+    <string name="constraint_location_on">Posizione attiva</string>
+    <string name="constraint_location_off">Posizione disattivata</string>
+    <string name="constraint_day_of_week">Giorno della settimana</string>
+    <string name="constraint_mobile_data_on">Dati mobili attivi</string>
+    <string name="constraint_mobile_data_off">Dati mobili disattivati</string>
+    <string name="constraint_airplane_mode_on">Modalità aereo attiva</string>
+    <string name="constraint_airplane_mode_off">Modalità aereo disattivata</string>
+    <string name="constraint_ringer_normal">Suoneria attiva</string>
+    <string name="constraint_ringer_vibrate">Suoneria su vibrazione</string>
+    <string name="constraint_ringer_silent">Suoneria silenziosa</string>
+    <string name="constraint_dnd_on">Non disturbare attivo</string>
+    <string name="constraint_dnd_off">Non disturbare disattivato</string>
+    <string name="constraint_headphones_connected">Cuffie connesse</string>
+    <string name="constraint_headphones_disconnected">Cuffie disconnesse</string>
+
+    <!-- Editor azioni: badge dei requisiti -->
+    <string name="badge_expert_mode">Richiede la Modalità avanzata</string>
+    <string name="badge_accessibility">Richiede il servizio di Accessibilità</string>
+    <string name="badge_notification_policy">Richiede l\'accesso a Non disturbare</string>
+    <string name="badge_write_settings">Richiede il permesso di modificare le impostazioni di sistema</string>
+
+    <!-- Editor azioni: etichette dei campi -->
+    <string name="field_key_to_send">Tasto da inviare</string>
+    <string name="field_tap_here">Tocca qui</string>
+    <string name="field_time_between_taps">Tempo tra i tocchi</string>
+    <string name="field_swipe_from">Scorri da</string>
+    <string name="field_swipe_to">Scorri a</string>
+    <string name="field_duration">Durata</string>
+    <string name="field_first_finger">Primo dito</string>
+    <string name="field_second_finger">Secondo dito</string>
+    <string name="field_app_to_open">App da aprire</string>
+    <string name="field_app_to_stop">App da arrestare</string>
+    <string name="field_extras">Extra</string>
+    <string name="field_setting_key">Chiave dell\'impostazione</string>
+    <string name="field_level">Livello</string>
+    <string name="field_brightness">Luminosità</string>
+    <string name="field_text_to_speak">Testo da pronunciare</string>
+    <string name="field_wait">Attesa</string>
+
+    <!-- Editor azioni: suggerimenti -->
+    <string name="hint_input_text">Digitato nel campo attivo</string>
+    <string name="hint_http_body">Inviato con la richiesta</string>
+    <string name="hint_optional">Facoltativo</string>
+    <string name="hint_sound_uri">URI content:// o file://</string>
+
+    <!-- Editor azioni: descrizioni -->
+    <string name="helper_input_key_code">Invia una pressione di tasto all\'app attualmente in primo piano.</string>
+    <string name="helper_http_request">Invia una richiesta web: utile per attivare un webhook o una scena smart-home.</string>
+    <string name="helper_shell_command">Esegue un comando da terminale sul dispositivo.</string>
+    <string name="helper_extras">Facoltativo. Ogni coppia viene inviata come extra di tipo stringa.</string>
+    <string name="helper_send_intent">Invia in broadcast un intent Android, un messaggio a cui altre app possono reagire. Per utenti avanzati.</string>
+    <string name="helper_modify_setting">Scrive direttamente un\'impostazione di sistema di Android.</string>
+    <string name="helper_repeat_previous">Esegue di nuovo l\'azione sopra questa.</string>
+
+    <!-- Editor azioni: opzioni -->
+    <string name="choice_pinch_in">Rimpicciolisci (pizzica verso l\'interno)</string>
+    <string name="choice_pinch_out">Ingrandisci (allarga)</string>
+    <string name="summary_zoom_in">Ingrandisci</string>
+    <string name="summary_zoom_out">Rimpicciolisci</string>
+    <string name="choice_namespace_system">System</string>
+    <string name="choice_namespace_secure">Secure</string>
+    <string name="choice_namespace_global">Global</string>
+    <string name="choice_stream_ring">Suoneria</string>
+    <string name="choice_stream_media">Media</string>
+    <string name="choice_stream_alarm">Sveglia</string>
+    <string name="choice_stream_notification">Notifica</string>
+    <string name="choice_ringer_normal">Normale</string>
+    <string name="choice_ringer_vibrate">Vibrazione</string>
+    <string name="choice_ringer_silent">Silenzioso</string>
+
+    <!-- Tipi di pressione del trigger -->
+    <string name="press_single_title">Pressione singola</string>
+    <string name="press_single_description">Si attiva quando il tasto viene premuto una volta</string>
+    <string name="press_double_title">Doppia pressione</string>
+    <string name="press_double_description">Si attiva quando il tasto viene premuto due volte di seguito</string>
+    <string name="press_long_title">Pressione prolungata</string>
+    <string name="press_long_badge">Tieni premuto</string>
+    <string name="press_long_description">Si attiva quando il tasto viene tenuto premuto per il tempo configurato</string>
+
+    <!-- Nomi dei tasti hardware -->
+    <string name="key_volume_down">Volume giù</string>
+    <string name="key_volume_up">Volume su</string>
+    <string name="key_power">Accensione</string>
+    <string name="key_assist">Assistente (Assist)</string>
+    <string name="key_voice_assist">Assistente vocale</string>
+    <string name="key_headsethook">Cuffie / Tasto media</string>
+    <string name="key_camera">Fotocamera / Scatto</string>
+    <string name="key_back">Indietro</string>
+    <string name="key_home">Home</string>
+    <string name="key_menu">Menu</string>
+    <string name="key_mute">Silenzioso</string>
+    <string name="key_media_play_pause">Riproduci / Pausa</string>
+    <string name="key_wakeup">Riattiva</string>
+    <string name="key_alert_slider">Interruttore di allerta / Switch personalizzato</string>
+
+    <!-- Guide per le Opzioni sviluppatore -->
+    <string name="guide_generic">Altro</string>
+    <string name="guide_pixel">Google Pixel / Android Stock</string>
+
+    <!-- Scorciatoie suggerite -->
+    <string name="suggestion_flashlight">Torcia</string>
+    <string name="suggestion_flashlight_subtitle">Accendi e spegni la torcia</string>
+    <string name="suggestion_play_pause">Riproduci / Pausa</string>
+    <string name="suggestion_play_pause_subtitle">Qualsiasi cosa in riproduzione</string>
+    <string name="suggestion_screenshot">Screenshot</string>
+    <string name="suggestion_screenshot_subtitle">Cattura lo schermo</string>
+    <string name="suggestion_dnd">Non disturbare</string>
+    <string name="suggestion_dnd_subtitle">Silenzia tutti gli avvisi</string>
+    <string name="suggestion_lock">Blocca dispositivo</string>
+    <string name="suggestion_lock_subtitle">Spegni lo schermo</string>
+    <string name="suggestion_camera">Apri fotocamera</string>
+    <string name="suggestion_camera_subtitle">Dritti allo scatto</string>
+    <string name="suggestion_headphones_play">Cuffie inserite</string>
+    <string name="suggestion_headphones_play_subtitle">Collegale e parte la musica</string>
+    <string name="suggestion_assistant">Assistente</string>
+    <string name="suggestion_assistant_subtitle">Parla con il tuo assistente</string>
+    <string name="suggestion_bedtime">Ora di dormire</string>
+    <string name="suggestion_bedtime_subtitle">Non disturbare, attenua, blocca</string>
+    <string name="suggestion_notifications">Notifiche</string>
+    <string name="suggestion_notifications_subtitle">Apri il pannello</string>
+    <string name="suggestion_car_bluetooth">In auto</string>
+    <string name="suggestion_car_bluetooth_subtitle">L\'auto si collega, parte la musica</string>
+    <string name="suggestion_sos">Segnale SOS</string>
+    <string name="suggestion_sos_subtitle">La torcia lampeggia ··· ––– ···</string>
+    <string name="suggestion_wifi">Wi-Fi</string>
+    <string name="suggestion_wifi_subtitle">Attiva o disattiva</string>
+    <string name="suggestion_low_battery">Batteria scarica</string>
+    <string name="suggestion_low_battery_subtitle">Sotto il 15%: Bluetooth off, attenua</string>
+    <string name="suggestion_auto_rotate">Rotazione automatica</string>
+    <string name="suggestion_auto_rotate_subtitle">Blocca o libera la rotazione</string>
+    <string name="suggestion_night_charge_dnd">Ricarica notturna</string>
+    <string name="suggestion_night_charge_dnd_subtitle">In carica dopo le 22:00: Non disturbare</string>
+    <string name="suggestion_bluetooth">Bluetooth</string>
+    <string name="suggestion_bluetooth_subtitle">Attiva o disattiva</string>
+    <string name="suggestion_vibrate_mode">Modalità vibrazione</string>
+    <string name="suggestion_vibrate_mode_subtitle">Suoneria su vibrazione</string>
+    <string name="suggestion_torch_off_screen_off">Torcia sicura</string>
+    <string name="suggestion_torch_off_screen_off_subtitle">Schermo spento, torcia spenta</string>
+    <string name="suggestion_battery_saver">Risparmio batteria</string>
+    <string name="suggestion_battery_saver_subtitle">Bluetooth e Wi-Fi off, attenua</string>
+
+    <!-- Comuni -->
+    <string name="common_cancel">Annulla</string>
+    <string name="common_save">Salva</string>
+    <string name="common_add">Aggiungi</string>
+    <string name="common_done">Fatto</string>
+    <string name="common_back">Indietro</string>
+    <string name="common_close">Chiudi</string>
+    <string name="common_remove">Rimuovi</string>
+    <string name="common_delete">Elimina</string>
+    <string name="common_coming_soon">Prossimamente</string>
+    <string name="picker_category_all">Tutte</string>
+
+    <!-- Scheda di configurazione azione -->
+    <string name="badge_tap_to_grant">%1$s · Tocca per concedere</string>
+    <string name="action_config_enter_key_code">Oppure inserisci un codice tasto</string>
+    <string name="action_config_cancel_recording">Annulla registrazione</string>
+    <string name="action_config_record_key">Registra un tasto fisico</string>
+    <string name="action_config_choose_app">Scegli un\'app</string>
+    <string name="action_config_enter_package">Oppure inserisci un nome di pacchetto</string>
+    <string name="action_config_pick_on_screen">Scegli sullo schermo</string>
+    <string name="action_config_allow_overlay">Consenti la sovrapposizione ad altre app per scegliere</string>
+    <string name="action_config_point_not_set">non impostato</string>
+
+    <!-- Selettore condizioni -->
+    <string name="constraint_picker_title">Scegli una condizione</string>
+    <string name="constraint_picker_search">Cerca condizioni</string>
+    <string name="constraint_picker_no_match">Nessuna condizione corrisponde a \"%1$s\"</string>
+    <string name="constraint_picker_empty_category">Ancora nessuna condizione in questa categoria</string>
+    <string name="constraint_picker_add_label">Aggiungi %1$s</string>
+
+    <!-- Foglio di configurazione delle condizioni -->
+    <string name="constraint_picker_configure_title">Configura condizione</string>
+    <string name="field_constraint_app">App</string>
+    <string name="field_orientation">Orientamento</string>
+    <string name="orientation_portrait">Verticale</string>
+    <string name="orientation_landscape">Orizzontale</string>
+    <string name="field_wifi_ssid">Nome rete (SSID)</string>
+    <string name="hint_wifi_ssid_any">Lascia vuoto per qualsiasi rete</string>
+    <string name="field_bluetooth_device">Dispositivo</string>
+    <string name="bluetooth_no_paired_devices">Nessun dispositivo associato. Associane uno prima nelle impostazioni Bluetooth.</string>
+    <string name="field_battery_percent">Livello batteria</string>
+    <string name="field_time_start">Da</string>
+    <string name="field_time_end">Fino a</string>
+    <string name="field_days">Giorni</string>
+    <string name="constraint_needs_usage_access">Richiede l\'accesso ai dati di utilizzo perché l\'app possa vedere quale app è in primo piano.</string>
+    <string name="constraint_config_choose_app">Scegli un\'app per continuare</string>
+    <string name="constraint_needs_location">Android mostra il nome della rete solo alle app con il permesso di posizione.</string>
+    <string name="constraint_grant_permission">Concedi</string>
+    <string name="constraint_summary_any_wifi">Qualsiasi rete</string>
+    <string name="constraint_summary_time_range" translatable="false">%1$s – %2$s</string>
+    <string name="constraint_summary_percent" translatable="false">%1$d%%</string>
+
+    <!-- Selettore azioni -->
+    <string name="action_picker_search">Cerca azioni</string>
+    <string name="action_picker_no_match">Nessuna azione corrisponde a \"%1$s\"</string>
+    <string name="action_picker_empty_category">Ancora nessuna azione in questa categoria</string>
+    <string name="action_picker_add_label">Aggiungi %1$s</string>
+
+    <!-- Editor scorciatoie -->
+    <string name="editor_discard_changes">Scarta modifiche</string>
+    <string name="editor_unsaved_title">Scartare le modifiche?</string>
+    <string name="editor_unsaved_body">Le modifiche a questa scorciatoia non sono state salvate.</string>
+    <string name="editor_unsaved_discard">Scarta</string>
+    <string name="editor_shortcut_name">Nome scorciatoia</string>
+    <string name="editor_shortcut_settings">Impostazioni scorciatoia</string>
+    <string name="editor_chain_when">Quando</string>
+    <string name="editor_chain_only_if">Solo se</string>
+    <string name="editor_chain_do">Esegui</string>
+    <string name="editor_add_action">Aggiungi azione</string>
+    <string name="editor_add_constraint">Aggiungi condizione</string>
+    <string name="editor_always_runs">Viene sempre eseguita</string>
+    <string name="editor_remove_constraint">Rimuovi %1$s</string>
+    <string name="editor_configure_action">Configura %1$s</string>
+    <string name="editor_more_options">Altre opzioni per %1$s</string>
+    <string name="editor_tap_to_configure">Tocca per configurare</string>
+    <string name="editor_configure">Configura</string>
+    <string name="editor_move_up">Sposta su</string>
+    <string name="editor_move_down">Sposta giù</string>
+    <string name="editor_test_run">Esegui prova</string>
+
+    <!-- Comuni (2) -->
+    <string name="common_ok">OK</string>
+    <string name="common_yes">Sì</string>
+    <string name="common_no">No</string>
+    <string name="common_confirm">Conferma</string>
+    <string name="common_save_caps">SALVA</string>
+    <string name="common_cancel_caps">ANNULLA</string>
+
+    <!-- Marchio -->
+
+    <!-- Barra di navigazione inferiore -->
+    <string name="nav_home">Home</string>
+    <string name="nav_shortcuts">Scorciatoie</string>
+    <string name="nav_settings">Impostazioni</string>
+
+    <!-- Finestre di dialogo -->
+    <string name="dialog_expert_connected">MODALITÀ AVANZATA CONNESSA</string>
+    <string name="dialog_new_input_title">Nuovo input rilevato</string>
+    <string name="dialog_new_input_body">Codice: %1$d. Assegna un nome breve a questo input.</string>
+    <string name="dialog_new_input_hint">es. Tasto scorciatoia</string>
+
+    <!-- Selettore app -->
+    <string name="app_picker_search">Cerca app</string>
+    <string name="app_picker_loading">Lettura delle app installate…</string>
+    <string name="app_picker_no_match">Nessuna app corrisponde a \"%1$s\"</string>
+    <string name="app_picker_choose">Scegli %1$s</string>
+    <string name="app_picker_selected">Selezionata</string>
+
+    <!-- Selettore trigger di automazione -->
+
+    <!-- Trigger di eventi -->
+
+    <!-- Selettore trigger -->
+    <string name="trigger_picker_title">Imposta tasto</string>
+    <string name="trigger_picker_subtitle">Scegli un tipo di pressione, poi registra un tasto.</string>
+    <string name="trigger_picker_no_key">Ancora nessun tasto</string>
+    <string name="trigger_picker_saved_key">Oppure scegli un tasto salvato</string>
+    <string name="trigger_picker_listening">In ascolto… tocca per interrompere</string>
+    <string name="trigger_picker_tap_to_record">Tocca, poi premi un tasto fisico</string>
+    <string name="trigger_picker_save_combo">Salva tasto</string>
+    <string name="trigger_picker_use_automation">Usa invece un\'automazione</string>
+    <string name="trigger_picker_use_key">Usa %1$s</string>
+
+    <!-- Impostazioni per scorciatoia -->
+    <string name="script_settings_name">Nome</string>
+    <string name="script_settings_enabled">Attiva</string>
+    <string name="script_settings_assign_key_first">Assegna un tasto dall\'editor per configurare il comportamento della pressione.</string>
+    <string name="script_settings_trigger_type">Tipo di pressione</string>
+    <string name="script_settings_double_press_window">Intervallo doppia pressione</string>
+    <string name="script_settings_long_press_threshold">Soglia pressione prolungata</string>
+    <string name="script_settings_using_global">Uso il valore globale predefinito (%1$dms)</string>
+    <string name="script_settings_custom_value">Personalizzato per questa scorciatoia</string>
+    <string name="script_settings_consume_input">Consuma l\'input originale</string>
+    <string name="script_settings_consume_input_description">Impedisce al tasto di raggiungere altre app, dove Android lo consente.</string>
+    <string name="script_settings_not_global">Non globale, solo per questa scorciatoia</string>
+    <string name="script_settings_vibrate">Vibra all\'esecuzione</string>
+    <string name="script_settings_vibrate_description">Una breve vibrazione quando questa scorciatoia si attiva.</string>
+    <string name="script_settings_reset_to_default">Ripristina il valore predefinito (%1$s)</string>
+
+    <!-- Elenco scorciatoie -->
+    <string name="scripts_title">Le mie scorciatoie</string>
+    <string name="scripts_paused_warning">Tutte le scorciatoie sono in pausa, quindi nessuna di queste verrà eseguita.</string>
+    <string name="scripts_new_shortcut">Nuova scorciatoia</string>
+    <string name="scripts_empty_title">Ancora nessuna scorciatoia</string>
+    <string name="scripts_empty_body">Una scorciatoia esegue una o più azioni quando premi un tasto fisico.</string>
+    <string name="scripts_empty_go_home">Parti da un suggerimento nella Home</string>
+    <string name="scripts_tutorial_title">Crea la tua prima scorciatoia</string>
+    <string name="scripts_tutorial_subtitle">Quattro passaggi, in loop.</string>
+    <string name="scripts_tutorial_pause">Metti in pausa la demo</string>
+    <string name="scripts_tutorial_play">Riproduci la demo</string>
+    <string name="scripts_tutorial_step_new">Tocca Nuova scorciatoia</string>
+    <string name="scripts_tutorial_step_key">Scegli Pressione tasto e premi il tuo tasto</string>
+    <string name="scripts_tutorial_step_action">Aggiungi un\'azione</string>
+    <string name="scripts_tutorial_step_done">Tocca Fatto</string>
+    <string name="scripts_tutorial_cap_fab">Il pulsante + blu, in alto a destra</string>
+    <string name="scripts_tutorial_cap_keypress">In Quando, tocca Pressione tasto</string>
+    <string name="scripts_tutorial_cap_press">Premi il tasto sul telefono</string>
+    <string name="scripts_tutorial_cap_save">Tocca Salva tasto</string>
+    <string name="scripts_tutorial_cap_add">In Esegui, tocca Aggiungi azione</string>
+    <string name="scripts_tutorial_cap_pick">Scegli Torcia</string>
+    <string name="scripts_tutorial_cap_lands">Compare sotto Esegui</string>
+    <string name="scripts_tutorial_cap_check">Il segno di spunta, in alto a destra</string>
+    <string name="scripts_tutorial_cap_runs">Volume su ora accende la torcia</string>
+    <string name="scripts_tutorial_mini_page">Pagina Scorciatoie</string>
+    <string name="scripts_tutorial_listening">In ascolto…</string>
+    <string name="scripts_tutorial_key_recorded">Tasto registrato</string>
+    <string name="scripts_no_trigger">Ancora nessun tasto</string>
+    <string name="scripts_no_condition">Nessuna condizione aggiunta</string>
+    <string name="scripts_no_actions">Ancora nessuna azione</string>
+    <string name="scripts_unnamed">Scorciatoia</string>
+    <string name="scripts_delete_label">Elimina %1$s</string>
+    <string name="scripts_toggle_state_on">Attivo</string>
+    <string name="scripts_toggle_state_off">Disattivo</string>
+    <string name="scripts_toggle_state_paused">Attivo, ma tutte le scorciatoie sono in pausa</string>
+    <string name="scripts_delete_title">Eliminare la scorciatoia?</string>
+    <string name="scripts_delete_body">\"%1$s\" verrà eliminata definitivamente. Questa azione non può essere annullata.</string>
+    <string name="scripts_snackbar_home">Home</string>
+
+    <!-- Home -->
+    <string name="home_suggested_shortcuts">Scorciatoie suggerite</string>
+    <string name="home_suggestions_group_single">Un tasto, un\'azione</string>
+    <string name="home_suggestions_group_multi">Un tasto, più passaggi</string>
+    <string name="home_suggestions_group_automation">Si avvia da solo</string>
+    <string name="home_your_shortcuts">Le tue scorciatoie</string>
+    <string name="suggestion_saved">%1$s è pronta · %2$s</string>
+    <string name="home_build_from_suggestion">Crea una scorciatoia da %1$s</string>
+    <string name="home_suggestion_soon">Presto</string>
+    <string name="home_suggestion_automation">Automazione</string>
+    <string name="home_pause_all">Metti in pausa tutte le scorciatoie</string>
+    <string name="home_resume_all">Riprendi tutte le scorciatoie</string>
+    <string name="home_status_live">Attiva</string>
+    <string name="home_status_paused">In pausa</string>
+    <string name="home_system_status">Stato del sistema</string>
+    <string name="home_collapse_status">Comprimi stato del sistema</string>
+    <string name="home_expand_status">Espandi stato del sistema</string>
+    <string name="home_accessibility_service">Servizio di Accessibilità</string>
+    <string name="home_status_advanced">Modalità avanzata</string>
+    <string name="home_status_active">Attivo</string>
+    <string name="home_status_offline">Non attivo</string>
+    <string name="home_status_running">In esecuzione</string>
+    <string name="home_status_off">Disattivata</string>
+    <string name="home_triggers_session">Esecuzioni in questa sessione</string>
+    <string name="home_last_from">Ultimo da %1$s</string>
+    <string name="home_open_label_settings">Apri le impostazioni di %1$s</string>
+    <string name="home_setup_title_off">Le tue scorciatoie non funzionano ancora</string>
+    <string name="home_setup_subtitle_off">Tre passaggi, tutti nelle impostazioni di Android. Ecco cosa toccare in ciascuno.</string>
+    <string name="home_setup_title_at_risk">Le tue scorciatoie potrebbero smettere di funzionare</string>
+    <string name="home_setup_subtitle_at_risk">Android può chiudere l\'app in background finché non attivi queste opzioni.</string>
+    <string name="home_setup_progress">%1$d/3</string>
+    <string name="home_setup_step_accessibility">Attiva il Servizio di Accessibilità</string>
+    <string name="home_setup_why_accessibility">KeySnap legge la pressione dei tuoi tasti attraverso di esso. Finché è spento non funziona nulla.</string>
+    <string name="home_setup_open_accessibility">Apri le impostazioni di Accessibilità</string>
+    <string name="home_setup_step_background">Lascia KeySnap in esecuzione in background</string>
+    <string name="home_setup_why_background">Android chiude le app che crede addormentate. Tocca Consenti quando lo chiede — con Rifiuta Android può continuare a chiudere KeySnap.</string>
+    <string name="home_setup_allow_background">Consenti l\'uso in background</string>
+    <string name="home_setup_done_background">Consentito</string>
+    <string name="home_setup_step_notifications">Consenti le notifiche</string>
+    <string name="home_setup_why_notifications">Solo per la configurazione: codice di accoppiamento e stato del servizio. Tocca Consenti quando Android lo chiede — Non consentire interrompe qui la configurazione.</string>
+    <string name="home_setup_ask_now">Chiedimelo ora</string>
+    <string name="home_setup_done_notifications">Consentite</string>
+    <string name="home_setup_all_done">Tutti e tre sono attivi. I tuoi tasti ora funzionano.</string>
+    <string name="home_setup_state_done">Completato</string>
+    <string name="home_setup_state_current">Passaggio attuale</string>
+    <string name="home_setup_state_upcoming">Non ancora iniziato</string>
+    <string name="home_setup_illo_downloaded_apps">App scaricate</string>
+    <string name="home_setup_why">Perché?</string>
+    <string name="home_setup_why_expanded">Espanso</string>
+    <string name="home_setup_why_collapsed">Compresso</string>
+    <string name="home_setup_whytext_accessibility">Android mostra i tasti fisici solo a un servizio di accessibilità, quindi KeySnap ne usa uno esattamente per questo: accorgersi di una pressione ed eseguire la tua scorciatoia. Non legge lo schermo delle altre app. Solo durante la configurazione della Modalità avanzata legge anche il codice di accoppiamento nella pagina del Debug wireless, e nient\'altro.</string>
+    <string name="home_setup_whytext_background">Android chiude le app che crede inattive, e un\'app chiusa non può eseguire le tue scorciatoie. Questo tiene vivo KeySnap mentre il telefono dorme. In background non fa altro che aspettare un tasto.</string>
+    <string name="home_setup_whytext_notifications">Solo durante la configurazione della Modalità avanzata: il codice di accoppiamento e se il servizio è attivo. Nessun promemoria, nessuna promozione, nient\'altro, mai.</string>
+    <string name="home_setup_illo_battery_dialog">Consentire a KeySnap di essere sempre attivo in background?</string>
+    <string name="home_setup_illo_battery_body">Potrebbe ridurre la durata della batteria.</string>
+    <string name="home_setup_illo_battery_deny">Rifiuta</string>
+    <string name="home_setup_illo_dialog">Consentire a KeySnap di inviarti notifiche?</string>
+    <string name="home_setup_illo_deny">Non consentire</string>
+    <string name="home_setup_illo_allow">Consenti</string>
+    <string name="home_nudge_title">Crea la tua prima scorciatoia</string>
+    <string name="home_nudge_subtitle">La torcia è qui sotto, a un tocco.</string>
+    <string name="home_nudge_dismiss">Chiudi</string>
+    <string name="home_reward_cooldown">Ricompensa in attesa, %1$s rimanenti. Passa a Pro.</string>
+    <string name="home_reward_available">Guarda una pubblicità per una scorciatoia in più per 4 ore</string>
+    <string name="home_reward_badge_idle">+1</string>
+
+    <!-- Promozione Pro -->
+    <string name="pro_card_subtitle">La versione gratuita tiene attive %1$d scorciatoie. Pro le tiene attive tutte.</string>
+    <string name="pro_card_at_cap">Perché la prossima scorciatoia non resterà attiva</string>
+    <string name="pro_active_shortcuts">Scorciatoie attive</string>
+    <string name="pro_progress_description">%1$d di %2$d scorciatoie attive</string>
+    <string name="pro_reward_remaining">%1$s rimanenti</string>
+    <string name="pro_reward_offer">+%1$d per %2$dh</string>
+    <string name="pro_unlock">Sblocca Pro</string>
+    <string name="pro_unlock_with_price">Sblocca Pro · %1$s</string>
+    <string name="pro_table_free">Gratis</string>
+    <string name="pro_table_pro">Pro</string>
+    <string name="pro_table_unlimited">Illimitate</string>
+    <string name="pro_table_free_limit_with_reward">%1$d (%2$d con ricompensa)</string>
+    <string name="pro_table_ads">Pubblicità</string>
+    <string name="pro_table_shown">Presenti</string>
+    <string name="pro_table_none">Assenti</string>
+    <string name="pro_table_row_description">%1$s: Gratis %2$s, Pro %3$s</string>
+
+    <!-- Pubblicità -->
+    <string name="ad_loading">Caricamento pubblicità…</string>
+    <string name="ad_sponsored">Sponsorizzato</string>
+
+    <!-- Impostazioni -->
+    <string name="settings_title">Impostazioni</string>
+    <string name="settings_subtitle">Impostazioni predefinite da cui parte ogni nuova scorciatoia.</string>
+    <string name="settings_group_keys">Tasti</string>
+    <string name="settings_group_advanced">Avanzate</string>
+    <string name="settings_group_app">App</string>
+    <string name="settings_defaults_panel">Valori predefiniti per le nuove scorciatoie</string>
+    <string name="settings_defaults_hint">Ogni scorciatoia può sovrascrivere questi valori dalle proprie impostazioni.</string>
+    <string name="settings_double_press_description">Tempo consentito tra i tocchi. Ritarda anche le azioni a pressione singola.</string>
+    <string name="settings_long_press_description">Per quanto tempo un tasto deve essere tenuto premuto prima che venga eseguita un\'azione a pressione prolungata.</string>
+    <string name="settings_appearance_panel">Aspetto</string>
+    <string name="settings_input_panel">Comportamento input</string>
+    <string name="settings_haptics_panel">Feedback aptico</string>
+    <string name="settings_haptic_feedback">Feedback aptico</string>
+    <string name="settings_haptic_feedback_on">Vibra quando una scorciatoia viene eseguita.</string>
+    <string name="settings_haptic_unavailable">La vibrazione non è disponibile su questo dispositivo.</string>
+    <string name="settings_haptic_duration">Durata della vibrazione</string>
+    <string name="settings_haptic_duration_description">Durata della vibrazione di conferma.</string>
+    <string name="settings_haptic_duration_disabled">Attiva il feedback aptico per regolarne la durata.</string>
+    <string name="settings_expert_panel">Modalità avanzata</string>
+    <string name="settings_detached_bridge">Leggi tutti i tasti fisici</string>
+    <string name="settings_bridge_running">Attivo — i tasti Accensione, assistente e altri tasti riservati funzionano, anche quando l\'app è chiusa.</string>
+    <string name="settings_bridge_stopped">Disattivo — solo i tasti che Android consente alle app.</string>
+    <string name="settings_run_setup">Esegui di nuovo la configurazione</string>
+    <string name="settings_run_setup_description">Riassocia il debug wireless.</string>
+    <string name="settings_about_panel">Informazioni</string>
+    <string name="settings_about_app">Informazioni su KeySnap</string>
+    <string name="settings_about_app_summary">Open source · niente esce dal tuo telefono</string>
+    <string name="settings_privacy_policy">Informativa sulla privacy</string>
+    <string name="settings_erase">Elimina tutti i dati</string>
+    <string name="settings_erase_confirm_title">Eliminare tutti i dati?</string>
+    <string name="settings_erase_action">Elimina tutto</string>
+    <string name="settings_erase_warning">Questa operazione arresta la Modalità avanzata, elimina il bridge dal dispositivo e rimuove tutte le scorciatoie e le preferenze. Non può essere annullata. Anche il servizio di Accessibilità viene disattivato; riattivalo in seguito.</string>
+    <string name="settings_version">Versione %1$s (%2$d)</string>
+    <string name="settings_input_monitor">Monitor input</string>
+    <string name="settings_show_log_action">Mostra il registro eventi</string>
+    <string name="settings_hide_log_action">Nascondi il registro eventi</string>
+    <string name="settings_log_count">%1$d di %2$d</string>
+    <string name="settings_log_waiting">In attesa di input fisico…</string>
+    <string name="settings_log_clear">Cancella</string>
+    <string name="settings_log_matched">Ha attivato una scorciatoia</string>
+
+    <!-- Selettore lingua -->
+    <string name="settings_language_panel">Lingua</string>
+    <string name="language_system">Predefinita di sistema</string>
+
+    <!-- Aspetto -->
+    <string name="theme_light">Chiaro</string>
+    <string name="theme_dark">Scuro</string>
+    <string name="theme_sepia">Seppia</string>
+
+    <!-- Cursori -->
+    <string name="slider_milliseconds">%1$d millisecondi</string>
+    <string name="slider_restore_default">Ripristina %1$s al valore predefinito</string>
+
+    <!-- Overlay selettore punto sullo schermo -->
+    <string name="picker_point_a">A: %1$d, %2$d</string>
+    <string name="picker_point_b">B: %1$d, %2$d</string>
+    <string name="picker_point">Punto: %1$d, %2$d</string>
+
+    <!-- Configurazione iniziale -->
+    <string name="onboarding_finish">Completa la configurazione</string>
+
+    <!-- Procedura guidata di configurazione -->
+    <string name="about_hero_title">Niente di ciò che fai qui esce dal tuo telefono.</string>
+    <string name="about_hero_body">Nessun server. Nessun account. Nessuna analisi. KeySnap non ha un posto in cui mandare le tue scorciatoie o i tasti che premi, e l\'intera app è open source: non devi crederci sulla parola.</string>
+    <string name="about_no_server_title">Non esiste alcun server</string>
+    <string name="about_no_server_body">KeySnap non ha backend, account né segnalazione di arresti anomali. Ciò che assegni, ciò che premi e le app che usi restano nella memoria privata di questa app. Non c\'è codice che carichi nulla di tutto questo, perché non c\'è alcuna destinazione.</string>
+    <string name="about_illo_no_server_caption">pressioni · scorciatoie · utilizzo</string>
+    <string name="about_open_source_title">Open source, così puoi verificare</string>
+    <string name="about_open_source_body">Ogni riga di KeySnap è pubblicata con licenza GPLv3. Leggi a cosa serve ogni autorizzazione, compila l\'app da solo o falla controllare a qualcuno che sa farlo.</string>
+    <string name="about_view_source">Vedi il codice su GitHub</string>
+    <string name="about_scope_title">Il servizio di Accessibilità vede solo le Impostazioni</string>
+    <string name="about_scope_body">Android non offre alle app nessun altro modo per rilevare un tasto fisico. Il servizio di KeySnap è limitato all\'app Impostazioni di sistema e la usa per una cosa sola: leggere il codice di accoppiamento mentre configuri la Modalità avanzata. Non può leggere la tua app bancaria, i tuoi messaggi o ciò che digiti: lo impone Android, non una promessa.</string>
+    <string name="about_bridge_title">La Modalità avanzata è l\'ADB del tuo telefono</string>
+    <string name="about_bridge_body">Si accoppia al Debug wireless del tuo telefono attraverso la rete locale: quella connessione non esce mai da casa tua. Esegue comandi shell solo per le scorciatoie che hai scritto tu. Se la disattivi il bridge viene eliminato; anche un riavvio lo ferma.</string>
+    <string name="about_illo_bridge_caption">spento → il bridge si elimina</string>
+    <string name="about_traffic_title">Tutte le connessioni che l\'app apre</string>
+    <string name="about_traffic_device">Il tuo telefono</string>
+    <string name="about_traffic_device_body">Accoppiamento tramite Debug wireless. Solo rete locale.</string>
+    <string name="about_traffic_yours">Gli indirizzi che scrivi tu</string>
+    <string name="about_traffic_yours_body">Un\'azione HTTP o Apri URL va esattamente dove l\'hai scritta, senza modifiche.</string>
+    <string name="about_traffic_google">Annunci Google e Google Play</string>
+    <string name="about_traffic_google_body">Per mostrare l\'annuncio nella versione gratuita e per verificare se hai acquistato Pro. Nessuno dei due riceve mai la pressione di un tasto o una scorciatoia.</string>
+    <string name="about_traffic_all">Questa è tutta la lista.</string>
+    <string name="about_erase_title">Riprenditi tutto quando vuoi</string>
+    <string name="about_erase_body">Elimina tutti i dati rimuove ogni scorciatoia, tasto salvato, preferenza e file del bridge, e arresta prima la Modalità avanzata così non resta nulla in esecuzione.</string>
+
+    <string name="wizard_title">Attiva la Modalità avanzata</string>
+    <string name="wizard_subtitle">Procedura guidata</string>
+    <string name="wizard_continue">Continua</string>
+    <string name="wizard_finish_pairing">Completa l\'accoppiamento</string>
+    <string name="wizard_step_intro">Introduzione</string>
+    <string name="wizard_step_pairing">Accoppiamento</string>
+    <string name="wizard_step_done">Fatto</string>
+    <string name="wizard_what_is_expert">Cos\'è la Modalità avanzata?</string>
+    <string name="wizard_expert_explainer">KeySnap si accoppia al Debug wireless del tuo telefono e legge i tasti direttamente dal kernel: Accensione, assistente, fotocamera, i pulsanti che Android nasconde alle app.</string>
+    <string name="wizard_expert_off_note">Spenta viene eliminata · il riavvio la ferma</string>
+    <string name="wizard_can">può</string>
+    <string name="wizard_never">mai</string>
+    <string name="wizard_no_dev_options">Non hai le Opzioni sviluppatore?</string>
+    <string name="wizard_no_dev_options_sub">I passaggi per il tuo telefono, nella schermata successiva</string>
+    <string name="wizard_illo_action">↳ Torcia accesa</string>
+    <string name="wizard_how_to_dev_options">Come attivare le Opzioni sviluppatore?</string>
+    <string name="wizard_auto_pairing">Accoppiamento ADB automatico</string>
+    <string name="wizard_auto_pairing_explainer">Non serve digitare manualmente il codice di accoppiamento: lo leggiamo in background e ci connettiamo automaticamente. In caso di errore, puoi inserirlo dalla notifica.</string>
+    <string name="wizard_open_settings">Apri le impostazioni e avvia l\'accoppiamento</string>
+    <string name="wizard_expert_running">La Modalità avanzata è in esecuzione</string>
+    <string name="wizard_expert_running_body">Tutti i tasti hardware Android (Accensione, assistente, Volume, Fotocamera, ecc.) vengono rilevati a livello di kernel Linux.</string>
+    <string name="wizard_connection_error">Errore di connessione</string>
+    <string name="wizard_connection_error_body">Impossibile avviare la Modalità avanzata. Il codice di accoppiamento o la porta potrebbero essere errati, oppure il servizio ADB potrebbe aver rifiutato la connessione — torna indietro e controlla i dettagli.</string>
+    <string name="wizard_connecting">Connessione in corso…</string>
+    <string name="wizard_connecting_body">La Modalità avanzata si sta avviando. Richiede qualche secondo: tieni aperta questa schermata.</string>
+    <string name="wizard_kernel_stream">Flusso eventi del kernel in diretta</string>
+    <string name="wizard_test_flash">Prova il trigger della torcia</string>
+
+    <!-- Stato dell\'accoppiamento -->
+    <string name="pairing_idle">In attesa di accoppiamento…</string>
+    <string name="pairing_not_started">Tocca il pulsante qui sopra per avviare l\'accoppiamento</string>
+    <string name="pairing_searching">Ricerca della schermata di accoppiamento…</string>
+    <string name="pairing_captured">Codice di accoppiamento acquisito…</string>
+    <string name="pairing_in_progress">Accoppiamento…</string>
+    <string name="pairing_paired">Accoppiato — connessione in corso…</string>
+    <string name="pairing_connecting">Connessione in corso…</string>
+    <string name="pairing_connected">Connesso</string>
+    <string name="pairing_error">Connessione non riuscita — riprova</string>
+
+    <!-- Notifica di configurazione della Modalità avanzata -->
+    <string name="notif_channel_setup">Configurazione Modalità avanzata</string>
+    <string name="notif_channel_setup_description">Mostrata mentre l\'app si accoppia con l\'ADB wireless e avvia il bridge</string>
+    <string name="notif_setup_title">Configurazione della Modalità avanzata in corso</string>
+    <string name="notif_setup_text">Accoppiamento con il debug wireless e avvio del bridge in corso.</string>
+
+    <!-- Righe del monitor input ed etichette dei trigger -->
+    <string name="event_key_down">PREMUTO (DOWN)</string>
+    <string name="event_key_up">RILASCIATO (UP)</string>
+    <string name="trigger_label_single">Pressione singola (%1$dms di attesa trascorsi)</string>
+    <string name="trigger_label_double">Doppia pressione (intervallo %1$dms)</string>
+    <string name="trigger_label_long">Pressione prolungata (%1$dms)</string>
+    <string name="source_accessibility">Accessibilità</string>
+    <string name="source_activity">Activity (primo piano)</string>
+
+    <!-- Messaggi del view model -->
+    <string name="default_shortcut_name">Scorciatoia #%1$d</string>
+    <string name="run_nothing_ran">Nessuna azione eseguita. Controlla le impostazioni dell\'azione.</string>
+    <string name="run_partial">Eseguite %1$d azioni su %2$d</string>
+    <string name="editor_needs_action">Aggiungi almeno un\'azione prima di salvare.</string>
+    <string name="editor_needs_trigger">Scegli un tasto prima di salvare.</string>
+    <string name="saved_needs_trigger">Salvata. Assegna un tasto perché possa essere eseguita.</string>
+    <string name="saved_named">\"%1$s\" salvata</string>
+    <string name="saved_needs_condition">Salvata. Aggiungi una condizione che cambia da sola, come In carica o Dispositivo Bluetooth connesso, perché possa essere eseguita.</string>
+    <string name="free_limit_saved_off">Piano gratuito: %1$d scorciatoie attive. Salvata disattivata — guarda una pubblicità o passa a Pro per attivarla.</string>
+    <string name="free_limit_reached">Limite del piano gratuito raggiunto. Passa a Pro per scorciatoie illimitate.</string>
+    <string name="free_limit_toggle_blocked">Piano gratuito: %1$d scorciatoie attive. Guarda una pubblicità o passa a Pro per attivare anche questa.</string>
+
+    <!-- Cornice della finestra di dialogo dell'informativa sulla privacy. Il testo della normativa
+         resta in PrivacyPolicy.kt: deve corrispondere parola per parola al documento in inglese
+         pubblicato su Play. -->
+    <string name="privacy_policy_title">Informativa sulla privacy</string>
+    <string name="privacy_last_updated">Ultimo aggiornamento %1$s</string>
+    <string name="privacy_contact_heading">Contatti</string>
+
+    <!-- Notifica di accoppiamento ADB wireless -->
+    <string name="notif_channel_pairing">Assistente di accoppiamento ADB</string>
+    <string name="notif_channel_pairing_description">Inserimento del codice di accoppiamento ADB wireless e notifiche di errore</string>
+    <string name="notif_pairing_title">In attesa dell\'accoppiamento ADB</string>
+    <string name="notif_pairing_default">Inserisci solo il codice a 6 cifre; la porta verrà trovata automaticamente.</string>
+    <string name="notif_pairing_input_label">Codice di accoppiamento a 6 cifre</string>
+    <string name="notif_pairing_enter_code">Inserisci codice</string>
+    <string name="notif_pairing_no_port">Porta di connessione ADB non trovata. Controlla il Debug wireless.</string>
+    <string name="notif_pairing_failed">Accoppiamento non riuscito. Inserisci di nuovo il codice a 6 cifre.</string>
+    <string name="notif_pairing_bad_code">Il codice deve essere di esattamente 6 cifre. Riprova.</string>
+
+    <!-- Selettore tema -->
+
+    <!-- Selettore tipo di trigger -->
+    <string name="trigger_kind_key">Pressione tasto</string>
+    <string name="trigger_kind_automation">Automazione</string>
+    <string name="automation_card_subtitle">Viene eseguita quando le condizioni qui sotto diventano vere</string>
+</resources>

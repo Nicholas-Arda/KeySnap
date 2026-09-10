@@ -1,0 +1,253 @@
+<title>KeySnap Store Deck</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@500;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@48,500,1,0&display=block">
+<style>
+  :root {
+    --ui-bg: #f5f4f0; --ui-fg: #1c1c1e; --ui-muted: #6b6a66; --ui-line: #dedbd2; --ui-accent: #0b57d0;
+    /* slide palette: fixed, this is artwork */
+    --ground: #eef4fd; --ink: #1c1c1e; --ink-2: #4f5a6b; --blue: #006efd; --blue-2: #2b86ff;
+    --sky: #d6e4fb; --sky-2: #e3edfc; --sky-3: #c9dcfa;
+    --navy: #0b1220; --navy-2: #131e31; --paper: #f5f1e8; --bezel: #101113;
+    --sepia-bg: #f4e9d5; --sepia-amber: #8b5a2b; --sepia-line: #c8ae80;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --ui-bg: #14161b; --ui-fg: #ecebe6; --ui-muted: #9a9892; --ui-line: #2a2d34; --ui-accent: #409cff; }
+  }
+  :root[data-theme="dark"] { --ui-bg: #14161b; --ui-fg: #ecebe6; --ui-muted: #9a9892; --ui-line: #2a2d34; --ui-accent: #409cff; }
+
+  body { background: var(--ui-bg); color: var(--ui-fg); font-family: Figtree, "Segoe UI", system-ui, sans-serif; margin: 0; }
+  .bar { display: flex; align-items: baseline; gap: 20px; padding: 18px 24px 6px; flex-wrap: wrap; }
+  .bar h1 { font-size: 18px; font-weight: 700; margin: 0; letter-spacing: -0.01em; }
+  .bar p { margin: 0; color: var(--ui-muted); font-size: 13px; }
+  .bar label { margin-left: auto; font-size: 13px; color: var(--ui-muted); display: flex; gap: 10px; align-items: center; }
+  .bar input { accent-color: var(--ui-accent); }
+  .deck { display: flex; gap: 20px; overflow-x: auto; padding: 14px 24px 28px; align-items: flex-start; }
+  .thumb { flex: none; position: relative; margin: 0; }
+  .thumb figcaption { font-size: 12px; color: var(--ui-muted); margin-top: 8px; display: flex; justify-content: space-between; font-variant-numeric: tabular-nums; }
+  .thumb figcaption b { color: var(--ui-fg); font-weight: 700; }
+  .frame { width: calc(1080px * var(--s, .3)); height: calc(1920px * var(--s, .3)); overflow: hidden; border-radius: 6px; border: 1px solid var(--ui-line); }
+  .frame.fg { width: calc(1024px * var(--s, .3)); height: calc(500px * var(--s, .3)); }
+  .slide { width: 1080px; height: 1920px; transform: scale(var(--s, .3)); transform-origin: 0 0; position: relative; overflow: hidden; background: var(--ground); color: var(--ink); }
+  .slide.feature { width: 1024px; height: 500px; }
+
+  /* the background language: soft round shapes, sky tones up top, brand blue below */
+  .blob { position: absolute; border-radius: 50%; z-index: 0; }
+  .blob.sky { background: var(--sky); }
+  .blob.sky2 { background: var(--sky-2); }
+  .blob.sky3 { background: var(--sky-3); }
+  .blob.blue { background: var(--blue); }
+  .blob.blue2 { background: var(--blue-2); }
+
+  /* headline block, shared */
+  .head { position: absolute; left: 80px; right: 80px; top: 130px; text-align: center; z-index: 3; }
+  .head h2 { font-size: 100px; line-height: 1.02; letter-spacing: -0.035em; font-weight: 800; margin: 0; text-wrap: balance; text-shadow: 0 2px 0 rgba(255,255,255,.6), 0 0 40px rgba(255,255,255,.9); }
+  .head h2 em { font-style: normal; color: var(--blue); }
+  .head p { font-size: 40px; line-height: 1.25; font-weight: 500; color: var(--ink-2); margin: 28px 60px 0; text-wrap: balance; text-shadow: 0 0 24px rgba(255,255,255,.9); }
+
+  /* phone: Android Studio's real Pixel 10 Pro device art (shots_framed/), frame baked into the image.
+     Geometry note: the framed PNG is 1410x2968 with the 1280x2856 glass at 59,60 — every size below is
+     the glass width (860/470/360, content-box) x 1410/1280, offset back by 59 (or 60) x glassWidth/1280, so the screen content
+     lands exactly where the old CSS device put it. */
+  .phone {
+    position: absolute; left: 50%; top: 575.69px; width: 947.34px; margin-left: -453.64px; z-index: 2;
+    filter: drop-shadow(0 50px 60px rgba(11, 18, 32, .38));
+  }
+  .phone .screen { display: block; }
+  .phone .screen img { width: 100%; height: auto; display: block; }
+  .phone.low { top: 675.69px; }
+  .phone.lower { top: 815.69px; }
+  /* three-phone fan for the theme slides */
+  .phone.fan { width: 517.73px; margin-left: 0; top: 459.97px; z-index: 1; filter: drop-shadow(0 28px 34px rgba(11, 18, 32, .34)); }
+  .phone.fan.l { left: -59.66px; transform: rotate(-8deg); }
+  .phone.fan.r { left: 650.34px; transform: rotate(8deg); }
+  .phone.fan.c { left: 295.34px; top: 319.97px; z-index: 2; }
+
+  /* callout pill */
+  .pill { position: absolute; left: 50%; transform: translateX(-50%); top: 520px; display: inline-flex; align-items: center; gap: 18px; padding: 22px 36px; border-radius: 999px; background: #fff; color: var(--ink); font-size: 34px; font-weight: 700; box-shadow: 0 24px 50px -16px rgba(11,18,32,.35); letter-spacing: -0.01em; white-space: nowrap; z-index: 4; }
+  .pill .k { display: inline-grid; place-items: center; min-width: 56px; height: 56px; padding: 0 16px; border-radius: 16px; background: var(--ink); color: #fff; font-size: 28px; font-weight: 700; }
+  .pill .arrow { color: var(--blue); font-size: 34px; }
+
+  /* icon cloud on the actions slide */
+  .cloud { position: absolute; left: 50%; top: 500px; transform: translateX(-50%); display: grid; grid-template-columns: repeat(5, 132px); gap: 26px; z-index: 3; }
+  .cloud span { width: 132px; height: 132px; border-radius: 40px; display: grid; place-items: center; background: #fff; box-shadow: 0 20px 40px -18px rgba(11,18,32,.35); }
+  .cloud i, .ms { font-family: "Material Symbols Rounded"; font-style: normal; font-size: 72px; line-height: 1; font-variation-settings: "FILL" 1, "wght" 500, "opsz" 48; }
+
+  /* dark brand slide */
+  .slide.brand { background: var(--navy); color: var(--paper); }
+  .slide.brand .head h2 { color: var(--paper); text-shadow: none; }
+  .slide.brand .head h2 em { color: #409cff; }
+  .pieces { position: absolute; left: 50%; top: 52%; transform: translate(-50%, -50%); width: 840px; }
+  .brand .facts { position: absolute; left: 80px; right: 80px; bottom: 260px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; text-align: center; }
+  .brand .facts div { padding: 40px 18px 34px; border-radius: 36px; background: var(--navy-2); color: var(--paper); }
+  .brand .facts small { display: block; font-size: 26px; line-height: 1.25; font-weight: 600; color: #cfd6e4; margin-top: 18px; text-wrap: balance; }
+  .brand .ms { font-size: 96px; color: #409cff; position: relative; display: inline-block; }
+  .brand .ms.strike::after { content: ""; position: absolute; left: -6px; right: -6px; top: 50%; height: 10px; border-radius: 5px; background: #ff6259; transform: rotate(-35deg); box-shadow: 0 0 0 5px var(--navy-2); }
+
+  /* experimental theme headline: each word wears its theme */
+  .head h2 .w-light { color: #fff; text-shadow: 0 0 2px rgba(28,28,30,.55), 0 0 28px rgba(0,110,253,.55), 0 0 70px rgba(0,110,253,.35); }
+  .head h2 .w-dark { color: var(--navy); text-shadow: 0 0 1px #409cff, 0 0 26px rgba(64,156,255,.45); }
+  .head h2 .w-sepia { color: var(--sepia-amber); background: var(--sepia-bg); box-shadow: 0 0 0 4px var(--sepia-bg), 0 0 0 7px var(--sepia-line); border-radius: 22px; padding: 0 16px; margin: 0 8px; text-shadow: none; }
+
+  /* feature graphic */
+  .feature { background: var(--blue); color: #fff; }
+  .feature .word { position: absolute; left: 72px; top: 118px; text-align: left; z-index: 2; }
+  .feature .word .name { height: 104px; display: block; }
+  .feature .word p { font-size: 46px; font-weight: 800; letter-spacing: -0.03em; margin: 40px 0 0 6px; line-height: 1.02; color: #fff; }
+  .feature .fgphone {
+    left: auto; right: -50.97px; top: 50.13px; width: 396.56px; margin-left: 0; transform: rotate(-8deg);
+    filter: drop-shadow(0 24px 30px rgba(0, 0, 0, .42));
+  }
+
+  /* export: one slide at true size */
+  body.export { background: transparent; --s: 1; }
+  body.export .bar, body.export .thumb { display: none; }
+  body.export .thumb.on { display: block; position: fixed; left: 0; top: 0; }
+  body.export .thumb.on .frame { border: 0; border-radius: 0; }
+  body.export .thumb.on figcaption { display: none; }
+  body.export .deck { padding: 0; }
+  @media (prefers-reduced-motion: no-preference) { .frame { transition: width .15s, height .15s; } }
+</style>
+
+<div class="bar">
+  <h1>KeySnap store deck</h1>
+  <p>Google Play phone screenshots 1080×1920 and the 1024×500 feature graphic. Draft six.</p>
+  <label>Zoom <input id="zoom" type="range" min="0.15" max="1" step="0.05" value="0.3"></label>
+</div>
+
+<div class="deck" id="deck">
+
+  <figure class="thumb" data-id="01">
+    <div class="frame"><section class="slide">
+      <div class="blob sky" style="left:-360px;top:-420px;width:900px;height:900px"></div>
+      <div class="blob sky2" style="left:620px;top:-260px;width:760px;height:760px"></div>
+      <div class="blob blue" style="left:-420px;top:880px;width:900px;height:1300px"></div>
+      <div class="blob blue2" style="left:760px;top:1000px;width:760px;height:1100px"></div>
+      <div class="blob sky3" style="left:760px;top:560px;width:520px;height:520px"></div>
+      <div class="head"><h2>Give every button a <em>new job</em></h2></div>
+      <div class="phone"><div class="screen"><img src="shots_framed/home.png" alt="KeySnap Home screen"></div></div>
+    </section></div>
+    <figcaption><b>01 Home</b><span>1080×1920</span></figcaption>
+  </figure>
+
+  <figure class="thumb" data-id="02">
+    <div class="frame"><section class="slide">
+      <div class="blob sky2" style="left:-300px;top:-300px;width:760px;height:760px"></div>
+      <div class="blob blue" style="left:560px;top:620px;width:1000px;height:1000px"></div>
+      <div class="blob sky" style="left:-260px;top:1260px;width:700px;height:700px"></div>
+      <div class="blob sky3" style="left:820px;top:200px;width:300px;height:300px"></div>
+      <div class="head"><h2>Double‑tap volume, <em>flashlight</em> on</h2></div>
+      <div class="phone low"><div class="screen"><img src="shots_framed/editor.png" alt="Shortcut editor"></div></div>
+      <div class="pill"><span class="k">Vol −</span><span class="k">×2</span><span class="arrow">→</span>Flashlight</div>
+    </section></div>
+    <figcaption><b>02 Editor</b><span>1080×1920</span></figcaption>
+  </figure>
+
+  <figure class="thumb" data-id="03">
+    <div class="frame"><section class="slide">
+      <div class="blob sky" style="left:-460px;top:820px;width:1100px;height:1100px"></div>
+      <div class="blob blue2" style="left:840px;top:-470px;width:560px;height:560px"></div>
+      <div class="blob blue" style="left:820px;top:1300px;width:700px;height:700px"></div>
+      <div class="blob sky2" style="left:-200px;top:-200px;width:520px;height:520px"></div>
+      <div class="head"><h2><em>90+ actions,</em> one press away</h2></div>
+      <div class="cloud">
+        <span><i style="color:#e0a400">flashlight_on</i></span>
+        <span><i style="color:#5b6bff">photo_camera</i></span>
+        <span><i style="color:#2a9d8f">screenshot</i></span>
+        <span><i style="color:#006efd">wifi</i></span>
+        <span><i style="color:#e5484d">music_note</i></span>
+        <span><i style="color:#7c4dff">volume_up</i></span>
+        <span><i style="color:#1a73e8">bluetooth</i></span>
+        <span><i style="color:#8a3ffc">do_not_disturb_on</i></span>
+        <span><i style="color:#f28c28">brightness_6</i></span>
+        <span><i style="color:#3d3d3d">apps</i></span>
+      </div>
+      <div class="phone lower"><div class="screen"><img src="shots_framed/catalog.png" alt="Action catalog"></div></div>
+    </section></div>
+    <figcaption><b>03 Actions</b><span>1080×1920</span></figcaption>
+  </figure>
+
+  <figure class="thumb" data-id="04">
+    <div class="frame"><section class="slide">
+      <div class="blob blue" style="left:-520px;top:560px;width:1000px;height:1400px"></div>
+      <div class="blob sky" style="left:560px;top:-380px;width:900px;height:900px"></div>
+      <div class="blob blue2" style="left:840px;top:900px;width:600px;height:600px"></div>
+      <div class="blob sky3" style="left:120px;top:1500px;width:420px;height:420px"></div>
+      <div class="head"><h2>The <em>power button</em>, too</h2><p>Advanced Mode reaches the keys other apps can’t see</p></div>
+      <div class="phone low"><div class="screen"><img src="shots_framed/shortcuts.png" alt="Shortcuts list"></div></div>
+      <div class="pill"><span class="k">Power</span><span class="k">×2</span><span class="arrow">→</span>Camera</div>
+    </section></div>
+    <figcaption><b>04 Advanced Mode</b><span>1080×1920</span></figcaption>
+  </figure>
+
+  <figure class="thumb" data-id="05">
+    <div class="frame"><section class="slide">
+      <div class="blob blue" style="left:-300px;top:1150px;width:1680px;height:1400px"></div>
+      <div class="blob sky2" style="left:-320px;top:-260px;width:800px;height:800px"></div>
+      <div class="blob sky" style="left:700px;top:120px;width:640px;height:640px"></div>
+      <div class="blob sky3" style="left:-80px;top:760px;width:300px;height:300px"></div>
+      <div class="head"><h2>Only when <em>you want</em></h2><p>Time, Wi‑Fi, battery, headphones and more</p></div>
+      <div class="phone low"><div class="screen"><img src="shots_framed/constraints.png" alt="Automation with conditions"></div></div>
+      <div class="pill"><span class="k">17:00+</span><span class="k">Home Wi‑Fi</span><span class="arrow">→</span>Toggle mobile data</div>
+    </section></div>
+    <figcaption><b>05 Conditions</b><span>1080×1920</span></figcaption>
+  </figure>
+
+  <figure class="thumb" data-id="06">
+    <div class="frame"><section class="slide brand">
+      <div class="head"><h2>No account.<br>No cloud.<br><em>Open source.</em></h2></div>
+      <img class="pieces" src="assets/lockup_dark.svg" alt="KeySnap">
+      <div class="facts">
+        <div><i class="ms">cloud_off</i><small>Nothing leaves your phone</small></div>
+        <div><i class="ms strike">dns</i><small>No servers, no sign‑in</small></div>
+        <div><i class="ms">code</i><small>GPL‑3, code on GitHub</small></div>
+      </div>
+    </section></div>
+    <figcaption><b>06 Brand</b><span>1080×1920</span></figcaption>
+  </figure>
+
+  <figure class="thumb" data-id="07">
+    <div class="frame"><section class="slide">
+      <div class="blob sky" style="left:-380px;top:-460px;width:1000px;height:1000px"></div>
+      <div class="blob sky2" style="left:560px;top:-200px;width:800px;height:800px"></div>
+      <div class="blob blue" style="left:-560px;top:1240px;width:1000px;height:1000px"></div>
+      <div class="blob blue2" style="left:700px;top:1320px;width:900px;height:900px"></div>
+      <div class="head"><h2><span class="w-light">Light,</span> <span class="w-dark">dark</span> or <span class="w-sepia">sepia</span></h2></div>
+      <div class="phone fan l"><div class="screen"><img src="shots_framed/home_dark.png" alt="Home, dark theme"></div></div>
+      <div class="phone fan r"><div class="screen"><img src="shots_framed/home_sepia.png" alt="Home, sepia theme"></div></div>
+      <div class="phone fan c"><div class="screen"><img src="shots_framed/home.png" alt="Home, light theme"></div></div>
+    </section></div>
+    <figcaption><b>07 Themes</b><span>1080×1920</span></figcaption>
+  </figure>
+
+  <figure class="thumb" data-id="fg">
+    <div class="frame fg"><section class="slide feature">
+      <div class="blob blue2" style="left:-220px;top:-320px;width:640px;height:640px"></div>
+      <div class="blob" style="left:300px;top:330px;width:520px;height:520px;background:#1a7bff"></div>
+      <div class="word">
+        <img class="name" src="assets/lockup_on_blue.svg" alt="KeySnap">
+        <p>Give every button<br>a new job.</p>
+      </div>
+      <div class="phone fgphone"><div class="screen"><img src="shots_framed/home.png" alt="KeySnap Home"></div></div>
+    </section></div>
+    <figcaption><b>Feature graphic</b><span>1024×500</span></figcaption>
+  </figure>
+
+</div>
+
+<script>
+  (function () {
+    var params = new URLSearchParams(location.search);
+    var id = params.get('slide');
+    var zoom = document.getElementById('zoom');
+    function setScale(s) { document.documentElement.style.setProperty('--s', s); }
+    try { var saved = localStorage.getItem('keysnap-deck-zoom'); if (saved) { zoom.value = saved; } } catch (e) {}
+    setScale(zoom.value);
+    zoom.addEventListener('input', function () { setScale(zoom.value); try { localStorage.setItem('keysnap-deck-zoom', zoom.value); } catch (e) {} });
+    if (id) {
+      document.body.classList.add('export');
+      setScale(1);
+      var el = document.querySelector('.thumb[data-id="' + id + '"]');
+      if (el) el.classList.add('on');
+    }
+  })();
+</script>

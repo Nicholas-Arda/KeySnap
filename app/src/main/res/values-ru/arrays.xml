@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Note: inside <string-array>, write an apostrophe as ’ rather than the escaped form.
+     aapt2 in this AGP fails with a bare NullPointerException on the escaped one. -->
+<resources>
+    <string-array name="guide_generic_steps">
+        <item>Откройте приложение «Настройки»</item>
+        <item>Перейдите в раздел \"О телефоне\" или \"Сведения о ПО\"</item>
+        <item>Нажмите на \"Номер сборки\" 7 раз подряд</item>
+        <item>Когда появится сообщение \"Теперь вы разработчик\", вернитесь в настройки</item>
+        <item>Откройте \"Для разработчиков\" и включите \"Отладку по Wi-Fi\"</item>
+    </string-array>
+    <string-array name="guide_samsung_steps">
+        <item>Откройте настройки</item>
+        <item>Перейдите в \"О телефоне\" &gt; \"Сведения о ПО\"</item>
+        <item>Нажмите на \"Номер сборки\" 7 раз подряд</item>
+        <item>Вернитесь назад и откройте \"Для разработчиков\"</item>
+        <item>Включите \"Отладку по Wi-Fi\"</item>
+    </string-array>
+    <string-array name="guide_xiaomi_steps">
+        <item>Откройте настройки</item>
+        <item>Перейдите в \"О телефоне\"</item>
+        <item>Нажмите \"Все характеристики\" &gt; \"Версия MIUI\" (или \"Версия HyperOS\") 7 раз</item>
+        <item>Вернитесь в главные настройки, откройте \"Дополнительные настройки\" &gt; \"Для разработчиков\"</item>
+        <item>Включите \"Отладку по Wi-Fi\"</item>
+    </string-array>
+    <string-array name="guide_huawei_steps">
+        <item>Откройте настройки</item>
+        <item>Перейдите в \"О телефоне\" &gt; \"Версия ПО\"</item>
+        <item>Нажмите \"Номер сборки\" 7 раз подряд</item>
+        <item>Откройте \"Для разработчиков\" в разделе \"Система и обновления\" (или на главном экране настроек)</item>
+        <item>Включите \"Отладку по Wi-Fi\"</item>
+    </string-array>
+    <string-array name="guide_coloros_steps">
+        <item>Откройте настройки</item>
+        <item>Перейдите в \"О телефоне\" &gt; \"Информация о версии\"</item>
+        <item>Нажмите \"Номер сборки\" 7 раз подряд</item>
+        <item>Вернитесь в главные настройки, откройте \"Дополнительные настройки\" &gt; \"Для разработчиков\"</item>
+        <item>Включите \"Отладку по Wi-Fi\"</item>
+    </string-array>
+    <string-array name="guide_vivo_steps">
+        <item>Откройте настройки</item>
+        <item>Перейдите в \"О телефоне\" (может быть в разделе \"Другие настройки\")</item>
+        <item>Нажмите \"Версия ПО\" 7 раз подряд</item>
+        <item>Вернитесь назад, откройте \"Управление системой\" &gt; \"Для разработчиков\"</item>
+        <item>Включите \"Отладку по Wi-Fi\"</item>
+    </string-array>
+    <string-array name="guide_pixel_steps">
+        <item>Откройте настройки</item>
+        <item>Перейдите в \"О телефоне\"</item>
+        <item>Нажмите \"Номер сборки\" 7 раз подряд</item>
+        <item>Вернитесь в главные настройки, откройте \"Система\" &gt; \"Для разработчиков\"</item>
+        <item>Включите \"Отладку по Wi-Fi\"</item>
+    </string-array>
+    <string-array name="wizard_can_do_lines">
+        <item>Читать любую аппаратную клавишу без задержки</item>
+        <item>Выполнять настройки и команды, которые вы напишете</item>
+        <item>Продолжать работать, когда приложение закрыто</item>
+    </string-array>
+    <string-array name="wizard_never_does_lines">
+        <item>Отбирать ввод у других приложений</item>
+        <item>Читать экран другого приложения</item>
+        <item>Отправлять то, что вы не положили в сценарий</item>
+    </string-array>
+    <string-array name="wizard_pairing_steps">
+        <item>Нажмите кнопку ниже, чтобы открыть настройки отладки по Wi-Fi.</item>
+        <item>В меню выберите «Сопряжение устройства по коду».</item>
+        <item>Мы считаем код сопряжения и подключимся автоматически.</item>
+    </string-array>
+</resources>

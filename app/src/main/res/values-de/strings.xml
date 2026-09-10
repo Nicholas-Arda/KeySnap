@@ -1,0 +1,822 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">KeySnap</string>
+    <string name="accessibility_service_description">Erkennt physische Tastendrücke (Lautstärke, Ein/Aus und andere Hardwaretasten), damit sie deine Kurzbefehle auslösen können. Nur während der Einrichtung des Erweiterten Modus liest sie außerdem den Kopplungscode aus dem Dialog für kabelloses Debugging des Systems. Sie kann den Bildschirm keiner anderen App lesen.</string>
+    <string name="accessibility_disclosure_agree">Zustimmen und Einstellungen öffnen</string>
+
+    <!-- Aktionskategorien -->
+    <string name="action_category_input">Eingabe</string>
+    <string name="action_category_apps">Apps</string>
+    <string name="action_category_flashlight">Taschenlampe</string>
+    <string name="action_category_navigation">Navigation</string>
+    <string name="action_category_volume">Lautstärke</string>
+    <string name="action_category_display">Display</string>
+    <string name="action_category_media">Medien</string>
+    <string name="action_category_connectivity">Konnektivität</string>
+    <string name="action_category_keyboard">Tastatur</string>
+    <string name="action_category_device">Gerät</string>
+    <string name="action_category_sound">Sound</string>
+    <string name="action_category_automation">Automatisierung</string>
+
+    <!-- Aktionsparameter -->
+    <string name="param_strength">Stärke</string>
+    <string name="param_key_code">Tastencode</string>
+    <string name="param_text">Text</string>
+    <string name="param_taps">Tippanzahl</string>
+    <string name="param_interval_ms">Intervall (ms)</string>
+    <string name="param_start_x">Start X</string>
+    <string name="param_start_y">Start Y</string>
+    <string name="param_end_x">Ende X</string>
+    <string name="param_end_y">Ende Y</string>
+    <string name="param_duration_ms">Dauer (ms)</string>
+    <string name="param_point_a_x">Punkt A X</string>
+    <string name="param_point_a_y">Punkt A Y</string>
+    <string name="param_point_b_x">Punkt B X</string>
+    <string name="param_point_b_y">Punkt B Y</string>
+    <string name="param_direction">Richtung</string>
+    <string name="param_app">App</string>
+    <string name="param_shortcut">Kurzbefehl</string>
+    <string name="param_method">Methode</string>
+    <string name="param_body">Inhalt</string>
+    <string name="param_command">Befehl</string>
+    <string name="param_action">Aktion</string>
+    <string name="param_extras">Extras (Schlüssel=Wert;Schlüssel2=Wert2)</string>
+    <string name="param_element">Element</string>
+    <string name="param_namespace">Namespace</string>
+    <string name="param_key">Schlüssel</string>
+    <string name="param_value">Wert</string>
+    <string name="param_mode">Modus</string>
+    <string name="param_stream">Stream</string>
+    <string name="param_sound">Sound</string>
+    <string name="param_times">Anzahl</string>
+
+    <!-- Aktionen: Taschenlampe -->
+    <string name="action_toggle_flashlight">Taschenlampe umschalten</string>
+    <string name="action_enable_flashlight">Taschenlampe einschalten</string>
+    <string name="action_disable_flashlight">Taschenlampe ausschalten</string>
+    <string name="action_change_flashlight_brightness">Taschenlampenhelligkeit ändern</string>
+
+    <!-- Aktionen: Eingabe -->
+    <string name="action_input_key_code">Tastencode eingeben</string>
+    <string name="action_input_text">Text eingeben</string>
+    <string name="action_tap_screen">Bildschirm antippen</string>
+    <string name="action_swipe_screen">Bildschirm wischen</string>
+    <string name="action_pinch_screen">Bildschirm zoomen (Pinch)</string>
+
+    <!-- Aktionen: Apps -->
+    <string name="action_launch_app">App starten</string>
+    <string name="action_launch_app_shortcut">App-Verknüpfung starten</string>
+    <string name="action_open_url">URL öffnen</string>
+    <string name="action_http_request">HTTP-Anfrage</string>
+    <string name="action_shell_command">Shell-Befehl</string>
+    <string name="action_send_intent">Intent senden</string>
+    <string name="action_interact_with_app_element">Mit App-Element interagieren</string>
+    <string name="action_launch_voice_assistant">Sprachassistent starten</string>
+    <string name="action_launch_device_assistant">Geräteassistent starten</string>
+    <string name="action_open_camera">Kamera öffnen</string>
+    <string name="action_open_settings">Einstellungen öffnen</string>
+    <string name="action_force_stop_app">Beenden der App erzwingen</string>
+    <string name="action_close_and_clear_app">App schließen und aus den zuletzt verwendeten entfernen</string>
+    <string name="action_modify_setting">Einstellung ändern</string>
+
+    <!-- Aktionen: Navigation -->
+    <string name="action_expand_notification_drawer">Benachrichtigungsleiste ausklappen</string>
+    <string name="action_toggle_notification_drawer">Benachrichtigungsleiste umschalten</string>
+    <string name="action_expand_quick_settings">Schnelleinstellungen ausklappen</string>
+    <string name="action_toggle_quick_settings">Schnelleinstellungen umschalten</string>
+    <string name="action_collapse_status_bar">Statusleiste einklappen</string>
+    <string name="action_go_back">Zurück</string>
+    <string name="action_go_home">Zum Startbildschirm</string>
+    <string name="action_open_recents">Letzte Apps öffnen</string>
+    <string name="action_open_menu">Menü öffnen</string>
+    <string name="action_go_last_app">Zur letzten App wechseln</string>
+    <string name="action_toggle_split_screen">Geteilten Bildschirm umschalten</string>
+    <string name="action_take_screenshot">Screenshot aufnehmen</string>
+    <string name="action_move_cursor_to_end">Cursor ans Ende setzen</string>
+
+    <!-- Aktionen: Lautstärke -->
+    <string name="action_volume_up">Lauter</string>
+    <string name="action_volume_down">Leiser</string>
+    <string name="action_volume_mute">Stummschalten</string>
+    <string name="action_volume_unmute">Stummschaltung aufheben</string>
+    <string name="action_volume_toggle_mute">Stummschaltung umschalten</string>
+    <string name="action_show_volume_dialog">Lautstärkedialog anzeigen</string>
+    <string name="action_cycle_ringer_mode">Klingelmodus durchschalten</string>
+    <string name="action_change_ringer_mode">Klingelmodus ändern</string>
+    <string name="action_change_volume_stream">Lautstärkestream ändern</string>
+
+    <!-- Aktionen: Anzeige -->
+    <string name="action_screen_on">Bildschirm einschalten</string>
+    <string name="action_screen_off">Bildschirm ausschalten</string>
+    <string name="action_toggle_screen">Bildschirm umschalten</string>
+    <string name="action_toggle_auto_rotate">Automatische Drehung umschalten</string>
+    <string name="action_portrait_mode">Hochformat</string>
+    <string name="action_landscape_mode">Querformat</string>
+    <string name="action_cycle_rotations">Ausrichtung durchschalten</string>
+    <string name="action_change_brightness">Helligkeit ändern</string>
+    <string name="action_toggle_auto_brightness">Automatische Helligkeit umschalten</string>
+    <string name="action_increase_brightness">Helligkeit erhöhen</string>
+    <string name="action_decrease_brightness">Helligkeit verringern</string>
+
+    <!-- Aktionen: Medien -->
+    <string name="action_media_play">Wiedergeben</string>
+    <string name="action_media_pause">Pausieren</string>
+    <string name="action_media_play_pause">Wiedergabe / Pause</string>
+    <string name="action_media_next">Nächster Titel</string>
+    <string name="action_media_previous">Vorheriger Titel</string>
+    <string name="action_media_fast_forward">Vorspulen</string>
+    <string name="action_media_rewind">Zurückspulen</string>
+    <string name="action_media_stop">Stopp</string>
+
+    <!-- Aktionen: Konnektivität -->
+    <string name="action_toggle_wifi">WLAN umschalten</string>
+    <string name="action_enable_wifi">WLAN aktivieren</string>
+    <string name="action_disable_wifi">WLAN deaktivieren</string>
+    <string name="action_toggle_bluetooth">Bluetooth umschalten</string>
+    <string name="action_enable_bluetooth">Bluetooth aktivieren</string>
+    <string name="action_disable_bluetooth">Bluetooth deaktivieren</string>
+    <string name="action_toggle_mobile_data">Mobile Daten umschalten</string>
+    <string name="action_toggle_nfc">NFC umschalten</string>
+    <string name="action_toggle_airplane_mode">Flugmodus umschalten</string>
+    <string name="action_toggle_location">Standort umschalten</string>
+    <string name="action_toggle_hotspot">Hotspot umschalten</string>
+
+    <!-- Aktionen: Tastatur -->
+    <string name="action_show_keyboard">Tastatur anzeigen</string>
+    <string name="action_hide_keyboard">Tastatur ausblenden</string>
+    <string name="action_toggle_keyboard">Tastatur umschalten</string>
+    <string name="action_switch_keyboard">Tastatur wechseln</string>
+    <string name="action_show_keyboard_picker">Tastaturauswahl anzeigen</string>
+    <string name="action_text_cut">Ausschneiden</string>
+    <string name="action_text_copy">Kopieren</string>
+    <string name="action_text_paste">Einfügen</string>
+    <string name="action_select_word_at_cursor">Wort an der Cursorposition auswählen</string>
+
+    <!-- Aktionen: Gerät -->
+    <string name="action_lock_device">Gerät sperren</string>
+    <string name="action_secure_lock_device">Gerät sicher sperren</string>
+    <string name="action_power_dialog">Ein/Aus-Dialog anzeigen</string>
+    <string name="action_toggle_dnd">Nicht stören umschalten</string>
+    <string name="action_enable_dnd">Nicht stören aktivieren</string>
+    <string name="action_disable_dnd">Nicht stören deaktivieren</string>
+    <string name="action_open_app_drawer">App-Übersicht öffnen</string>
+    <string name="action_dismiss_all_notifications">Alle Benachrichtigungen schließen</string>
+    <string name="action_answer_call">Anruf annehmen</string>
+    <string name="action_end_call">Anruf beenden</string>
+
+    <!-- Aktionen: Sound -->
+    <string name="action_play_sound">Ton abspielen</string>
+    <string name="action_text_to_speech">Text-zu-Sprache</string>
+    <string name="action_vibrate">Vibrieren</string>
+    <string name="action_stop_text_to_speech">Text-zu-Sprache stoppen</string>
+
+    <!-- Aktionen: Automatisierung -->
+    <string name="action_delay">Verzögerung</string>
+    <string name="action_repeat_previous">Vorherige Aktion wiederholen</string>
+    <string name="action_toggle_mapping">Alle Kurzbefehle umschalten</string>
+    <string name="action_pause_mapping">Alle Kurzbefehle pausieren</string>
+    <string name="action_resume_mapping">Alle Kurzbefehle fortsetzen</string>
+
+    <!-- Bedingungskategorien -->
+    <string name="constraint_category_apps">Apps</string>
+    <string name="constraint_category_media">Medien</string>
+    <string name="constraint_category_display">Display</string>
+    <string name="constraint_category_flashlight">Taschenlampe</string>
+    <string name="constraint_category_keyboard">Tastatur</string>
+    <string name="constraint_category_lock">Sperre</string>
+    <string name="constraint_category_phone">Telefon</string>
+    <string name="constraint_category_power">Akku</string>
+    <string name="constraint_category_device">Gerät</string>
+    <string name="constraint_category_time">Zeit</string>
+    <string name="constraint_category_connectivity">Verbindungen</string>
+    <string name="constraint_category_sound">Ton</string>
+
+    <!-- Bedingungen -->
+    <string name="constraint_app_in_foreground">App im Vordergrund</string>
+    <string name="constraint_app_not_in_foreground">App nicht im Vordergrund</string>
+    <string name="constraint_app_playing_media">App spielt Medien ab</string>
+    <string name="constraint_app_not_playing_media">App spielt keine Medien ab</string>
+    <string name="constraint_no_media_playing">Es werden keine Medien abgespielt</string>
+    <string name="constraint_media_is_playing">Medien werden abgespielt</string>
+    <string name="constraint_bluetooth_on">Bluetooth ist an</string>
+    <string name="constraint_bluetooth_off">Bluetooth ist aus</string>
+    <string name="constraint_screen_on">Bildschirm ist an</string>
+    <string name="constraint_screen_off">Bildschirm ist aus</string>
+    <string name="constraint_screen_orientation">Bildschirmausrichtung</string>
+    <string name="constraint_physical_orientation">Physische Ausrichtung</string>
+    <string name="constraint_flashlight_on">Taschenlampe ist an</string>
+    <string name="constraint_flashlight_off">Taschenlampe ist aus</string>
+    <string name="constraint_wifi_on">WLAN ist an</string>
+    <string name="constraint_wifi_off">WLAN ist aus</string>
+    <string name="constraint_connected_to_wifi_network">Mit einem WLAN-Netzwerk verbunden</string>
+    <string name="constraint_disconnected_from_wifi_network">Nicht mit einem WLAN-Netzwerk verbunden</string>
+    <string name="constraint_input_method_chosen">Eingabemethode ist ausgewählt</string>
+    <string name="constraint_input_method_not_chosen">Eingabemethode ist nicht ausgewählt</string>
+    <string name="constraint_keyboard_showing">Tastatur wird angezeigt</string>
+    <string name="constraint_keyboard_not_showing">Tastatur wird nicht angezeigt</string>
+    <string name="constraint_device_locked">Gerät ist gesperrt</string>
+    <string name="constraint_device_unlocked">Gerät ist entsperrt</string>
+    <string name="constraint_lock_screen_showing">Sperrbildschirm wird angezeigt</string>
+    <string name="constraint_lock_screen_not_showing">Sperrbildschirm wird nicht angezeigt</string>
+    <string name="constraint_in_phone_call">Im Telefongespräch</string>
+    <string name="constraint_not_in_phone_call">Nicht im Telefongespräch</string>
+    <string name="constraint_phone_ringing">Telefon klingelt</string>
+    <string name="constraint_charging">Wird geladen</string>
+    <string name="constraint_discharging">Entlädt sich</string>
+    <string name="constraint_hinge_closed">Scharnier geschlossen</string>
+    <string name="constraint_hinge_open">Scharnier geöffnet</string>
+    <string name="constraint_time">Zeit</string>
+    <string name="constraint_bluetooth_device_connected">Bluetooth-Gerät ist verbunden</string>
+    <string name="constraint_bluetooth_device_disconnected">Bluetooth-Gerät ist getrennt</string>
+    <string name="constraint_dark_mode_on">Dunkles Design ist an</string>
+    <string name="constraint_dark_mode_off">Dunkles Design ist aus</string>
+    <string name="constraint_battery_saver_on">Energiesparmodus ist an</string>
+    <string name="constraint_battery_saver_off">Energiesparmodus ist aus</string>
+    <string name="constraint_charging_wired">Lädt per Kabel</string>
+    <string name="constraint_charging_wireless">Lädt kabellos</string>
+    <string name="constraint_battery_above">Akku über einem Stand</string>
+    <string name="constraint_battery_below">Akku unter einem Stand</string>
+    <string name="constraint_location_on">Standort ist an</string>
+    <string name="constraint_location_off">Standort ist aus</string>
+    <string name="constraint_day_of_week">Wochentag</string>
+    <string name="constraint_mobile_data_on">Mobile Daten sind an</string>
+    <string name="constraint_mobile_data_off">Mobile Daten sind aus</string>
+    <string name="constraint_airplane_mode_on">Flugmodus ist an</string>
+    <string name="constraint_airplane_mode_off">Flugmodus ist aus</string>
+    <string name="constraint_ringer_normal">Klingelton ist an</string>
+    <string name="constraint_ringer_vibrate">Klingelton auf Vibration</string>
+    <string name="constraint_ringer_silent">Klingelton ist lautlos</string>
+    <string name="constraint_dnd_on">Nicht stören ist an</string>
+    <string name="constraint_dnd_off">Nicht stören ist aus</string>
+    <string name="constraint_headphones_connected">Kopfhörer sind verbunden</string>
+    <string name="constraint_headphones_disconnected">Kopfhörer sind getrennt</string>
+
+    <!-- Aktionseditor: Anforderungshinweise -->
+    <string name="badge_expert_mode">Erfordert den Erweiterten Modus</string>
+    <string name="badge_accessibility">Erfordert den Bedienungshilfen-Dienst</string>
+    <string name="badge_notification_policy">Erfordert Zugriff auf „Nicht stören“</string>
+    <string name="badge_write_settings">Erfordert die Berechtigung zum Ändern der Systemeinstellungen</string>
+
+    <!-- Aktionseditor: Feldbezeichnungen -->
+    <string name="field_key_to_send">Zu sendende Taste</string>
+    <string name="field_tap_here">Hier tippen</string>
+    <string name="field_time_between_taps">Zeit zwischen den Berührungen</string>
+    <string name="field_swipe_from">Wischen von</string>
+    <string name="field_swipe_to">Wischen nach</string>
+    <string name="field_duration">Dauer</string>
+    <string name="field_first_finger">Erster Finger</string>
+    <string name="field_second_finger">Zweiter Finger</string>
+    <string name="field_app_to_open">Zu öffnende App</string>
+    <string name="field_app_to_stop">Zu beendende App</string>
+    <string name="field_extras">Extras</string>
+    <string name="field_setting_key">Einstellungsschlüssel</string>
+    <string name="field_level">Stufe</string>
+    <string name="field_brightness">Helligkeit</string>
+    <string name="field_text_to_speak">Zu sprechender Text</string>
+    <string name="field_wait">Warten</string>
+
+    <!-- Aktionseditor: Hinweise -->
+    <string name="hint_input_text">Wird in das fokussierte Feld eingegeben</string>
+    <string name="hint_http_body">Wird mit der Anfrage gesendet</string>
+    <string name="hint_optional">Optional</string>
+    <string name="hint_sound_uri">content:// oder file:// URI</string>
+
+    <!-- Aktionseditor: Erklärungen -->
+    <string name="helper_input_key_code">Sendet einen Tastendruck an die App, die gerade im Vordergrund ist.</string>
+    <string name="helper_http_request">Sendet eine Webanfrage – nützlich, um einen Webhook oder eine Smart-Home-Szene auszulösen.</string>
+    <string name="helper_shell_command">Führt einen Terminalbefehl auf dem Gerät aus.</string>
+    <string name="helper_extras">Optional. Jedes Paar wird als String-Extra gesendet.</string>
+    <string name="helper_send_intent">Sendet einen Android-Intent – eine Nachricht, auf die andere Apps reagieren können. Für erfahrene Nutzer.</string>
+    <string name="helper_modify_setting">Schreibt direkt eine Android-Systemeinstellung.</string>
+    <string name="helper_repeat_previous">Führt die Aktion darüber erneut aus.</string>
+
+    <!-- Aktionseditor: Auswahlmöglichkeiten -->
+    <string name="choice_pinch_in">Herauszoomen (zusammenziehen)</string>
+    <string name="choice_pinch_out">Hineinzoomen (auseinanderziehen)</string>
+    <string name="summary_zoom_in">Hineinzoomen</string>
+    <string name="summary_zoom_out">Herauszoomen</string>
+    <string name="choice_namespace_system">System</string>
+    <string name="choice_namespace_secure">Secure</string>
+    <string name="choice_namespace_global">Global</string>
+    <string name="choice_stream_ring">Klingelton</string>
+    <string name="choice_stream_media">Medien</string>
+    <string name="choice_stream_alarm">Wecker</string>
+    <string name="choice_stream_notification">Benachrichtigung</string>
+    <string name="choice_ringer_normal">Normal</string>
+    <string name="choice_ringer_vibrate">Vibration</string>
+    <string name="choice_ringer_silent">Lautlos</string>
+
+    <!-- Auslösertypen -->
+    <string name="press_single_title">Einmal drücken</string>
+    <string name="press_single_description">Wird ausgelöst, wenn die Taste einmal gedrückt wird</string>
+    <string name="press_double_title">Doppelt drücken</string>
+    <string name="press_double_description">Wird ausgelöst, wenn die Taste zweimal hintereinander gedrückt wird</string>
+    <string name="press_long_title">Lange drücken</string>
+    <string name="press_long_badge">Halten</string>
+    <string name="press_long_description">Wird ausgelöst, wenn die Taste für die eingestellte Zeit gehalten wird</string>
+
+    <!-- Hardware-Tastennamen -->
+    <string name="key_volume_down">Lautstärke leiser</string>
+    <string name="key_volume_up">Lautstärke lauter</string>
+    <string name="key_power">Ein/Aus</string>
+    <string name="key_assist">Assistent (Assist)</string>
+    <string name="key_voice_assist">Sprachassistent</string>
+    <string name="key_headsethook">Headset / Medientaste</string>
+    <string name="key_camera">Kamera / Auslöser</string>
+    <string name="key_back">Zurück</string>
+    <string name="key_home">Home</string>
+    <string name="key_menu">Menü</string>
+    <string name="key_mute">Stumm</string>
+    <string name="key_media_play_pause">Wiedergabe / Pause</string>
+    <string name="key_wakeup">Aufwecken</string>
+    <string name="key_alert_slider">Alert-Schieberegler / Benutzerdefinierter Schalter</string>
+
+    <!-- Entwickleroptionen-Anleitungen -->
+    <string name="guide_generic">Andere</string>
+    <string name="guide_pixel">Google Pixel / Reines Android</string>
+
+    <!-- Vorgeschlagene Kurzbefehle -->
+    <string name="suggestion_flashlight">Taschenlampe</string>
+    <string name="suggestion_flashlight_subtitle">Taschenlampe an und aus</string>
+    <string name="suggestion_play_pause">Wiedergabe / Pause</string>
+    <string name="suggestion_play_pause_subtitle">Was auch immer gerade läuft</string>
+    <string name="suggestion_screenshot">Screenshot</string>
+    <string name="suggestion_screenshot_subtitle">Bildschirm aufnehmen</string>
+    <string name="suggestion_dnd">Nicht stören</string>
+    <string name="suggestion_dnd_subtitle">Alle Benachrichtigungen stummschalten</string>
+    <string name="suggestion_lock">Gerät sperren</string>
+    <string name="suggestion_lock_subtitle">Bildschirm ausschalten</string>
+    <string name="suggestion_camera">Kamera öffnen</string>
+    <string name="suggestion_camera_subtitle">Direkt zum Foto</string>
+    <string name="suggestion_headphones_play">Kopfhörer rein</string>
+    <string name="suggestion_headphones_play_subtitle">Einstecken, Musik startet</string>
+    <string name="suggestion_assistant">Assistent</string>
+    <string name="suggestion_assistant_subtitle">Mit dem Assistenten sprechen</string>
+    <string name="suggestion_bedtime">Schlafenszeit</string>
+    <string name="suggestion_bedtime_subtitle">Nicht stören, dimmen, sperren</string>
+    <string name="suggestion_notifications">Benachrichtigungen</string>
+    <string name="suggestion_notifications_subtitle">Leiste herunterziehen</string>
+    <string name="suggestion_car_bluetooth">Im Auto</string>
+    <string name="suggestion_car_bluetooth_subtitle">Auto verbindet, Musik läuft</string>
+    <string name="suggestion_sos">SOS-Signal</string>
+    <string name="suggestion_sos_subtitle">Taschenlampe blinkt ··· ––– ···</string>
+    <string name="suggestion_wifi">WLAN</string>
+    <string name="suggestion_wifi_subtitle">Ein- oder ausschalten</string>
+    <string name="suggestion_low_battery">Akku schwach</string>
+    <string name="suggestion_low_battery_subtitle">Unter 15 %: Bluetooth aus, dimmen</string>
+    <string name="suggestion_auto_rotate">Autom. Drehen</string>
+    <string name="suggestion_auto_rotate_subtitle">Drehung sperren oder freigeben</string>
+    <string name="suggestion_night_charge_dnd">Nachtladung</string>
+    <string name="suggestion_night_charge_dnd_subtitle">Ab 22:00 am Ladegerät: Nicht stören</string>
+    <string name="suggestion_bluetooth">Bluetooth</string>
+    <string name="suggestion_bluetooth_subtitle">Ein- oder ausschalten</string>
+    <string name="suggestion_vibrate_mode">Vibrationsmodus</string>
+    <string name="suggestion_vibrate_mode_subtitle">Klingelton auf Vibration</string>
+    <string name="suggestion_torch_off_screen_off">Lampen-Schutz</string>
+    <string name="suggestion_torch_off_screen_off_subtitle">Bildschirm aus, Lampe aus</string>
+    <string name="suggestion_battery_saver">Energiesparen</string>
+    <string name="suggestion_battery_saver_subtitle">Bluetooth und WLAN aus, dimmen</string>
+
+    <!-- Allgemein -->
+    <string name="common_cancel">Abbrechen</string>
+    <string name="common_save">Speichern</string>
+    <string name="common_add">Hinzufügen</string>
+    <string name="common_done">Fertig</string>
+    <string name="common_back">Zurück</string>
+    <string name="common_close">Schließen</string>
+    <string name="common_remove">Entfernen</string>
+    <string name="common_delete">Löschen</string>
+    <string name="common_coming_soon">Demnächst</string>
+    <string name="picker_category_all">Alle</string>
+
+    <!-- Aktionskonfiguration -->
+    <string name="badge_tap_to_grant">%1$s · Zum Erteilen tippen</string>
+    <string name="action_config_enter_key_code">Oder einen Tastencode eingeben</string>
+    <string name="action_config_cancel_recording">Aufnahme abbrechen</string>
+    <string name="action_config_record_key">Physische Taste aufnehmen</string>
+    <string name="action_config_choose_app">App auswählen</string>
+    <string name="action_config_enter_package">Oder einen Paketnamen eingeben</string>
+    <string name="action_config_pick_on_screen">Auf dem Bildschirm auswählen</string>
+    <string name="action_config_allow_overlay">Anzeige über anderen Apps erlauben, um auszuwählen</string>
+    <string name="action_config_point_not_set">nicht festgelegt</string>
+
+    <!-- Bedingungsauswahl -->
+    <string name="constraint_picker_title">Eine Bedingung wählen</string>
+    <string name="constraint_picker_search">Bedingungen durchsuchen</string>
+    <string name="constraint_picker_no_match">Keine Bedingungen stimmen mit „%1$s“ überein</string>
+    <string name="constraint_picker_empty_category">Noch keine Bedingungen in dieser Kategorie</string>
+    <string name="constraint_picker_add_label">%1$s hinzufügen</string>
+
+    <!-- Bedingung einrichten -->
+    <string name="constraint_picker_configure_title">Bedingung einrichten</string>
+    <string name="field_constraint_app">App</string>
+    <string name="field_orientation">Ausrichtung</string>
+    <string name="orientation_portrait">Hochformat</string>
+    <string name="orientation_landscape">Querformat</string>
+    <string name="field_wifi_ssid">Netzwerkname (SSID)</string>
+    <string name="hint_wifi_ssid_any">Für ein beliebiges Netzwerk leer lassen</string>
+    <string name="field_bluetooth_device">Gerät</string>
+    <string name="bluetooth_no_paired_devices">Keine gekoppelten Geräte. Kopple zuerst eines in den Bluetooth-Einstellungen.</string>
+    <string name="field_battery_percent">Akkustand</string>
+    <string name="field_time_start">Von</string>
+    <string name="field_time_end">Bis</string>
+    <string name="field_days">Tage</string>
+    <string name="constraint_needs_usage_access">Benötigt Nutzungszugriff, damit die App sehen kann, welche App im Vordergrund ist.</string>
+    <string name="constraint_config_choose_app">Wähle eine App aus, um fortzufahren</string>
+    <string name="constraint_needs_location">Android zeigt den Netzwerknamen nur Apps mit Standortberechtigung.</string>
+    <string name="constraint_grant_permission">Erteilen</string>
+    <string name="constraint_summary_any_wifi">Beliebiges Netzwerk</string>
+    <string name="constraint_summary_time_range" translatable="false">%1$s – %2$s</string>
+    <string name="constraint_summary_percent" translatable="false">%1$d%%</string>
+
+    <!-- Aktionsauswahl -->
+    <string name="action_picker_search">Aktionen durchsuchen</string>
+    <string name="action_picker_no_match">Keine Aktionen stimmen mit „%1$s“ überein</string>
+    <string name="action_picker_empty_category">Noch keine Aktionen in dieser Kategorie</string>
+    <string name="action_picker_add_label">%1$s hinzufügen</string>
+
+    <!-- Skripteditor -->
+    <string name="editor_discard_changes">Änderungen verwerfen</string>
+    <string name="editor_unsaved_title">Änderungen verwerfen?</string>
+    <string name="editor_unsaved_body">Deine Änderungen an diesem Kurzbefehl wurden nicht gespeichert.</string>
+    <string name="editor_unsaved_discard">Verwerfen</string>
+    <string name="editor_shortcut_name">Name des Kurzbefehls</string>
+    <string name="editor_shortcut_settings">Einstellungen des Kurzbefehls</string>
+    <string name="editor_chain_when">Wenn</string>
+    <string name="editor_chain_only_if">Nur wenn</string>
+    <string name="editor_chain_do">Dann</string>
+    <string name="editor_add_action">Aktion hinzufügen</string>
+    <string name="editor_add_constraint">Bedingung hinzufügen</string>
+    <string name="editor_always_runs">Läuft immer</string>
+    <string name="editor_remove_constraint">%1$s entfernen</string>
+    <string name="editor_configure_action">%1$s konfigurieren</string>
+    <string name="editor_more_options">Weitere Optionen für %1$s</string>
+    <string name="editor_tap_to_configure">Zum Konfigurieren tippen</string>
+    <string name="editor_configure">Konfigurieren</string>
+    <string name="editor_move_up">Nach oben verschieben</string>
+    <string name="editor_move_down">Nach unten verschieben</string>
+    <string name="editor_test_run">Testlauf</string>
+
+    <!-- Allgemein (2) -->
+    <string name="common_ok">OK</string>
+    <string name="common_yes">Ja</string>
+    <string name="common_no">Nein</string>
+    <string name="common_confirm">Bestätigen</string>
+    <string name="common_save_caps">SPEICHERN</string>
+    <string name="common_cancel_caps">ABBRECHEN</string>
+
+    <!-- Bottom-Navigation -->
+    <string name="nav_home">Start</string>
+    <string name="nav_shortcuts">Kurzbefehle</string>
+    <string name="nav_settings">Einstellungen</string>
+
+    <!-- Dialoge -->
+    <string name="dialog_expert_connected">ERWEITERTER MODUS VERBUNDEN</string>
+    <string name="dialog_new_input_title">Neue Eingabe erkannt</string>
+    <string name="dialog_new_input_body">Code: %1$d. Gib dieser Eingabe einen kurzen Namen.</string>
+    <string name="dialog_new_input_hint">z. B. Kurzbefehltaste</string>
+
+    <!-- App-Auswahl -->
+    <string name="app_picker_search">Apps durchsuchen</string>
+    <string name="app_picker_loading">Installierte Apps werden gelesen…</string>
+    <string name="app_picker_no_match">Keine Apps stimmen mit „%1$s“ überein</string>
+    <string name="app_picker_choose">%1$s auswählen</string>
+    <string name="app_picker_selected">Ausgewählt</string>
+
+    <!-- Automatisierungsauslöser-Auswahl -->
+
+    <!-- Ereignisauslöser -->
+
+    <!-- Auslöserauswahl -->
+    <string name="trigger_picker_title">Taste festlegen</string>
+    <string name="trigger_picker_subtitle">Wähle eine Druckart und nimm dann eine Taste auf.</string>
+    <string name="trigger_picker_no_key">Noch keine Taste</string>
+    <string name="trigger_picker_saved_key">Oder eine gespeicherte Taste wählen</string>
+    <string name="trigger_picker_listening">Wird aufgezeichnet… zum Stoppen tippen</string>
+    <string name="trigger_picker_tap_to_record">Tippen und dann eine physische Taste drücken</string>
+    <string name="trigger_picker_save_combo">Taste speichern</string>
+    <string name="trigger_picker_use_automation">Stattdessen eine Automatisierung verwenden</string>
+    <string name="trigger_picker_use_key">%1$s verwenden</string>
+
+    <!-- Einstellungen pro Kurzbefehl -->
+    <string name="script_settings_name">Name</string>
+    <string name="script_settings_enabled">Aktiviert</string>
+    <string name="script_settings_assign_key_first">Weise im Editor eine Taste zu, um das Druckverhalten zu konfigurieren.</string>
+    <string name="script_settings_trigger_type">Druckart</string>
+    <string name="script_settings_double_press_window">Doppeldruck-Zeitfenster</string>
+    <string name="script_settings_long_press_threshold">Schwelle für langes Drücken</string>
+    <string name="script_settings_using_global">Verwendet globalen Standardwert (%1$dms)</string>
+    <string name="script_settings_custom_value">Eigener Wert für diesen Kurzbefehl</string>
+    <string name="script_settings_consume_input">Ursprüngliche Eingabe abfangen</string>
+    <string name="script_settings_consume_input_description">Verhindert, dass die Taste andere Apps erreicht, sofern Android dies zulässt.</string>
+    <string name="script_settings_not_global">Nicht global, nur für diesen Kurzbefehl</string>
+    <string name="script_settings_vibrate">Bei Ausführung vibrieren</string>
+    <string name="script_settings_vibrate_description">Eine kurze Vibration, wenn dieser Kurzbefehl ausgelöst wird.</string>
+    <string name="script_settings_reset_to_default">Auf Standard zurücksetzen (%1$s)</string>
+
+    <!-- Kurzbefehlsliste -->
+    <string name="scripts_title">Meine Kurzbefehle</string>
+    <string name="scripts_paused_warning">Alle Kurzbefehle sind pausiert, daher wird keiner davon ausgelöst.</string>
+    <string name="scripts_new_shortcut">Neuer Kurzbefehl</string>
+    <string name="scripts_empty_title">Noch keine Kurzbefehle</string>
+    <string name="scripts_empty_body">Ein Kurzbefehl führt eine oder mehrere Aktionen aus, wenn du eine physische Taste drückst.</string>
+    <string name="scripts_empty_go_home">Mit einem Vorschlag auf der Startseite beginnen</string>
+    <string name="scripts_tutorial_title">Erstelle deinen ersten Kurzbefehl</string>
+    <string name="scripts_tutorial_subtitle">Vier Schritte, in Schleife.</string>
+    <string name="scripts_tutorial_pause">Demo pausieren</string>
+    <string name="scripts_tutorial_play">Demo abspielen</string>
+    <string name="scripts_tutorial_step_new">Auf „Neuer Kurzbefehl“ tippen</string>
+    <string name="scripts_tutorial_step_key">„Tastendruck“ wählen und deine Taste drücken</string>
+    <string name="scripts_tutorial_step_action">Eine Aktion hinzufügen</string>
+    <string name="scripts_tutorial_step_done">Auf „Fertig“ tippen</string>
+    <string name="scripts_tutorial_cap_fab">Der blaue +-Button oben rechts</string>
+    <string name="scripts_tutorial_cap_keypress">Unter „Wenn“ auf „Tastendruck“ tippen</string>
+    <string name="scripts_tutorial_cap_press">Drücke die Taste an deinem Telefon</string>
+    <string name="scripts_tutorial_cap_save">Auf „Taste speichern“ tippen</string>
+    <string name="scripts_tutorial_cap_add">Unter „Dann“ auf „Aktion hinzufügen“ tippen</string>
+    <string name="scripts_tutorial_cap_pick">„Taschenlampe“ auswählen</string>
+    <string name="scripts_tutorial_cap_lands">Sie erscheint unter „Dann“</string>
+    <string name="scripts_tutorial_cap_check">Das Häkchen oben rechts</string>
+    <string name="scripts_tutorial_cap_runs">„Lautstärke lauter“ schaltet jetzt die Taschenlampe</string>
+    <string name="scripts_tutorial_mini_page">Kurzbefehle-Seite</string>
+    <string name="scripts_tutorial_listening">Wird aufgezeichnet…</string>
+    <string name="scripts_tutorial_key_recorded">Taste aufgezeichnet</string>
+    <string name="scripts_no_trigger">Noch keine Taste</string>
+    <string name="scripts_no_condition">Keine Bedingung hinzugefügt</string>
+    <string name="scripts_no_actions">Noch keine Aktionen</string>
+    <string name="scripts_unnamed">Kurzbefehl</string>
+    <string name="scripts_delete_label">%1$s löschen</string>
+    <string name="scripts_toggle_state_on">Ein</string>
+    <string name="scripts_toggle_state_off">Aus</string>
+    <string name="scripts_toggle_state_paused">Ein, aber alle Kurzbefehle sind pausiert</string>
+    <string name="scripts_delete_title">Kurzbefehl löschen?</string>
+    <string name="scripts_delete_body">„%1$s" wird endgültig gelöscht. Dies kann nicht rückgängig gemacht werden.</string>
+    <string name="scripts_snackbar_home">Start</string>
+
+    <!-- Start -->
+    <string name="home_suggested_shortcuts">Vorgeschlagene Kurzbefehle</string>
+    <string name="home_suggestions_group_single">Eine Taste, eine Aktion</string>
+    <string name="home_suggestions_group_multi">Eine Taste, mehrere Schritte</string>
+    <string name="home_suggestions_group_automation">Läuft von selbst</string>
+    <string name="home_your_shortcuts">Deine Kurzbefehle</string>
+    <string name="suggestion_saved">%1$s ist bereit · %2$s</string>
+    <string name="home_build_from_suggestion">Kurzbefehl aus %1$s erstellen</string>
+    <string name="home_suggestion_soon">Bald</string>
+    <string name="home_suggestion_automation">Automatisierung</string>
+    <string name="home_pause_all">Alle Kurzbefehle pausieren</string>
+    <string name="home_resume_all">Alle Kurzbefehle fortsetzen</string>
+    <string name="home_status_live">Live</string>
+    <string name="home_status_paused">Pausiert</string>
+    <string name="home_system_status">Systemstatus</string>
+    <string name="home_collapse_status">Systemstatus einklappen</string>
+    <string name="home_expand_status">Systemstatus ausklappen</string>
+    <string name="home_accessibility_service">Bedienungshilfen-Dienst</string>
+    <string name="home_status_advanced">Erweiterter Modus</string>
+    <string name="home_status_active">Aktiv</string>
+    <string name="home_status_offline">Offline</string>
+    <string name="home_status_running">Läuft</string>
+    <string name="home_status_off">Aus</string>
+    <string name="home_triggers_session">Ausführungen in dieser Sitzung</string>
+    <string name="home_last_from">Zuletzt von %1$s</string>
+    <string name="home_open_label_settings">%1$s-Einstellungen öffnen</string>
+    <string name="home_setup_title_off">Deine Kurzbefehle laufen noch nicht</string>
+    <string name="home_setup_subtitle_off">Drei Schritte, alle in Androids eigenen Einstellungen. Hier steht, was du jeweils antippst.</string>
+    <string name="home_setup_title_at_risk">Deine Kurzbefehle funktionieren möglicherweise nicht mehr</string>
+    <string name="home_setup_subtitle_at_risk">Android kann die App im Hintergrund beenden, solange dies nicht aktiviert ist.</string>
+    <string name="home_setup_progress">%1$d/3</string>
+    <string name="home_setup_step_accessibility">Bedienungshilfen-Dienst aktivieren</string>
+    <string name="home_setup_why_accessibility">Darüber liest KeySnap deine Tastendrücke. Ohne ihn läuft nichts.</string>
+    <string name="home_setup_open_accessibility">Bedienungshilfen öffnen</string>
+    <string name="home_setup_step_background">KeySnap im Hintergrund laufen lassen</string>
+    <string name="home_setup_why_background">Android beendet Apps, die es für schlafend hält. Tippe auf „Zulassen“, wenn Android fragt — mit „Ablehnen“ kann KeySnap weiter beendet werden.</string>
+    <string name="home_setup_allow_background">Hintergrundnutzung zulassen</string>
+    <string name="home_setup_done_background">Zugelassen</string>
+    <string name="home_setup_step_notifications">Benachrichtigungen zulassen</string>
+    <string name="home_setup_why_notifications">Nur zur Einrichtung: Kopplungscode und Dienststatus. Tippe auf „Zulassen“, wenn Android fragt — „Nicht zulassen“ beendet die Einrichtung hier.</string>
+    <string name="home_setup_ask_now">Jetzt fragen</string>
+    <string name="home_setup_done_notifications">Zugelassen</string>
+    <string name="home_setup_all_done">Alle drei sind an. Deine Tasten funktionieren jetzt.</string>
+    <string name="home_setup_state_done">Erledigt</string>
+    <string name="home_setup_state_current">Aktueller Schritt</string>
+    <string name="home_setup_state_upcoming">Noch nicht begonnen</string>
+    <string name="home_setup_illo_downloaded_apps">Heruntergeladene Apps</string>
+    <string name="home_setup_why">Warum?</string>
+    <string name="home_setup_why_expanded">Ausgeklappt</string>
+    <string name="home_setup_why_collapsed">Eingeklappt</string>
+    <string name="home_setup_whytext_accessibility">Android zeigt Hardwaretasten nur einem Bedienungshilfe-Dienst. Genau dafür nutzt KeySnap einen: einen Tastendruck bemerken und deinen Kurzbefehl ausführen. Bildschirme anderer Apps liest er nicht. Nur während der Einrichtung des Erweiterten Modus liest er zusätzlich den Kopplungscode auf der Seite für kabelloses Debugging — sonst nichts.</string>
+    <string name="home_setup_whytext_background">Android beendet Apps, die es für untätig hält, und eine beendete App kann deine Kurzbefehle nicht ausführen. Das hält KeySnap am Leben, während dein Telefon schläft. Im Hintergrund tut es nichts, außer auf eine Taste zu warten.</string>
+    <string name="home_setup_whytext_notifications">Nur während der Einrichtung des Erweiterten Modus: der Kopplungscode und ob der Dienst läuft. Keine Erinnerungen, keine Werbung, sonst nie etwas.</string>
+    <string name="home_setup_illo_battery_dialog">Darf KeySnap immer im Hintergrund laufen?</string>
+    <string name="home_setup_illo_battery_body">Das kann die Akkulaufzeit verkürzen.</string>
+    <string name="home_setup_illo_battery_deny">Ablehnen</string>
+    <string name="home_setup_illo_dialog">Darf KeySnap dir Benachrichtigungen senden?</string>
+    <string name="home_setup_illo_deny">Nicht zulassen</string>
+    <string name="home_setup_illo_allow">Zulassen</string>
+    <string name="home_nudge_title">Erstelle deinen ersten Kurzbefehl</string>
+    <string name="home_nudge_subtitle">Die Taschenlampe ist gleich darunter, ein Tippen.</string>
+    <string name="home_nudge_dismiss">Schließen</string>
+    <string name="home_reward_cooldown">Belohnung in Abklingzeit, noch %1$s. Hol dir Pro.</string>
+    <string name="home_reward_available">Werbung ansehen für einen zusätzlichen Kurzbefehl für 4 Stunden</string>
+    <string name="home_reward_badge_idle">+1</string>
+
+    <!-- Pro-Angebot -->
+    <string name="pro_card_subtitle">Gratis hält %1$d Kurzbefehle aktiv. Pro hält alle aktiv.</string>
+    <string name="pro_card_at_cap">Warum der nächste Kurzbefehl nicht aktiv bleibt</string>
+    <string name="pro_active_shortcuts">Aktive Kurzbefehle</string>
+    <string name="pro_progress_description">%1$d von %2$d aktiven Kurzbefehlen</string>
+    <string name="pro_reward_remaining">Noch %1$s</string>
+    <string name="pro_reward_offer">+%1$d für %2$d Std</string>
+    <string name="pro_unlock">Pro freischalten</string>
+    <string name="pro_unlock_with_price">Pro freischalten · %1$s</string>
+    <string name="pro_table_free">Kostenlos</string>
+    <string name="pro_table_pro">Pro</string>
+    <string name="pro_table_unlimited">Unbegrenzt</string>
+    <string name="pro_table_free_limit_with_reward">%1$d (%2$d mit Belohnung)</string>
+    <string name="pro_table_ads">Werbung</string>
+    <string name="pro_table_shown">Wird angezeigt</string>
+    <string name="pro_table_none">Keine</string>
+    <string name="pro_table_row_description">%1$s: Kostenlos %2$s, Pro %3$s</string>
+
+    <!-- Werbung -->
+    <string name="ad_loading">Werbung wird geladen…</string>
+    <string name="ad_sponsored">Gesponsert</string>
+
+    <!-- Einstellungen -->
+    <string name="settings_title">Einstellungen</string>
+    <string name="settings_subtitle">Standardwerte, mit denen jeder neue Kurzbefehl startet.</string>
+    <string name="settings_group_keys">Tasten</string>
+    <string name="settings_group_advanced">Erweitert</string>
+    <string name="settings_group_app">App</string>
+    <string name="settings_defaults_panel">Standardwerte für neue Kurzbefehle</string>
+    <string name="settings_defaults_hint">Jeder Kurzbefehl kann diese in seinen eigenen Einstellungen überschreiben.</string>
+    <string name="settings_double_press_description">Erlaubte Zeit zwischen den Tastendrücken. Verzögert außerdem Aktionen für einfaches Drücken.</string>
+    <string name="settings_long_press_description">Wie lange eine Taste gehalten werden muss, bevor eine Aktion für langes Drücken ausgeführt wird.</string>
+    <string name="settings_appearance_panel">Erscheinungsbild</string>
+    <string name="settings_input_panel">Eingabeverhalten</string>
+    <string name="settings_haptics_panel">Haptik</string>
+    <string name="settings_haptic_feedback">Haptisches Feedback</string>
+    <string name="settings_haptic_feedback_on">Vibriert, wenn ein Kurzbefehl ausgeführt wird.</string>
+    <string name="settings_haptic_unavailable">Vibration ist auf diesem Gerät nicht verfügbar.</string>
+    <string name="settings_haptic_duration">Dauer der Haptik</string>
+    <string name="settings_haptic_duration_description">Länge der Bestätigungsvibration.</string>
+    <string name="settings_haptic_duration_disabled">Aktiviere haptisches Feedback, um die Dauer anzupassen.</string>
+    <string name="settings_expert_panel">Erweiterter Modus</string>
+    <string name="settings_detached_bridge">Alle Hardware-Tasten lesen</string>
+    <string name="settings_bridge_running">Ein – Ein/Aus-, Assistent- und andere gesperrte Tasten funktionieren, auch wenn die App geschlossen ist.</string>
+    <string name="settings_bridge_stopped">Aus – nur die Tasten, die Android für Apps freigibt.</string>
+    <string name="settings_run_setup">Einrichtung erneut ausführen</string>
+    <string name="settings_run_setup_description">Kabelloses Debugging erneut koppeln.</string>
+    <string name="settings_about_panel">Über</string>
+    <string name="settings_about_app">Über KeySnap</string>
+    <string name="settings_about_app_summary">Open Source · nichts verlässt dein Telefon</string>
+    <string name="settings_privacy_policy">Datenschutzerklärung</string>
+    <string name="settings_erase">Alle Daten löschen</string>
+    <string name="settings_erase_confirm_title">Alle Daten löschen?</string>
+    <string name="settings_erase_action">Alles löschen</string>
+    <string name="settings_erase_warning">Dies stoppt den Erweiterten Modus, löscht die Bridge vom Gerät und entfernt jeden Kurzbefehl und jede Einstellung. Dies kann nicht rückgängig gemacht werden. Der Bedienungshilfen-Dienst wird ebenfalls deaktiviert; aktiviere ihn danach wieder.</string>
+    <string name="settings_version">Version %1$s (%2$d)</string>
+    <string name="settings_input_monitor">Eingabemonitor</string>
+    <string name="settings_show_log_action">Ereignisprotokoll anzeigen</string>
+    <string name="settings_hide_log_action">Ereignisprotokoll ausblenden</string>
+    <string name="settings_log_count">%1$d von %2$d</string>
+    <string name="settings_log_waiting">Warten auf physische Eingabe…</string>
+    <string name="settings_log_clear">Leeren</string>
+    <string name="settings_log_matched">Hat einen Kurzbefehl ausgelöst</string>
+
+    <!-- Sprachauswahl -->
+    <string name="settings_language_panel">Sprache</string>
+    <string name="language_system">Systemstandard</string>
+
+    <!-- Erscheinungsbild -->
+    <string name="theme_light">Hell</string>
+    <string name="theme_dark">Dunkel</string>
+    <string name="theme_sepia">Sepia</string>
+
+    <!-- Schieberegler -->
+    <string name="slider_milliseconds">%1$d Millisekunden</string>
+    <string name="slider_restore_default">%1$s auf Standard zurücksetzen</string>
+
+    <!-- Bildschirmpunkt-Auswahl-Overlay -->
+    <string name="picker_point_a">A: %1$d, %2$d</string>
+    <string name="picker_point_b">B: %1$d, %2$d</string>
+    <string name="picker_point">Punkt: %1$d, %2$d</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_finish">Einrichtung abschließen</string>
+
+    <!-- Einrichtungsassistent -->
+    <string name="about_hero_title">Nichts, was du hier tust, verlässt dein Telefon.</string>
+    <string name="about_hero_body">Keine Server. Kein Konto. Keine Analyse. KeySnap hat keinen Ort, an den es deine Kurzbefehle oder Tastendrücke senden könnte — und die ganze App ist Open Source, du musst uns also nicht glauben.</string>
+    <string name="about_no_server_title">Es gibt keinen Server</string>
+    <string name="about_no_server_body">KeySnap hat kein Backend, kein Konto und keine Absturzberichte. Was du belegst, was du drückst und welche Apps du benutzt, bleibt im privaten Speicher dieser App. Es gibt darin keinen Code, der das hochlädt, weil es kein Ziel dafür gibt.</string>
+    <string name="about_illo_no_server_caption">Tastendrücke · Kurzbefehle · Nutzung</string>
+    <string name="about_open_source_title">Open Source, damit du nachsehen kannst</string>
+    <string name="about_open_source_body">Jede Zeile von KeySnap ist unter der GPLv3 veröffentlicht. Lies nach, wofür jede Berechtigung verwendet wird, baue die App selbst, oder gib sie jemandem, der das kann.</string>
+    <string name="about_view_source">Quellcode auf GitHub ansehen</string>
+    <string name="about_scope_title">Der Bedienungshilfen-Dienst sieht nur die Einstellungen</string>
+    <string name="about_scope_body">Android gibt Apps keinen anderen Weg, eine Hardwaretaste zu erkennen. Der Dienst von KeySnap ist auf die System-Einstellungen beschränkt und nutzt sie für genau eine Sache: den Kopplungscode zu lesen, während du den Erweiterten Modus einrichtest. Er kann deine Banking-App, deine Nachrichten oder das, was du tippst, nicht lesen — das erzwingt Android, nicht ein Versprechen.</string>
+    <string name="about_bridge_title">Der Erweiterte Modus ist das ADB deines eigenen Telefons</string>
+    <string name="about_bridge_body">Er koppelt sich über dein lokales Netzwerk mit dem kabellosen Debugging deines Telefons — diese Verbindung verlässt dein Zuhause nie. Shell-Befehle führt er nur für die Kurzbefehle aus, die du geschrieben hast. Schaltest du ihn aus, wird die Bridge gelöscht; ein Neustart stoppt sie ebenfalls.</string>
+    <string name="about_illo_bridge_caption">aus → die Bridge löscht sich selbst</string>
+    <string name="about_traffic_title">Jede Verbindung, die die App aufbaut</string>
+    <string name="about_traffic_device">Dein eigenes Telefon</string>
+    <string name="about_traffic_device_body">Kopplung per kabellosem Debugging. Nur im lokalen Netzwerk.</string>
+    <string name="about_traffic_yours">Adressen, die du selbst eingetippt hast</string>
+    <string name="about_traffic_yours_body">Eine HTTP- oder URL-Aktion geht genau dorthin, wohin du sie geschrieben hast, unverändert.</string>
+    <string name="about_traffic_google">Google-Anzeigen und Google Play</string>
+    <string name="about_traffic_google_body">Um die Anzeige in der kostenlosen Version zu zeigen und zu prüfen, ob du Pro gekauft hast. Keiner von beiden erhält je einen Tastendruck oder einen Kurzbefehl.</string>
+    <string name="about_traffic_all">Das ist die ganze Liste.</string>
+    <string name="about_erase_title">Nimm jederzeit alles zurück</string>
+    <string name="about_erase_body">Alle Daten löschen entfernt jeden Kurzbefehl, jede gespeicherte Taste, jede Einstellung und jede Bridge-Datei und stoppt zuerst den Erweiterten Modus, damit nichts weiterläuft.</string>
+
+    <string name="wizard_title">Erweiterten Modus aktivieren</string>
+    <string name="wizard_subtitle">Einrichtungsassistent</string>
+    <string name="wizard_continue">Weiter</string>
+    <string name="wizard_finish_pairing">Kopplung abschließen</string>
+    <string name="wizard_step_intro">Einführung</string>
+    <string name="wizard_step_pairing">Kopplung</string>
+    <string name="wizard_step_done">Fertig</string>
+    <string name="wizard_what_is_expert">Was ist der Erweiterte Modus?</string>
+    <string name="wizard_expert_explainer">KeySnap koppelt sich mit dem kabellosen Debugging deines Telefons und liest Tasten direkt aus dem Kernel — Ein/Aus, Assistent, Kamera; die Tasten, die Android vor Apps verbirgt.</string>
+    <string name="wizard_expert_off_note">Aus löscht sie · Neustart stoppt sie</string>
+    <string name="wizard_can">kann</string>
+    <string name="wizard_never">nie</string>
+    <string name="wizard_no_dev_options">Noch keine Entwickleroptionen?</string>
+    <string name="wizard_no_dev_options_sub">Schritte für dein Telefon auf dem nächsten Bildschirm</string>
+    <string name="wizard_illo_action">↳ Taschenlampe an</string>
+    <string name="wizard_how_to_dev_options">Wie aktiviert man die Entwickleroptionen?</string>
+    <string name="wizard_auto_pairing">Automatische ADB-Kopplung</string>
+    <string name="wizard_auto_pairing_explainer">Der Kopplungscode muss nicht manuell eingegeben werden – wir lesen ihn im Hintergrund und verbinden automatisch. Falls das fehlschlägt, kannst du ihn über die Benachrichtigung eingeben.</string>
+    <string name="wizard_open_settings">Einstellungen öffnen und Kopplung starten</string>
+    <string name="wizard_expert_running">Der Erweiterte Modus läuft</string>
+    <string name="wizard_expert_running_body">Alle Android-Hardwaretasten (Ein/Aus, Assistent, Lautstärke, Kamera usw.) werden auf Linux-Kernel-Ebene erfasst.</string>
+    <string name="wizard_connection_error">Verbindungsfehler</string>
+    <string name="wizard_connection_error_body">Der Erweiterte Modus konnte nicht gestartet werden. Der Kopplungscode oder Port ist möglicherweise falsch, oder der ADB-Dienst hat die Verbindung abgelehnt – geh zurück und überprüfe die Angaben.</string>
+    <string name="wizard_connecting">Verbinde…</string>
+    <string name="wizard_connecting_body">Der Erweiterte Modus wird gestartet. Das dauert ein paar Sekunden – lass diesen Bildschirm offen.</string>
+    <string name="wizard_kernel_stream">Live-Ereignisstream des Kernels</string>
+    <string name="wizard_test_flash">Taschenlampen-Auslöser testen</string>
+
+    <!-- Kopplungsstatus -->
+    <string name="pairing_idle">Warten auf Kopplung…</string>
+    <string name="pairing_not_started">Tippe oben auf die Schaltfläche, um die Kopplung zu starten</string>
+    <string name="pairing_searching">Suche nach dem Kopplungsbildschirm…</string>
+    <string name="pairing_captured">Kopplungscode erfasst…</string>
+    <string name="pairing_in_progress">Koppeln…</string>
+    <string name="pairing_paired">Gekoppelt – wird verbunden…</string>
+    <string name="pairing_connecting">Verbinde…</string>
+    <string name="pairing_connected">Verbunden</string>
+    <string name="pairing_error">Verbindung fehlgeschlagen – erneut versuchen</string>
+
+    <!-- Benachrichtigung zur Einrichtung des Erweiterten Modus -->
+    <string name="notif_channel_setup">Einrichtung des Erweiterten Modus</string>
+    <string name="notif_channel_setup_description">Wird angezeigt, während die App mit kabellosem ADB koppelt und die Bridge startet</string>
+    <string name="notif_setup_title">Der Erweiterte Modus wird eingerichtet</string>
+    <string name="notif_setup_text">Koppelt mit kabellosem Debugging und startet die Bridge.</string>
+
+    <!-- Eingabemonitor: Ereigniszeilen und Auslöserbezeichnungen -->
+    <string name="event_key_down">GEDRÜCKT (DOWN)</string>
+    <string name="event_key_up">LOSGELASSEN (UP)</string>
+    <string name="trigger_label_single">Einmal drücken (%1$dms Wartezeit abgelaufen)</string>
+    <string name="trigger_label_double">Doppelt drücken (%1$dms Zeitfenster)</string>
+    <string name="trigger_label_long">Lange drücken (%1$dms)</string>
+    <string name="source_accessibility">Bedienungshilfen</string>
+    <string name="source_activity">Aktivität (Vordergrund)</string>
+
+    <!-- ViewModel-Meldungen -->
+    <string name="default_shortcut_name">Kurzbefehl #%1$d</string>
+    <string name="run_nothing_ran">Nichts wurde ausgeführt. Überprüfe die Aktionseinstellungen.</string>
+    <string name="run_partial">%1$d von %2$d Aktionen ausgeführt</string>
+    <string name="editor_needs_action">Füge mindestens eine Aktion hinzu, bevor du speicherst.</string>
+    <string name="editor_needs_trigger">Wähle eine Taste, bevor du speicherst.</string>
+    <string name="saved_needs_trigger">Gespeichert. Weise eine Taste zu, damit er ausgeführt werden kann.</string>
+    <string name="saved_named">„%1$s“ gespeichert</string>
+    <string name="saved_needs_condition">Gespeichert. Füge eine Bedingung hinzu, die sich von selbst ändert, z. B. Wird geladen oder Bluetooth-Gerät verbunden, damit es ausgeführt werden kann.</string>
+    <string name="free_limit_saved_off">Kostenloser Plan: %1$d aktive Kurzbefehle. Als deaktiviert gespeichert – sieh dir eine Werbung an oder hol dir Pro, um ihn zu aktivieren.</string>
+    <string name="free_limit_reached">Limit des kostenlosen Plans erreicht. Hol dir Pro für unbegrenzte Kurzbefehle.</string>
+    <string name="free_limit_toggle_blocked">Kostenloser Plan: %1$d aktive Kurzbefehle. Sieh dir eine Werbung an oder hol dir Pro, um auch diesen zu aktivieren.</string>
+
+    <!-- Datenschutzerklärung: Dialog-Rahmen. Der eigentliche Text bleibt in PrivacyPolicy.kt: er
+         muss wortgleich mit dem für Play veröffentlichten englischen Dokument übereinstimmen. -->
+    <string name="privacy_policy_title">Datenschutzerklärung</string>
+    <string name="privacy_last_updated">Zuletzt aktualisiert am %1$s</string>
+    <string name="privacy_contact_heading">Kontakt</string>
+
+    <!-- Benachrichtigung zur kabellosen ADB-Kopplung -->
+    <string name="notif_channel_pairing">ADB-Kopplungshilfe</string>
+    <string name="notif_channel_pairing_description">Eingabe des kabellosen ADB-Kopplungscodes und Fehlerbenachrichtigungen</string>
+    <string name="notif_pairing_title">Warten auf ADB-Kopplung</string>
+    <string name="notif_pairing_default">Gib einfach den 6-stelligen Code ein; der Port wird automatisch gefunden.</string>
+    <string name="notif_pairing_input_label">6-stelliger Kopplungscode</string>
+    <string name="notif_pairing_enter_code">Code eingeben</string>
+    <string name="notif_pairing_no_port">ADB-Verbindungsport nicht gefunden. Überprüfe das kabellose Debugging.</string>
+    <string name="notif_pairing_failed">Kopplung fehlgeschlagen. Gib den 6-stelligen Code erneut ein.</string>
+    <string name="notif_pairing_bad_code">Der Code muss genau 6 Ziffern haben. Bitte versuche es erneut.</string>
+
+    <!-- Design-Umschalter -->
+
+    <!-- Auslöserart-Auswahl -->
+    <string name="trigger_kind_key">Tastendruck</string>
+    <string name="trigger_kind_automation">Automatisierung</string>
+    <string name="automation_card_subtitle">Wird ausgeführt, sobald die Bedingungen unten eintreten</string>
+</resources>

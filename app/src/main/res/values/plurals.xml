@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="scripts_action_count">
+        <item quantity="one">%1$d action</item>
+        <item quantity="other">%1$d actions</item>
+    </plurals>
+    <plurals name="home_suggestion_steps">
+        <item quantity="one">%1$d step</item>
+        <item quantity="other">%1$d steps</item>
+    </plurals>
+    <plurals name="run_all">
+        <item quantity="one">Ran %1$d action</item>
+        <item quantity="other">Ran all %1$d actions</item>
+    </plurals>
+    <plurals name="settings_log_event_count">
+        <item quantity="one">%1$d event</item>
+        <item quantity="other">%1$d events</item>
+    </plurals>
+    <plurals name="saved_needs_config">
+        <item quantity="one">Saved. %1$d action still needs configuring.</item>
+        <item quantity="other">Saved. %1$d actions still need configuring.</item>
+    </plurals>
+</resources>

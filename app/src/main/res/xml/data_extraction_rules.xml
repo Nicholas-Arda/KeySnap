@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+   The ADB RSA private key and the bridge control token authorize privileged access to one
+   specific device. They must never leave it, so both cloud backup and device-to-device transfer
+   exclude them; a restored install simply pairs again. Everything else — scripts, timings,
+   theme — is user work and is worth restoring.
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="sharedpref" path="arda_mapper_adb_crypto.xml" />
+        <exclude domain="sharedpref" path="arda_mapper_adb_prefs.xml" />
+        <exclude domain="sharedpref" path="arda_mapper_bridge_prefs.xml" />
+        <exclude domain="external" path="bridge" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="sharedpref" path="arda_mapper_adb_crypto.xml" />
+        <exclude domain="sharedpref" path="arda_mapper_adb_prefs.xml" />
+        <exclude domain="sharedpref" path="arda_mapper_bridge_prefs.xml" />
+        <exclude domain="external" path="bridge" />
+    </device-transfer>
+</data-extraction-rules>

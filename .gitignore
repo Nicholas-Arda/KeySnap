@@ -1,0 +1,38 @@
+*.iml
+.gradle
+.kotlin
+/local.properties
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+.env
+debug.keystore
+*.jks
+*.keystore
+google-services.json
+.mcp.json
+
+bridge/build/
+
+.idea/
+TODO.md
+
+# Obsidian vault — kişisel notlar, git dışı
+/vault/
+/docs/superpowers/
+
+# Impeccable critique snapshots — AI artefaktı, git dışı
+/.impeccable/
+
+# Play listing build output — frame.py + build.py + export.sh regenerate these from shots/
+/store/play-listing/shots_framed/
+/store/play-listing/out/
+/store/play-listing/deck.html
+/store/play-listing/night/out/
+/store/play-listing/night/deck.html
+app/release/
+store/play-listing/video/
+skills-lock.json
