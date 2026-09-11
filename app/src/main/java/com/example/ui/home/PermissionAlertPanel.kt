@@ -96,6 +96,8 @@ import com.example.ui.components.ConsoleShape
 import com.example.ui.components.InnerShape
 import com.example.service.adb.WirelessAdbManager
 import com.example.ui.components.MinTouchTarget
+import com.example.ui.components.glassCard
+import com.example.ui.theme.LocalGlass
 import io.github.nicholasarda.keysnap.R
 import kotlinx.coroutines.delay
 
@@ -189,9 +191,8 @@ fun SetupCard(
         Column(
             Modifier
                 .fillMaxWidth()
+                .glassCard(LocalGlass.current, rim = colors.primary.copy(alpha = .45f))
                 .clip(ConsoleShape)
-                .background(colors.surface)
-                .border(1.dp, colors.primary.copy(alpha = .45f), ConsoleShape)
                 .testTag("permission_alerts")
                 // animateContentSize clips to its bounds; it goes before the padding so the current
                 // step's scaled-up marker can overshoot the content edge without being cut.

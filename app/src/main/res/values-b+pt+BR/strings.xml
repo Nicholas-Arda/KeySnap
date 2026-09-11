@@ -470,6 +470,8 @@
     <string name="nav_home">Início</string>
     <string name="nav_shortcuts">Atalhos</string>
     <string name="nav_settings">Configurações</string>
+    <string name="settings_close">Fechar configurações</string>
+    <string name="home_switch_theme">Alternar tema</string>
 
     <!-- Diálogos -->
     <string name="dialog_expert_connected">MODO AVANÇADO CONECTADO</string>
@@ -530,7 +532,7 @@
     <string name="scripts_tutorial_step_key">Escolha Pressão de tecla e pressione sua tecla</string>
     <string name="scripts_tutorial_step_action">Adicione uma ação</string>
     <string name="scripts_tutorial_step_done">Toque em Concluído</string>
-    <string name="scripts_tutorial_cap_fab">O botão + azul, no canto superior direito</string>
+    <string name="scripts_tutorial_cap_fab">O botão + azul, na barra inferior</string>
     <string name="scripts_tutorial_cap_keypress">Em Quando, toque em Pressão de tecla</string>
     <string name="scripts_tutorial_cap_press">Pressione a tecla no seu telefone</string>
     <string name="scripts_tutorial_cap_save">Toque em Salvar tecla</string>

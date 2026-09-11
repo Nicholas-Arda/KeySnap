@@ -45,7 +45,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material.icons.outlined.Keyboard
 import androidx.compose.material.icons.outlined.Search
@@ -204,23 +206,11 @@ private fun ListScreen(state: MiniState, targets: MiniTargets, reduced: Boolean)
     val colors = MaterialTheme.colorScheme
     Box(Modifier.fillMaxSize().padding(12.dp)) {
         Column {
-            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    stringResource(R.string.scripts_tutorial_mini_page),
-                    Modifier.weight(1f),
-                    style = mini(10.5f, FontWeight.Medium).copy(letterSpacing = 0.8.sp),
-                    color = colors.onSurfaceVariant,
-                )
-                Box(
-                    Modifier
-                        .then(targets.mark(TutorialTarget.Fab))
-                        .clip(CardShape)
-                        .background(colors.primary)
-                        .padding(6.dp),
-                ) {
-                    Icon(Icons.Filled.Add, null, Modifier.size(14.dp), tint = colors.onPrimary)
-                }
-            }
+            Text(
+                stringResource(R.string.scripts_tutorial_mini_page),
+                style = mini(10.5f, FontWeight.Medium).copy(letterSpacing = 0.8.sp),
+                color = colors.onSurfaceVariant,
+            )
             Spacer(Modifier.height(9.dp))
             val cardVisible = remember { MutableTransitionState(false) }
             cardVisible.targetState = state.card
@@ -240,6 +230,34 @@ private fun ListScreen(state: MiniState, targets: MiniTargets, reduced: Boolean)
                 )
             }
         }
+        MiniBottomBar(targets, Modifier.align(Alignment.BottomCenter))
+    }
+}
+
+/** The app's bottom bar in miniature, on the Shortcuts tab; its + is where a new shortcut starts. */
+@Composable
+private fun MiniBottomBar(targets: MiniTargets, modifier: Modifier = Modifier) {
+    val colors = MaterialTheme.colorScheme
+    Row(
+        modifier
+            .clip(CircleShape)
+            .background(colors.surface)
+            .border(1.dp, colors.outline.copy(alpha = .55f), CircleShape)
+            .padding(horizontal = 14.dp, vertical = 5.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
+        Icon(Icons.Filled.Home, null, Modifier.size(15.dp), tint = colors.onSurfaceVariant)
+        Box(
+            Modifier
+                .then(targets.mark(TutorialTarget.Fab))
+                .clip(CircleShape)
+                .background(colors.primary)
+                .padding(5.dp),
+        ) {
+            Icon(Icons.Filled.Add, null, Modifier.size(14.dp), tint = colors.onPrimary)
+        }
+        Icon(Icons.Filled.Bolt, null, Modifier.size(15.dp), tint = colors.primary)
     }
 }
 

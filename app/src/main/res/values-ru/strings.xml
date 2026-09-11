@@ -469,6 +469,8 @@
     <string name="nav_home">Главная</string>
     <string name="nav_shortcuts">Сценарии</string>
     <string name="nav_settings">Настройки</string>
+    <string name="settings_close">Закрыть настройки</string>
+    <string name="home_switch_theme">Сменить тему</string>
 
     <!-- Диалоги -->
     <string name="dialog_expert_connected">РАСШИРЕННЫЙ РЕЖИМ ПОДКЛЮЧЁН</string>
@@ -529,7 +531,7 @@
     <string name="scripts_tutorial_step_key">Выберите «Нажатие клавиши» и нажмите свою клавишу</string>
     <string name="scripts_tutorial_step_action">Добавьте действие</string>
     <string name="scripts_tutorial_step_done">Нажмите «Готово»</string>
-    <string name="scripts_tutorial_cap_fab">Синяя кнопка + вверху справа</string>
+    <string name="scripts_tutorial_cap_fab">Синяя кнопка + на нижней панели</string>
     <string name="scripts_tutorial_cap_keypress">В разделе «Когда» нажмите «Нажатие клавиши»</string>
     <string name="scripts_tutorial_cap_press">Нажмите клавишу на телефоне</string>
     <string name="scripts_tutorial_cap_save">Нажмите «Сохранить клавишу»</string>

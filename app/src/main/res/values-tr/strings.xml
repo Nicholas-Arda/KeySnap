@@ -467,6 +467,8 @@
     <string name="nav_home">Ana sayfa</string>
     <string name="nav_shortcuts">Kısayollar</string>
     <string name="nav_settings">Ayarlar</string>
+    <string name="settings_close">Ayarları kapat</string>
+    <string name="home_switch_theme">Temayı değiştir</string>
 
     <!-- İletişim kutuları -->
     <string name="dialog_expert_connected">UZMAN MODU BAĞLANDI</string>
@@ -527,7 +529,7 @@
     <string name="scripts_tutorial_step_key">Tuş Basışı\'nı seçip tuşunuza basın</string>
     <string name="scripts_tutorial_step_action">Bir eylem ekleyin</string>
     <string name="scripts_tutorial_step_done">Tamam\'a dokunun</string>
-    <string name="scripts_tutorial_cap_fab">Sağ üstteki mavi + düğmesi</string>
+    <string name="scripts_tutorial_cap_fab">Alt çubuktaki mavi + düğmesi</string>
     <string name="scripts_tutorial_cap_keypress">Şu olduğunda bölümünde Tuş Basışı\'na dokunun</string>
     <string name="scripts_tutorial_cap_press">Telefonunuzdaki tuşa basın</string>
     <string name="scripts_tutorial_cap_save">Tuşu kaydet\'e dokunun</string>

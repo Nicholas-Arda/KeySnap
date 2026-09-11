@@ -469,6 +469,8 @@
     <string name="nav_home">Start</string>
     <string name="nav_shortcuts">Kurzbefehle</string>
     <string name="nav_settings">Einstellungen</string>
+    <string name="settings_close">Einstellungen schließen</string>
+    <string name="home_switch_theme">Design wechseln</string>
 
     <!-- Dialoge -->
     <string name="dialog_expert_connected">ERWEITERTER MODUS VERBUNDEN</string>
@@ -529,7 +531,7 @@
     <string name="scripts_tutorial_step_key">„Tastendruck“ wählen und deine Taste drücken</string>
     <string name="scripts_tutorial_step_action">Eine Aktion hinzufügen</string>
     <string name="scripts_tutorial_step_done">Auf „Fertig“ tippen</string>
-    <string name="scripts_tutorial_cap_fab">Der blaue +-Button oben rechts</string>
+    <string name="scripts_tutorial_cap_fab">Der blaue +-Button in der unteren Leiste</string>
     <string name="scripts_tutorial_cap_keypress">Unter „Wenn“ auf „Tastendruck“ tippen</string>
     <string name="scripts_tutorial_cap_press">Drücke die Taste an deinem Telefon</string>
     <string name="scripts_tutorial_cap_save">Auf „Taste speichern“ tippen</string>

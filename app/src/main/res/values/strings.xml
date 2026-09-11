@@ -498,6 +498,8 @@
     <string name="nav_home">Home</string>
     <string name="nav_shortcuts">Shortcuts</string>
     <string name="nav_settings">Settings</string>
+    <string name="settings_close">Close settings</string>
+    <string name="home_switch_theme">Switch theme</string>
 
     <!-- Dialogs -->
     <string name="dialog_expert_connected">ADVANCED MODE CONNECTED</string>
@@ -555,7 +557,7 @@
     <string name="scripts_tutorial_step_key">Choose Key press and press your key</string>
     <string name="scripts_tutorial_step_action">Add an action</string>
     <string name="scripts_tutorial_step_done">Tap Done</string>
-    <string name="scripts_tutorial_cap_fab">The blue + button, top right</string>
+    <string name="scripts_tutorial_cap_fab">The blue + button in the bottom bar</string>
     <string name="scripts_tutorial_cap_keypress">In When, tap Key press</string>
     <string name="scripts_tutorial_cap_press">Press the key on your phone</string>
     <string name="scripts_tutorial_cap_save">Tap Save key</string>

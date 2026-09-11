@@ -4,10 +4,10 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,8 +18,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandLess
@@ -64,6 +63,7 @@ import com.example.data.ShortcutScript
 import com.example.data.SuggestedShortcut
 import com.example.ui.components.ConsolePanel
 import com.example.ui.components.ConsoleShape
+import com.example.ui.components.GroundedPage
 import com.example.ui.components.IconTile
 import com.example.ui.components.InnerShape
 import com.example.ui.components.MinTouchTarget
@@ -92,9 +92,10 @@ fun HomeScreen(
     onPickSuggestion: (SuggestedShortcut) -> Unit,
     onRewardButtonClick: () -> Unit,
     onOpenProScreen: () -> Unit,
+    onCycleTheme: () -> Unit = {},
     nudgeDismissed: Boolean = true,
     onDismissNudge: () -> Unit = {},
-    listState: LazyListState = androidx.compose.foundation.lazy.rememberLazyListState(),
+    scrollState: ScrollState = rememberScrollState(),
     scrollToProCard: Boolean = false,
     onScrolledToProCard: () -> Unit = {},
 ) {
@@ -105,66 +106,53 @@ fun HomeScreen(
     var setupCardRetired by rememberSaveable { mutableStateOf(!setupIncomplete) }
     LaunchedEffect(setupIncomplete) { if (setupIncomplete) setupCardRetired = false }
     val showNudge = setupCardRetired && scripts.isEmpty() && !nudgeDismissed
-    val itemCount = 3 + (if (!setupCardRetired) 1 else 0) + (if (scripts.isNotEmpty()) 1 else 0) +
-        (if (showNudge) 1 else 0) + (if (!isPro) 1 else 0)
     LaunchedEffect(scrollToProCard) {
         if (scrollToProCard && !isPro) {
-            listState.animateScrollToItem(itemCount - 1)
+            // The Pro card is the last thing on the page.
+            scrollState.animateScrollTo(scrollState.maxValue)
             onScrolledToProCard()
         }
     }
-    LazyColumn(
-        Modifier.fillMaxSize().padding(horizontal = 16.dp),
-        state = listState,
-        verticalArrangement = Arrangement.spacedBy(14.dp),
-        contentPadding = PaddingValues(top = 8.dp, bottom = 96.dp),
-    ) {
-        item {
-            ConsoleHeader(
-                isMappingEnabled = isMappingEnabled,
-                isPro = isPro,
+    GroundedPage(themeMode, scrollState) {
+        ConsoleHeader(
+            isMappingEnabled = isMappingEnabled,
+            isPro = isPro,
+            rewardActive = rewardActive,
+            rewardRemainingLabel = rewardRemainingLabel,
+            themeMode = themeMode,
+            onToggleMapping = onToggleMapping,
+            onRewardButtonClick = onRewardButtonClick,
+            onCycleTheme = onCycleTheme,
+        )
+        if (!setupCardRetired) {
+            SetupCard(
+                gaps = permissionGaps,
+                isServiceActive = isServiceActive,
+                onOpenAccessibility = onOpenAccessibility,
+                onRetired = { setupCardRetired = true },
+            )
+        }
+        LiveStatusPanel(
+            isServiceActive = isServiceActive,
+            isAdvancedActive = isAdvancedModeRunning,
+            triggerCount = triggerCount,
+            lastSource = lastSource,
+            onOpenWizard = onOpenWizard,
+            onOpenAccessibility = onOpenAccessibility,
+        )
+        if (scripts.isNotEmpty()) YourShortcutsPanel(scripts, onOpenScript)
+        if (showNudge) FirstShortcutNudge(onDismiss = onDismissNudge)
+        SuggestedShortcutsPanel(isPro = isPro, scripts = scripts, onPick = onPickSuggestion)
+        if (!isPro) {
+            ProUpsellCard(
+                activeCount = activeScriptCount,
+                limit = activeScriptLimit,
+                proPrice = proPrice,
                 rewardActive = rewardActive,
                 rewardRemainingLabel = rewardRemainingLabel,
-                themeMode = themeMode,
-                onToggleMapping = onToggleMapping,
                 onRewardButtonClick = onRewardButtonClick,
+                onOpenProScreen = onOpenProScreen,
             )
-        }
-        if (!setupCardRetired) {
-            item {
-                SetupCard(
-                    gaps = permissionGaps,
-                    isServiceActive = isServiceActive,
-                    onOpenAccessibility = onOpenAccessibility,
-                    onRetired = { setupCardRetired = true },
-                )
-            }
-        }
-        item {
-            LiveStatusPanel(
-                isServiceActive = isServiceActive,
-                isAdvancedActive = isAdvancedModeRunning,
-                triggerCount = triggerCount,
-                lastSource = lastSource,
-                onOpenWizard = onOpenWizard,
-                onOpenAccessibility = onOpenAccessibility,
-            )
-        }
-        if (scripts.isNotEmpty()) item { YourShortcutsPanel(scripts, onOpenScript) }
-        if (showNudge) item { FirstShortcutNudge(onDismiss = onDismissNudge) }
-        item { SuggestedShortcutsPanel(isPro = isPro, scripts = scripts, onPick = onPickSuggestion) }
-        if (!isPro) {
-            item {
-                ProUpsellCard(
-                    activeCount = activeScriptCount,
-                    limit = activeScriptLimit,
-                    proPrice = proPrice,
-                    rewardActive = rewardActive,
-                    rewardRemainingLabel = rewardRemainingLabel,
-                    onRewardButtonClick = onRewardButtonClick,
-                    onOpenProScreen = onOpenProScreen,
-                )
-            }
         }
     }
 }
@@ -376,13 +364,24 @@ private fun ConsoleHeader(
     themeMode: ThemeMode,
     onToggleMapping: () -> Unit,
     onRewardButtonClick: () -> Unit,
+    onCycleTheme: () -> Unit,
 ) {
     Row(
-        Modifier.fillMaxWidth().padding(vertical = 8.dp),
+        // The end padding leaves the corner to the Settings gear, which floats over every page.
+        Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 8.dp, end = 52.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(Modifier.weight(1f), contentAlignment = Alignment.CenterStart) {
-            KeySnapLockup(themeMode)
+            // The logo doubles as the theme switch: Light, Dark, Sepia in turn.
+            Box(
+                Modifier
+                    .heightIn(min = MinTouchTarget)
+                    .clip(InnerShape)
+                    .clickable(onClickLabel = stringResource(R.string.home_switch_theme), onClick = onCycleTheme),
+                contentAlignment = Alignment.Center,
+            ) {
+                KeySnapLockup(themeMode)
+            }
         }
         if (!isPro) {
             RewardAdButton(rewardActive, rewardRemainingLabel, onRewardButtonClick)

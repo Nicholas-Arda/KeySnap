@@ -470,6 +470,8 @@
     <string name="nav_home">Inicio</string>
     <string name="nav_shortcuts">Accesos directos</string>
     <string name="nav_settings">Ajustes</string>
+    <string name="settings_close">Cerrar ajustes</string>
+    <string name="home_switch_theme">Cambiar tema</string>
 
     <!-- Diálogos -->
     <string name="dialog_expert_connected">MODO AVANZADO CONECTADO</string>
@@ -530,7 +532,7 @@
     <string name="scripts_tutorial_step_key">Elige Pulsación de tecla y pulsa tu tecla</string>
     <string name="scripts_tutorial_step_action">Añade una acción</string>
     <string name="scripts_tutorial_step_done">Toca Hecho</string>
-    <string name="scripts_tutorial_cap_fab">El botón + azul, arriba a la derecha</string>
+    <string name="scripts_tutorial_cap_fab">El botón + azul, en la barra inferior</string>
     <string name="scripts_tutorial_cap_keypress">En Cuando, toca Pulsación de tecla</string>
     <string name="scripts_tutorial_cap_press">Pulsa la tecla en tu teléfono</string>
     <string name="scripts_tutorial_cap_save">Toca Guardar tecla</string>

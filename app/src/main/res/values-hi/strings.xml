@@ -469,6 +469,8 @@
     <string name="nav_home">होम</string>
     <string name="nav_shortcuts">शॉर्टकट</string>
     <string name="nav_settings">सेटिंग</string>
+    <string name="settings_close">सेटिंग बंद करें</string>
+    <string name="home_switch_theme">थीम बदलें</string>
 
     <!-- डायलॉग -->
     <string name="dialog_expert_connected">उन्नत मोड कनेक्ट हो गया</string>
@@ -529,7 +531,7 @@
     <string name="scripts_tutorial_step_key">बटन दबाना चुनें और अपना बटन दबाएं</string>
     <string name="scripts_tutorial_step_action">एक क्रिया जोड़ें</string>
     <string name="scripts_tutorial_step_done">हो गया पर टैप करें</string>
-    <string name="scripts_tutorial_cap_fab">ऊपर दाईं ओर का नीला + बटन</string>
+    <string name="scripts_tutorial_cap_fab">नीचे की बार का नीला + बटन</string>
     <string name="scripts_tutorial_cap_keypress">जब में, बटन दबाना पर टैप करें</string>
     <string name="scripts_tutorial_cap_press">अपने फ़ोन का बटन दबाएं</string>
     <string name="scripts_tutorial_cap_save">बटन सेव करें पर टैप करें</string>

@@ -469,6 +469,8 @@
     <string name="nav_home">Accueil</string>
     <string name="nav_shortcuts">Raccourcis</string>
     <string name="nav_settings">Paramètres</string>
+    <string name="settings_close">Fermer les paramètres</string>
+    <string name="home_switch_theme">Changer de thème</string>
 
     <!-- Boîtes de dialogue -->
     <string name="dialog_expert_connected">MODE AVANCÉ CONNECTÉ</string>
@@ -529,7 +531,7 @@
     <string name="scripts_tutorial_step_key">Choisissez Appui sur une touche et appuyez sur votre touche</string>
     <string name="scripts_tutorial_step_action">Ajoutez une action</string>
     <string name="scripts_tutorial_step_done">Touchez Terminé</string>
-    <string name="scripts_tutorial_cap_fab">Le bouton + bleu, en haut à droite</string>
+    <string name="scripts_tutorial_cap_fab">Le bouton + bleu, dans la barre inférieure</string>
     <string name="scripts_tutorial_cap_keypress">Dans Quand, touchez Appui sur une touche</string>
     <string name="scripts_tutorial_cap_press">Appuyez sur la touche de votre téléphone</string>
     <string name="scripts_tutorial_cap_save">Touchez Enregistrer la touche</string>

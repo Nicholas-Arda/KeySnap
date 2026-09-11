@@ -470,6 +470,8 @@
     <string name="nav_home">الرئيسية</string>
     <string name="nav_shortcuts">الاختصارات</string>
     <string name="nav_settings">الإعدادات</string>
+    <string name="settings_close">إغلاق الإعدادات</string>
+    <string name="home_switch_theme">تبديل المظهر</string>
 
     <!-- Dialogs -->
     <string name="dialog_expert_connected">الوضع المتقدم متصل</string>
@@ -526,7 +528,7 @@
     <string name="scripts_tutorial_step_key">اختر ضغطة مفتاح واضغط مفتاحك</string>
     <string name="scripts_tutorial_step_action">أضف إجراءً</string>
     <string name="scripts_tutorial_step_done">اضغط على تم</string>
-    <string name="scripts_tutorial_cap_fab">زر + الأزرق في الأعلى يمينًا</string>
+    <string name="scripts_tutorial_cap_fab">زر + الأزرق في الشريط السفلي</string>
     <string name="scripts_tutorial_cap_keypress">في قسم عند، اضغط على ضغطة مفتاح</string>
     <string name="scripts_tutorial_cap_press">اضغط المفتاح على هاتفك</string>
     <string name="scripts_tutorial_cap_save">اضغط على حفظ المفتاح</string>

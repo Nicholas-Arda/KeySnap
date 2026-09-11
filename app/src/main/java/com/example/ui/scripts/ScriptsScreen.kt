@@ -1,46 +1,42 @@
 package com.example.ui.scripts
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.DeleteOutline
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -54,9 +50,13 @@ import com.example.data.ShortcutScript
 import com.example.data.getReadableKeyName
 import com.example.ui.components.AppAlertDialog
 import com.example.ui.components.ConsoleShape
+import com.example.ui.components.GroundedPage
 import com.example.ui.components.IconTile
 import com.example.ui.components.InnerShape
+import com.example.ui.components.glassCard
 import com.example.ui.home.iconForScript
+import com.example.ui.theme.LocalGlass
+import com.example.ui.theme.ThemeMode
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -68,53 +68,34 @@ import com.example.ui.components.MinTouchTarget
 fun ScriptsScreen(
     scripts: List<ShortcutScript>,
     globallyEnabled: Boolean,
+    themeMode: ThemeMode,
     onToggleScriptEnabled: (String, Boolean) -> Unit,
     onOpenScript: (String) -> Unit,
-    onCreateScript: () -> Unit,
     onDeleteScript: (String) -> Unit,
     onGoHome: () -> Unit,
 ) {
-    LazyColumn(
-        Modifier.fillMaxSize().padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(14.dp),
-        // Bottom clears the floating bottom navigation only — nothing floats over the list.
-        contentPadding = PaddingValues(top = 8.dp, bottom = 132.dp),
-    ) {
-        item {
-            Row(Modifier.fillMaxWidth().padding(top = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                    Text(
-                        stringResource(R.string.scripts_title),
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.onSurface,
-                    )
-                    if (!globallyEnabled && scripts.isNotEmpty()) {
-                        Text(
-                            stringResource(R.string.scripts_paused_warning),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.error,
-                        )
-                    }
-                }
-                // The icon-only button takes its name from the icon's description, so keep the label
-                // there — without it TalkBack announces only "Button".
-                FilledIconButton(
-                    onClick = onCreateScript,
-                    modifier = Modifier.testTag("new_script_button"),
-                    colors = IconButtonDefaults.filledIconButtonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary,
-                    ),
-                ) {
-                    Icon(Icons.Filled.Add, stringResource(R.string.scripts_new_shortcut))
-                }
+    GroundedPage(themeMode, rememberScrollState()) {
+        // New shortcuts start from the bottom bar's +. The end padding keeps the title clear of the
+        // Settings gear, and the title's row is as tall as the gear so the two line up.
+        Column(Modifier.fillMaxWidth().padding(top = 8.dp, end = 52.dp)) {
+            Box(Modifier.heightIn(min = MinTouchTarget), contentAlignment = Alignment.CenterStart) {
+                Text(
+                    stringResource(R.string.scripts_title),
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+            }
+            if (!globallyEnabled && scripts.isNotEmpty()) {
+                Text(
+                    stringResource(R.string.scripts_paused_warning),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.error,
+                )
             }
         }
-        if (scripts.isEmpty()) {
-            item { EmptyState(onGoHome) }
-        }
-        items(scripts.size, key = { scripts[it].id }) { index ->
-            ScriptCard(scripts[index], globallyEnabled, onToggleScriptEnabled, onOpenScript, onDeleteScript)
+        if (scripts.isEmpty()) EmptyState(onGoHome)
+        scripts.forEach { script ->
+            key(script.id) { ScriptCard(script, globallyEnabled, onToggleScriptEnabled, onOpenScript, onDeleteScript) }
         }
     }
 }
@@ -180,11 +161,9 @@ private fun ScriptCard(
     }
     Card(
         onClick = { onOpen(script.id) },
-        modifier = Modifier.fillMaxWidth().testTag("script_card_${script.id}"),
+        modifier = Modifier.fillMaxWidth().glassCard(LocalGlass.current).testTag("script_card_${script.id}"),
         shape = ConsoleShape,
-        colors = CardDefaults.cardColors(containerColor = colors.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-        border = BorderStroke(1.dp, colors.outline.copy(alpha = .4f)),
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
     ) {
         Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {

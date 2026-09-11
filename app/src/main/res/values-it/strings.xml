@@ -470,6 +470,8 @@
     <string name="nav_home">Home</string>
     <string name="nav_shortcuts">Scorciatoie</string>
     <string name="nav_settings">Impostazioni</string>
+    <string name="settings_close">Chiudi impostazioni</string>
+    <string name="home_switch_theme">Cambia tema</string>
 
     <!-- Finestre di dialogo -->
     <string name="dialog_expert_connected">MODALITÀ AVANZATA CONNESSA</string>
@@ -530,7 +532,7 @@
     <string name="scripts_tutorial_step_key">Scegli Pressione tasto e premi il tuo tasto</string>
     <string name="scripts_tutorial_step_action">Aggiungi un\'azione</string>
     <string name="scripts_tutorial_step_done">Tocca Fatto</string>
-    <string name="scripts_tutorial_cap_fab">Il pulsante + blu, in alto a destra</string>
+    <string name="scripts_tutorial_cap_fab">Il pulsante + blu, nella barra in basso</string>
     <string name="scripts_tutorial_cap_keypress">In Quando, tocca Pressione tasto</string>
     <string name="scripts_tutorial_cap_press">Premi il tasto sul telefono</string>
     <string name="scripts_tutorial_cap_save">Tocca Salva tasto</string>

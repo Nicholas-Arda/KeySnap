@@ -35,6 +35,7 @@ import androidx.compose.ui.semantics.collapse
 import androidx.compose.ui.semantics.expand
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import com.example.ui.theme.LocalGlass
 import com.example.ui.theme.SectionLabel
 
 /**
@@ -43,7 +44,8 @@ import com.example.ui.theme.SectionLabel
  * row, full-width buttons — and [InnerShape] for tiles — glyph tiles, chips, badges, small buttons,
  * search fields. A circle is not a radius choice: those stay `CircleShape`.
  */
-internal val ConsoleShape = RoundedCornerShape(20.dp)
+internal val ConsoleCorner = 20.dp
+internal val ConsoleShape = RoundedCornerShape(ConsoleCorner)
 val InnerShape = RoundedCornerShape(12.dp)
 
 /** Android's minimum comfortable touch target. Any row or pill that takes a tap should reach it. */
@@ -112,13 +114,13 @@ fun ConsolePanel(
 ) {
     val colors = MaterialTheme.colorScheme
     Card(
-        modifier.fillMaxWidth().testTag(testTag),
+        modifier.fillMaxWidth().then(if (alert) Modifier else Modifier.glassCard(LocalGlass.current)).testTag(testTag),
         shape = ConsoleShape,
         colors = CardDefaults.cardColors(
-            containerColor = if (alert) colors.error.copy(alpha = .10f).compositeOver(colors.surface) else colors.surface,
+            containerColor = if (alert) colors.error.copy(alpha = .10f).compositeOver(colors.surface) else Color.Transparent,
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-        border = BorderStroke(1.dp, if (alert) colors.error.copy(alpha = .55f) else colors.outline.copy(alpha = .4f)),
+        elevation = CardDefaults.cardElevation(defaultElevation = if (alert) 1.dp else 0.dp),
+        border = if (alert) BorderStroke(1.dp, colors.error.copy(alpha = .55f)) else null,
     ) {
         // A clickable header needs a 48dp tap target; giving it the column's top padding instead of
         // stacking on top of it keeps its label on the same line as every plain panel's label.

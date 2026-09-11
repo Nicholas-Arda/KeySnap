@@ -103,14 +103,19 @@ fun SettingsScreen(
     isAdvancedModeRunning: Boolean = false,
     onToggleAdvancedMode: (Boolean) -> Unit = {},
     onRunSetupAgain: () -> Unit = {},
+    reveal: (index: Int) -> Modifier = { Modifier },
 ) {
     LazyColumn(
-        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(14.dp),
-        contentPadding = PaddingValues(top = 8.dp, bottom = 96.dp),
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        contentPadding = PaddingValues(start = 12.dp, end = 12.dp, top = 18.dp, bottom = 40.dp),
     ) {
         item {
-            Column(Modifier.padding(top = 8.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            // The end padding keeps the title clear of the close button in this corner.
+            Column(
+                reveal(0).padding(start = 8.dp, end = 60.dp, bottom = 4.dp),
+                verticalArrangement = Arrangement.spacedBy(2.dp),
+            ) {
                 Text(
                     stringResource(R.string.settings_title),
                     style = MaterialTheme.typography.titleLarge,
@@ -123,9 +128,9 @@ fun SettingsScreen(
                 )
             }
         }
-        item { SettingsGroupLabel(R.string.settings_group_keys, first = true) }
+        item { SettingsGroupLabel(R.string.settings_group_keys, reveal(1), first = true) }
         item {
-            ConsolePanel(stringResource(R.string.settings_defaults_panel), testTag = "defaults_for_new_scripts") {
+            ConsolePanel(stringResource(R.string.settings_defaults_panel), testTag = "defaults_for_new_scripts", modifier = reveal(2)) {
                 Text(
                     stringResource(R.string.settings_defaults_hint),
                     style = MaterialTheme.typography.bodySmall,
@@ -150,7 +155,7 @@ fun SettingsScreen(
             }
         }
         item {
-            ConsolePanel(stringResource(R.string.settings_input_panel), testTag = "input_behavior") {
+            ConsolePanel(stringResource(R.string.settings_input_panel), testTag = "input_behavior", modifier = reveal(3)) {
                 SettingsSwitchRow(
                     title = stringResource(R.string.script_settings_consume_input),
                     description = stringResource(R.string.script_settings_consume_input_description),
@@ -162,7 +167,7 @@ fun SettingsScreen(
             }
         }
         item {
-            ConsolePanel(stringResource(R.string.settings_haptics_panel), testTag = "haptics") {
+            ConsolePanel(stringResource(R.string.settings_haptics_panel), testTag = "haptics", modifier = reveal(4)) {
                 SettingsSwitchRow(
                     title = stringResource(R.string.settings_haptic_feedback),
                     description = stringResource(
@@ -190,34 +195,36 @@ fun SettingsScreen(
                 )
             }
         }
-        item { SettingsGroupLabel(R.string.settings_group_advanced) }
+        item { SettingsGroupLabel(R.string.settings_group_advanced, reveal(5)) }
         item {
-            AdvancedModePanel(
-                isRunning = isAdvancedModeRunning,
-                onToggle = onToggleAdvancedMode,
-                onRunSetupAgain = onRunSetupAgain,
-            )
+            Box(reveal(6)) {
+                AdvancedModePanel(
+                    isRunning = isAdvancedModeRunning,
+                    onToggle = onToggleAdvancedMode,
+                    onRunSetupAgain = onRunSetupAgain,
+                )
+            }
         }
-        item { EventLogPanel(keyHistory, isEventLogExpanded, onToggleLog, onClearHistory) }
-        item { SettingsGroupLabel(R.string.settings_group_app) }
+        item { Box(reveal(7)) { EventLogPanel(keyHistory, isEventLogExpanded, onToggleLog, onClearHistory) } }
+        item { SettingsGroupLabel(R.string.settings_group_app, reveal(8)) }
         if (themeMode != null) {
             item {
-                ConsolePanel(stringResource(R.string.settings_appearance_panel), testTag = "appearance") {
+                ConsolePanel(stringResource(R.string.settings_appearance_panel), testTag = "appearance", modifier = reveal(9)) {
                     AppearanceRow(themeMode, onSetThemeMode)
                 }
             }
         }
-        item { LanguagePanel() }
-        item { AboutPanel(onEraseAllData) }
+        item { Box(reveal(10)) { LanguagePanel() } }
+        item { Box(reveal(11)) { AboutPanel(onEraseAllData) } }
     }
 }
 
 /** Eight sibling panels do not scan; these split them into Keys, Advanced and App. */
 @Composable
-private fun SettingsGroupLabel(labelRes: Int, first: Boolean = false) {
+private fun SettingsGroupLabel(labelRes: Int, modifier: Modifier = Modifier, first: Boolean = false) {
     Text(
         stringResource(labelRes),
-        Modifier.padding(top = if (first) 0.dp else 10.dp),
+        modifier.padding(start = 8.dp, top = if (first) 0.dp else 10.dp),
         style = SectionLabel,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )

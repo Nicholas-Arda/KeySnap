@@ -53,11 +53,13 @@ import androidx.compose.ui.unit.sp
 import com.example.ui.components.ConsoleShape
 import com.example.ui.components.InnerShape
 import com.example.ui.components.MinTouchTarget
+import com.example.ui.components.glassCard
 import com.example.ui.home.SetupStepState
 import com.example.ui.home.StepMarker
 import com.example.ui.home.dur
 import com.example.ui.home.rememberReducedMotion
 import com.example.ui.home.stepRail
+import com.example.ui.theme.LocalGlass
 import io.github.nicholasarda.keysnap.R
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
@@ -152,9 +154,8 @@ fun ShortcutTutorialCard(modifier: Modifier = Modifier) {
     Column(
         modifier
             .fillMaxWidth()
+            .glassCard(LocalGlass.current, rim = colors.primary.copy(alpha = .45f))
             .clip(ConsoleShape)
-            .background(colors.surface)
-            .border(1.dp, colors.primary.copy(alpha = .45f), ConsoleShape)
             // animateContentSize clips to its bounds; it goes before the padding so the current
             // step's scaled-up marker can overshoot the content edge without being cut.
             .animateContentSize(spring(dampingRatio = 0.9f))
