@@ -81,6 +81,7 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.createBitmap
 import com.example.ui.theme.GlassColors
 import com.example.ui.theme.LocalGlass
 import io.github.nicholasarda.keysnap.R
@@ -304,7 +305,7 @@ private fun CacheDrawScope.haloMask(): ImageBitmap {
         )
         addCircle(size.width / 2, reach + FabSize.toPx() / 2, FabSize.toPx() / 2 + grow, android.graphics.Path.Direction.CW)
     }
-    val bitmap = Bitmap.createBitmap(size.width.toInt(), size.height.toInt(), Bitmap.Config.ALPHA_8)
+    val bitmap = createBitmap(size.width.toInt(), size.height.toInt(), Bitmap.Config.ALPHA_8)
     android.graphics.Canvas(bitmap).drawPath(
         silhouette,
         android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply {
