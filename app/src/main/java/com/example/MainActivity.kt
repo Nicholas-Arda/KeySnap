@@ -37,12 +37,25 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        requestFastestRefreshRate()
         setContent {
             val themeMode by viewModel.themeMode.collectAsState()
             MyApplicationTheme(themeMode = themeMode) {
                 MainScreen(viewModel = viewModel)
             }
         }
+    }
+
+    // ColorOS's default display setting runs apps that ask for nothing at 90 Hz on a 120 Hz panel,
+    // which made every animation here visibly less fluid. Ask for the fastest mode at the current
+    // resolution; the system can still lower it (battery saver, OEM policy).
+    private fun requestFastestRefreshRate() {
+        val display = display ?: return
+        val current = display.mode
+        val fastest = display.supportedModes
+            .filter { it.physicalWidth == current.physicalWidth && it.physicalHeight == current.physicalHeight }
+            .maxByOrNull { it.refreshRate } ?: return
+        window.attributes = window.attributes.apply { preferredDisplayModeId = fastest.modeId }
     }
 
     override fun onResume() {
