@@ -155,8 +155,10 @@ fun ShortcutTutorialCard(modifier: Modifier = Modifier) {
             .clip(ConsoleShape)
             .background(colors.surface)
             .border(1.dp, colors.primary.copy(alpha = .45f), ConsoleShape)
-            .padding(16.dp)
-            .animateContentSize(spring(dampingRatio = 0.9f)),
+            // animateContentSize clips to its bounds; it goes before the padding so the current
+            // step's scaled-up marker can overshoot the content edge without being cut.
+            .animateContentSize(spring(dampingRatio = 0.9f))
+            .padding(16.dp),
     ) {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             Column(Modifier.weight(1f)) {

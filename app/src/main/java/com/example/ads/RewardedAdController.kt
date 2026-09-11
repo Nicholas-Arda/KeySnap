@@ -2,6 +2,8 @@ package com.example.ads
 
 import android.app.Activity
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.FullScreenContentCallback
@@ -15,6 +17,8 @@ class RewardedAdController(context: Context) {
     private val appContext = context.applicationContext
     private var rewardedAd: RewardedAd? = null
     private var isLoading = false
+    private val handler = Handler(Looper.getMainLooper())
+    private var retryDelayMs = INITIAL_RETRY_MS
 
     fun preload() {
         if (rewardedAd != null || isLoading) return
@@ -27,11 +31,16 @@ class RewardedAdController(context: Context) {
                 override fun onAdLoaded(ad: RewardedAd) {
                     isLoading = false
                     rewardedAd = ad
+                    retryDelayMs = INITIAL_RETRY_MS
                 }
 
                 override fun onAdFailedToLoad(error: LoadAdError) {
                     isLoading = false
                     rewardedAd = null
+                    // A no-fill at start-up used to leave the reward button dead until the next
+                    // tap. Retry with the backoff AdMob asks for so the slot fills on its own.
+                    handler.postDelayed(::preload, retryDelayMs)
+                    retryDelayMs = (retryDelayMs * 2).coerceAtMost(MAX_RETRY_MS)
                 }
             },
         )
@@ -49,3 +58,6 @@ class RewardedAdController(context: Context) {
         ad.show(activity) { onRewardEarned() }
     }
 }
+
+private const val INITIAL_RETRY_MS = 30_000L
+private const val MAX_RETRY_MS = 5 * 60_000L
