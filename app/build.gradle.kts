@@ -170,6 +170,7 @@ dependencies {
   implementation(libs.moshi)
   implementation(libs.play.services.ads)
   implementation(libs.billing.ktx)
+  implementation(libs.androidx.fragment)
   implementation(libs.bcprov)
   implementation(libs.bcpkix)
   implementation(libs.conscrypt.android)
