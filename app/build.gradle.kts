@@ -71,8 +71,8 @@ android {
     // Mode — is an Android 11 feature anyway, so nothing below 30 could use the app's core.
     minSdk = 30
     targetSdk = 36
-    versionCode = 6
-    versionName = "1.0.1"
+    versionCode = 7
+    versionName = "1.0.2"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
