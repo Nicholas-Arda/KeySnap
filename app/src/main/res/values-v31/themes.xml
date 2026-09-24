@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Android 12+ launch splash: the launcher icon's glyph on its own blue (#006EFD, see
+         ic_launcher_background), instead of the system default of a masked icon on a plain
+         light/dark ground. The foreground keeps the adaptive-icon safe zone, which is the
+         same 2/3 ratio the splash icon circle uses, so it crops exactly like the launcher. -->
+    <style name="Theme.MyApplication" parent="android:Theme.DeviceDefault.NoActionBar">
+        <item name="android:windowSplashScreenBackground">#006EFD</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+    </style>
+</resources>
