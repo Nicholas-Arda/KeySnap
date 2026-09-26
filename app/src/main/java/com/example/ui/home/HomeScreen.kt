@@ -233,7 +233,6 @@ private fun ProUpsellCard(
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             OutlinedButton(
                 onClick = onRewardButtonClick,
-                enabled = !rewardActive,
                 modifier = Modifier.weight(1f).heightIn(min = MinTouchTarget).testTag("pro_upsell_ad_button"),
             ) {
                 if (rewardActive) {

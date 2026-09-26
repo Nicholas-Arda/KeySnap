@@ -21,6 +21,7 @@ class EntitlementManager internal constructor(
         const val FREE_SCRIPT_LIMIT = 2
         const val REWARD_BONUS_SCRIPTS = 1
         const val REWARD_WINDOW_MS = 4 * 60 * 60 * 1000L
+        const val REWARD_EXTEND_MS = 30 * 60 * 1000L
 
         @Volatile private var instance: EntitlementManager? = null
 
@@ -48,8 +49,11 @@ class EntitlementManager internal constructor(
         prefs.edit().putBoolean(KEY_IS_PRO, pro).apply()
     }
 
+    /** First watch grants the full window; watching again while already active only extends it by
+     *  [REWARD_EXTEND_MS], so re-watching isn't as rewarding as the first ad. */
     fun grantRewardWindow() {
-        val expiry = System.currentTimeMillis() + REWARD_WINDOW_MS
+        val base = if (rewardActive) _rewardExpiryAt.value else System.currentTimeMillis()
+        val expiry = base + if (rewardActive) REWARD_EXTEND_MS else REWARD_WINDOW_MS
         _rewardExpiryAt.value = expiry
         prefs.edit().putLong(KEY_REWARD_EXPIRY_AT, expiry).apply()
     }

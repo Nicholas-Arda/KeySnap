@@ -667,13 +667,10 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
         scriptRepository.setScriptEnabled(id, enabled)
     }
 
-    /** Tapping the reward button: shows the ad when one is loaded and ready, on cooldown goes
-     *  straight to Pro purchase instead of loading another ad. */
+    /** Tapping the reward button always offers another ad, even while a reward window is already
+     *  active — [EntitlementManager.grantRewardWindow] only extends it by the smaller re-watch
+     *  bonus in that case, so watching again isn't as rewarding as the first ad. */
     fun onRewardButtonClick(activity: Activity) {
-        if (entitlementManager.rewardActive) {
-            purchasePro(activity)
-            return
-        }
         rewardedAdController.show(activity) { entitlementManager.grantRewardWindow() }
     }
 
