@@ -61,6 +61,7 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         viewModel.refreshServiceStatus()
+        viewModel.refreshPurchases()
     }
 
     // Foreground key events are intercepted for real-time monitoring and recording. Down and up

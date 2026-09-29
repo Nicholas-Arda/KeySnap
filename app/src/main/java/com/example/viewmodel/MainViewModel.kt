@@ -684,6 +684,10 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
         purchaseManager.purchasePro(activity)
     }
 
+    fun refreshPurchases() {
+        purchaseManager.refresh()
+    }
+
     fun toggleConsumeOriginal(consume: Boolean) {
         repository.setConsumeOriginalEvent(consume)
     }

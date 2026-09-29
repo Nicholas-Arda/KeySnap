@@ -40,6 +40,7 @@ class PurchaseManager(context: Context, private val entitlements: EntitlementMan
     private val billingClient = BillingClient.newBuilder(context.applicationContext)
         .setListener(purchasesListener)
         .enablePendingPurchases(PendingPurchasesParams.newBuilder().enableOneTimeProducts().build())
+        .enableAutoServiceReconnection()
         .build()
 
     fun start() {
@@ -52,6 +53,13 @@ class PurchaseManager(context: Context, private val entitlements: EntitlementMan
 
             override fun onBillingServiceDisconnected() = Unit
         })
+    }
+
+    /** Re-reads Play on every return to the app, so a promo code redeemed in the Play Store or a
+     *  refund takes effect without a restart, and a price that failed to load gets another try. */
+    fun refresh() {
+        if (proProductDetails == null) queryProductDetails()
+        restorePurchases()
     }
 
     private fun queryProductDetails() {
@@ -67,10 +75,16 @@ class PurchaseManager(context: Context, private val entitlements: EntitlementMan
     }
 
     /** Play Billing requires every purchase eventually be observed here, not just at the moment of
-     *  purchase, so a reinstall or a purchase made on another device is still recognized. */
+     *  purchase, so a reinstall, a purchase on another device, a promo code or a refund is seen. */
     private fun restorePurchases() {
         val params = QueryPurchasesParams.newBuilder().setProductType(BillingClient.ProductType.INAPP).build()
-        billingClient.queryPurchasesAsync(params) { _, purchases -> purchases.forEach(::handlePurchase) }
+        billingClient.queryPurchasesAsync(params) { result, purchases ->
+            purchases.forEach(::handlePurchase)
+            val ownsPro = purchases.any {
+                AdConfig.PRO_PRODUCT_ID in it.products && it.purchaseState == Purchase.PurchaseState.PURCHASED
+            }
+            proAfterQuery(result.responseCode, ownsPro)?.let(entitlements::setPro)
+        }
     }
 
     fun purchasePro(activity: Activity) {
@@ -94,3 +108,9 @@ class PurchaseManager(context: Context, private val entitlements: EntitlementMan
         }
     }
 }
+
+/** What Pro should become after a purchases query; null keeps the stored value. Only an OK answer
+ *  proves ownership or its absence — offline, a signed-out Play Store or a service error must never
+ *  cost a paying user Pro. */
+internal fun proAfterQuery(responseCode: Int, ownsPro: Boolean): Boolean? =
+    if (responseCode == BillingClient.BillingResponseCode.OK) ownsPro else null
