@@ -192,10 +192,13 @@ private fun PermissionHints(constraintType: String, ssid: String, context: Conte
         }
         constraintType.endsWith("_wifi_network") && ssid.isNotBlank() -> {
             var granted by remember { mutableStateOf(hasFineLocation(context)) }
-            val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted = it }
+            // Android 12+ ignores a fine-only request; fine must be asked alongside coarse.
+            val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { result ->
+                granted = result[Manifest.permission.ACCESS_FINE_LOCATION] == true
+            }
             if (!granted) {
                 PermissionHint(stringResource(R.string.constraint_needs_location)) {
-                    launcher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                    launcher.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION))
                 }
             }
         }
