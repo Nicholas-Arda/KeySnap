@@ -68,6 +68,16 @@ class RunLogTest {
         assertEquals(RunFailure.ADVANCED_MODE_OFF, failureReason("shell_command", allGranted))
     }
 
+    @Test fun aFailureWhileAdvancedModeIsOnIsNeverBlamedOnAdvancedModeBeingOff() {
+        // The app ran the whole chain although the bridge was up (its RUN request fell through).
+        val env = allGranted.copy(advancedMode = true)
+        val actions = listOf(ScriptAction("toggle_wifi"), ScriptAction("shell_command"))
+
+        val run = buildRunRecord("s", 1L, RunRecord.SOURCE_AUTOMATION, null, null, actions, listOf(false, false), null, env)
+
+        assertEquals(listOf("FAILED", "FAILED"), run.actions.map { it.reason })
+    }
+
     /** The reasons must agree with the requirement badges the editor already shows for each action. */
     @Test fun reasonSetsCoverEveryActionTheEditorBadges() {
         ScriptActionCatalog.all.forEach { descriptor ->

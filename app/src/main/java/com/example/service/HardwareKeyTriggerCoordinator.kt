@@ -15,6 +15,7 @@ import com.example.data.LiveKeyEvent
 import com.example.data.RunEnvironment
 import com.example.data.RunLogRepository
 import com.example.data.RunRecord
+import com.example.data.ScriptAction
 import com.example.data.ScriptActionCatalog
 import com.example.data.ScriptRepository
 import com.example.data.ShortcutScript
@@ -24,6 +25,8 @@ import com.example.data.getReadableKeyName
 import com.example.data.resolveHapticDurationForScript
 import com.example.data.resolveTimingForKey
 import com.example.data.resolveVibrateForScript
+import com.example.service.bridge.BridgeController
+import com.example.service.bridge.BridgeRunResult
 import io.github.nicholasarda.keysnap.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -165,9 +168,7 @@ object HardwareKeyTriggerCoordinator {
             // Runs the app's share (often nothing: executeEach calls no handler for the bridge's
             // actions) and records the whole run, the bridge's part included.
             coordinatorScope.launch {
-                val appResults = actionExecutor?.executeEach(script.actions) {
-                    it.type in ScriptActionCatalog.UNSUPPORTED_BY_BRIDGE
-                } ?: return@launch
+                val appResults = actionExecutor?.executeAppShare(script.actions) ?: return@launch
                 recordRun(script, keyCode, pressType, appResults, actionResults)
             }
         }
@@ -337,8 +338,17 @@ object HardwareKeyTriggerCoordinator {
                 if (resolveVibrateForScript(script, config.vibrateOnTrigger)) {
                     vibratePhone(context, resolveHapticDurationForScript(script, config.hapticDurationMs))
                 }
-                actionExecutor?.executeEach(script.actions)?.let { results ->
-                    recordRun(script, keyCode, pressType?.name, results, bridgeReport = null)
+                val executor = actionExecutor
+                if (executor != null) {
+                    // An automation has no press for the bridge to match, so it is handed the chain
+                    // here. A key run reaches this only while the bridge is down (handleGesture),
+                    // and must not ask it: a bridge coming up meanwhile has matched the press itself.
+                    val run = if (keyCode == null) {
+                        runChain(script.actions, executor, BridgeController::runActions)
+                    } else {
+                        ChainResults(executor.executeEach(script.actions), bridgeReport = null)
+                    }
+                    recordRun(script, keyCode, pressType?.name, run.appResults, run.bridgeReport)
                 }
                 _triggerCount.value = _triggerCount.value + 1
                 Log.d(TAG, "Trigger fired: script=${script.id}, action=$triggerLabel, total=${_triggerCount.value}")
@@ -375,6 +385,7 @@ object HardwareKeyTriggerCoordinator {
         accessibility = KeyMapperAccessibilityService.isServiceActive.value,
         dndAccess = context.getSystemService(NotificationManager::class.java)?.isNotificationPolicyAccessGranted == true,
         writeSettings = Settings.System.canWrite(context),
+        advancedMode = _isAdvancedBridgeActive.value,
     )
 
     fun vibratePhone(context: Context, durationMs: Long = 50) {
@@ -393,6 +404,27 @@ object HardwareKeyTriggerCoordinator {
             Log.e(TAG, "Vibration execution failed", e)
         }
     }
+}
+
+/** [appResults] is `executeEach`'s output (null = the bridge's action); [bridgeReport] the bridge's own. */
+internal data class ChainResults(val appResults: List<Boolean?>, val bridgeReport: List<Pair<String, Boolean>>?)
+
+/** The part of a bridge-run chain the app runs itself; see [ScriptActionCatalog.UNSUPPORTED_BY_BRIDGE]. */
+internal suspend fun ScriptActionExecutor.executeAppShare(actions: List<ScriptAction>): List<Boolean?> =
+    executeEach(actions) { it.type in ScriptActionCatalog.UNSUPPORTED_BY_BRIDGE }
+
+/**
+ * Runs a chain the way a key press would: [runOnBridge] runs what it supports, then the app runs
+ * its share, as [HardwareKeyTriggerCoordinator.onBridgeTrigger] does. When [runOnBridge] returns
+ * null (no bridge, or the request failed) the whole chain runs here, once.
+ */
+internal suspend fun runChain(
+    actions: List<ScriptAction>,
+    executor: ScriptActionExecutor,
+    runOnBridge: suspend (List<ScriptAction>) -> BridgeRunResult?,
+): ChainResults {
+    val bridge = runOnBridge(actions) ?: return ChainResults(executor.executeEach(actions), bridgeReport = null)
+    return ChainResults(executor.executeAppShare(actions), bridge.actionResults)
 }
 
 /** Rising-edge detector keyed by script id. [update] is true only for a false -> true change; a first sighting only records. */

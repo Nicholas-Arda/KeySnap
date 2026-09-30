@@ -354,7 +354,7 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
             } else {
                 actionExecutor.execute(actions) { it.type in ScriptActionCatalog.UNSUPPORTED_BY_BRIDGE }
             }
-            val ran = results.count { it } + (onBridge?.first ?: 0)
+            val ran = results.count { it } + (onBridge?.ran ?: 0)
             _editorMessage.value = when {
                 results.isEmpty() -> null
                 ran == 0 -> res.getString(R.string.run_nothing_ran)

@@ -27,7 +27,7 @@ public final class EventServer implements Runnable {
 
         void onShutdownRequested();
 
-        /** Runs one chain now and answers "<ran>	<total>". */
+        /** Runs one chain now and answers "<ran>	<total>	<actionResults>". */
         String onRunRequested(String payloadJson);
     }
 

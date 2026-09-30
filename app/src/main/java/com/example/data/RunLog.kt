@@ -47,8 +47,17 @@ enum class RunFailure(@StringRes val labelRes: Int) {
     }
 }
 
-/** What the app process could see when an action it ran failed. */
-data class RunEnvironment(val accessibility: Boolean, val dndAccess: Boolean, val writeSettings: Boolean)
+/**
+ * What the app process could see when an action it ran failed. [advancedMode] is whether the bridge
+ * was up: the app can still end up running a bridge action then (a RUN that fell through), and
+ * "Requires Advanced Mode" would be wrong.
+ */
+data class RunEnvironment(
+    val accessibility: Boolean,
+    val dndAccess: Boolean,
+    val writeSettings: Boolean,
+    val advancedMode: Boolean = false,
+)
 
 // Which prerequisite explains an app-side failure. These mirror ScriptActionExecutor.android:
 // ADVANCED_MODE_TYPES are the branches it hard-returns false for, plus shell_command, which runs
@@ -82,7 +91,7 @@ internal const val MAX_RUNS_PER_SCRIPT = 20
 internal const val MAX_RUNS = 200
 
 internal fun failureReason(type: String, env: RunEnvironment): RunFailure = when {
-    type in ADVANCED_MODE_TYPES -> RunFailure.ADVANCED_MODE_OFF
+    type in ADVANCED_MODE_TYPES -> if (env.advancedMode) RunFailure.FAILED else RunFailure.ADVANCED_MODE_OFF
     type in ACCESSIBILITY_TYPES && !env.accessibility -> RunFailure.ACCESSIBILITY_OFF
     type in DND_ACCESS_TYPES && !env.dndAccess -> RunFailure.DND_ACCESS_MISSING
     type in WRITE_SETTINGS_TYPES && !env.writeSettings -> RunFailure.WRITE_SETTINGS_MISSING

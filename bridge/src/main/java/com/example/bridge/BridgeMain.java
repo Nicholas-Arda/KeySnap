@@ -269,15 +269,19 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
             ok[index] &= success;
             logActionResult(script, keyCode, pressType, action, success);
         });
-        List<String> types = new ArrayList<>();
-        for (BridgeConfig.Action action : script.actions) {
-            types.add(action.type);
-        }
         // One broadcast per physical press, not per action, mirroring the app process's own
         // per-script counting in HardwareKeyTriggerCoordinator.executeActions — otherwise a
         // multi-action script vibrates and increments "Triggers today" once per action.
         server.broadcastTrigger(System.currentTimeMillis(), keyCode, pressType, script.id, true,
-                BridgeProtocol.encodeActionResults(types, ok));
+                BridgeProtocol.encodeActionResults(typesOf(script.actions), ok));
+    }
+
+    private static List<String> typesOf(List<BridgeConfig.Action> actions) {
+        List<String> types = new ArrayList<>();
+        for (BridgeConfig.Action action : actions) {
+            types.add(action.type);
+        }
+        return types;
     }
 
     /** Runs one chain, expanding "repeat_previous", and reports how many actions succeeded. */
@@ -314,8 +318,10 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
     }
 
     /**
-     * The editor's Run button, so it shows what a real press does rather than what the app process
-     * alone can do. No trigger broadcast: a test press must not move the counter or buzz.
+     * The editor's Run button and the app's automations, so both do what a real press does rather
+     * than what the app process alone can do. No trigger broadcast: the app counts and buzzes for
+     * an automation itself, and a test press must not do either. The reply ends with the same
+     * per-action field a TRIGGER carries, for the automation's run log.
      */
     @Override
     public String onRunRequested(String payloadJson) {
@@ -328,9 +334,13 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
             BridgeLog.w("RUN payload could not be parsed: " + e.getClass().getSimpleName());
             return "0	0";
         }
-        int ran = runActions(actions, (index, action, success) ->
-                BridgeLog.i("Run from the app: action=" + action.type + " success=" + success));
-        return ran + "	" + actions.size();
+        boolean[] ok = new boolean[actions.size()];
+        java.util.Arrays.fill(ok, true);
+        int ran = runActions(actions, (index, action, success) -> {
+            ok[index] &= success;
+            BridgeLog.i("Run from the app: action=" + action.type + " success=" + success);
+        });
+        return ran + "\t" + actions.size() + "\t" + BridgeProtocol.encodeActionResults(typesOf(actions), ok);
     }
 
     private void logActionResult(BridgeConfig.Script script, int keyCode, String pressType,

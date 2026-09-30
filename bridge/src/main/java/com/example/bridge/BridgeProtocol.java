@@ -18,7 +18,7 @@ public final class BridgeProtocol {
     /** Bumped whenever the on-disk payload or the socket protocol changes incompatibly, or when
      *  :bridge behavior changes at all — an already-running detached bridge has no way to pick up
      *  a source-only fix otherwise. */
-    public static final int VERSION = 11;
+    public static final int VERSION = 12;
 
     /** Process name given to app_process, used by `pidof` for liveness checks. */
     public static final String NICE_NAME = "arda_bridge";
@@ -48,7 +48,11 @@ public final class BridgeProtocol {
     public static final String CMD_PING = "PING";
     public static final String CMD_RELOAD = "RELOAD";
     public static final String CMD_SHUTDOWN = "SHUTDOWN";
-    /** RUN <json>: run one action chain now, for the editor's Run button. */
+    /**
+     * RUN <json>: run one action chain now, for the editor's Run button and automations. Answered
+     * with OK ran total actionResults — see {@link #encodeActionResults}; a bridge older than v11
+     * omits the last field.
+     */
     public static final String CMD_RUN = "RUN";
 
     /** Bridge -> client. */

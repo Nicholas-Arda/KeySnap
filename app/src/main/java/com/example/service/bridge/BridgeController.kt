@@ -247,10 +247,10 @@ object BridgeController {
     }
 
     /**
-     * Runs one chain in the bridge, for the editor's Run button. Null when the bridge is not the
-     * one executing right now, which leaves the caller on its own app-process path.
+     * Runs one chain in the bridge, for the editor's Run button and automations. Null when the
+     * bridge is not the one executing right now, which leaves the caller on its own app-process path.
      */
-    suspend fun runActions(actions: List<ScriptAction>): Pair<Int, Int>? {
+    suspend fun runActions(actions: List<ScriptAction>): BridgeRunResult? {
         if (_state.value != BridgeState.RUNNING) return null
         val payload = JSONObject().put(
             "actions",

@@ -35,6 +35,34 @@ data class BridgeTrigger(
     val actionResults: List<Pair<String, Boolean>>? = null,
 )
 
+/** The bridge's answer to a RUN: [ran] of [total] actions succeeded. */
+data class BridgeRunResult(
+    val ran: Int,
+    val total: Int,
+    /** Per-action results in chain order; null from a bridge older than protocol v11. */
+    val actionResults: List<Pair<String, Boolean>>?,
+)
+
+/**
+ * Parses the bridge's RUN reply; null unless it is an OK for a non-empty chain. The bridge answers
+ * `0 0` when it could not parse the payload, and a chain always has an action, so that reads as
+ * "not run" and the caller runs the chain itself.
+ */
+internal fun parseRunReply(line: String?): BridgeRunResult? {
+    val fields = line?.split('\t').orEmpty()
+    if (fields.firstOrNull() != BridgeProtocol.MSG_OK || fields.size < 3) return null
+    val total = fields[2].toIntOrNull() ?: 0
+    if (total == 0) return null
+    return BridgeRunResult(
+        ran = fields[1].toIntOrNull() ?: 0,
+        total = total,
+        actionResults = decodeActionResults(fields.getOrNull(3)),
+    )
+}
+
+private fun decodeActionResults(field: String?): List<Pair<String, Boolean>>? =
+    field?.let { BridgeProtocol.decodeActionResults(it) }?.map { it.key to it.value }
+
 /** The bridge's identity, returned by a successful handshake. */
 data class BridgeStatus(
     val protocolVersion: Int,
@@ -97,19 +125,17 @@ class BridgeClient(
     }
 
     /**
-     * Runs one action chain in the bridge now. Returns how many of its actions succeeded out of
-     * how many it ran, or null when no bridge answered.
+     * Runs one action chain in the bridge now. Null when no bridge answered or the reply was not
+     * an OK, which leaves the caller to run the chain itself.
      */
-    suspend fun requestRun(payloadJson: String): Pair<Int, Int>? = withContext(Dispatchers.IO) {
+    // ponytail: a reply lost after the RUN was sent (the bridge dying mid-chain) also reads as null,
+    // so the caller may repeat actions the bridge already ran; return a "sent, outcome unknown"
+    // result instead if that ever shows up.
+    suspend fun requestRun(payloadJson: String): BridgeRunResult? = withContext(Dispatchers.IO) {
         openSession()?.use { session ->
             runCatching {
                 session.writer.writeLine("${BridgeProtocol.CMD_RUN}$SEP$payloadJson")
-                val fields = session.reader.readLine()?.split(SEP).orEmpty()
-                if (fields.firstOrNull() != BridgeProtocol.MSG_OK || fields.size < 3) {
-                    null
-                } else {
-                    (fields[1].toIntOrNull() ?: 0) to (fields[2].toIntOrNull() ?: 0)
-                }
+                parseRunReply(session.reader.readLine())
             }.getOrNull()
         }
     }
@@ -169,9 +195,7 @@ class BridgeClient(
                         pressType = fields[3],
                         scriptId = fields[4],
                         success = fields[5] == "1",
-                        actionResults = fields.getOrNull(6)
-                            ?.let { BridgeProtocol.decodeActionResults(it) }
-                            ?.map { it.key to it.value },
+                        actionResults = decodeActionResults(fields.getOrNull(6)),
                     ),
                 )
             }
