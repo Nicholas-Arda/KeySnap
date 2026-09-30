@@ -445,6 +445,8 @@
     <string name="editor_chain_when">Wenn</string>
     <string name="editor_chain_only_if">Nur wenn</string>
     <string name="editor_chain_do">Dann</string>
+    <string name="editor_chain_runs">Letzte Ausführungen</string>
+    <string name="run_history_empty">Noch nicht ausgeführt</string>
     <string name="editor_add_action">Aktion hinzufügen</string>
     <string name="editor_add_constraint">Bedingung hinzufügen</string>
     <string name="editor_always_runs">Läuft immer</string>
@@ -546,6 +548,7 @@
     <string name="scripts_no_trigger">Noch keine Taste</string>
     <string name="scripts_no_condition">Keine Bedingung hinzugefügt</string>
     <string name="scripts_no_actions">Noch keine Aktionen</string>
+    <string name="scripts_last_run_failed">Letzte Ausführung nicht abgeschlossen</string>
     <string name="scripts_unnamed">Kurzbefehl</string>
     <string name="scripts_delete_label">%1$s löschen</string>
     <string name="scripts_toggle_state_on">Ein</string>
@@ -594,7 +597,7 @@
     <string name="home_setup_allow_background">Hintergrundnutzung zulassen</string>
     <string name="home_setup_done_background">Zugelassen</string>
     <string name="home_setup_step_notifications">Benachrichtigungen zulassen</string>
-    <string name="home_setup_why_notifications">Nur zur Einrichtung: Kopplungscode und Dienststatus. Tippe auf „Zulassen“, wenn Android fragt — „Nicht zulassen“ beendet die Einrichtung hier.</string>
+    <string name="home_setup_why_notifications">Für die Einrichtung und um dir zu sagen, wenn ein Kurzbefehl nicht ausgeführt werden konnte. Tippe auf „Zulassen“, wenn Android fragt — „Nicht zulassen“ beendet die Einrichtung hier.</string>
     <string name="home_setup_ask_now">Jetzt fragen</string>
     <string name="home_setup_done_notifications">Zugelassen</string>
     <string name="home_setup_all_done">Alle drei sind an. Deine Tasten funktionieren jetzt.</string>
@@ -607,7 +610,7 @@
     <string name="home_setup_why_collapsed">Eingeklappt</string>
     <string name="home_setup_whytext_accessibility">Android zeigt Hardwaretasten nur einem Bedienungshilfe-Dienst. Genau dafür nutzt KeySnap einen: einen Tastendruck bemerken und deinen Kurzbefehl ausführen. Bildschirme anderer Apps liest er nicht. Nur während der Einrichtung des Erweiterten Modus liest er zusätzlich den Kopplungscode auf der Seite für kabelloses Debugging — sonst nichts.</string>
     <string name="home_setup_whytext_background">Android beendet Apps, die es für untätig hält, und eine beendete App kann deine Kurzbefehle nicht ausführen. Das hält KeySnap am Leben, während dein Telefon schläft. Im Hintergrund tut es nichts, außer auf eine Taste zu warten.</string>
-    <string name="home_setup_whytext_notifications">Nur während der Einrichtung des Erweiterten Modus: der Kopplungscode und ob der Dienst läuft. Keine Erinnerungen, keine Werbung, sonst nie etwas.</string>
+    <string name="home_setup_whytext_notifications">Während der Einrichtung des Erweiterten Modus: der Kopplungscode und ob der Dienst läuft. Danach nur, wenn ein Kurzbefehl nicht ausgeführt werden konnte, und warum. Keine Erinnerungen, keine Werbung, sonst nie etwas.</string>
     <string name="home_setup_illo_battery_dialog">Darf KeySnap immer im Hintergrund laufen?</string>
     <string name="home_setup_illo_battery_body">Das kann die Akkulaufzeit verkürzen.</string>
     <string name="home_setup_illo_battery_deny">Ablehnen</string>
@@ -776,6 +779,9 @@
     <string name="notif_channel_setup_description">Wird angezeigt, während die App mit kabellosem ADB koppelt und die Bridge startet</string>
     <string name="notif_setup_title">Der Erweiterte Modus wird eingerichtet</string>
     <string name="notif_setup_text">Koppelt mit kabellosem Debugging und startet die Bridge.</string>
+    <string name="notif_channel_run_failures">Probleme mit Kurzbefehlen</string>
+    <string name="notif_channel_run_failures_description">Meldet, wenn eine Aktion eines Kurzbefehls nicht ausgeführt werden konnte, und warum</string>
+    <string name="notif_run_failed_title">„%1$s“ konnte nicht vollständig ausgeführt werden</string>
 
     <!-- Eingabemonitor: Ereigniszeilen und Auslöserbezeichnungen -->
     <string name="event_key_down">GEDRÜCKT (DOWN)</string>
@@ -790,6 +796,7 @@
     <string name="default_shortcut_name">Kurzbefehl #%1$d</string>
     <string name="run_nothing_ran">Nichts wurde ausgeführt. Überprüfe die Aktionseinstellungen.</string>
     <string name="run_partial">%1$d von %2$d Aktionen ausgeführt</string>
+    <string name="run_failure_generic">Nicht abgeschlossen</string>
     <string name="editor_needs_action">Füge mindestens eine Aktion hinzu, bevor du speicherst.</string>
     <string name="editor_needs_trigger">Wähle eine Taste, bevor du speicherst.</string>
     <string name="saved_needs_trigger">Gespeichert. Weise eine Taste zu, damit er ausgeführt werden kann.</string>

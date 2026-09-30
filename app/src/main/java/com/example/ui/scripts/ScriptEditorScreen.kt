@@ -106,6 +106,7 @@ import com.example.data.ScriptAction
 import com.example.data.ScriptActionCatalog
 import com.example.data.ConstraintEditorForms
 import com.example.data.InstalledApp
+import com.example.data.RunRecord
 import com.example.data.ScriptConstraint
 import com.example.data.ScriptConstraintCatalog
 import com.example.data.getReadableKeyName
@@ -151,6 +152,7 @@ fun ScriptEditorScreen(
     onConfigureConstraint: (Int) -> Unit = {},
     installedApps: List<InstalledApp> = emptyList(),
     advancedModeActive: Boolean = false,
+    runs: List<RunRecord> = emptyList(),
     onRunOnce: () -> Unit,
     onDeleteScript: () -> Unit,
     onDone: () -> Unit,
@@ -258,6 +260,7 @@ fun ScriptEditorScreen(
                             onConfigureConstraint = onConfigureConstraint,
                             installedApps = installedApps,
                             advancedModeActive = advancedModeActive,
+                            runs = runs,
                             onOpenAddAction = { pane = EditorPane.ADD_ACTION },
                             modifier = Modifier.weight(1f),
                         )
@@ -368,6 +371,7 @@ private fun ChainArea(
     onConfigureConstraint: (Int) -> Unit = {},
     installedApps: List<InstalledApp> = emptyList(),
     advancedModeActive: Boolean = false,
+    runs: List<RunRecord> = emptyList(),
 ) {
     // Held here rather than inside the row: with per-row state, removing or reordering an action
     // leaves an open menu attached to whichever action slid into that position.
@@ -406,6 +410,11 @@ private fun ChainArea(
         item { AddActionRow(onOpenAddAction) }
         if (draft.actions.isEmpty()) {
             item { ChainHint(stringResource(R.string.editor_needs_action)) }
+        }
+        // Only a saved shortcut can have run; a new draft's id has no history yet.
+        if (!draft.isNew) {
+            item { ChainLabel(stringResource(R.string.editor_chain_runs), topPadding = 6.dp) }
+            item { RunHistoryCard(runs) }
         }
     }
 }

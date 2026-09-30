@@ -1,6 +1,6 @@
 # KeySnap — Privacy Policy
 
-Last updated 8 September 2026
+Last updated 30 September 2026
 
 This is the same text the app shows under **Settings → About → Privacy policy**. A unit test
 (`PrivacyPolicyTest`) fails if the two ever disagree, so publish this file as-is and update it from
@@ -14,7 +14,7 @@ KeySnap has no servers, no accounts, no analytics and no crash reporting. Nothin
 
 ## What is stored on your device
 
-Your shortcuts, their triggers and any names you give to unlabelled hardware keys. Your timing, haptic and appearance preferences. An ADB key pair the app generates to authorise this one device for wireless debugging. When Advanced Mode is on, the bridge program and the local token the app uses to talk to it. All of this stays in the app's private storage on this device.
+Your shortcuts, their triggers and any names you give to unlabelled hardware keys. Your timing, haptic and appearance preferences. A history of each shortcut's last 20 runs: when it ran, which key or automation started it, and whether each action worked, but never what an action contains, such as a URL, a command or typed text. An ADB key pair the app generates to authorise this one device for wireless debugging. When Advanced Mode is on, the bridge program and the local token the app uses to talk to it. All of this stays in the app's private storage on this device.
 
 ## The accessibility service
 
@@ -30,7 +30,7 @@ The app makes three kinds of network connection. The first is to your own device
 
 ## Permissions and why
 
-Internet, network state, Wi-Fi state and multicast: to find and connect to your device's own wireless debugging service on the local network. Notifications: to show the pairing code prompt and the setup notification. Vibrate: for the confirmation buzz when a shortcut fires. Display over other apps: only when you tap "Pick on screen" to choose tap coordinates; the manual X/Y fields work without it. Bluetooth: to list your paired devices and notice when one connects, for the Bluetooth device conditions. Location: Android only reveals the name of the Wi-Fi network you are on to apps holding the location permission, so the "connected to Wi-Fi network" condition asks for it; the app never reads your position, and the permission is requested only when you add that condition. Usage access: to know which app is in the foreground, for the "app in foreground" condition. Do Not Disturb access: to switch the ringer to Silent. Modify system settings: to change brightness and screen rotation without Advanced Mode. Each of these is a switch you turn on yourself in Android's settings, and the app never asks for one until you use the feature that needs it. The camera permission is deliberately not requested — the torch is controlled through an API that needs no permission.
+Internet, network state, Wi-Fi state and multicast: to find and connect to your device's own wireless debugging service on the local network. Notifications: to show the pairing code prompt and the setup notification, and to tell you when a shortcut's action could not run and why. Vibrate: for the confirmation buzz when a shortcut fires. Display over other apps: only when you tap "Pick on screen" to choose tap coordinates; the manual X/Y fields work without it. Bluetooth: to list your paired devices and notice when one connects, for the Bluetooth device conditions. Location: Android only reveals the name of the Wi-Fi network you are on to apps holding the location permission, so the "connected to Wi-Fi network" condition asks for it; the app never reads your position, and the permission is requested only when you add that condition. Usage access: to know which app is in the foreground, for the "app in foreground" condition. Do Not Disturb access: to switch the ringer to Silent. Modify system settings: to change brightness and screen rotation without Advanced Mode. Each of these is a switch you turn on yourself in Android's settings, and the app never asks for one until you use the feature that needs it. The camera permission is deliberately not requested — the torch is controlled through an API that needs no permission.
 
 ## Backup
 

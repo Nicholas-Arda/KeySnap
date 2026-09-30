@@ -52,6 +52,8 @@ Shortcuts run in the background, and the whole thing works without an account, a
 
 **Conditions.** Attach an *Only if* list to any shortcut: time of day, day of week, charging state, battery level, Wi‑Fi network, Bluetooth device, headphones, dark mode, Do Not Disturb, ringer mode, screen and lock state, orientation, which app is in the foreground, whether media is playing, and more. Around sixty in total.
 
+**Run history.** Each shortcut remembers its last 20 runs: when it ran, which key or automation started it, and whether each action worked. When an action can't run, a notification says why, such as a missing permission or Advanced Mode being off, and opens the shortcut. The history holds no action contents and never leaves the phone.
+
 **Appearance.** Light, dark and sepia themes. The interface ships in English, Arabic, German, Spanish, French, Hindi, Italian, Portuguese (Brazil), Russian and Turkish.
 
 ## Advanced Mode
@@ -67,7 +69,7 @@ Input capture is strictly read-only. The bridge listens to the kernel's event st
 KeySnap asks for a permission only when you use the feature that needs it, and each one is a switch you turn on yourself in Android's settings.
 
 - **Accessibility service.** The only way an app can see hardware key presses. It is restricted to reading screen content from the system Settings app alone, and uses that solely to read the pairing code from the Wireless Debugging dialog during Advanced Mode setup.
-- **Run in the background and notifications.** So Android does not put the app to sleep, and so setup can show the pairing prompt.
+- **Run in the background and notifications.** So Android does not put the app to sleep, so setup can show the pairing prompt, and so a shortcut that can't run can tell you why.
 - **Location.** Android only reveals the Wi‑Fi network name to apps holding it, so the *connected to Wi‑Fi network* condition needs it. The app never reads your position.
 - **Bluetooth, Do Not Disturb access, usage access, modify system settings, display over other apps.** Each unlocks one group of actions or conditions and is requested from inside that feature.
 - **Camera** is deliberately not requested. The flashlight uses an API that needs no permission.

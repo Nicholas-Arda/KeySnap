@@ -56,6 +56,7 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.dp
 import com.example.data.ConstraintEditorForms
 import com.example.data.EntitlementManager
+import com.example.data.latestFailedScriptIds
 import com.example.ui.components.AppBottomBar
 import com.example.ui.components.AdvancedActivationBanner
 import com.example.ui.components.AccessibilityDisclosureDialog
@@ -110,6 +111,7 @@ fun MainScreen(viewModel: MainViewModel) {
     val rewardExpiryAt by viewModel.rewardExpiryAt.collectAsState()
     val scriptsMessage by viewModel.scriptsMessage.collectAsState()
     val nudgeDismissed by viewModel.nudgeDismissed.collectAsState()
+    val runLog by viewModel.runLog.collectAsState()
     var nowTick by remember { mutableStateOf(System.currentTimeMillis()) }
     LaunchedEffect(Unit) {
         while (true) {
@@ -252,6 +254,7 @@ fun MainScreen(viewModel: MainViewModel) {
                         onOpenScript = viewModel::editScript,
                         onDeleteScript = viewModel::deleteScript,
                         onGoHome = { goToPage(0) },
+                        failedScriptIds = remember(runLog) { latestFailedScriptIds(runLog) },
                     )
                 }
             }
@@ -386,6 +389,7 @@ fun MainScreen(viewModel: MainViewModel) {
                 },
                 installedApps = installedApps,
                 advancedModeActive = isAdvancedModeRunning,
+                runs = runLog.filter { it.scriptId == draft.id },
                 onOpenTriggerPicker = { showTriggerPicker = true },
                 onToggleAutomation = viewModel::draftToggleAutomation,
                 onPickConstraint = { type ->

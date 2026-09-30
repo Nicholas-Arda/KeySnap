@@ -445,6 +445,8 @@
     <string name="editor_chain_when">Quand</string>
     <string name="editor_chain_only_if">Seulement si</string>
     <string name="editor_chain_do">Faire</string>
+    <string name="editor_chain_runs">Exécutions récentes</string>
+    <string name="run_history_empty">Pas encore exécuté</string>
     <string name="editor_add_action">Ajouter une action</string>
     <string name="editor_add_constraint">Ajouter une condition</string>
     <string name="editor_always_runs">S\'exécute toujours</string>
@@ -546,6 +548,7 @@
     <string name="scripts_no_trigger">Pas encore de touche</string>
     <string name="scripts_no_condition">Aucune condition ajoutée</string>
     <string name="scripts_no_actions">Pas encore d\'action</string>
+    <string name="scripts_last_run_failed">La dernière exécution n\'a pas abouti</string>
     <string name="scripts_unnamed">Raccourci</string>
     <string name="scripts_delete_label">Supprimer %1$s</string>
     <string name="scripts_toggle_state_on">Activé</string>
@@ -594,7 +597,7 @@
     <string name="home_setup_allow_background">Autoriser l\'arrière-plan</string>
     <string name="home_setup_done_background">Autorisé</string>
     <string name="home_setup_step_notifications">Autorisez les notifications</string>
-    <string name="home_setup_why_notifications">Configuration uniquement : code d\'appairage et état du service. Touchez Autoriser quand Android le demande — Refuser arrête la configuration ici.</string>
+    <string name="home_setup_why_notifications">Pour la configuration, et pour vous prévenir quand un raccourci n\'a pas pu s\'exécuter. Touchez Autoriser quand Android le demande — Refuser arrête la configuration ici.</string>
     <string name="home_setup_ask_now">Demander maintenant</string>
     <string name="home_setup_done_notifications">Autorisées</string>
     <string name="home_setup_all_done">Les trois sont activés. Vos boutons fonctionnent.</string>
@@ -607,7 +610,7 @@
     <string name="home_setup_why_collapsed">Réduit</string>
     <string name="home_setup_whytext_accessibility">Android ne montre les boutons physiques qu\'à un service d\'accessibilité : KeySnap en utilise un exactement pour ça, remarquer un appui et lancer votre raccourci. Il ne lit pas l\'écran des autres applis. Pendant la configuration du mode avancé uniquement, il lit aussi le code d\'appairage sur la page de débogage sans fil, et rien d\'autre.</string>
     <string name="home_setup_whytext_background">Android ferme les applis qu\'il croit inactives, et une appli fermée ne peut pas lancer vos raccourcis. Cela garde KeySnap en vie pendant que votre téléphone dort. En arrière-plan, il ne fait qu\'attendre un appui.</string>
-    <string name="home_setup_whytext_notifications">Uniquement pendant la configuration du mode avancé : le code d\'appairage et l\'état du service. Aucun rappel, aucune promotion, rien d\'autre, jamais.</string>
+    <string name="home_setup_whytext_notifications">Pendant la configuration du mode avancé : le code d\'appairage et l\'état du service. Ensuite, seulement quand un raccourci n\'a pas pu s\'exécuter, et pourquoi. Aucun rappel, aucune promotion, rien d\'autre, jamais.</string>
     <string name="home_setup_illo_battery_dialog">Autoriser KeySnap à toujours fonctionner en arrière-plan ?</string>
     <string name="home_setup_illo_battery_body">Cela peut réduire l\'autonomie.</string>
     <string name="home_setup_illo_battery_deny">Refuser</string>
@@ -776,6 +779,9 @@
     <string name="notif_channel_setup_description">Affiché pendant que l\'application s\'appaire avec l\'ADB sans fil et démarre le pont</string>
     <string name="notif_setup_title">Configuration du mode avancé en cours</string>
     <string name="notif_setup_text">Appairage avec le débogage sans fil et démarrage du pont.</string>
+    <string name="notif_channel_run_failures">Problèmes de raccourcis</string>
+    <string name="notif_channel_run_failures_description">Vous prévient quand une action d\'un raccourci n\'a pas pu s\'exécuter, et pourquoi</string>
+    <string name="notif_run_failed_title">« %1$s » n\'a pas pu aller au bout</string>
 
     <!-- Lignes d\'événements du moniteur de saisie et libellés de déclencheur -->
     <string name="event_key_down">PRESSÉE (DOWN)</string>
@@ -790,6 +796,7 @@
     <string name="default_shortcut_name">Raccourci nº %1$d</string>
     <string name="run_nothing_ran">Rien ne s\'est exécuté. Vérifiez les paramètres de l\'action.</string>
     <string name="run_partial">%1$d action(s) sur %2$d exécutée(s)</string>
+    <string name="run_failure_generic">Non terminée</string>
     <string name="editor_needs_action">Ajoutez au moins une action avant d\'enregistrer.</string>
     <string name="editor_needs_trigger">Choisissez une touche avant d\'enregistrer.</string>
     <string name="saved_needs_trigger">Enregistré. Attribuez une touche pour qu\'il puisse s\'exécuter.</string>

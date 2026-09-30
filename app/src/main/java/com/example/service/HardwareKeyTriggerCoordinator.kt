@@ -1,19 +1,25 @@
 package com.example.service
 
+import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
+import android.provider.Settings
 import android.util.Log
 import android.view.KeyEvent
 import com.example.data.KeyMappingConfig
 import com.example.data.KeyMappingRepository
 import com.example.data.LiveKeyEvent
+import com.example.data.RunEnvironment
+import com.example.data.RunLogRepository
+import com.example.data.RunRecord
 import com.example.data.ScriptActionCatalog
 import com.example.data.ScriptRepository
 import com.example.data.ShortcutScript
 import com.example.data.TriggerPressType
+import com.example.data.buildRunRecord
 import com.example.data.getReadableKeyName
 import com.example.data.resolveHapticDurationForScript
 import com.example.data.resolveTimingForKey
@@ -139,17 +145,30 @@ object HardwareKeyTriggerCoordinator {
      *
      * [success] describes the bridge's own execution, so it gates only the counter and the
      * haptic; the app's share runs either way.
+     *
+     * [actionResults] is the bridge's own per-action report, merged into the run log by [buildRunRecord].
      */
-    fun onBridgeTrigger(keyCode: Int, pressType: String, scriptId: String, success: Boolean) {
+    fun onBridgeTrigger(
+        keyCode: Int,
+        pressType: String,
+        scriptId: String,
+        success: Boolean,
+        actionResults: List<Pair<String, Boolean>>? = null,
+    ) {
         if (success) {
             _triggerCount.value = _triggerCount.value + 1
         }
         val context = appContext
         val config = repository?.config?.value
         val script = scriptRepository?.scripts?.value?.firstOrNull { it.id == scriptId }
-        if (script != null && script.actions.any { it.type in ScriptActionCatalog.UNSUPPORTED_BY_BRIDGE }) {
+        if (script != null) {
+            // Runs the app's share (often nothing: executeEach calls no handler for the bridge's
+            // actions) and records the whole run, the bridge's part included.
             coordinatorScope.launch {
-                actionExecutor?.execute(script.actions) { it.type in ScriptActionCatalog.UNSUPPORTED_BY_BRIDGE }
+                val appResults = actionExecutor?.executeEach(script.actions) {
+                    it.type in ScriptActionCatalog.UNSUPPORTED_BY_BRIDGE
+                } ?: return@launch
+                recordRun(script, keyCode, pressType, appResults, actionResults)
             }
         }
         if (success && context != null && config != null) {
@@ -280,7 +299,7 @@ object HardwareKeyTriggerCoordinator {
             return
         }
         Log.d(TAG, "$label detected and fired")
-        executeActions(context, config, matched, label)
+        executeActions(context, config, matched, label, keyCode, pressType)
     }
 
     /**
@@ -302,7 +321,7 @@ object HardwareKeyTriggerCoordinator {
         }
         if (fired.isEmpty()) return
         Log.d(TAG, "Automation fired: scripts=${fired.map { it.id }}")
-        executeActions(context, defaults, fired, context.getString(R.string.trigger_kind_automation))
+        executeActions(context, defaults, fired, context.getString(R.string.trigger_kind_automation), keyCode = null, pressType = null)
     }
 
     private fun executeActions(
@@ -310,18 +329,53 @@ object HardwareKeyTriggerCoordinator {
         config: KeyMappingConfig,
         scripts: List<ShortcutScript>,
         triggerLabel: String,
+        keyCode: Int?,
+        pressType: TriggerPressType?,
     ) {
         coordinatorScope.launch {
             scripts.forEach { script ->
                 if (resolveVibrateForScript(script, config.vibrateOnTrigger)) {
                     vibratePhone(context, resolveHapticDurationForScript(script, config.hapticDurationMs))
                 }
-                actionExecutor?.execute(script.actions)
+                actionExecutor?.executeEach(script.actions)?.let { results ->
+                    recordRun(script, keyCode, pressType?.name, results, bridgeReport = null)
+                }
                 _triggerCount.value = _triggerCount.value + 1
                 Log.d(TAG, "Trigger fired: script=${script.id}, action=$triggerLabel, total=${_triggerCount.value}")
             }
         }
     }
+
+    /** One entry in the shortcut's run log. Action type ids and outcomes only; see [RunRecord]. */
+    private fun recordRun(
+        script: ShortcutScript,
+        keyCode: Int?,
+        pressType: String?,
+        appResults: List<Boolean?>,
+        bridgeReport: List<Pair<String, Boolean>>?,
+    ) {
+        val context = appContext ?: return
+        val record = buildRunRecord(
+            scriptId = script.id,
+            at = System.currentTimeMillis(),
+            source = if (keyCode != null) RunRecord.SOURCE_KEY else RunRecord.SOURCE_AUTOMATION,
+            keyCode = keyCode,
+            pressType = pressType,
+            actions = script.actions,
+            appResults = appResults,
+            bridgeReport = bridgeReport,
+            env = runEnvironment(context),
+        )
+        RunLogRepository.getInstance(context).append(record)
+        RunFailureNotifier.onRun(context, script, record)
+        Log.d(TAG, "Run recorded: script=${script.id} failed=${record.actions.filterNot { it.ok }.map { it.type }}")
+    }
+
+    private fun runEnvironment(context: Context) = RunEnvironment(
+        accessibility = KeyMapperAccessibilityService.isServiceActive.value,
+        dndAccess = context.getSystemService(NotificationManager::class.java)?.isNotificationPolicyAccessGranted == true,
+        writeSettings = Settings.System.canWrite(context),
+    )
 
     fun vibratePhone(context: Context, durationMs: Long = 50) {
         try {

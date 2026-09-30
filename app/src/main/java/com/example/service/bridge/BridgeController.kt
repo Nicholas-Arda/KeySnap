@@ -95,6 +95,7 @@ object BridgeController {
                 pressType = trigger.pressType,
                 scriptId = trigger.scriptId,
                 success = trigger.success,
+                actionResults = trigger.actionResults,
             )
         }
 

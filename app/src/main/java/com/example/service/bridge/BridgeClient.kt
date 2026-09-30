@@ -31,6 +31,8 @@ data class BridgeTrigger(
     val pressType: String,
     val scriptId: String,
     val success: Boolean,
+    /** The bridge's per-action results in script order; null from a bridge older than protocol v11. */
+    val actionResults: List<Pair<String, Boolean>>? = null,
 )
 
 /** The bridge's identity, returned by a successful handshake. */
@@ -167,6 +169,9 @@ class BridgeClient(
                         pressType = fields[3],
                         scriptId = fields[4],
                         success = fields[5] == "1",
+                        actionResults = fields.getOrNull(6)
+                            ?.let { BridgeProtocol.decodeActionResults(it) }
+                            ?.map { it.key to it.value },
                     ),
                 )
             }

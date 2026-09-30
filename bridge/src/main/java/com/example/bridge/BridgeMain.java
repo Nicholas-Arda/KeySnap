@@ -261,43 +261,56 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
      * Mirrors the equivalent expansion in the app's ScriptActionExecutor.execute(List).
      */
     private void runScript(BridgeConfig.Script script, int keyCode, String pressType) {
-        runActions(script.actions, (action, success) ->
-                logActionResult(script, keyCode, pressType, action, success));
+        // One result per configured action for the app's run log; a "repeat_previous" counts as ok
+        // only if every repetition was.
+        boolean[] ok = new boolean[script.actions.size()];
+        java.util.Arrays.fill(ok, true);
+        runActions(script.actions, (index, action, success) -> {
+            ok[index] &= success;
+            logActionResult(script, keyCode, pressType, action, success);
+        });
+        List<String> types = new ArrayList<>();
+        for (BridgeConfig.Action action : script.actions) {
+            types.add(action.type);
+        }
         // One broadcast per physical press, not per action, mirroring the app process's own
         // per-script counting in HardwareKeyTriggerCoordinator.executeActions — otherwise a
         // multi-action script vibrates and increments "Triggers today" once per action.
-        server.broadcastTrigger(System.currentTimeMillis(), keyCode, pressType, script.id, true);
+        server.broadcastTrigger(System.currentTimeMillis(), keyCode, pressType, script.id, true,
+                BridgeProtocol.encodeActionResults(types, ok));
     }
 
     /** Runs one chain, expanding "repeat_previous", and reports how many actions succeeded. */
     private int runActions(List<BridgeConfig.Action> actions, ActionReporter reporter) {
         int ran = 0;
         BridgeConfig.Action previous = null;
-        for (BridgeConfig.Action action : actions) {
+        for (int index = 0; index < actions.size(); index++) {
+            BridgeConfig.Action action = actions.get(index);
             if (BridgeConfig.ACTION_REPEAT_PREVIOUS.equals(action.type)) {
                 Integer count = parseInt(action.params.get("count"));
                 int clamped = count == null ? 0 : Math.max(0, Math.min(MAX_REPEAT_COUNT, count));
                 if (previous == null || clamped <= 0) {
-                    reporter.report(action, false);
+                    reporter.report(index, action, false);
                 } else {
                     for (int i = 0; i < clamped; i++) {
                         boolean success = executeAction(previous);
                         ran += success ? 1 : 0;
-                        reporter.report(previous, success);
+                        reporter.report(index, previous, success);
                     }
                 }
                 continue;
             }
             boolean success = executeAction(action);
             ran += success ? 1 : 0;
-            reporter.report(action, success);
+            reporter.report(index, action, success);
             previous = action;
         }
         return ran;
     }
 
+    /** [index] is the configured action's position; a repeat reports once per repetition. */
     private interface ActionReporter {
-        void report(BridgeConfig.Action action, boolean success);
+        void report(int index, BridgeConfig.Action action, boolean success);
     }
 
     /**
@@ -315,7 +328,7 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
             BridgeLog.w("RUN payload could not be parsed: " + e.getClass().getSimpleName());
             return "0	0";
         }
-        int ran = runActions(actions, (action, success) ->
+        int ran = runActions(actions, (index, action, success) ->
                 BridgeLog.i("Run from the app: action=" + action.type + " success=" + success));
         return ran + "	" + actions.size();
     }

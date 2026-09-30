@@ -56,6 +56,13 @@ class LocalizationTest {
         }
     }
 
+    @Test fun everyShippedLanguageExplainsEveryRunFailure() {
+        shippedLocales.forEach { tag ->
+            val res = contextFor(tag).resources
+            RunFailure.entries.forEach { assertTrue("[$tag] $it", res.getString(it.labelRes).isNotBlank()) }
+        }
+    }
+
     @Test fun everyShippedLanguageLabelsEveryEditorField() {
         shippedLocales.forEach { tag ->
             val res = contextFor(tag).resources

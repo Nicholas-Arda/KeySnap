@@ -470,6 +470,8 @@
     <string name="editor_chain_when">When</string>
     <string name="editor_chain_only_if">Only if</string>
     <string name="editor_chain_do">Do</string>
+    <string name="editor_chain_runs">Recent runs</string>
+    <string name="run_history_empty">Hasn’t run yet</string>
     <string name="editor_add_action">Add action</string>
     <string name="editor_add_constraint">Add condition</string>
     <string name="editor_always_runs">Always runs</string>
@@ -572,6 +574,7 @@
     <string name="scripts_no_trigger">No key yet</string>
     <string name="scripts_no_condition">No condition added</string>
     <string name="scripts_no_actions">No actions yet</string>
+    <string name="scripts_last_run_failed">Last run didn’t finish</string>
     <string name="scripts_unnamed">Shortcut</string>
     <string name="scripts_delete_label">Delete %1$s</string>
     <string name="scripts_toggle_state_on">On</string>
@@ -620,7 +623,7 @@
     <string name="home_setup_allow_background">Allow background use</string>
     <string name="home_setup_done_background">Allowed</string>
     <string name="home_setup_step_notifications">Allow notifications</string>
-    <string name="home_setup_why_notifications">Setup only: pairing codes and service status. Tap Allow when Android asks — Don’t allow stops setup here.</string>
+    <string name="home_setup_why_notifications">For setup, and to tell you when a shortcut couldn’t run. Tap Allow when Android asks — Don’t allow stops setup here.</string>
     <string name="home_setup_ask_now">Ask me now</string>
     <string name="home_setup_done_notifications">Allowed</string>
     <string name="home_setup_all_done">All three are on. Your buttons work now.</string>
@@ -632,7 +635,7 @@
     <string name="home_setup_why_collapsed">Collapsed</string>
     <string name="home_setup_whytext_accessibility">Android shows hardware buttons only to an accessibility service, so KeySnap uses one for exactly that: noticing a press and running your shortcut. It does not read other apps\' screens. During Advanced Mode setup it also reads the pairing code on the Wireless Debugging page, and nothing else.</string>
     <string name="home_setup_whytext_background">Android closes apps it thinks are idle, and a closed app cannot run your shortcuts. This keeps KeySnap alive while your phone sleeps. In the background it does nothing but wait for a button.</string>
-    <string name="home_setup_whytext_notifications">Only during Advanced Mode setup: the pairing code and whether the service is running. No reminders, no promotions, nothing else, ever.</string>
+    <string name="home_setup_whytext_notifications">During Advanced Mode setup: the pairing code and whether the service is running. After that, only when a shortcut couldn’t run, and why. No reminders, no promotions, nothing else, ever.</string>
     <string name="home_setup_illo_downloaded_apps">Downloaded apps</string>
     <string name="home_setup_illo_battery_dialog">Let KeySnap always run in background?</string>
     <string name="home_setup_illo_battery_body">This may reduce battery life.</string>
@@ -820,6 +823,9 @@
     <string name="notif_channel_setup_description">Shown while the app is pairing with wireless ADB and starting the bridge</string>
     <string name="notif_setup_title">Setting up Advanced Mode</string>
     <string name="notif_setup_text">Pairing with wireless debugging and starting the bridge.</string>
+    <string name="notif_channel_run_failures">Shortcut problems</string>
+    <string name="notif_channel_run_failures_description">Tells you when a shortcut’s action couldn’t run, and why</string>
+    <string name="notif_run_failed_title">\"%1$s\" couldn’t finish</string>
 
     <!-- Input monitor event rows and trigger labels -->
     <string name="event_key_down">PRESSED (DOWN)</string>
@@ -834,6 +840,7 @@
     <string name="default_shortcut_name">Shortcut #%1$d</string>
     <string name="run_nothing_ran">Nothing ran. Check the action settings.</string>
     <string name="run_partial">Ran %1$d of %2$d actions</string>
+    <string name="run_failure_generic">Didn’t complete</string>
     <string name="editor_needs_action">Add at least one action before saving.</string>
     <string name="editor_needs_trigger">Choose a key before saving.</string>
     <string name="saved_needs_trigger">Saved. Assign a key so it can run.</string>

@@ -445,6 +445,8 @@
     <string name="editor_chain_when">Когда</string>
     <string name="editor_chain_only_if">Только если</string>
     <string name="editor_chain_do">Выполнить</string>
+    <string name="editor_chain_runs">Недавние запуски</string>
+    <string name="run_history_empty">Ещё не запускался</string>
     <string name="editor_add_action">Добавить действие</string>
     <string name="editor_add_constraint">Добавить условие</string>
     <string name="editor_always_runs">Выполняется всегда</string>
@@ -546,6 +548,7 @@
     <string name="scripts_no_trigger">Клавиша ещё не задана</string>
     <string name="scripts_no_condition">Условие не добавлено</string>
     <string name="scripts_no_actions">Пока нет действий</string>
+    <string name="scripts_last_run_failed">Последний запуск не завершён</string>
     <string name="scripts_unnamed">Сценарий</string>
     <string name="scripts_delete_label">Удалить %1$s</string>
     <string name="scripts_toggle_state_on">Включено</string>
@@ -594,7 +597,7 @@
     <string name="home_setup_allow_background">Разрешить работу в фоне</string>
     <string name="home_setup_done_background">Разрешено</string>
     <string name="home_setup_step_notifications">Разрешите уведомления</string>
-    <string name="home_setup_why_notifications">Только для настройки: код сопряжения и статус службы. Нажмите «Разрешить», когда Android спросит, — «Запретить» остановит настройку здесь.</string>
+    <string name="home_setup_why_notifications">Для настройки и чтобы сообщить, когда сценарий не удалось выполнить. Нажмите «Разрешить», когда Android спросит, — «Запретить» остановит настройку здесь.</string>
     <string name="home_setup_ask_now">Спросить сейчас</string>
     <string name="home_setup_done_notifications">Разрешены</string>
     <string name="home_setup_all_done">Все три включены. Ваши кнопки работают.</string>
@@ -607,7 +610,7 @@
     <string name="home_setup_why_collapsed">Свёрнуто</string>
     <string name="home_setup_whytext_accessibility">Android показывает аппаратные кнопки только службе специальных возможностей, поэтому KeySnap использует её именно для этого: заметить нажатие и запустить ваш сценарий. Экраны других приложений она не читает. Только во время настройки Расширенного режима она также считывает код сопряжения на странице беспроводной отладки — и больше ничего.</string>
     <string name="home_setup_whytext_background">Android закрывает приложения, которые считает бездействующими, а закрытое приложение не может выполнять ваши сценарии. Это оставляет KeySnap работать, пока телефон спит. В фоне он только ждёт нажатия кнопки.</string>
-    <string name="home_setup_whytext_notifications">Только во время настройки Расширенного режима: код сопряжения и состояние службы. Никаких напоминаний, никакой рекламы, ничего больше — никогда.</string>
+    <string name="home_setup_whytext_notifications">Во время настройки Расширенного режима: код сопряжения и состояние службы. После этого — только когда сценарий не удалось выполнить, и почему. Никаких напоминаний, никакой рекламы, ничего больше — никогда.</string>
     <string name="home_setup_illo_battery_dialog">Разрешить KeySnap всегда работать в фоне?</string>
     <string name="home_setup_illo_battery_body">Это может сократить время работы батареи.</string>
     <string name="home_setup_illo_battery_deny">Запретить</string>
@@ -776,6 +779,9 @@
     <string name="notif_channel_setup_description">Показывается, пока приложение сопрягается с беспроводным ADB и запускает мост</string>
     <string name="notif_setup_title">Настройка Расширенного режима</string>
     <string name="notif_setup_text">Сопряжение с беспроводной отладкой и запуск моста.</string>
+    <string name="notif_channel_run_failures">Проблемы сценариев</string>
+    <string name="notif_channel_run_failures_description">Сообщает, когда действие сценария не удалось выполнить, и почему</string>
+    <string name="notif_run_failed_title">«%1$s» не выполнен до конца</string>
 
     <!-- Строки событий монитора ввода и метки триггеров -->
     <string name="event_key_down">НАЖАТА (DOWN)</string>
@@ -790,6 +796,7 @@
     <string name="default_shortcut_name">Сценарий №%1$d</string>
     <string name="run_nothing_ran">Ничего не выполнилось. Проверьте настройки действия.</string>
     <string name="run_partial">Выполнено %1$d из %2$d действий</string>
+    <string name="run_failure_generic">Не выполнено</string>
     <string name="editor_needs_action">Добавьте хотя бы одно действие перед сохранением.</string>
     <string name="editor_needs_trigger">Выберите клавишу перед сохранением.</string>
     <string name="saved_needs_trigger">Сохранено. Назначьте клавишу, чтобы он мог сработать.</string>

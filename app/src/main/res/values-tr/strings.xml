@@ -451,6 +451,8 @@
     <string name="editor_chain_when">Şu olduğunda</string>
     <string name="editor_chain_only_if">Yalnızca şu durumda</string>
     <string name="editor_chain_do">Yap</string>
+    <string name="editor_chain_runs">Son çalışmalar</string>
+    <string name="run_history_empty">Henüz çalışmadı</string>
     <string name="editor_add_action">Eylem ekle</string>
     <string name="editor_add_constraint">Koşul ekle</string>
     <string name="editor_always_runs">Her zaman çalışır</string>
@@ -544,6 +546,7 @@
     <string name="scripts_no_trigger">Henüz tuş yok</string>
     <string name="scripts_no_condition">Koşul eklenmedi</string>
     <string name="scripts_no_actions">Henüz eylem yok</string>
+    <string name="scripts_last_run_failed">Son çalışma tamamlanamadı</string>
     <string name="scripts_unnamed">Kısayol</string>
     <string name="scripts_delete_label">%1$s kısayolunu sil</string>
     <string name="scripts_toggle_state_on">Açık</string>
@@ -592,7 +595,7 @@
     <string name="home_setup_allow_background">Arka planda çalışmasına izin ver</string>
     <string name="home_setup_done_background">İzin verildi</string>
     <string name="home_setup_step_notifications">Bildirimlere izin verin</string>
-    <string name="home_setup_why_notifications">Yalnızca kurulum için: eşleştirme kodu ve servis durumu. Android sorduğunda İzin ver’e dokunun — İzin verme, kurulumu burada durdurur.</string>
+    <string name="home_setup_why_notifications">Kurulum için ve bir kısayol çalışamadığında haber vermek için. Android sorduğunda İzin ver’e dokunun — İzin verme, kurulumu burada durdurur.</string>
     <string name="home_setup_ask_now">Şimdi sor</string>
     <string name="home_setup_done_notifications">İzin verildi</string>
     <string name="home_setup_all_done">Üçü de açık. Tuşlarınız artık çalışıyor.</string>
@@ -605,7 +608,7 @@
     <string name="home_setup_why_collapsed">Daraltıldı</string>
     <string name="home_setup_whytext_accessibility">Android, donanım tuşlarını yalnızca bir erişilebilirlik servisine gösterir; KeySnap de tam olarak bunun için bir tane kullanır: bir basışı fark etmek ve kısayolunuzu çalıştırmak. Başka uygulamaların ekranlarını okumaz. Yalnızca Uzman Modu kurulumu sırasında, Kablosuz Hata Ayıklama sayfasındaki eşleştirme kodunu da okur, başka hiçbir şeyi değil.</string>
     <string name="home_setup_whytext_background">Android, boşta olduğunu düşündüğü uygulamaları kapatır; kapanmış bir uygulama da kısayollarınızı çalıştıramaz. Bu, telefonunuz uyurken KeySnap’i ayakta tutar. Arka planda bir tuşa basılmasını beklemekten başka bir şey yapmaz.</string>
-    <string name="home_setup_whytext_notifications">Yalnızca Uzman Modu kurulumu sırasında: eşleştirme kodu ve servisin çalışıp çalışmadığı. Hatırlatma yok, tanıtım yok, başka hiçbir şey yok.</string>
+    <string name="home_setup_whytext_notifications">Uzman Modu kurulumu sırasında: eşleştirme kodu ve servisin çalışıp çalışmadığı. Sonrasında yalnızca bir kısayol çalışamadığında ve nedeni. Hatırlatma yok, tanıtım yok, başka hiçbir şey yok.</string>
     <string name="home_setup_illo_battery_dialog">KeySnap arka planda her zaman çalışsın mı?</string>
     <string name="home_setup_illo_battery_body">Bu, pil ömrünü kısaltabilir.</string>
     <string name="home_setup_illo_battery_deny">Reddet</string>
@@ -774,6 +777,9 @@
     <string name="notif_channel_setup_description">Uygulama kablosuz ADB ile eşleşirken ve köprüyü başlatırken gösterilir</string>
     <string name="notif_setup_title">Uzman Modu kuruluyor</string>
     <string name="notif_setup_text">Kablosuz hata ayıklamayla eşleşiliyor ve köprü başlatılıyor.</string>
+    <string name="notif_channel_run_failures">Kısayol sorunları</string>
+    <string name="notif_channel_run_failures_description">Bir kısayolun eylemi çalışamadığında haber verir ve nedenini söyler</string>
+    <string name="notif_run_failed_title">\"%1$s\" tamamlanamadı</string>
 
     <!-- Giriş izleyici satırları ve tetikleyici etiketleri -->
     <string name="event_key_down">BASILDI (DOWN)</string>
@@ -788,6 +794,7 @@
     <string name="default_shortcut_name">Kısayol #%1$d</string>
     <string name="run_nothing_ran">Hiçbir şey çalışmadı. Eylem ayarlarını kontrol edin.</string>
     <string name="run_partial">%2$d eylemin %1$d tanesi çalıştı</string>
+    <string name="run_failure_generic">Tamamlanamadı</string>
     <string name="editor_needs_action">Kaydetmeden önce en az bir eylem ekleyin.</string>
     <string name="editor_needs_trigger">Kaydetmeden önce bir tuş seçin.</string>
     <string name="saved_needs_trigger">Kaydedildi. Çalışabilmesi için bir tuş atayın.</string>

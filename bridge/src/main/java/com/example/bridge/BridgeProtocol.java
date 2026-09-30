@@ -1,5 +1,10 @@
 package com.example.bridge;
 
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Constants shared by the app and the detached bridge process.
  *
@@ -13,7 +18,7 @@ public final class BridgeProtocol {
     /** Bumped whenever the on-disk payload or the socket protocol changes incompatibly, or when
      *  :bridge behavior changes at all — an already-running detached bridge has no way to pick up
      *  a source-only fix otherwise. */
-    public static final int VERSION = 10;
+    public static final int VERSION = 11;
 
     /** Process name given to app_process, used by `pidof` for liveness checks. */
     public static final String NICE_NAME = "arda_bridge";
@@ -51,9 +56,48 @@ public final class BridgeProtocol {
     public static final String MSG_PONG = "PONG";
     public static final String MSG_ERROR = "ERROR";
     public static final String MSG_EVENT = "EVENT";
+    /** TRIGGER ts keyCode pressType scriptId success actionResults — see {@link #encodeActionResults}. */
     public static final String MSG_TRIGGER = "TRIGGER";
     public static final String MSG_DEVICE = "DEVICE";
     public static final String MSG_BYE = "BYE";
+
+    /**
+     * The TRIGGER line's last field: one {@code type=1|0} per configured action, in script order,
+     * comma-separated. Only catalog type ids travel here, never an action's params.
+     */
+    public static String encodeActionResults(List<String> types, boolean[] ok) {
+        StringBuilder out = new StringBuilder();
+        for (int i = 0; i < types.size(); i++) {
+            if (i > 0) {
+                out.append(',');
+            }
+            out.append(types.get(i)).append('=').append(ok[i] ? '1' : '0');
+        }
+        return out.toString();
+    }
+
+    /** Null when the field is missing (an older bridge) or malformed; the app then trusts the success flag. */
+    public static List<Map.Entry<String, Boolean>> decodeActionResults(String field) {
+        if (field == null) {
+            return null;
+        }
+        List<Map.Entry<String, Boolean>> results = new ArrayList<>();
+        if (field.isEmpty()) {
+            return results;
+        }
+        for (String pair : field.split(",", -1)) {
+            int eq = pair.lastIndexOf('=');
+            if (eq <= 0 || eq != pair.length() - 2) {
+                return null;
+            }
+            char flag = pair.charAt(eq + 1);
+            if (flag != '0' && flag != '1') {
+                return null;
+            }
+            results.add(new AbstractMap.SimpleImmutableEntry<>(pair.substring(0, eq), flag == '1'));
+        }
+        return results;
+    }
 
     public static String configPath(String externalFilesDir) {
         return externalFilesDir + "/" + CONFIG_NAME;

@@ -104,9 +104,10 @@ public final class EventServer implements Runnable {
                 + (down ? "down" : "up") + SEP + (mapped ? 1 : 0) + SEP + sanitize(source));
     }
 
-    public void broadcastTrigger(long timestamp, int keyCode, String pressType, String scriptId, boolean success) {
+    public void broadcastTrigger(long timestamp, int keyCode, String pressType, String scriptId, boolean success,
+            String actionResults) {
         broadcast(BridgeProtocol.MSG_TRIGGER + SEP + timestamp + SEP + keyCode + SEP + pressType
-                + SEP + sanitize(scriptId) + SEP + (success ? 1 : 0));
+                + SEP + sanitize(scriptId) + SEP + (success ? 1 : 0) + SEP + sanitize(actionResults));
     }
 
     public void broadcastDevice(String path, String name) {

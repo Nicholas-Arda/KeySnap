@@ -22,6 +22,8 @@ import com.example.data.InstalledAppsRepository
 import com.example.data.KeyMappingConfig
 import com.example.data.KeyMappingRepository
 import com.example.data.LiveKeyEvent
+import com.example.data.RunLogRepository
+import com.example.data.RunRecord
 import com.example.data.ScriptAction
 import com.example.data.ScriptActionCatalog
 import com.example.data.ScriptConstraint
@@ -102,6 +104,11 @@ class MainViewModel(
     }
     val scripts: StateFlow<List<ShortcutScript>> = scriptRepository.scripts
 val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
+
+    private val runLogRepository = RunLogRepository.getInstance(appContext)
+
+    /** Every shortcut's recent runs, newest first; written by HardwareKeyTriggerCoordinator. */
+    val runLog: StateFlow<List<RunRecord>> = runLogRepository.runs
 
     private val entitlementManager = EntitlementManager.getInstance(appContext)
     private val rewardedAdController = RewardedAdController(appContext)
@@ -213,6 +220,11 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
             vibrateOnTrigger = script.vibrateOnTrigger,
             hapticDurationMs = script.hapticDurationMs,
         )
+    }
+
+    /** From a "couldn't run" notification. Never replaces an editor that already has a draft open. */
+    fun openScriptFromNotification(id: String) {
+        if (_editingScript.value == null) editScript(id)
     }
 
     private fun updateDraft(transform: (ScriptDraft) -> ScriptDraft) {
@@ -432,6 +444,7 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
 
     fun deleteScript(id: String) {
         scriptRepository.delete(id)
+        runLogRepository.forget(id)
         if (_editingScript.value?.id == id) _editingScript.value = null
     }
 

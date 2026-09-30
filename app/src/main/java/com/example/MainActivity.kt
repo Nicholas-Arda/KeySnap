@@ -1,6 +1,7 @@
 package com.example
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.KeyEvent
 import androidx.activity.ComponentActivity
@@ -14,6 +15,7 @@ import androidx.compose.runtime.getValue
 import com.example.data.AppLocale
 import com.example.data.KeyMappingRepository
 import com.example.data.resolveConsumeForScript
+import com.example.service.RunFailureNotifier
 import com.example.ui.MainScreen
 import com.example.ui.theme.MyApplicationTheme
 import com.example.viewmodel.MainViewModel
@@ -44,6 +46,20 @@ class MainActivity : ComponentActivity() {
                 MainScreen(viewModel = viewModel)
             }
         }
+        // A recreated activity has already handled the intent it was started with.
+        if (savedInstanceState == null) openScriptFrom(intent)
+    }
+
+    // singleTask: a notification tapped while the app is already open arrives here.
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        openScriptFrom(intent)
+    }
+
+    private fun openScriptFrom(intent: Intent?) {
+        val id = intent?.getStringExtra(RunFailureNotifier.EXTRA_SCRIPT_ID) ?: return
+        intent.removeExtra(RunFailureNotifier.EXTRA_SCRIPT_ID)
+        viewModel.openScriptFromNotification(id)
     }
 
     // ColorOS's default display setting runs apps that ask for nothing at 90 Hz on a 120 Hz panel,

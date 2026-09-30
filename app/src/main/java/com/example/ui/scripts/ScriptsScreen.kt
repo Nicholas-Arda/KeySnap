@@ -73,6 +73,7 @@ fun ScriptsScreen(
     onOpenScript: (String) -> Unit,
     onDeleteScript: (String) -> Unit,
     onGoHome: () -> Unit,
+    failedScriptIds: Set<String> = emptySet(),
 ) {
     GroundedPage(themeMode, rememberScrollState()) {
         // New shortcuts start from the bottom bar's +. The end padding keeps the title clear of the
@@ -95,7 +96,7 @@ fun ScriptsScreen(
         }
         if (scripts.isEmpty()) EmptyState(onGoHome)
         scripts.forEach { script ->
-            key(script.id) { ScriptCard(script, globallyEnabled, onToggleScriptEnabled, onOpenScript, onDeleteScript) }
+            key(script.id) { ScriptCard(script, globallyEnabled, script.id in failedScriptIds, onToggleScriptEnabled, onOpenScript, onDeleteScript) }
         }
     }
 }
@@ -142,6 +143,7 @@ private fun EmptyState(onGoHome: () -> Unit) {
 private fun ScriptCard(
     script: ShortcutScript,
     globallyEnabled: Boolean,
+    lastRunFailed: Boolean,
     onToggle: (String, Boolean) -> Unit,
     onOpen: (String) -> Unit,
     onDelete: (String) -> Unit,
@@ -201,11 +203,12 @@ private fun ScriptCard(
                 Text(
                     when {
                         script.actions.isEmpty() -> stringResource(R.string.scripts_no_actions)
+                        lastRunFailed -> stringResource(R.string.scripts_last_run_failed)
                         else -> pluralStringResource(R.plurals.scripts_action_count, script.actions.size, script.actions.size)
                     },
                     Modifier.weight(1f),
                     style = MaterialTheme.typography.bodySmall,
-                    color = if (script.actions.isEmpty()) colors.error else colors.onSurfaceVariant,
+                    color = if (script.actions.isEmpty() || lastRunFailed) colors.error else colors.onSurfaceVariant,
                     maxLines = 1,
                 )
                 IconButton(

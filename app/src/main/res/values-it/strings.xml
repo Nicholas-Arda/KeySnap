@@ -444,6 +444,8 @@
     <string name="editor_chain_when">Quando</string>
     <string name="editor_chain_only_if">Solo se</string>
     <string name="editor_chain_do">Esegui</string>
+    <string name="editor_chain_runs">Esecuzioni recenti</string>
+    <string name="run_history_empty">Non ancora eseguita</string>
     <string name="editor_add_action">Aggiungi azione</string>
     <string name="editor_add_constraint">Aggiungi condizione</string>
     <string name="editor_always_runs">Viene sempre eseguita</string>
@@ -547,6 +549,7 @@
     <string name="scripts_no_trigger">Ancora nessun tasto</string>
     <string name="scripts_no_condition">Nessuna condizione aggiunta</string>
     <string name="scripts_no_actions">Ancora nessuna azione</string>
+    <string name="scripts_last_run_failed">L\'ultima esecuzione non è stata completata</string>
     <string name="scripts_unnamed">Scorciatoia</string>
     <string name="scripts_delete_label">Elimina %1$s</string>
     <string name="scripts_toggle_state_on">Attivo</string>
@@ -595,7 +598,7 @@
     <string name="home_setup_allow_background">Consenti l\'uso in background</string>
     <string name="home_setup_done_background">Consentito</string>
     <string name="home_setup_step_notifications">Consenti le notifiche</string>
-    <string name="home_setup_why_notifications">Solo per la configurazione: codice di accoppiamento e stato del servizio. Tocca Consenti quando Android lo chiede — Non consentire interrompe qui la configurazione.</string>
+    <string name="home_setup_why_notifications">Per la configurazione e per avvisarti quando una scorciatoia non è stata eseguita. Tocca Consenti quando Android lo chiede — Non consentire interrompe qui la configurazione.</string>
     <string name="home_setup_ask_now">Chiedimelo ora</string>
     <string name="home_setup_done_notifications">Consentite</string>
     <string name="home_setup_all_done">Tutti e tre sono attivi. I tuoi tasti ora funzionano.</string>
@@ -608,7 +611,7 @@
     <string name="home_setup_why_collapsed">Compresso</string>
     <string name="home_setup_whytext_accessibility">Android mostra i tasti fisici solo a un servizio di accessibilità, quindi KeySnap ne usa uno esattamente per questo: accorgersi di una pressione ed eseguire la tua scorciatoia. Non legge lo schermo delle altre app. Solo durante la configurazione della Modalità avanzata legge anche il codice di accoppiamento nella pagina del Debug wireless, e nient\'altro.</string>
     <string name="home_setup_whytext_background">Android chiude le app che crede inattive, e un\'app chiusa non può eseguire le tue scorciatoie. Questo tiene vivo KeySnap mentre il telefono dorme. In background non fa altro che aspettare un tasto.</string>
-    <string name="home_setup_whytext_notifications">Solo durante la configurazione della Modalità avanzata: il codice di accoppiamento e se il servizio è attivo. Nessun promemoria, nessuna promozione, nient\'altro, mai.</string>
+    <string name="home_setup_whytext_notifications">Durante la configurazione della Modalità avanzata: il codice di accoppiamento e se il servizio è attivo. Dopo, solo quando una scorciatoia non è stata eseguita, e perché. Nessun promemoria, nessuna promozione, nient\'altro, mai.</string>
     <string name="home_setup_illo_battery_dialog">Consentire a KeySnap di essere sempre attivo in background?</string>
     <string name="home_setup_illo_battery_body">Potrebbe ridurre la durata della batteria.</string>
     <string name="home_setup_illo_battery_deny">Rifiuta</string>
@@ -777,6 +780,9 @@
     <string name="notif_channel_setup_description">Mostrata mentre l\'app si accoppia con l\'ADB wireless e avvia il bridge</string>
     <string name="notif_setup_title">Configurazione della Modalità avanzata in corso</string>
     <string name="notif_setup_text">Accoppiamento con il debug wireless e avvio del bridge in corso.</string>
+    <string name="notif_channel_run_failures">Problemi delle scorciatoie</string>
+    <string name="notif_channel_run_failures_description">Ti avvisa quando un\'azione di una scorciatoia non è stata eseguita, e perché</string>
+    <string name="notif_run_failed_title">\"%1$s\" non è stata completata</string>
 
     <!-- Righe del monitor input ed etichette dei trigger -->
     <string name="event_key_down">PREMUTO (DOWN)</string>
@@ -791,6 +797,7 @@
     <string name="default_shortcut_name">Scorciatoia #%1$d</string>
     <string name="run_nothing_ran">Nessuna azione eseguita. Controlla le impostazioni dell\'azione.</string>
     <string name="run_partial">Eseguite %1$d azioni su %2$d</string>
+    <string name="run_failure_generic">Non completata</string>
     <string name="editor_needs_action">Aggiungi almeno un\'azione prima di salvare.</string>
     <string name="editor_needs_trigger">Scegli un tasto prima di salvare.</string>
     <string name="saved_needs_trigger">Salvata. Assegna un tasto perché possa essere eseguita.</string>

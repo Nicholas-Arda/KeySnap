@@ -446,6 +446,8 @@
     <string name="editor_chain_when">Cuando</string>
     <string name="editor_chain_only_if">Solo si</string>
     <string name="editor_chain_do">Hacer</string>
+    <string name="editor_chain_runs">Ejecuciones recientes</string>
+    <string name="run_history_empty">Aún no se ha ejecutado</string>
     <string name="editor_add_action">Añadir acción</string>
     <string name="editor_add_constraint">Añadir condición</string>
     <string name="editor_always_runs">Siempre se ejecuta</string>
@@ -547,6 +549,7 @@
     <string name="scripts_no_trigger">Aún no hay tecla</string>
     <string name="scripts_no_condition">Sin condición añadida</string>
     <string name="scripts_no_actions">Aún no hay acciones</string>
+    <string name="scripts_last_run_failed">La última ejecución no se completó</string>
     <string name="scripts_unnamed">Acceso directo</string>
     <string name="scripts_delete_label">Eliminar %1$s</string>
     <string name="scripts_toggle_state_on">Activado</string>
@@ -595,7 +598,7 @@
     <string name="home_setup_allow_background">Permitir uso en segundo plano</string>
     <string name="home_setup_done_background">Permitido</string>
     <string name="home_setup_step_notifications">Permite las notificaciones</string>
-    <string name="home_setup_why_notifications">Solo para la configuración: código de emparejamiento y estado del servicio. Toca Permitir cuando Android lo pida; No permitir detiene la configuración aquí.</string>
+    <string name="home_setup_why_notifications">Para la configuración y para avisarte cuando un acceso directo no se pudo ejecutar. Toca Permitir cuando Android lo pida; No permitir detiene la configuración aquí.</string>
     <string name="home_setup_ask_now">Pregúntame ahora</string>
     <string name="home_setup_done_notifications">Permitidas</string>
     <string name="home_setup_all_done">Los tres están activados. Tus botones ya funcionan.</string>
@@ -608,7 +611,7 @@
     <string name="home_setup_why_collapsed">Plegado</string>
     <string name="home_setup_whytext_accessibility">Android solo muestra los botones físicos a un servicio de accesibilidad, así que KeySnap usa uno exactamente para eso: notar una pulsación y ejecutar tu acceso directo. No lee la pantalla de otras apps. Solo durante la configuración del Modo avanzado lee también el código de emparejamiento en la página de Depuración inalámbrica, y nada más.</string>
     <string name="home_setup_whytext_background">Android cierra las apps que cree inactivas, y una app cerrada no puede ejecutar tus accesos directos. Esto mantiene vivo a KeySnap mientras el teléfono duerme. En segundo plano no hace nada más que esperar un botón.</string>
-    <string name="home_setup_whytext_notifications">Solo durante la configuración del Modo avanzado: el código de emparejamiento y si el servicio está en marcha. Sin recordatorios, sin promociones, nada más, nunca.</string>
+    <string name="home_setup_whytext_notifications">Durante la configuración del Modo avanzado: el código de emparejamiento y si el servicio está en marcha. Después, solo cuando un acceso directo no se pudo ejecutar, y por qué. Sin recordatorios, sin promociones, nada más, nunca.</string>
     <string name="home_setup_illo_battery_dialog">¿Permitir que KeySnap se ejecute siempre en segundo plano?</string>
     <string name="home_setup_illo_battery_body">Esto puede reducir la duración de la batería.</string>
     <string name="home_setup_illo_battery_deny">Denegar</string>
@@ -777,6 +780,9 @@
     <string name="notif_channel_setup_description">Se muestra mientras la app se empareja con ADB inalámbrico y arranca el puente</string>
     <string name="notif_setup_title">Configurando el Modo avanzado</string>
     <string name="notif_setup_text">Emparejando con la depuración inalámbrica e iniciando el puente.</string>
+    <string name="notif_channel_run_failures">Problemas con accesos directos</string>
+    <string name="notif_channel_run_failures_description">Te avisa cuando una acción de un acceso directo no se pudo ejecutar, y por qué</string>
+    <string name="notif_run_failed_title">\"%1$s\" no se completó</string>
 
     <!-- Filas del monitor de entrada y etiquetas de disparador -->
     <string name="event_key_down">PULSADA (DOWN)</string>
@@ -791,6 +797,7 @@
     <string name="default_shortcut_name">Acceso directo n.º %1$d</string>
     <string name="run_nothing_ran">No se ejecutó nada. Revisa los ajustes de la acción.</string>
     <string name="run_partial">Se ejecutaron %1$d de %2$d acciones</string>
+    <string name="run_failure_generic">No se completó</string>
     <string name="editor_needs_action">Añade al menos una acción antes de guardar.</string>
     <string name="editor_needs_trigger">Elige una tecla antes de guardar.</string>
     <string name="saved_needs_trigger">Guardado. Asigna una tecla para que pueda ejecutarse.</string>

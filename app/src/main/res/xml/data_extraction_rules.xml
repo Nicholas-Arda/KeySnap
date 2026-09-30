@@ -2,7 +2,8 @@
 <!--
    The ADB RSA private key and the bridge control token authorize privileged access to one
    specific device. They must never leave it, so both cloud backup and device-to-device transfer
-   exclude them; a restored install simply pairs again. Everything else — scripts, timings,
+   exclude them; a restored install simply pairs again. The run log is excluded too: the privacy
+   policy promises it stays on this phone. Everything else — scripts, timings,
    theme — is user work and is worth restoring.
 -->
 <data-extraction-rules>
@@ -10,12 +11,14 @@
         <exclude domain="sharedpref" path="arda_mapper_adb_crypto.xml" />
         <exclude domain="sharedpref" path="arda_mapper_adb_prefs.xml" />
         <exclude domain="sharedpref" path="arda_mapper_bridge_prefs.xml" />
+        <exclude domain="sharedpref" path="keysnap_run_log.xml" />
         <exclude domain="external" path="bridge" />
     </cloud-backup>
     <device-transfer>
         <exclude domain="sharedpref" path="arda_mapper_adb_crypto.xml" />
         <exclude domain="sharedpref" path="arda_mapper_adb_prefs.xml" />
         <exclude domain="sharedpref" path="arda_mapper_bridge_prefs.xml" />
+        <exclude domain="sharedpref" path="keysnap_run_log.xml" />
         <exclude domain="external" path="bridge" />
     </device-transfer>
 </data-extraction-rules>

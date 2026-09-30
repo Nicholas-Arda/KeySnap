@@ -30,7 +30,7 @@ import com.example.ui.theme.MonoLabel
  */
 object PrivacyPolicy {
 
-    const val LAST_UPDATED = "8 September 2026"
+    const val LAST_UPDATED = "30 September 2026"
 
     /**
      * Left blank deliberately. A published policy needs a contact address, but which address to
@@ -50,7 +50,10 @@ object PrivacyPolicy {
 
         "What is stored on your device" to
             "Your shortcuts, their triggers and any names you give to unlabelled hardware keys. " +
-            "Your timing, haptic and appearance preferences. An ADB key pair the app generates " +
+            "Your timing, haptic and appearance preferences. A history of each shortcut's last " +
+            "20 runs: when it ran, which key or automation started it, and whether each action " +
+            "worked, but never what an action contains, such as a URL, a command or typed text. " +
+            "An ADB key pair the app generates " +
             "to authorise this one device for wireless debugging. When Advanced Mode is on, the " +
             "bridge program and the local token the app uses to talk to it. All of this stays in " +
             "the app's private storage on this device.",
@@ -83,7 +86,8 @@ object PrivacyPolicy {
         "Permissions and why" to
             "Internet, network state, Wi-Fi state and multicast: to find and connect to your " +
             "device's own wireless debugging service on the local network. Notifications: to " +
-            "show the pairing code prompt and the setup notification. Vibrate: for the " +
+            "show the pairing code prompt and the setup notification, and to tell you when a " +
+            "shortcut's action could not run and why. Vibrate: for the " +
             "confirmation buzz when a shortcut fires. Display over other apps: only when you tap " +
             "\"Pick on screen\" to choose tap coordinates; the manual X/Y fields work without " +
             "it. Bluetooth: to list your paired devices and notice when one connects, for the " +

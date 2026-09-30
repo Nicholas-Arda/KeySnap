@@ -143,24 +143,37 @@ class ScriptActionExecutor(private val handler: ScriptActionHandler) {
      * full, unfiltered list — used when the privileged bridge already owns some of a script's
      * actions and the app must run only the rest, without shifting what "repeat_previous" repeats.
      */
-    suspend fun execute(actions: List<ScriptAction>, shouldRun: (ScriptAction) -> Boolean = { true }): List<Boolean> {
-        val results = mutableListOf<Boolean>()
+    suspend fun execute(actions: List<ScriptAction>, shouldRun: (ScriptAction) -> Boolean = { true }): List<Boolean> =
+        runEach(actions, shouldRun).flatMap { it ?: listOf(false) }
+
+    /**
+     * One entry per action in [actions], for the run log: true when it (every repetition, for a
+     * "repeat_previous") succeeded, false when it failed, null when [shouldRun] left it to the bridge.
+     */
+    suspend fun executeEach(actions: List<ScriptAction>, shouldRun: (ScriptAction) -> Boolean = { true }): List<Boolean?> =
+        runEach(actions, shouldRun).map { runs -> runs?.all { it } }
+
+    /** Each configured action's repetition results, or null when [shouldRun] skipped it. */
+    private suspend fun runEach(actions: List<ScriptAction>, shouldRun: (ScriptAction) -> Boolean): List<List<Boolean>?> {
+        val out = mutableListOf<List<Boolean>?>()
         var previous: ScriptAction? = null
         for (action in actions) {
             if (action.type == REPEAT_PREVIOUS_TYPE) {
                 val target = previous
                 val count = action.params["count"]?.toIntOrNull()?.coerceIn(0, MAX_REPEAT_COUNT) ?: 0
-                if (target == null || count <= 0 || !shouldRun(target)) {
-                    results.add(false)
-                } else {
-                    repeat(count) { results.add(handler.execute(target)) }
-                }
+                out.add(
+                    when {
+                        target == null || count <= 0 -> listOf(false)
+                        !shouldRun(target) -> null
+                        else -> List(count) { handler.execute(target) }
+                    },
+                )
             } else {
-                results.add(if (shouldRun(action)) handler.execute(action) else false)
+                out.add(if (shouldRun(action)) listOf(handler.execute(action)) else null)
                 previous = action
             }
         }
-        return results
+        return out
     }
 
     companion object {

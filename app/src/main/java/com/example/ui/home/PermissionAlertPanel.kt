@@ -593,7 +593,7 @@ private fun canPostNotifications(context: Context): Boolean =
  * The runtime dialog first: that is the only place Android shows Allow/Deny, and it is what the user
  * expects from a "Fix" button. Once the permission is permanently denied the dialog no longer
  * appears at all, so that case — and pre-13, where there is no dialog — falls back to the settings
- * screen for the pairing channel, the only notification this app posts.
+ * screen for the pairing channel.
  */
 @Composable
 private fun rememberNotificationPermissionRequest(): () -> Unit {

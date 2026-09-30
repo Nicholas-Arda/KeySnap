@@ -445,6 +445,8 @@
     <string name="editor_chain_when">जब</string>
     <string name="editor_chain_only_if">केवल अगर</string>
     <string name="editor_chain_do">करें</string>
+    <string name="editor_chain_runs">हाल के रन</string>
+    <string name="run_history_empty">अभी तक नहीं चला</string>
     <string name="editor_add_action">क्रिया जोड़ें</string>
     <string name="editor_add_constraint">शर्त जोड़ें</string>
     <string name="editor_always_runs">हमेशा चलता है</string>
@@ -546,6 +548,7 @@
     <string name="scripts_no_trigger">अभी कोई बटन नहीं</string>
     <string name="scripts_no_condition">कोई शर्त नहीं जोड़ी गई</string>
     <string name="scripts_no_actions">अभी कोई क्रिया नहीं है</string>
+    <string name="scripts_last_run_failed">पिछला रन पूरा नहीं हुआ</string>
     <string name="scripts_unnamed">शॉर्टकट</string>
     <string name="scripts_delete_label">%1$s डिलीट करें</string>
     <string name="scripts_toggle_state_on">चालू</string>
@@ -594,7 +597,7 @@
     <string name="home_setup_allow_background">बैकग्राउंड में चलने दें</string>
     <string name="home_setup_done_background">अनुमति दी गई</string>
     <string name="home_setup_step_notifications">सूचनाओं की अनुमति दें</string>
-    <string name="home_setup_why_notifications">सिर्फ़ सेटअप के लिए: पेयरिंग कोड और सेवा की स्थिति। Android पूछे तो “अनुमति दें” पर टैप करें — “अनुमति न दें” यहीं सेटअप रोक देगा।</string>
+    <string name="home_setup_why_notifications">सेटअप के लिए, और यह बताने के लिए कि कोई शॉर्टकट कब नहीं चल पाया। Android पूछे तो “अनुमति दें” पर टैप करें — “अनुमति न दें” यहीं सेटअप रोक देगा।</string>
     <string name="home_setup_ask_now">अभी पूछें</string>
     <string name="home_setup_done_notifications">अनुमति है</string>
     <string name="home_setup_all_done">तीनों चालू हैं। आपके बटन अब काम करते हैं।</string>
@@ -607,7 +610,7 @@
     <string name="home_setup_why_collapsed">बंद किया हुआ</string>
     <string name="home_setup_whytext_accessibility">Android हार्डवेयर बटन सिर्फ़ एक ऐक्सेसिबिलिटी सेवा को दिखाता है, इसलिए KeySnap ठीक इसी काम के लिए एक सेवा इस्तेमाल करता है: बटन दबना पहचानना और आपका शॉर्टकट चलाना। यह दूसरे ऐप्स की स्क्रीन नहीं पढ़ता। सिर्फ़ उन्नत मोड सेटअप के दौरान यह वायरलेस डिबगिंग पेज पर दिख रहा पेयरिंग कोड भी पढ़ता है, और कुछ नहीं।</string>
     <string name="home_setup_whytext_background">Android उन ऐप्स को बंद कर देता है जिन्हें वह निष्क्रिय समझता है, और बंद ऐप आपके शॉर्टकट नहीं चला सकता। इससे आपका फ़ोन सोते समय भी KeySnap चलता रहता है। बैकग्राउंड में यह बटन दबने का इंतज़ार करने के अलावा कुछ नहीं करता।</string>
-    <string name="home_setup_whytext_notifications">सिर्फ़ उन्नत मोड सेटअप के दौरान: पेयरिंग कोड और सेवा चल रही है या नहीं। कोई रिमाइंडर नहीं, कोई प्रचार नहीं, और कभी कुछ और नहीं।</string>
+    <string name="home_setup_whytext_notifications">उन्नत मोड सेटअप के दौरान: पेयरिंग कोड और सेवा चल रही है या नहीं। उसके बाद सिर्फ़ तब, जब कोई शॉर्टकट नहीं चल पाया, और क्यों। कोई रिमाइंडर नहीं, कोई प्रचार नहीं, और कभी कुछ और नहीं।</string>
     <string name="home_setup_illo_battery_dialog">KeySnap को हमेशा बैकग्राउंड में चलने दें?</string>
     <string name="home_setup_illo_battery_body">इससे बैटरी जल्दी खर्च हो सकती है।</string>
     <string name="home_setup_illo_battery_deny">अस्वीकार करें</string>
@@ -776,6 +779,9 @@
     <string name="notif_channel_setup_description">जब ऐप वायरलेस ADB से पेयर हो रहा हो और ब्रिज शुरू कर रहा हो, तब दिखाई जाती है</string>
     <string name="notif_setup_title">उन्नत मोड सेट किया जा रहा है</string>
     <string name="notif_setup_text">वायरलेस डिबगिंग से पेयर हो रहा है और ब्रिज शुरू किया जा रहा है।</string>
+    <string name="notif_channel_run_failures">शॉर्टकट की समस्याएँ</string>
+    <string name="notif_channel_run_failures_description">किसी शॉर्टकट की कोई क्रिया न चल पाने पर बताता है, और क्यों</string>
+    <string name="notif_run_failed_title">\"%1$s\" पूरा नहीं हो सका</string>
 
     <!-- इनपुट मॉनिटर इवेंट रो और ट्रिगर लेबल -->
     <string name="event_key_down">दबाया गया (DOWN)</string>
@@ -790,6 +796,7 @@
     <string name="default_shortcut_name">शॉर्टकट #%1$d</string>
     <string name="run_nothing_ran">कुछ नहीं चला। क्रिया की सेटिंग जांचें।</string>
     <string name="run_partial">%2$d में से %1$d क्रियाएं चलीं</string>
+    <string name="run_failure_generic">पूरा नहीं हुआ</string>
     <string name="editor_needs_action">सेव करने से पहले कम से कम एक क्रिया जोड़ें।</string>
     <string name="editor_needs_trigger">सेव करने से पहले एक बटन चुनें।</string>
     <string name="saved_needs_trigger">सेव हो गया। इसे चलाने के लिए एक बटन असाइन करें।</string>

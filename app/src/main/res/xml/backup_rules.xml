@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
    Pre-Android-12 backup agent. Mirrors data_extraction_rules.xml: device-scoped ADB credentials
-   and the bridge control token never leave the device they authorize.
+   and the bridge control token never leave the device they authorize. The run log is excluded
+   too: the privacy policy promises it stays on this phone.
 -->
 <full-backup-content>
     <exclude domain="sharedpref" path="arda_mapper_adb_crypto.xml" />
     <exclude domain="sharedpref" path="arda_mapper_adb_prefs.xml" />
     <exclude domain="sharedpref" path="arda_mapper_bridge_prefs.xml" />
+    <exclude domain="sharedpref" path="keysnap_run_log.xml" />
     <exclude domain="external" path="bridge" />
 </full-backup-content>

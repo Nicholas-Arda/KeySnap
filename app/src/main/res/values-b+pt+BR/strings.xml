@@ -446,6 +446,8 @@
     <string name="editor_chain_when">Quando</string>
     <string name="editor_chain_only_if">Somente se</string>
     <string name="editor_chain_do">Fazer</string>
+    <string name="editor_chain_runs">Execuções recentes</string>
+    <string name="run_history_empty">Ainda não foi executado</string>
     <string name="editor_add_action">Adicionar ação</string>
     <string name="editor_add_constraint">Adicionar condição</string>
     <string name="editor_always_runs">Sempre executa</string>
@@ -547,6 +549,7 @@
     <string name="scripts_no_trigger">Nenhuma tecla ainda</string>
     <string name="scripts_no_condition">Nenhuma condição adicionada</string>
     <string name="scripts_no_actions">Ainda não há ações</string>
+    <string name="scripts_last_run_failed">A última execução não foi concluída</string>
     <string name="scripts_unnamed">Atalho</string>
     <string name="scripts_delete_label">Excluir %1$s</string>
     <string name="scripts_toggle_state_on">Ativado</string>
@@ -595,7 +598,7 @@
     <string name="home_setup_allow_background">Permitir uso em segundo plano</string>
     <string name="home_setup_done_background">Permitido</string>
     <string name="home_setup_step_notifications">Permita as notificações</string>
-    <string name="home_setup_why_notifications">Só para a configuração: código de pareamento e status do serviço. Toque em Permitir quando o Android perguntar — Não permitir interrompe a configuração aqui.</string>
+    <string name="home_setup_why_notifications">Para a configuração e para avisar quando um atalho não puder ser executado. Toque em Permitir quando o Android perguntar — Não permitir interrompe a configuração aqui.</string>
     <string name="home_setup_ask_now">Perguntar agora</string>
     <string name="home_setup_done_notifications">Permitidas</string>
     <string name="home_setup_all_done">Os três estão ativos. Seus botões já funcionam.</string>
@@ -608,7 +611,7 @@
     <string name="home_setup_why_collapsed">Recolhido</string>
     <string name="home_setup_whytext_accessibility">O Android mostra os botões físicos apenas a um serviço de acessibilidade, então o KeySnap usa um exatamente para isso: perceber um toque e executar o seu atalho. Ele não lê a tela de outros apps. Só durante a configuração do Modo Avançado ele também lê o código de pareamento na página de Depuração sem Fio, e nada além disso.</string>
     <string name="home_setup_whytext_background">O Android encerra apps que considera inativos, e um app encerrado não consegue executar seus atalhos. Isso mantém o KeySnap vivo enquanto o celular dorme. Em segundo plano ele não faz nada além de esperar um botão.</string>
-    <string name="home_setup_whytext_notifications">Só durante a configuração do Modo Avançado: o código de pareamento e se o serviço está em execução. Sem lembretes, sem promoções, nada além disso, nunca.</string>
+    <string name="home_setup_whytext_notifications">Durante a configuração do Modo Avançado: o código de pareamento e se o serviço está em execução. Depois disso, só quando um atalho não puder ser executado, e por quê. Sem lembretes, sem promoções, nada além disso, nunca.</string>
     <string name="home_setup_illo_battery_dialog">Permitir que o KeySnap fique sempre em execução em segundo plano?</string>
     <string name="home_setup_illo_battery_body">Isso pode reduzir a duração da bateria.</string>
     <string name="home_setup_illo_battery_deny">Negar</string>
@@ -777,6 +780,9 @@
     <string name="notif_channel_setup_description">Exibido enquanto o app pareia com o ADB sem fio e inicia a ponte</string>
     <string name="notif_setup_title">Configurando o Modo Avançado</string>
     <string name="notif_setup_text">Pareando com a depuração sem fio e iniciando a ponte.</string>
+    <string name="notif_channel_run_failures">Problemas nos atalhos</string>
+    <string name="notif_channel_run_failures_description">Avisa quando uma ação de um atalho não pôde ser executada, e por quê</string>
+    <string name="notif_run_failed_title">\"%1$s\" não foi concluído</string>
 
     <!-- Linhas de evento e rótulos de gatilho do monitor de entrada -->
     <string name="event_key_down">PRESSIONADA (DOWN)</string>
@@ -791,6 +797,7 @@
     <string name="default_shortcut_name">Atalho nº %1$d</string>
     <string name="run_nothing_ran">Nada foi executado. Verifique as configurações da ação.</string>
     <string name="run_partial">Executadas %1$d de %2$d ações</string>
+    <string name="run_failure_generic">Não foi concluída</string>
     <string name="editor_needs_action">Adicione pelo menos uma ação antes de salvar.</string>
     <string name="editor_needs_trigger">Escolha uma tecla antes de salvar.</string>
     <string name="saved_needs_trigger">Salvo. Atribua uma tecla para que possa ser executado.</string>

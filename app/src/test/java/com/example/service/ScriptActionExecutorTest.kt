@@ -167,4 +167,36 @@ class ScriptActionExecutorTest {
         assertEquals(emptyList<String>(), ran)
         assertEquals(listOf(false, false), results)
     }
+
+    /** executeEach feeds the run log: one entry per configured action, null for the bridge's share. */
+    @Test fun executeEachReportsOneResultPerConfiguredActionAndNullForTheBridgesShare() = runBlocking {
+        val executor = ScriptActionExecutor { action -> action.type != "go_back" }
+        val actions = listOf(
+            ScriptAction("toggle_flashlight"),
+            ScriptAction("repeat_previous", mapOf("count" to "3")),
+            ScriptAction("go_back"),
+            ScriptAction("toggle_wifi"),
+        )
+
+        val results = executor.executeEach(actions) { it.type != "toggle_wifi" }
+
+        assertEquals(listOf(true, true, false, null), results)
+    }
+
+    @Test fun executeEachFailsARepeatWhenAnyRepetitionFails() = runBlocking {
+        var calls = 0
+        val executor = ScriptActionExecutor { calls++; calls != 3 } // the second repetition fails
+        val actions = listOf(ScriptAction("vibrate"), ScriptAction("repeat_previous", mapOf("count" to "2")))
+
+        assertEquals(listOf(true, false), executor.executeEach(actions))
+        assertEquals(3, calls)
+    }
+
+    @Test fun executeEachFailsALeadingRepeatAndLeavesARepeatOfTheBridgesActionToTheBridge() = runBlocking {
+        val executor = ScriptActionExecutor { true }
+        assertEquals(listOf(false), executor.executeEach(listOf(ScriptAction("repeat_previous", mapOf("count" to "2")))))
+
+        val bridged = listOf(ScriptAction("toggle_wifi"), ScriptAction("repeat_previous", mapOf("count" to "2")))
+        assertEquals(listOf(null, null), executor.executeEach(bridged) { it.type != "toggle_wifi" })
+    }
 }

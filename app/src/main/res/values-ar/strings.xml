@@ -446,6 +446,8 @@
     <string name="editor_chain_when">عند</string>
     <string name="editor_chain_only_if">فقط إذا</string>
     <string name="editor_chain_do">نفّذ</string>
+    <string name="editor_chain_runs">آخر مرات التشغيل</string>
+    <string name="run_history_empty">لم يعمل بعد</string>
     <string name="editor_add_action">إضافة إجراء</string>
     <string name="editor_add_constraint">إضافة شرط</string>
     <string name="editor_always_runs">يعمل دائمًا</string>
@@ -543,6 +545,7 @@
     <string name="scripts_no_trigger">لا يوجد مفتاح بعد</string>
     <string name="scripts_no_condition">لم تتم إضافة شرط</string>
     <string name="scripts_no_actions">لا توجد إجراءات بعد</string>
+    <string name="scripts_last_run_failed">لم يكتمل آخر تشغيل</string>
     <string name="scripts_unnamed">اختصار</string>
     <string name="scripts_delete_label">حذف %1$s</string>
     <string name="scripts_toggle_state_on">قيد التشغيل</string>
@@ -591,7 +594,7 @@
     <string name="home_setup_allow_background">السماح بالعمل في الخلفية</string>
     <string name="home_setup_done_background">مسموح</string>
     <string name="home_setup_step_notifications">اسمح بالإشعارات</string>
-    <string name="home_setup_why_notifications">للإعداد فقط: رمز الإقران وحالة الخدمة. اضغط «سماح» عندما يسأل Android — «عدم السماح» يوقف الإعداد هنا.</string>
+    <string name="home_setup_why_notifications">للإعداد، ولإخبارك عندما يتعذّر تشغيل اختصار. اضغط «سماح» عندما يسأل Android — «عدم السماح» يوقف الإعداد هنا.</string>
     <string name="home_setup_ask_now">اسألني الآن</string>
     <string name="home_setup_done_notifications">مسموح</string>
     <string name="home_setup_all_done">الثلاثة مفعّلة. أزرارك تعمل الآن.</string>
@@ -604,7 +607,7 @@
     <string name="home_setup_why_collapsed">مطوي</string>
     <string name="home_setup_whytext_accessibility">لا يُظهر Android أزرار الجهاز إلا لخدمة إمكانية وصول، ولهذا يستخدم KeySnap واحدة لهذا الغرض تحديدًا: ملاحظة الضغطة وتشغيل اختصارك. وهو لا يقرأ شاشات التطبيقات الأخرى. وأثناء إعداد الوضع المتقدم فقط يقرأ أيضًا رمز الإقران في صفحة تصحيح الأخطاء اللاسلكي، ولا شيء غير ذلك.</string>
     <string name="home_setup_whytext_background">يغلق Android التطبيقات التي يظنها خاملة، والتطبيق المغلق لا يستطيع تشغيل اختصاراتك. هذا يُبقي KeySnap حيًا بينما ينام هاتفك. وفي الخلفية لا يفعل شيئًا سوى انتظار ضغطة زر.</string>
-    <string name="home_setup_whytext_notifications">أثناء إعداد الوضع المتقدم فقط: رمز الإقران وما إذا كانت الخدمة تعمل. لا تذكيرات ولا عروض ولا أي شيء آخر، أبدًا.</string>
+    <string name="home_setup_whytext_notifications">أثناء إعداد الوضع المتقدم: رمز الإقران وما إذا كانت الخدمة تعمل. بعد ذلك، فقط عندما يتعذّر تشغيل اختصار، والسبب. لا تذكيرات ولا عروض ولا أي شيء آخر، أبدًا.</string>
     <string name="home_setup_illo_battery_dialog">السماح لـ KeySnap بالعمل دائمًا في الخلفية؟</string>
     <string name="home_setup_illo_battery_body">قد يقلل هذا من عمر البطارية.</string>
     <string name="home_setup_illo_battery_deny">رفض</string>
@@ -773,6 +776,9 @@
     <string name="notif_channel_setup_description">يظهر أثناء إقران التطبيق مع ADB اللاسلكي وبدء تشغيل الجسر</string>
     <string name="notif_setup_title">جارٍ إعداد الوضع المتقدم</string>
     <string name="notif_setup_text">جارٍ الإقران مع تصحيح الأخطاء اللاسلكي وبدء تشغيل الجسر.</string>
+    <string name="notif_channel_run_failures">مشكلات الاختصارات</string>
+    <string name="notif_channel_run_failures_description">يخبرك عندما يتعذّر تشغيل إجراء في أحد الاختصارات، والسبب</string>
+    <string name="notif_run_failed_title">تعذّر إكمال «%1$s»</string>
 
     <!-- Input monitor event rows and trigger labels -->
     <string name="event_key_down">مضغوط (DOWN)</string>
@@ -787,6 +793,7 @@
     <string name="default_shortcut_name">اختصار رقم %1$d</string>
     <string name="run_nothing_ran">لم يعمل أي شيء. تحقق من إعدادات الإجراء.</string>
     <string name="run_partial">تم تشغيل %1$d من %2$d إجراءات</string>
+    <string name="run_failure_generic">لم يكتمل</string>
     <string name="editor_needs_action">أضف إجراءً واحدًا على الأقل قبل الحفظ.</string>
     <string name="editor_needs_trigger">اختر مفتاحًا قبل الحفظ.</string>
     <string name="saved_needs_trigger">تم الحفظ. عيّن مفتاحًا ليتمكن من العمل.</string>
