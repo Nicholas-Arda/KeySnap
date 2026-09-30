@@ -1,6 +1,7 @@
 package com.example.bridge;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -85,5 +86,16 @@ public class KeyEventMappingTest {
         // KEY_PROG1 is Linux code 148 == 0x94; both spellings must resolve identically or the
         // same physical button would map differently depending on getevent's labelling.
         assertEquals(byName, byHex);
+    }
+
+    @Test
+    public void onlyInventedCodesAreSynthetic() {
+        int oem = KeyEventMapping.parse("/dev/input/event4: EV_KEY KEY_F13 DOWN").androidKeyCode;
+        int volume = KeyEventMapping.parse("/dev/input/event4: EV_KEY KEY_VOLUMEUP DOWN").androidKeyCode;
+        assertTrue(KeyEventMapping.isSynthetic(oem));
+        assertFalse(KeyEventMapping.isSynthetic(volume));
+        // -1 is the app's "no key" sentinel in prefs; a bit test would call it synthetic.
+        assertFalse(KeyEventMapping.isSynthetic(-1));
+        assertFalse(KeyEventMapping.isSynthetic(0));
     }
 }

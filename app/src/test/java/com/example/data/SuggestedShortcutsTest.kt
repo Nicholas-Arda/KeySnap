@@ -112,4 +112,76 @@ class SuggestedShortcutsTest {
         assertEquals(SuggestedShortcuts.all.size, SuggestedShortcuts.ordered.size)
         assertFalse("A coming-soon tile precedes an available one", availability.zipWithNext().any { !it.first && it.second })
     }
+
+    /**
+     * CLAUDE.md: no suggested script may call an endpoint the user did not type or pre-fill anything
+     * privileged. A blank HTTP request (webhooks) or a blank link (WhatsApp) is the only privileged
+     * step a recipe may carry.
+     */
+    @Test fun noRecipeShipsAnEndpointOrAPrivilegedPayload() {
+        SuggestedShortcuts.all.forEach { recipe ->
+            recipe.actions.filter { it.type in ScriptActionCatalog.PRIVILEGED }.forEach { action ->
+                assertTrue("${recipe.id}: only a blank HTTP request or link may ship", action.type in setOf("http_request", "open_url"))
+                assertTrue("${recipe.id} ships a URL", action.params["url"].isNullOrBlank())
+            }
+        }
+    }
+
+    @Test fun recipesWithABlankRequiredFieldOpenTheEditor() {
+        SuggestedShortcuts.all
+            .filter { recipe -> recipe.actions.any { ActionEditorForms.missingRequired(it).isNotEmpty() } }
+            .forEach { assertTrue(it.id, it.needsEditor) }
+    }
+
+    @Test fun keyRecipesWithEverythingFilledStayOneTap() {
+        SuggestedShortcuts.all
+            .filter { !it.automation && it.actions.none { a -> ActionEditorForms.missingRequired(a).isNotEmpty() } }
+            .forEach { assertFalse(it.id, it.needsEditor) }
+        assertFalse(SuggestedShortcuts.all.first { it.id == "suggestion_flashlight" }.needsEditor)
+    }
+
+    @Test fun webhookShelfHoldsFourBlankHttpRequests() {
+        val webhooks = SuggestedShortcuts.all.filter { it.category == RecipeCategory.WEBHOOK }
+        assertEquals(4, webhooks.size)
+        webhooks.forEach {
+            assertEquals(it.id, "http_request", it.actions.single().type)
+            assertTrue(it.id, it.needsEditor)
+        }
+    }
+
+    @Test fun iftttShelfHoldsTheMappedApplets() {
+        assertEquals(
+            setOf(
+                "suggestion_car_bluetooth", "suggestion_night_charge_dnd", "recipe_wifi_vibrate",
+                "recipe_wifi_ring", "recipe_morning_dnd_off", "recipe_ifttt_webhook",
+            ),
+            SuggestedShortcuts.all.filter { it.category == RecipeCategory.IFTTT }.map { it.id }.toSet(),
+        )
+    }
+
+    /** matches() hides a built recipe by shape; two recipes with one shape would hide each other. */
+    @Test fun noTwoRecipesShareAShape() {
+        val shapes = SuggestedShortcuts.all.map { Triple(it.automation, it.actions, it.constraints.map { c -> c.type }) }
+        assertEquals(shapes.size, shapes.distinct().size)
+    }
+
+    @Test fun shapeDecidesTheCategoryUnlessARecipeNamesOne() {
+        assertEquals(RecipeCategory.SINGLE, SuggestedShortcuts.all.first { it.id == "suggestion_flashlight" }.category)
+        assertEquals(RecipeCategory.MULTI, SuggestedShortcuts.all.first { it.id == "suggestion_sos" }.category)
+        assertEquals(RecipeCategory.AUTOMATION, SuggestedShortcuts.all.first { it.id == "suggestion_low_battery" }.category)
+    }
+
+    /**
+     * Batch decision 4: WhatsApp without new action code. The link ships blank (the user types
+     * number and text), the send step is a tap the user places, and the limits are written on it.
+     */
+    @Test fun whatsAppRecipeIsABlankLinkAPauseAndATapTheUserPlaces() {
+        val recipe = SuggestedShortcuts.all.first { it.id == "recipe_whatsapp" }
+        assertEquals(listOf("open_url", "delay", "tap_screen"), recipe.actions.map { it.type })
+        assertTrue(recipe.actions[0].params["url"].isNullOrBlank())
+        assertTrue(recipe.actions[2].params["x"].isNullOrBlank() && recipe.actions[2].params["y"].isNullOrBlank())
+        assertTrue(recipe.needsEditor)
+        assertNotNull(recipe.noteRes)
+        assertEquals(RecipeCategory.MULTI, recipe.category)
+    }
 }

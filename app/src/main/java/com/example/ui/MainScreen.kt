@@ -56,6 +56,7 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.dp
 import com.example.data.ConstraintEditorForms
 import com.example.data.EntitlementManager
+import com.example.data.ScriptActionCatalog
 import com.example.data.latestFailedScriptIds
 import com.example.ui.components.AppBottomBar
 import com.example.ui.components.AdvancedActivationBanner
@@ -69,7 +70,9 @@ import com.example.ui.scripts.ConstraintConfigSheet
 import com.example.ui.scripts.ScriptEditorScreen
 import com.example.ui.scripts.ScriptSettingsSheet
 import com.example.ui.scripts.ScriptsScreen
+import com.example.ui.scripts.ShortcutReviewDialog
 import com.example.ui.scripts.TriggerPickerSheet
+import com.example.ui.scripts.shareShortcutText
 import com.example.ui.settings.SettingsGear
 import com.example.ui.settings.SettingsScreen
 import com.example.ui.settings.SettingsScrim
@@ -112,6 +115,7 @@ fun MainScreen(viewModel: MainViewModel) {
     val scriptsMessage by viewModel.scriptsMessage.collectAsState()
     val nudgeDismissed by viewModel.nudgeDismissed.collectAsState()
     val runLog by viewModel.runLog.collectAsState()
+    val pendingImport by viewModel.pendingImport.collectAsState()
     var nowTick by remember { mutableStateOf(System.currentTimeMillis()) }
     LaunchedEffect(Unit) {
         while (true) {
@@ -254,6 +258,8 @@ fun MainScreen(viewModel: MainViewModel) {
                         onOpenScript = viewModel::editScript,
                         onDeleteScript = viewModel::deleteScript,
                         onGoHome = { goToPage(0) },
+                        onImportText = viewModel::importShortcutText,
+                        onImportUri = viewModel::importShortcutUri,
                         failedScriptIds = remember(runLog) { latestFailedScriptIds(runLog) },
                     )
                 }
@@ -325,6 +331,8 @@ fun MainScreen(viewModel: MainViewModel) {
                     onStartRecording = viewModel::startRecordingKey,
                     onCancelRecording = viewModel::cancelRecordingKey,
                     onSetPressType = viewModel::draftSetPressType,
+                    // A phone with no spare key can still use a recipe, from a widget or tile.
+                    onSwitchToSurface = { viewModel.draftSetSurfaceOnly(true) },
                 )
             }
         } else {
@@ -334,6 +342,7 @@ fun MainScreen(viewModel: MainViewModel) {
             // Same shape for constraints: the type while the sheet is open, the index when editing.
             var pendingConstraintType by remember { mutableStateOf<String?>(null) }
             var pendingConstraintIndex by remember { mutableStateOf<Int?>(null) }
+            var confirmShare by remember { mutableStateOf(false) }
             val installedApps by viewModel.installedApps.collectAsState()
             val pickedPoints by viewModel.pickedPoints.collectAsState()
             var canDrawOverlays by remember { mutableStateOf(Settings.canDrawOverlays(context)) }
@@ -415,6 +424,14 @@ fun MainScreen(viewModel: MainViewModel) {
                 onClose = {
                     closeEditorSheets()
                     viewModel.discardDraft()
+                },
+                // Anything privileged, or typed text, may carry a token or password; say so before it leaves.
+                onShare = {
+                    if (draft.actions.any { it.type in ScriptActionCatalog.REVIEWED_LITERALLY }) {
+                        confirmShare = true
+                    } else {
+                        viewModel.draftShareText()?.let { shareShortcutText(context, it) }
+                    }
                 },
             )
             configuringType?.let { type ->
@@ -510,6 +527,21 @@ fun MainScreen(viewModel: MainViewModel) {
                     },
                 )
             }
+            if (confirmShare) {
+                ShortcutReviewDialog(
+                    title = stringResource(R.string.share_review_title),
+                    name = draft.name,
+                    automation = draft.automation,
+                    actions = draft.actions,
+                    note = stringResource(R.string.share_review_note),
+                    confirmLabel = stringResource(R.string.share_action),
+                    onConfirm = {
+                        confirmShare = false
+                        viewModel.draftShareText()?.let { shareShortcutText(context, it) }
+                    },
+                    onDismiss = { confirmShare = false },
+                )
+            }
         }
         SnackbarHost(
             snackbarHostState,
@@ -533,6 +565,20 @@ fun MainScreen(viewModel: MainViewModel) {
     if (showSetupWizard) SetupWizardModal(viewModel, viewModel::closeSetupWizard)
     showNameKeyDialogForCode?.let { code ->
         NameKeyDialog(code, viewModel::dismissNameKeyDialog) { viewModel.saveUnknownKey(code, it) }
+    }
+    pendingImport?.let { imported ->
+        ShortcutReviewDialog(
+            title = stringResource(R.string.import_review_title),
+            name = imported.name,
+            automation = imported.automation,
+            actions = imported.actions,
+            note = stringResource(
+                if (imported.startsEnabled) R.string.import_review_note else R.string.import_review_note_privileged,
+            ),
+            confirmLabel = stringResource(R.string.import_confirm),
+            onConfirm = viewModel::confirmImport,
+            onDismiss = viewModel::dismissImport,
+        )
     }
     if (showAccessibilityDisclosure) {
         AccessibilityDisclosureDialog(

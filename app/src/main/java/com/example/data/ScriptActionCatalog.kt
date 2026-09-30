@@ -271,6 +271,30 @@ object ScriptActionCatalog {
         "show_notification",
     )
 
+    /**
+     * Actions that run with real privilege on a user-authored command, URI, URL or setting
+     * (CLAUDE.md "Privileged actions must stay legible"). An import shows every parameter of these
+     * literally before saving and never switches such a shortcut on; no recipe may pre-fill one.
+     * show_notification is here for its tap target, a user-typed URL that opens like open_url.
+     * App-only: the bridge has no use for it, so nothing mirrors it.
+     */
+    val PRIVILEGED: Set<String> = setOf(
+        "shell_command",
+        "modify_setting",
+        "force_stop_app",
+        "send_intent",
+        "http_request",
+        "open_url",
+        "show_notification",
+    )
+
+    /**
+     * Printed as written in the share and import review, and a share of them warns first:
+     * [PRIVILEGED] plus input_text, which routinely types passwords (CLAUDE.md "Never log secrets").
+     * input_text does not make an import arrive switched off; only [PRIVILEGED] does.
+     */
+    val REVIEWED_LITERALLY: Set<String> = PRIVILEGED + "input_text"
+
     private val byType: Map<String, ActionDescriptor> = all.associateBy { it.type }
     val byCategory: Map<ActionCategory, List<ActionDescriptor>> = all.groupBy { it.category }
 

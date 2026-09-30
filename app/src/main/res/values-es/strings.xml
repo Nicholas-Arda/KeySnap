@@ -858,4 +858,45 @@
     <string name="run_source_widget">Widget</string>
     <string name="run_source_tile">Icono de ajustes rápidos</string>
     <string name="widget_limit_reached">Plan gratuito: %1$d widgets en la pantalla de inicio. Pásate a Pro para widgets ilimitados.</string>
+    <!-- OEM key tip -->
+    <string name="oem_key_tip">Consejo: configura este botón como “Ninguno” en los ajustes del teléfono para que solo KeySnap responda a él.</string>
+    <!-- Recipe gallery -->
+    <string name="recipe_category_ifttt">¿Vienes de IFTTT?</string>
+    <string name="recipe_category_webhook">Webhooks</string>
+    <string name="recipe_wifi_vibrate">En el trabajo</string>
+    <string name="recipe_wifi_vibrate_subtitle">WiFi del trabajo: timbre en vibración</string>
+    <string name="recipe_wifi_ring">Salir del trabajo</string>
+    <string name="recipe_wifi_ring_subtitle">Fuera de esa WiFi: vuelve el timbre</string>
+    <string name="recipe_morning_dnd_off">Desenchufar por la mañana</string>
+    <string name="recipe_morning_dnd_off_subtitle">Sin cargador tras las 06:00: No molestar desactivado</string>
+    <string name="recipe_ifttt_webhook">Applet de IFTTT</string>
+    <string name="recipe_ifttt_webhook_subtitle">Una tecla llama a tu URL de Webhooks</string>
+    <string name="recipe_home_assistant_subtitle">Pega la URL de webhook de una automatización</string>
+    <string name="recipe_discord_subtitle">Pega la URL de webhook de un canal</string>
+    <string name="recipe_ntfy_subtitle">Pega la URL de tu tema</string>
+    <string name="recipe_apps_script_subtitle">Pega la URL de tu aplicación web</string>
+    <string name="recipe_whatsapp">Enviar un mensaje de WhatsApp</string>
+    <string name="recipe_whatsapp_subtitle">Abre un chat con tu texto y toca Enviar</string>
+    <string name="recipe_whatsapp_note">En el primer paso, escribe https://wa.me/&lt;número&gt;?text=&lt;mensaje&gt; con el número en formato internacional, solo dígitos. Luego coloca el toque sobre el botón Enviar de WhatsApp. La pantalla debe estar encendida y desbloqueada, WhatsApp aparece un momento y puede que tengas que ajustar el toque de Enviar en tu teléfono.</string>
+    <string name="home_recipes_all">Todos</string>
+    <!-- Share and import -->
+    <string name="import_error_invalid">Esto no es un acceso directo de KeySnap válido.</string>
+    <string name="import_error_newer">Este acceso directo se creó con una versión más reciente de KeySnap. Actualiza la app y vuelve a intentarlo.</string>
+    <string name="import_error_unsupported">Este acceso directo usa una acción o condición que esta versión de KeySnap no tiene.</string>
+    <string name="import_error_too_large">Es demasiado grande para ser un acceso directo.</string>
+    <string name="import_error_hidden">Este acceso directo contiene caracteres ocultos que pueden disimular lo que ejecuta, así que no se importó.</string>
+    <string name="share_action">Compartir</string>
+    <string name="share_review_title">¿Compartir este acceso directo?</string>
+    <string name="share_review_note">Cualquiera a quien se lo envíes podrá leer estas direcciones y comandos, incluidas las contraseñas o tokens que contengan.</string>
+    <string name="share_text_intro">Acceso directo de KeySnap. Para añadirlo, comparte este mensaje con KeySnap, o abre KeySnap y pégalo en Importar.</string>
+    <string name="import_title">Importar un acceso directo</string>
+    <string name="import_body">Pega un acceso directo que alguien te haya compartido o elige un archivo.</string>
+    <string name="import_paste_hint">Pega aquí el texto compartido</string>
+    <string name="import_choose_file">Elegir archivo</string>
+    <string name="import_confirm">Importar</string>
+    <string name="import_review_title">¿Importar este acceso directo?</string>
+    <string name="import_review_note">Se abre en el editor para que lo revises y lo guardes.</string>
+    <string name="import_review_note_privileged">Ejecuta los comandos y direcciones que se muestran arriba. Se guardará desactivado; actívalo en Mis accesos directos cuando confíes en él.</string>
+    <string name="import_error_read">No se pudo leer ese archivo.</string>
+    <string name="import_error_busy">Cierra el acceso directo que estás editando y vuelve a importar.</string>
 </resources>

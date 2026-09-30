@@ -18,7 +18,7 @@ public final class BridgeProtocol {
     /** Bumped whenever the on-disk payload or the socket protocol changes incompatibly, or when
      *  :bridge behavior changes at all — an already-running detached bridge has no way to pick up
      *  a source-only fix otherwise. */
-    public static final int VERSION = 13;
+    public static final int VERSION = 14;
 
     /** Process name given to app_process, used by `pidof` for liveness checks. */
     public static final String NICE_NAME = "arda_bridge";

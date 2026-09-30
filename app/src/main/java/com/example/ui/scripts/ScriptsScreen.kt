@@ -1,5 +1,6 @@
 package com.example.ui.scripts
 
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,6 +19,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.outlined.DeleteOutline
+import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -32,6 +34,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -74,8 +77,11 @@ fun ScriptsScreen(
     onOpenScript: (String) -> Unit,
     onDeleteScript: (String) -> Unit,
     onGoHome: () -> Unit,
+    onImportText: (String) -> Unit,
+    onImportUri: (Uri) -> Unit,
     failedScriptIds: Set<String> = emptySet(),
 ) {
+    var showImport by rememberSaveable { mutableStateOf(false) }
     GroundedPage(themeMode, rememberScrollState()) {
         // New shortcuts start from the bottom bar's +. The end padding keeps the title clear of the
         // Settings gear, and the title's row is as tall as the gear so the two line up.
@@ -94,12 +100,28 @@ fun ScriptsScreen(
                     color = MaterialTheme.colorScheme.error,
                 )
             }
+            Row(
+                Modifier
+                    .heightIn(min = MinTouchTarget)
+                    .clickable(role = Role.Button) { showImport = true }
+                    .testTag("import_shortcut_button"),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
+                Icon(Icons.Outlined.FileDownload, null, Modifier.size(16.dp), tint = MaterialTheme.colorScheme.primary)
+                Text(
+                    stringResource(R.string.import_title),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+            }
         }
         if (scripts.isEmpty()) EmptyState(onGoHome)
         scripts.forEach { script ->
             key(script.id) { ScriptCard(script, globallyEnabled, script.id in failedScriptIds, onToggleScriptEnabled, onOpenScript, onDeleteScript) }
         }
     }
+    if (showImport) ImportShortcutDialog(onImportText, onImportUri, onDismiss = { showImport = false })
 }
 
 /**

@@ -854,4 +854,45 @@
     <string name="run_source_widget">أداة</string>
     <string name="run_source_tile">مربع الإعدادات السريعة</string>
     <string name="widget_limit_reached">الخطة المجانية: %1$d أداة على الشاشة الرئيسية. احصل على Pro لعدد غير محدود من الأدوات.</string>
+    <!-- OEM key tip -->
+    <string name="oem_key_tip">نصيحة: اضبط هذا الزر على “بلا” في إعدادات هاتفك، ليستجيب له KeySnap وحده.</string>
+    <!-- Recipe gallery -->
+    <string name="recipe_category_ifttt">قادم من IFTTT؟</string>
+    <string name="recipe_category_webhook">Webhooks</string>
+    <string name="recipe_wifi_vibrate">في العمل</string>
+    <string name="recipe_wifi_vibrate_subtitle">شبكة Wi-Fi العمل: الرنين إلى اهتزاز</string>
+    <string name="recipe_wifi_ring">مغادرة العمل</string>
+    <string name="recipe_wifi_ring_subtitle">خارج تلك الشبكة: يعود الرنين</string>
+    <string name="recipe_morning_dnd_off">فصل الشاحن صباحًا</string>
+    <string name="recipe_morning_dnd_off_subtitle">بعد 06:00 دون شاحن: إيقاف عدم الإزعاج</string>
+    <string name="recipe_ifttt_webhook">تطبيق IFTTT مصغّر</string>
+    <string name="recipe_ifttt_webhook_subtitle">مفتاح يستدعي عنوان Webhooks الخاص بك</string>
+    <string name="recipe_home_assistant_subtitle">الصق عنوان webhook لأتمتة</string>
+    <string name="recipe_discord_subtitle">الصق عنوان webhook لقناة</string>
+    <string name="recipe_ntfy_subtitle">الصق عنوان الموضوع الخاص بك</string>
+    <string name="recipe_apps_script_subtitle">الصق عنوان تطبيق الويب الخاص بك</string>
+    <string name="recipe_whatsapp">إرسال رسالة WhatsApp</string>
+    <string name="recipe_whatsapp_subtitle">يفتح محادثة بنصك وينقر على إرسال</string>
+    <string name="recipe_whatsapp_note">في الخطوة الأولى اكتب https://wa.me/&lt;الرقم&gt;?text=&lt;الرسالة&gt; مع الرقم بالصيغة الدولية وبالأرقام فقط. ثم ضع النقرة على زر الإرسال في WhatsApp. يجب أن تكون الشاشة مشغّلة وغير مقفلة، ويظهر WhatsApp للحظة، وقد تحتاج نقرة الإرسال إلى تعديل على هاتفك.</string>
+    <string name="home_recipes_all">الكل</string>
+    <!-- Share and import -->
+    <string name="import_error_invalid">هذا ليس اختصار KeySnap صالحًا.</string>
+    <string name="import_error_newer">أُنشئ هذا الاختصار بإصدار أحدث من KeySnap. حدّث التطبيق وحاول مرة أخرى.</string>
+    <string name="import_error_unsupported">يستخدم هذا الاختصار إجراءً أو شرطًا غير موجود في هذا الإصدار من KeySnap.</string>
+    <string name="import_error_too_large">هذا أكبر من أن يكون اختصارًا.</string>
+    <string name="import_error_hidden">يحتوي هذا الاختصار على أحرف مخفية قد تُخفي ما يشغّله، لذلك لم يتم استيراده.</string>
+    <string name="share_action">مشاركة</string>
+    <string name="share_review_title">هل تريد مشاركة هذا الاختصار؟</string>
+    <string name="share_review_note">يمكن لأي شخص ترسله إليه قراءة هذه العناوين والأوامر، بما فيها أي كلمات مرور أو رموز مميزة بداخلها.</string>
+    <string name="share_text_intro">اختصار KeySnap. لإضافته، شارك هذه الرسالة مع KeySnap، أو افتح KeySnap والصقها في استيراد.</string>
+    <string name="import_title">استيراد اختصار</string>
+    <string name="import_body">الصق اختصارًا شاركه أحدهم معك، أو اختر ملفًا.</string>
+    <string name="import_paste_hint">الصق النص المُشارَك هنا</string>
+    <string name="import_choose_file">اختيار ملف</string>
+    <string name="import_confirm">استيراد</string>
+    <string name="import_review_title">هل تريد استيراد هذا الاختصار؟</string>
+    <string name="import_review_note">يُفتح في المحرر لتتحقق منه وتحفظه.</string>
+    <string name="import_review_note_privileged">يشغّل الأوامر والعناوين المعروضة أعلاه. سيُحفظ متوقفًا؛ شغّله من اختصاراتي عندما تثق به.</string>
+    <string name="import_error_read">تعذّرت قراءة ذلك الملف.</string>
+    <string name="import_error_busy">أغلق الاختصار الذي تعدّله، ثم استورد مرة أخرى.</string>
 </resources>

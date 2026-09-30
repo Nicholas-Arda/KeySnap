@@ -69,7 +69,7 @@ fun TriggerPickerSheet(
     onSetPressType: (TriggerPressType) -> Unit,
     // Null for the suggestion-tile flow, which has no automation counterpart to switch to.
     onSwitchToAutomation: (() -> Unit)? = null,
-    // Null for the suggestion-tile flow too: a suggestion is saved the moment it gets a key.
+    // Null hides the "No spare key?" link.
     onSwitchToSurface: (() -> Unit)? = null,
 ) {
     val colors = MaterialTheme.colorScheme

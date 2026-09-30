@@ -223,4 +223,16 @@ class ScriptActionCatalogTest {
         val available = ScriptActionCatalog.all.filter { it.availability == ActionAvailability.AVAILABLE }.map { it.type }
         assertEquals(emptyList<String>(), available.filterNot { it in bridgeIds })
     }
+
+    /**
+     * CLAUDE.md "Privileged actions must stay legible": the import review and recipe tests key off
+     * this set. show_notification is in it because its tap target is a user-typed URL, like open_url.
+     */
+    @Test fun privilegedActionsAreAvailableCatalogEntries() {
+        assertEquals(
+            setOf("shell_command", "modify_setting", "force_stop_app", "send_intent", "http_request", "open_url", "show_notification"),
+            ScriptActionCatalog.PRIVILEGED,
+        )
+        ScriptActionCatalog.PRIVILEGED.forEach { assertTrue(it, ScriptActionCatalog.isAvailable(it)) }
+    }
 }

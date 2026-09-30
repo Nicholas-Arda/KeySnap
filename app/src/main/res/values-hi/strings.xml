@@ -857,4 +857,45 @@
     <string name="run_source_widget">विजेट</string>
     <string name="run_source_tile">क्विक सेटिंग टाइल</string>
     <string name="widget_limit_reached">फ़्री प्लान: होम स्क्रीन पर %1$d विजेट। अनलिमिटेड विजेट के लिए Pro लें।</string>
+    <!-- OEM key tip -->
+    <string name="oem_key_tip">टिप: फ़ोन की सेटिंग में इस बटन को “कोई नहीं” पर सेट करें, ताकि सिर्फ़ KeySnap इस पर प्रतिक्रिया दे।</string>
+    <!-- Recipe gallery -->
+    <string name="recipe_category_ifttt">IFTTT से आ रहे हैं?</string>
+    <string name="recipe_category_webhook">Webhooks</string>
+    <string name="recipe_wifi_vibrate">काम पर</string>
+    <string name="recipe_wifi_vibrate_subtitle">ऑफ़िस WiFi पर रिंगर वाइब्रेट</string>
+    <string name="recipe_wifi_ring">काम से निकलते समय</string>
+    <string name="recipe_wifi_ring_subtitle">उस WiFi से हटते ही रिंगर चालू</string>
+    <string name="recipe_morning_dnd_off">सुबह चार्जर से हटाना</string>
+    <string name="recipe_morning_dnd_off_subtitle">06:00 के बाद चार्जर हटाने पर DND बंद</string>
+    <string name="recipe_ifttt_webhook">IFTTT ऐपलेट</string>
+    <string name="recipe_ifttt_webhook_subtitle">एक बटन आपका Webhooks URL कॉल करता है</string>
+    <string name="recipe_home_assistant_subtitle">किसी ऑटोमेशन का webhook URL पेस्ट करें</string>
+    <string name="recipe_discord_subtitle">किसी चैनल का webhook URL पेस्ट करें</string>
+    <string name="recipe_ntfy_subtitle">अपने टॉपिक का URL पेस्ट करें</string>
+    <string name="recipe_apps_script_subtitle">अपने वेब ऐप का URL पेस्ट करें</string>
+    <string name="recipe_whatsapp">WhatsApp मैसेज भेजें</string>
+    <string name="recipe_whatsapp_subtitle">आपके टेक्स्ट के साथ चैट खोलता है, भेजें पर टैप करता है</string>
+    <string name="recipe_whatsapp_note">पहले चरण में https://wa.me/&lt;नंबर&gt;?text=&lt;मैसेज&gt; लिखें, नंबर देश कोड के साथ, सिर्फ़ अंकों में। फिर टैप को WhatsApp के भेजें बटन पर रखें। स्क्रीन चालू और अनलॉक होनी चाहिए, WhatsApp पल भर के लिए दिखता है, और आपके फ़ोन पर भेजें वाले टैप को ठीक करना पड़ सकता है।</string>
+    <string name="home_recipes_all">सभी</string>
+    <!-- Share and import -->
+    <string name="import_error_invalid">यह एक मान्य KeySnap शॉर्टकट नहीं है।</string>
+    <string name="import_error_newer">यह शॉर्टकट KeySnap के नए वर्शन से बना है। ऐप अपडेट करके फिर से कोशिश करें।</string>
+    <string name="import_error_unsupported">यह शॉर्टकट ऐसा ऐक्शन या शर्त इस्तेमाल करता है जो KeySnap के इस वर्शन में नहीं है।</string>
+    <string name="import_error_too_large">यह शॉर्टकट होने के लिए बहुत बड़ा है।</string>
+    <string name="import_error_hidden">इस शॉर्टकट में छिपे हुए अक्षर हैं जो यह छिपा सकते हैं कि यह क्या चलाता है, इसलिए इसे इम्पोर्ट नहीं किया गया।</string>
+    <string name="share_action">शेयर करें</string>
+    <string name="share_review_title">यह शॉर्टकट शेयर करें?</string>
+    <string name="share_review_note">जिसे भी आप इसे भेजेंगे, वह ये पते और कमांड पढ़ सकता है, उनमें मौजूद पासवर्ड या टोकन समेत।</string>
+    <string name="share_text_intro">KeySnap शॉर्टकट। इसे जोड़ने के लिए यह मैसेज KeySnap पर शेयर करें, या KeySnap खोलकर इसे इम्पोर्ट में पेस्ट करें।</string>
+    <string name="import_title">शॉर्टकट इम्पोर्ट करें</string>
+    <string name="import_body">किसी का शेयर किया शॉर्टकट पेस्ट करें, या कोई फ़ाइल चुनें।</string>
+    <string name="import_paste_hint">शेयर किया गया टेक्स्ट यहाँ पेस्ट करें</string>
+    <string name="import_choose_file">फ़ाइल चुनें</string>
+    <string name="import_confirm">इम्पोर्ट</string>
+    <string name="import_review_title">यह शॉर्टकट इम्पोर्ट करें?</string>
+    <string name="import_review_note">यह एडिटर में खुलता है ताकि आप इसे जाँचकर सेव कर सकें।</string>
+    <string name="import_review_note_privileged">यह ऊपर दिखाए गए कमांड और पते चलाता है। इसे बंद करके सेव किया जाएगा; भरोसा होने पर मेरे शॉर्टकट में इसे चालू करें।</string>
+    <string name="import_error_read">वह फ़ाइल पढ़ी नहीं जा सकी।</string>
+    <string name="import_error_busy">जिस शॉर्टकट को आप एडिट कर रहे हैं उसे बंद करें, फिर दोबारा इम्पोर्ट करें।</string>
 </resources>

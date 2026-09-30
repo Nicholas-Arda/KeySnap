@@ -54,6 +54,7 @@ import androidx.compose.material.icons.outlined.Keyboard
 import androidx.compose.material.icons.outlined.PlayCircleOutline
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.Widgets
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -160,6 +161,7 @@ fun ScriptEditorScreen(
     onDeleteScript: () -> Unit,
     onDone: () -> Unit,
     onClose: () -> Unit,
+    onShare: () -> Unit = {},
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     LaunchedEffect(message) {
@@ -273,6 +275,7 @@ fun ScriptEditorScreen(
                             canDelete = !draft.isNew,
                             onRunOnce = onRunOnce,
                             onDeleteScript = { confirmDelete = true },
+                            onShare = onShare,
                         )
                     }
                     SnackbarHost(snackbarHostState, Modifier.align(Alignment.BottomCenter))
@@ -386,6 +389,8 @@ private fun ChainArea(
         verticalArrangement = Arrangement.spacedBy(10.dp),
         contentPadding = PaddingValues(top = 8.dp, bottom = 24.dp),
     ) {
+        // A recipe's instructions stay in view while its blanks are filled in.
+        draft.noteRes?.let { note -> item { ChainHint(stringResource(note)) } }
         item { ChainLabel(stringResource(R.string.editor_chain_when)) }
         item { TriggerCard(draft, onOpenTriggerPicker, onToggleAutomation, onClearSurfaceOnly) }
         // Done is disabled until both of these are filled in; say which one is missing.
@@ -873,7 +878,13 @@ private fun AdvancedModeChip(active: Boolean) {
 }
 
 @Composable
-private fun BottomToolbar(canRun: Boolean, canDelete: Boolean, onRunOnce: () -> Unit, onDeleteScript: () -> Unit) {
+private fun BottomToolbar(
+    canRun: Boolean,
+    canDelete: Boolean,
+    onRunOnce: () -> Unit,
+    onDeleteScript: () -> Unit,
+    onShare: () -> Unit,
+) {
     val colors = MaterialTheme.colorScheme
     Row(
         Modifier
@@ -894,11 +905,18 @@ private fun BottomToolbar(canRun: Boolean, canDelete: Boolean, onRunOnce: () -> 
         } else {
             Spacer(Modifier)
         }
-        TextButton(onClick = onRunOnce, enabled = canRun, modifier = Modifier.testTag("run_once_button")) {
+        Row {
             val tint = if (canRun) colors.primary else colors.onSurfaceVariant.copy(alpha = .4f)
-            Icon(Icons.Outlined.PlayCircleOutline, null, tint = tint, modifier = Modifier.size(18.dp))
-            Spacer(Modifier.width(4.dp))
-            Text(stringResource(R.string.editor_test_run), color = tint, style = MaterialTheme.typography.labelLarge)
+            TextButton(onClick = onShare, enabled = canRun, modifier = Modifier.testTag("share_script_button")) {
+                Icon(Icons.Outlined.Share, null, tint = tint, modifier = Modifier.size(18.dp))
+                Spacer(Modifier.width(4.dp))
+                Text(stringResource(R.string.share_action), color = tint, style = MaterialTheme.typography.labelLarge)
+            }
+            TextButton(onClick = onRunOnce, enabled = canRun, modifier = Modifier.testTag("run_once_button")) {
+                Icon(Icons.Outlined.PlayCircleOutline, null, tint = tint, modifier = Modifier.size(18.dp))
+                Spacer(Modifier.width(4.dp))
+                Text(stringResource(R.string.editor_test_run), color = tint, style = MaterialTheme.typography.labelLarge)
+            }
         }
     }
 }

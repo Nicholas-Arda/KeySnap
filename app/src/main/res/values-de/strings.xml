@@ -857,4 +857,45 @@
     <string name="run_source_widget">Widget</string>
     <string name="run_source_tile">Schnelleinstellungen-Kachel</string>
     <string name="widget_limit_reached">Kostenloser Plan: %1$d Startbildschirm-Widgets. Hol dir Pro für unbegrenzte Widgets.</string>
+    <!-- OEM key tip -->
+    <string name="oem_key_tip">Tipp: Stell diese Taste in den Einstellungen deines Telefons auf „Keine“, damit nur KeySnap darauf reagiert.</string>
+    <!-- Recipe gallery -->
+    <string name="recipe_category_ifttt">Kommst du von IFTTT?</string>
+    <string name="recipe_category_webhook">Webhooks</string>
+    <string name="recipe_wifi_vibrate">Bei der Arbeit</string>
+    <string name="recipe_wifi_vibrate_subtitle">Arbeits-WLAN: Klingelton auf Vibration</string>
+    <string name="recipe_wifi_ring">Feierabend</string>
+    <string name="recipe_wifi_ring_subtitle">WLAN verlassen: Klingelton wieder an</string>
+    <string name="recipe_morning_dnd_off">Morgens abstecken</string>
+    <string name="recipe_morning_dnd_off_subtitle">Nach 06:00 vom Ladegerät: Nicht stören aus</string>
+    <string name="recipe_ifttt_webhook">IFTTT-Applet</string>
+    <string name="recipe_ifttt_webhook_subtitle">Eine Taste ruft deine Webhooks-URL auf</string>
+    <string name="recipe_home_assistant_subtitle">Webhook-URL einer Automation einfügen</string>
+    <string name="recipe_discord_subtitle">Webhook-URL eines Kanals einfügen</string>
+    <string name="recipe_ntfy_subtitle">URL deines Topics einfügen</string>
+    <string name="recipe_apps_script_subtitle">URL deiner Web-App einfügen</string>
+    <string name="recipe_whatsapp">WhatsApp-Nachricht senden</string>
+    <string name="recipe_whatsapp_subtitle">Öffnet einen Chat mit deinem Text, tippt Senden</string>
+    <string name="recipe_whatsapp_note">Gib im ersten Schritt https://wa.me/&lt;nummer&gt;?text=&lt;nachricht&gt; ein, die Nummer international und nur mit Ziffern. Setze dann das Antippen auf die Senden-Schaltfläche von WhatsApp. Der Bildschirm muss an und entsperrt sein, WhatsApp erscheint kurz, und das Antippen von Senden muss auf deinem Telefon eventuell angepasst werden.</string>
+    <string name="home_recipes_all">Alle</string>
+    <!-- Share and import -->
+    <string name="import_error_invalid">Das ist kein gültiger KeySnap-Kurzbefehl.</string>
+    <string name="import_error_newer">Dieser Kurzbefehl wurde mit einer neueren KeySnap-Version erstellt. Aktualisiere die App und versuche es erneut.</string>
+    <string name="import_error_unsupported">Dieser Kurzbefehl nutzt eine Aktion oder Bedingung, die diese KeySnap-Version nicht hat.</string>
+    <string name="import_error_too_large">Das ist zu groß für einen Kurzbefehl.</string>
+    <string name="import_error_hidden">Dieser Kurzbefehl enthält versteckte Zeichen, die verschleiern können, was er ausführt. Er wurde daher nicht importiert.</string>
+    <string name="share_action">Teilen</string>
+    <string name="share_review_title">Diesen Kurzbefehl teilen?</string>
+    <string name="share_review_note">Alle, denen du ihn schickst, können diese Adressen und Befehle lesen, samt darin enthaltener Passwörter oder Tokens.</string>
+    <string name="share_text_intro">KeySnap-Kurzbefehl. Zum Hinzufügen teile diese Nachricht mit KeySnap oder öffne KeySnap und füge sie unter Importieren ein.</string>
+    <string name="import_title">Kurzbefehl importieren</string>
+    <string name="import_body">Füge einen Kurzbefehl ein, den jemand mit dir geteilt hat, oder wähle eine Datei.</string>
+    <string name="import_paste_hint">Geteilten Text hier einfügen</string>
+    <string name="import_choose_file">Datei wählen</string>
+    <string name="import_confirm">Importieren</string>
+    <string name="import_review_title">Diesen Kurzbefehl importieren?</string>
+    <string name="import_review_note">Er öffnet sich im Editor, damit du ihn prüfen und speichern kannst.</string>
+    <string name="import_review_note_privileged">Er führt die oben gezeigten Befehle und Adressen aus. Er wird ausgeschaltet gespeichert; schalte ihn unter Meine Kurzbefehle ein, sobald du ihm vertraust.</string>
+    <string name="import_error_read">Diese Datei konnte nicht gelesen werden.</string>
+    <string name="import_error_busy">Schließe den Kurzbefehl, den du bearbeitest, und importiere dann erneut.</string>
 </resources>

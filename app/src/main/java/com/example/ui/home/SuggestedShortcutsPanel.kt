@@ -2,11 +2,14 @@ package com.example.ui.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.BatteryAlert
@@ -18,10 +21,16 @@ import androidx.compose.material.icons.outlined.Headphones
 import androidx.compose.material.icons.outlined.Mic
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Sos
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -34,6 +43,7 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import io.github.nicholasarda.keysnap.R
 import androidx.compose.ui.unit.dp
+import com.example.data.RecipeCategory
 import com.example.data.ScriptActionCatalog
 import com.example.data.ShortcutScript
 import com.example.data.SuggestedShortcut
@@ -47,7 +57,8 @@ import com.example.ui.theme.SectionLabel
 /**
  * Ready-made shortcuts as a vertical list rather than a wrapping tile grid: Home has little else to
  * show, so this is the panel that fills the screen, and a list scrolls down with the rest of the page
- * instead of competing for width with its own sideways scroll.
+ * instead of competing for width with its own sideways scroll. The list is grouped into
+ * [RecipeCategory] shelves, with a chip row on top that filters to one shelf.
  */
 @Composable
 fun SuggestedShortcutsPanel(isPro: Boolean, scripts: List<ShortcutScript>, onPick: (SuggestedShortcut) -> Unit) {
@@ -57,21 +68,26 @@ fun SuggestedShortcutsPanel(isPro: Boolean, scripts: List<ShortcutScript>, onPic
     // offering it again would still be offering a duplicate.
     val remaining = SuggestedShortcuts.ordered.filterNot { suggestion -> scripts.any { suggestion.matches(it) } }
     if (remaining.isEmpty()) return
-    // Grouped by shape rather than by a hand-kept list, so the sections match the pills on the rows.
-    val groups = listOf(
-        R.string.home_suggestions_group_single to remaining.filter { !it.automation && it.actions.size == 1 },
-        R.string.home_suggestions_group_multi to remaining.filter { !it.automation && it.actions.size > 1 },
-        R.string.home_suggestions_group_automation to remaining.filter { it.automation },
-    ).filter { it.second.isNotEmpty() }
+    // Enum order, so the gallery reads basics first and the two special shelves last.
+    val groups = RecipeCategory.entries
+        .map { category -> category to remaining.filter { it.category == category } }
+        .filter { it.second.isNotEmpty() }
+    // Null shows every shelf. Saved, so the choice survives paging to Shortcuts and back.
+    var selected by rememberSaveable { mutableStateOf<RecipeCategory?>(null) }
+    // A shelf empties once its last recipe is built; fall back to all rather than show nothing.
+    val active = selected?.takeIf { chosen -> groups.any { it.first == chosen } }
+    val shown = groups.filter { active == null || it.first == active }
+    val shownCount = shown.sumOf { it.second.size }
     ConsolePanel(label = stringResource(R.string.home_suggested_shortcuts), testTag = "suggested_shortcuts") {
         Column {
+            RecipeCategoryChips(groups.map { it.first }, active) { selected = it }
             // Counted over the whole panel, not per group: the first group alone is a dozen rows, so a
             // group-boundary ad would sit far below the fold.
             var row = 0
-            groups.forEachIndexed { groupIndex, (labelRes, items) ->
+            shown.forEachIndexed { groupIndex, (category, items) ->
                 Text(
-                    stringResource(labelRes),
-                    Modifier.padding(top = if (groupIndex == 0) 0.dp else 16.dp, bottom = 2.dp),
+                    stringResource(category.titleRes),
+                    Modifier.padding(top = if (groupIndex == 0) 8.dp else 16.dp, bottom = 2.dp),
                     style = SectionLabel,
                     color = colors.onSurfaceVariant,
                 )
@@ -80,12 +96,50 @@ fun SuggestedShortcutsPanel(isPro: Boolean, scripts: List<ShortcutScript>, onPic
                     SuggestionRow(suggestion, onPick)
                     row++
                     // Ad as the panel's 2nd and 9th row, never as its last item.
-                    if (!isPro && (row == 1 || row == 8) && row < remaining.size) {
+                    if (!isPro && (row == 1 || row == 8) && row < shownCount) {
                         HorizontalDivider(color = colors.outline.copy(alpha = .45f))
                         NativeAdCard(Modifier.padding(vertical = 4.dp))
                     }
                 }
             }
+        }
+    }
+}
+
+/** Same chip look as the action editor's choice rows ([com.example.ui.scripts.ChoiceFieldRow]). */
+@Composable
+private fun RecipeCategoryChips(
+    categories: List<RecipeCategory>,
+    selected: RecipeCategory?,
+    onSelect: (RecipeCategory?) -> Unit,
+) {
+    val colors = MaterialTheme.colorScheme
+    val chipColors = FilterChipDefaults.filterChipColors(
+        selectedContainerColor = colors.primary,
+        selectedLabelColor = colors.onPrimary,
+        containerColor = colors.surfaceVariant,
+        labelColor = colors.onSurfaceVariant,
+    )
+    LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        item {
+            FilterChip(
+                selected = selected == null,
+                onClick = { onSelect(null) },
+                label = { Text(stringResource(R.string.home_recipes_all), style = MaterialTheme.typography.labelMedium) },
+                border = null,
+                colors = chipColors,
+                modifier = Modifier.testTag("recipe_chip_all"),
+            )
+        }
+        items(categories) { category ->
+            FilterChip(
+                selected = selected == category,
+                onClick = { onSelect(category) },
+                label = { Text(stringResource(category.titleRes), style = MaterialTheme.typography.labelMedium) },
+                border = null,
+                colors = chipColors,
+                modifier = Modifier.testTag("recipe_chip_${category.name.lowercase()}"),
+            )
         }
     }
 }
@@ -166,6 +220,15 @@ private fun SuggestionRow(suggestion: SuggestedShortcut, onPick: (SuggestedShort
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
+            // In full, never ellipsized: it carries the limits the user must know before picking it.
+            suggestion.noteRes?.let { note ->
+                Text(
+                    stringResource(note),
+                    Modifier.padding(top = 4.dp).testTag("recipe_note_${suggestion.id}"),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = colors.onSurfaceVariant,
+                )
+            }
         }
         TileBadge(suggestion)
     }

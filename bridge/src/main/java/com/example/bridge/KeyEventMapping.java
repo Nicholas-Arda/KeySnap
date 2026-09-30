@@ -228,6 +228,15 @@ public final class KeyEventMapping {
         return SYNTHETIC_KEY_BASE | (hash & SYNTHETIC_KEY_MASK);
     }
 
+    /**
+     * True for a code {@link #parse} invented for a button Android has no key code for. The app
+     * uses it to warn that the maker's own action on that button still fires: capture is
+     * read-only and never grabs the key.
+     */
+    public static boolean isSynthetic(int keyCode) {
+        return keyCode >= SYNTHETIC_KEY_BASE;
+    }
+
     private static String emptyToNull(String value) {
         if (value == null) {
             return null;

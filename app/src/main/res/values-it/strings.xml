@@ -859,4 +859,45 @@
     <string name="run_source_widget">Widget</string>
     <string name="run_source_tile">Riquadro delle impostazioni rapide</string>
     <string name="widget_limit_reached">Piano gratuito: %1$d widget nella schermata Home. Passa a Pro per widget illimitati.</string>
+    <!-- OEM key tip -->
+    <string name="oem_key_tip">Suggerimento: imposta questo tasto su “Nessuno” nelle impostazioni del telefono, così reagisce solo KeySnap.</string>
+    <!-- Recipe gallery -->
+    <string name="recipe_category_ifttt">Arrivi da IFTTT?</string>
+    <string name="recipe_category_webhook">Webhook</string>
+    <string name="recipe_wifi_vibrate">Al lavoro</string>
+    <string name="recipe_wifi_vibrate_subtitle">Wi-Fi del lavoro: suoneria in vibrazione</string>
+    <string name="recipe_wifi_ring">Uscita dal lavoro</string>
+    <string name="recipe_wifi_ring_subtitle">Fuori da quel Wi-Fi: suoneria riattivata</string>
+    <string name="recipe_morning_dnd_off">Scollegato al mattino</string>
+    <string name="recipe_morning_dnd_off_subtitle">Dal caricatore dopo le 06:00: Non disturbare disattivato</string>
+    <string name="recipe_ifttt_webhook">Applet IFTTT</string>
+    <string name="recipe_ifttt_webhook_subtitle">Un tasto chiama il tuo URL Webhooks</string>
+    <string name="recipe_home_assistant_subtitle">Incolla l\'URL webhook di un\'automazione</string>
+    <string name="recipe_discord_subtitle">Incolla l\'URL webhook di un canale</string>
+    <string name="recipe_ntfy_subtitle">Incolla l\'URL del tuo topic</string>
+    <string name="recipe_apps_script_subtitle">Incolla l\'URL della tua app web</string>
+    <string name="recipe_whatsapp">Invia un messaggio WhatsApp</string>
+    <string name="recipe_whatsapp_subtitle">Apre una chat con il tuo testo, tocca Invia</string>
+    <string name="recipe_whatsapp_note">Nel primo passaggio scrivi https://wa.me/&lt;numero&gt;?text=&lt;messaggio&gt; con il numero in formato internazionale, solo cifre. Poi posiziona il tocco sul pulsante Invia di WhatsApp. Lo schermo deve essere acceso e sbloccato, WhatsApp compare per un attimo e il tocco su Invia potrebbe dover essere regolato sul tuo telefono.</string>
+    <string name="home_recipes_all">Tutti</string>
+    <!-- Share and import -->
+    <string name="import_error_invalid">Questa non è una scorciatoia KeySnap valida.</string>
+    <string name="import_error_newer">Questa scorciatoia è stata creata con una versione più recente di KeySnap. Aggiorna l\'app e riprova.</string>
+    <string name="import_error_unsupported">Questa scorciatoia usa un\'azione o una condizione che questa versione di KeySnap non ha.</string>
+    <string name="import_error_too_large">È troppo grande per essere una scorciatoia.</string>
+    <string name="import_error_hidden">Questa scorciatoia contiene caratteri nascosti che possono mascherare ciò che esegue, quindi non è stata importata.</string>
+    <string name="share_action">Condividi</string>
+    <string name="share_review_title">Condividere questa scorciatoia?</string>
+    <string name="share_review_note">Chiunque la riceva potrà leggere questi indirizzi e comandi, comprese eventuali password o token al loro interno.</string>
+    <string name="share_text_intro">Scorciatoia KeySnap. Per aggiungerla, condividi questo messaggio con KeySnap, oppure apri KeySnap e incollalo in Importa.</string>
+    <string name="import_title">Importa una scorciatoia</string>
+    <string name="import_body">Incolla una scorciatoia che qualcuno ha condiviso con te, oppure scegli un file.</string>
+    <string name="import_paste_hint">Incolla qui il testo condiviso</string>
+    <string name="import_choose_file">Scegli file</string>
+    <string name="import_confirm">Importa</string>
+    <string name="import_review_title">Importare questa scorciatoia?</string>
+    <string name="import_review_note">Si apre nell\'editor così puoi controllarla e salvarla.</string>
+    <string name="import_review_note_privileged">Esegue i comandi e gli indirizzi mostrati sopra. Verrà salvata disattivata; attivala in Le mie scorciatoie quando ti fidi.</string>
+    <string name="import_error_read">Impossibile leggere quel file.</string>
+    <string name="import_error_busy">Chiudi la scorciatoia che stai modificando, poi importa di nuovo.</string>
 </resources>

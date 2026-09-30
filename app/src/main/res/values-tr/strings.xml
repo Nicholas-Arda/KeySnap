@@ -855,4 +855,45 @@
     <string name="run_source_widget">Widget</string>
     <string name="run_source_tile">Hızlı Ayarlar kutucuğu</string>
     <string name="widget_limit_reached">Ücretsiz plan: %1$d ana ekran widget\'ı. Sınırsız widget için Pro\'ya geçin.</string>
+    <!-- OEM key tip -->
+    <string name="oem_key_tip">İpucu: Telefon ayarlarında bu tuşu “Yok” olarak ayarlayın; böylece yalnızca KeySnap tepki verir.</string>
+    <!-- Recipe gallery -->
+    <string name="recipe_category_ifttt">IFTTT\'den mi geliyorsunuz?</string>
+    <string name="recipe_category_webhook">Webhook\'lar</string>
+    <string name="recipe_wifi_vibrate">İşteyken</string>
+    <string name="recipe_wifi_vibrate_subtitle">İş WiFi\'ında zil titreşime</string>
+    <string name="recipe_wifi_ring">İş Çıkışı</string>
+    <string name="recipe_wifi_ring_subtitle">O WiFi\'dan çıkınca zil açılır</string>
+    <string name="recipe_morning_dnd_off">Sabah Şarjdan Çıkış</string>
+    <string name="recipe_morning_dnd_off_subtitle">06:00 sonrası şarjdan çıkınca DND kapat</string>
+    <string name="recipe_ifttt_webhook">IFTTT Applet\'i</string>
+    <string name="recipe_ifttt_webhook_subtitle">Tuş, Webhooks adresinizi çağırır</string>
+    <string name="recipe_home_assistant_subtitle">Otomasyonun webhook adresini yapıştırın</string>
+    <string name="recipe_discord_subtitle">Kanal webhook adresini yapıştırın</string>
+    <string name="recipe_ntfy_subtitle">Konu (topic) adresinizi yapıştırın</string>
+    <string name="recipe_apps_script_subtitle">Web uygulaması adresini yapıştırın</string>
+    <string name="recipe_whatsapp">WhatsApp mesajı gönder</string>
+    <string name="recipe_whatsapp_subtitle">Sohbeti metninizle açar, Gönder\'e dokunur</string>
+    <string name="recipe_whatsapp_note">İlk adıma https://wa.me/&lt;numara&gt;?text=&lt;mesaj&gt; yazın; numara ülke koduyla, yalnızca rakam olsun. Sonra dokunmayı WhatsApp\'ın Gönder düğmesine yerleştirin. Ekran açık ve kilitsiz olmalı, WhatsApp kısa bir an görünür ve Gönder dokunuşunun telefonunuza göre ayarlanması gerekebilir.</string>
+    <string name="home_recipes_all">Tümü</string>
+    <!-- Share and import -->
+    <string name="import_error_invalid">Bu geçerli bir KeySnap kısayolu değil.</string>
+    <string name="import_error_newer">Bu kısayol daha yeni bir KeySnap sürümüyle yapılmış. Uygulamayı güncelleyip yeniden deneyin.</string>
+    <string name="import_error_unsupported">Bu kısayol, bu KeySnap sürümünde olmayan bir eylem ya da koşul kullanıyor.</string>
+    <string name="import_error_too_large">Bu, bir kısayol için fazla büyük.</string>
+    <string name="import_error_hidden">Bu kısayol, ne çalıştırdığını gizleyebilecek görünmez karakterler içeriyor; bu yüzden içe aktarılmadı.</string>
+    <string name="share_action">Paylaş</string>
+    <string name="share_review_title">Bu kısayol paylaşılsın mı?</string>
+    <string name="share_review_note">Gönderdiğiniz herkes bu adresleri ve komutları, içlerindeki şifre ya da anahtarlarla birlikte okuyabilir.</string>
+    <string name="share_text_intro">KeySnap kısayolu. Eklemek için bu mesajı KeySnap\'e paylaşın ya da KeySnap\'i açıp İçe aktar\'a yapıştırın.</string>
+    <string name="import_title">Kısayol içe aktar</string>
+    <string name="import_body">Size paylaşılan bir kısayolu yapıştırın ya da bir dosya seçin.</string>
+    <string name="import_paste_hint">Paylaşılan metni buraya yapıştırın</string>
+    <string name="import_choose_file">Dosya seç</string>
+    <string name="import_confirm">İçe aktar</string>
+    <string name="import_review_title">Bu kısayol içe aktarılsın mı?</string>
+    <string name="import_review_note">Kontrol edip kaydetmeniz için düzenleyicide açılır.</string>
+    <string name="import_review_note_privileged">Yukarıdaki komutları ve adresleri çalıştırır. Kapalı olarak kaydedilir; güvendiğinizde Kısayollarım\'dan açın.</string>
+    <string name="import_error_read">Bu dosya okunamadı.</string>
+    <string name="import_error_busy">Düzenlediğiniz kısayolu kapatıp yeniden içe aktarın.</string>
 </resources>

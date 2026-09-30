@@ -858,4 +858,45 @@
     <string name="run_source_widget">Widget</string>
     <string name="run_source_tile">Bloco das configurações rápidas</string>
     <string name="widget_limit_reached">Plano gratuito: %1$d widgets na tela inicial. Compre o Pro para widgets ilimitados.</string>
+    <!-- OEM key tip -->
+    <string name="oem_key_tip">Dica: defina este botão como “Nenhum” nas configurações do celular, para que só o KeySnap responda a ele.</string>
+    <!-- Recipe gallery -->
+    <string name="recipe_category_ifttt">Vindo do IFTTT?</string>
+    <string name="recipe_category_webhook">Webhooks</string>
+    <string name="recipe_wifi_vibrate">No trabalho</string>
+    <string name="recipe_wifi_vibrate_subtitle">Wi-Fi do trabalho: toque no vibrar</string>
+    <string name="recipe_wifi_ring">Saindo do trabalho</string>
+    <string name="recipe_wifi_ring_subtitle">Fora desse Wi-Fi: toque de volta</string>
+    <string name="recipe_morning_dnd_off">Desconectar de manhã</string>
+    <string name="recipe_morning_dnd_off_subtitle">Fora do carregador após 06:00: Não perturbe desativado</string>
+    <string name="recipe_ifttt_webhook">Applet do IFTTT</string>
+    <string name="recipe_ifttt_webhook_subtitle">Uma tecla chama sua URL do Webhooks</string>
+    <string name="recipe_home_assistant_subtitle">Cole a URL de webhook de uma automação</string>
+    <string name="recipe_discord_subtitle">Cole a URL de webhook de um canal</string>
+    <string name="recipe_ntfy_subtitle">Cole a URL do seu tópico</string>
+    <string name="recipe_apps_script_subtitle">Cole a URL do seu app da web</string>
+    <string name="recipe_whatsapp">Enviar mensagem no WhatsApp</string>
+    <string name="recipe_whatsapp_subtitle">Abre uma conversa com seu texto e toca em Enviar</string>
+    <string name="recipe_whatsapp_note">No primeiro passo, digite https://wa.me/&lt;número&gt;?text=&lt;mensagem&gt; com o número no formato internacional, só dígitos. Depois posicione o toque no botão Enviar do WhatsApp. A tela precisa estar ligada e desbloqueada, o WhatsApp aparece por um instante e o toque em Enviar pode precisar de ajuste no seu celular.</string>
+    <string name="home_recipes_all">Todos</string>
+    <!-- Share and import -->
+    <string name="import_error_invalid">Este não é um atalho válido do KeySnap.</string>
+    <string name="import_error_newer">Este atalho foi criado com uma versão mais recente do KeySnap. Atualize o app e tente de novo.</string>
+    <string name="import_error_unsupported">Este atalho usa uma ação ou condição que esta versão do KeySnap não tem.</string>
+    <string name="import_error_too_large">Isso é grande demais para ser um atalho.</string>
+    <string name="import_error_hidden">Este atalho contém caracteres ocultos que podem disfarçar o que ele executa, por isso não foi importado.</string>
+    <string name="share_action">Compartilhar</string>
+    <string name="share_review_title">Compartilhar este atalho?</string>
+    <string name="share_review_note">Quem receber poderá ler estes endereços e comandos, incluindo senhas ou tokens que estejam neles.</string>
+    <string name="share_text_intro">Atalho do KeySnap. Para adicioná-lo, compartilhe esta mensagem com o KeySnap, ou abra o KeySnap e cole em Importar.</string>
+    <string name="import_title">Importar um atalho</string>
+    <string name="import_body">Cole um atalho que alguém compartilhou com você ou escolha um arquivo.</string>
+    <string name="import_paste_hint">Cole aqui o texto compartilhado</string>
+    <string name="import_choose_file">Escolher arquivo</string>
+    <string name="import_confirm">Importar</string>
+    <string name="import_review_title">Importar este atalho?</string>
+    <string name="import_review_note">Ele abre no editor para você conferir e salvar.</string>
+    <string name="import_review_note_privileged">Ele executa os comandos e endereços mostrados acima. Será salvo desativado; ative-o em Meus atalhos quando confiar nele.</string>
+    <string name="import_error_read">Não foi possível ler esse arquivo.</string>
+    <string name="import_error_busy">Feche o atalho que você está editando e importe de novo.</string>
 </resources>

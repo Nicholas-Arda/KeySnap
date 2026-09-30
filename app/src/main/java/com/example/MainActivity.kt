@@ -2,6 +2,7 @@ package com.example
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.KeyEvent
 import androidx.activity.ComponentActivity
@@ -12,6 +13,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.core.content.IntentCompat
 import com.example.data.AppLocale
 import com.example.data.KeyMappingRepository
 import com.example.data.resolveConsumeForScript
@@ -46,14 +48,31 @@ class MainActivity : ComponentActivity() {
                 MainScreen(viewModel = viewModel)
             }
         }
-        // A recreated activity has already handled the intent it was started with.
-        if (savedInstanceState == null) openScriptFrom(intent)
+        // A recreated activity has already handled the intent it was started with; rotating the
+        // phone must not import the same share again either.
+        if (savedInstanceState == null) {
+            openScriptFrom(intent)
+            importShared(intent)
+        }
     }
 
-    // singleTask: a notification tapped while the app is already open arrives here.
+    // singleTask: a notification tapped, or a shortcut shared in, while the app is already open arrives here.
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         openScriptFrom(intent)
+        importShared(intent)
+    }
+
+    /** ACTION_SEND from any app is untrusted; the view model validates it and asks before anything is saved. */
+    private fun importShared(intent: Intent?) {
+        if (intent?.action != Intent.ACTION_SEND) return
+        // getCharSequenceExtra: some apps send styled text, which getStringExtra returns as null.
+        val text = intent.getCharSequenceExtra(Intent.EXTRA_TEXT)?.toString()
+        val stream = IntentCompat.getParcelableExtra(intent, Intent.EXTRA_STREAM, Uri::class.java)
+        when {
+            text != null -> viewModel.importShortcutText(text)
+            stream != null -> viewModel.importShortcutUri(stream)
+        }
     }
 
     private fun openScriptFrom(intent: Intent?) {

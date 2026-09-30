@@ -28,6 +28,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.testTag
+import com.example.bridge.KeyEventMapping
 import com.example.ui.theme.MonoLabel
 import androidx.compose.ui.res.stringResource
 import io.github.nicholasarda.keysnap.R
@@ -79,7 +81,20 @@ fun NameKeyDialog(code: Int, onDismiss: () -> Unit, onSave: (String) -> Unit) {
     var customName by remember { mutableStateOf("") }
     val colors = MaterialTheme.colorScheme
     AlertDialog(onDismissRequest = onDismiss, title = { Text(stringResource(R.string.dialog_new_input_title)) }, text = {
-        Column { Text(stringResource(R.string.dialog_new_input_body, code)); Spacer(Modifier.height(8.dp)); OutlinedTextField(customName, { customName = it }, singleLine = true, placeholder = { Text(stringResource(R.string.dialog_new_input_hint)) }) }
+        Column {
+            Text(stringResource(R.string.dialog_new_input_body, code))
+            // Capture is read-only, so the maker's own action on this button still fires alongside ours.
+            if (KeyEventMapping.isSynthetic(code)) {
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    stringResource(R.string.oem_key_tip),
+                    Modifier.testTag("oem_key_tip"),
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
+            Spacer(Modifier.height(8.dp))
+            OutlinedTextField(customName, { customName = it }, singleLine = true, placeholder = { Text(stringResource(R.string.dialog_new_input_hint)) })
+        }
     }, confirmButton = { Button(onClick = { if (customName.isNotBlank()) onSave(customName.trim()) }) { Text(stringResource(R.string.common_save_caps)) } }, dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.common_cancel_caps)) } }, containerColor = colors.surface, titleContentColor = colors.onSurface, textContentColor = colors.onSurfaceVariant)
 }
 

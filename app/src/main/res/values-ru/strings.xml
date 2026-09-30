@@ -857,4 +857,45 @@
     <string name="run_source_widget">Виджет</string>
     <string name="run_source_tile">Плитка быстрых настроек</string>
     <string name="widget_limit_reached">Бесплатный план: %1$d виджета на главном экране. Перейдите на Pro для неограниченного количества виджетов.</string>
+    <!-- OEM key tip -->
+    <string name="oem_key_tip">Совет: в настройках телефона выберите для этой кнопки «Нет», чтобы на неё реагировал только KeySnap.</string>
+    <!-- Recipe gallery -->
+    <string name="recipe_category_ifttt">Переходите с IFTTT?</string>
+    <string name="recipe_category_webhook">Webhooks</string>
+    <string name="recipe_wifi_vibrate">На работе</string>
+    <string name="recipe_wifi_vibrate_subtitle">Рабочий Wi-Fi: звонок на вибрацию</string>
+    <string name="recipe_wifi_ring">Уход с работы</string>
+    <string name="recipe_wifi_ring_subtitle">Вне этого Wi-Fi: звонок снова включён</string>
+    <string name="recipe_morning_dnd_off">Утром с зарядки</string>
+    <string name="recipe_morning_dnd_off_subtitle">С зарядки после 06:00: Не беспокоить выкл.</string>
+    <string name="recipe_ifttt_webhook">Апплет IFTTT</string>
+    <string name="recipe_ifttt_webhook_subtitle">Кнопка вызывает ваш URL Webhooks</string>
+    <string name="recipe_home_assistant_subtitle">Вставьте URL вебхука автоматизации</string>
+    <string name="recipe_discord_subtitle">Вставьте URL вебхука канала</string>
+    <string name="recipe_ntfy_subtitle">Вставьте URL вашей темы</string>
+    <string name="recipe_apps_script_subtitle">Вставьте URL вашего веб-приложения</string>
+    <string name="recipe_whatsapp">Отправить сообщение WhatsApp</string>
+    <string name="recipe_whatsapp_subtitle">Открывает чат с вашим текстом и нажимает «Отправить»</string>
+    <string name="recipe_whatsapp_note">На первом шаге введите https://wa.me/&lt;номер&gt;?text=&lt;сообщение&gt;, номер в международном формате, только цифры. Затем поставьте нажатие на кнопку «Отправить» в WhatsApp. Экран должен быть включён и разблокирован, WhatsApp ненадолго появится, а нажатие на «Отправить» может потребоваться подстроить под ваш телефон.</string>
+    <string name="home_recipes_all">Все</string>
+    <!-- Share and import -->
+    <string name="import_error_invalid">Это не сценарий KeySnap.</string>
+    <string name="import_error_newer">Этот сценарий создан в более новой версии KeySnap. Обновите приложение и попробуйте снова.</string>
+    <string name="import_error_unsupported">Этот сценарий использует действие или условие, которого нет в этой версии KeySnap.</string>
+    <string name="import_error_too_large">Это слишком большой объём для сценария.</string>
+    <string name="import_error_hidden">Этот сценарий содержит скрытые символы, которые могут замаскировать то, что он выполняет, поэтому он не импортирован.</string>
+    <string name="share_action">Поделиться</string>
+    <string name="share_review_title">Поделиться этим сценарием?</string>
+    <string name="share_review_note">Любой получатель сможет прочитать эти адреса и команды, включая пароли или токены в них.</string>
+    <string name="share_text_intro">Сценарий KeySnap. Чтобы добавить его, отправьте это сообщение в KeySnap или откройте KeySnap и вставьте его в разделе «Импорт».</string>
+    <string name="import_title">Импорт сценария</string>
+    <string name="import_body">Вставьте сценарий, которым с вами поделились, или выберите файл.</string>
+    <string name="import_paste_hint">Вставьте сюда полученный текст</string>
+    <string name="import_choose_file">Выбрать файл</string>
+    <string name="import_confirm">Импорт</string>
+    <string name="import_review_title">Импортировать этот сценарий?</string>
+    <string name="import_review_note">Он откроется в редакторе, чтобы вы могли проверить и сохранить его.</string>
+    <string name="import_review_note_privileged">Он выполняет показанные выше команды и адреса. Он будет сохранён выключенным; включите его в разделе «Мои сценарии», когда будете ему доверять.</string>
+    <string name="import_error_read">Не удалось прочитать этот файл.</string>
+    <string name="import_error_busy">Закройте редактируемый сценарий, затем повторите импорт.</string>
 </resources>

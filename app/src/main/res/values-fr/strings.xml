@@ -858,4 +858,45 @@
     <string name="run_source_widget">Widget</string>
     <string name="run_source_tile">Tuile des paramètres rapides</string>
     <string name="widget_limit_reached">Offre gratuite : %1$d widgets d\'écran d\'accueil. Passez à Pro pour des widgets illimités.</string>
+    <!-- OEM key tip -->
+    <string name="oem_key_tip">Astuce : réglez ce bouton sur « Aucun » dans les paramètres du téléphone, pour que seul KeySnap y réagisse.</string>
+    <!-- Recipe gallery -->
+    <string name="recipe_category_ifttt">Vous venez d\'IFTTT ?</string>
+    <string name="recipe_category_webhook">Webhooks</string>
+    <string name="recipe_wifi_vibrate">Au travail</string>
+    <string name="recipe_wifi_vibrate_subtitle">Wi-Fi du travail : sonnerie en vibreur</string>
+    <string name="recipe_wifi_ring">En quittant le travail</string>
+    <string name="recipe_wifi_ring_subtitle">Hors de ce Wi-Fi : sonnerie rétablie</string>
+    <string name="recipe_morning_dnd_off">Débranché le matin</string>
+    <string name="recipe_morning_dnd_off_subtitle">Débranché après 06h00 : NPD désactivé</string>
+    <string name="recipe_ifttt_webhook">Applet IFTTT</string>
+    <string name="recipe_ifttt_webhook_subtitle">Une touche appelle votre URL Webhooks</string>
+    <string name="recipe_home_assistant_subtitle">Collez l\'URL webhook d\'une automatisation</string>
+    <string name="recipe_discord_subtitle">Collez l\'URL webhook d\'un salon</string>
+    <string name="recipe_ntfy_subtitle">Collez l\'URL de votre sujet</string>
+    <string name="recipe_apps_script_subtitle">Collez l\'URL de votre application web</string>
+    <string name="recipe_whatsapp">Envoyer un message WhatsApp</string>
+    <string name="recipe_whatsapp_subtitle">Ouvre une discussion avec votre texte, touche Envoyer</string>
+    <string name="recipe_whatsapp_note">À la première étape, saisissez https://wa.me/&lt;numéro&gt;?text=&lt;message&gt; avec le numéro au format international, chiffres uniquement. Placez ensuite le toucher sur le bouton Envoyer de WhatsApp. L\'écran doit être allumé et déverrouillé, WhatsApp apparaît un instant et le toucher sur Envoyer peut devoir être ajusté sur votre téléphone.</string>
+    <string name="home_recipes_all">Tous</string>
+    <!-- Share and import -->
+    <string name="import_error_invalid">Ce n\'est pas un raccourci KeySnap valide.</string>
+    <string name="import_error_newer">Ce raccourci a été créé avec une version plus récente de KeySnap. Mettez l\'application à jour et réessayez.</string>
+    <string name="import_error_unsupported">Ce raccourci utilise une action ou une condition que cette version de KeySnap ne possède pas.</string>
+    <string name="import_error_too_large">C\'est trop volumineux pour être un raccourci.</string>
+    <string name="import_error_hidden">Ce raccourci contient des caractères cachés qui peuvent masquer ce qu\'il exécute ; il n\'a donc pas été importé.</string>
+    <string name="share_action">Partager</string>
+    <string name="share_review_title">Partager ce raccourci ?</string>
+    <string name="share_review_note">Toute personne à qui vous l\'envoyez pourra lire ces adresses et commandes, y compris les mots de passe ou jetons qu\'elles contiennent.</string>
+    <string name="share_text_intro">Raccourci KeySnap. Pour l\'ajouter, partagez ce message avec KeySnap, ou ouvrez KeySnap et collez-le sous Importer.</string>
+    <string name="import_title">Importer un raccourci</string>
+    <string name="import_body">Collez un raccourci qu\'on vous a partagé, ou choisissez un fichier.</string>
+    <string name="import_paste_hint">Collez le texte partagé ici</string>
+    <string name="import_choose_file">Choisir un fichier</string>
+    <string name="import_confirm">Importer</string>
+    <string name="import_review_title">Importer ce raccourci ?</string>
+    <string name="import_review_note">Il s\'ouvre dans l\'éditeur pour que vous puissiez le vérifier et l\'enregistrer.</string>
+    <string name="import_review_note_privileged">Il exécute les commandes et adresses affichées ci-dessus. Il sera enregistré désactivé ; activez-le dans Mes raccourcis quand vous lui faites confiance.</string>
+    <string name="import_error_read">Impossible de lire ce fichier.</string>
+    <string name="import_error_busy">Fermez le raccourci en cours de modification, puis importez à nouveau.</string>
 </resources>

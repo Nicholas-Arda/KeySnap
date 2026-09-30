@@ -46,7 +46,9 @@ object PrivacyPolicy {
             "sent to the developer or to anyone else. The only data that leaves your device goes " +
             "to Google's advertising and billing services, described under \"Advertising and " +
             "purchases\" below, and it is limited to what those services need to show an ad or " +
-            "confirm a purchase.",
+            "confirm a purchase." +
+            " If you share a shortcut, the app hands its text to the app you pick in Android's share " +
+            "sheet and sends it nowhere itself.",
 
         "What is stored on your device" to
             "Your shortcuts, their triggers, which shortcut each home-screen widget and Quick " +

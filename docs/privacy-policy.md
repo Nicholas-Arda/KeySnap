@@ -10,7 +10,7 @@ repo; update it by hand whenever this file changes.
 
 ## What is collected
 
-KeySnap has no servers, no accounts, no analytics and no crash reporting. Nothing about your shortcuts, the keys you press or the way you use the app is ever sent to the developer or to anyone else. The only data that leaves your device goes to Google's advertising and billing services, described under "Advertising and purchases" below, and it is limited to what those services need to show an ad or confirm a purchase.
+KeySnap has no servers, no accounts, no analytics and no crash reporting. Nothing about your shortcuts, the keys you press or the way you use the app is ever sent to the developer or to anyone else. The only data that leaves your device goes to Google's advertising and billing services, described under "Advertising and purchases" below, and it is limited to what those services need to show an ad or confirm a purchase. If you share a shortcut, the app hands its text to the app you pick in Android's share sheet and sends it nowhere itself.
 
 ## What is stored on your device
 

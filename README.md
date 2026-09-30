@@ -52,6 +52,10 @@ Shortcuts run in the background, and the whole thing works without an account, a
 
 **Conditions.** Attach an *Only if* list to any shortcut: time of day, day of week, charging state, battery level, Wi‑Fi network, Bluetooth device, headphones, dark mode, Do Not Disturb, ringer mode, screen and lock state, orientation, which app is in the foreground, whether media is playing, and more. Around sixty in total.
 
+**Recipes.** Home has a gallery of ready-made shortcuts in categories: pick one, press the key you want, and it is ready. Webhook recipes for Home Assistant, Discord, ntfy and Google Apps Script come with the address left blank, so you paste your own. A WhatsApp recipe opens a chat through a `https://wa.me/` link you type and taps Send for you; it needs the screen on and unlocked.
+
+**Sharing.** Any shortcut can be shared as text through Android's share sheet and imported on another phone, by sharing that text or file to KeySnap or pasting it under *Import*. The key stays behind, because keys belong to a phone. Before anything is saved, KeySnap lists what the shortcut runs, with the exact command, URL or intent of every privileged action, and a shared shortcut that contains one is saved switched off.
+
 **Run history.** Each shortcut remembers its last 20 runs: when it ran, which key or automation started it, and whether each action worked. When an action can't run, a notification says why, such as a missing permission or Advanced Mode being off, and opens the shortcut. The history holds no action contents and never leaves the phone.
 
 **Appearance.** Light, dark and sepia themes. The interface ships in English, Arabic, German, Spanish, French, Hindi, Italian, Portuguese (Brazil), Russian and Turkish.
@@ -79,7 +83,7 @@ The full list with reasons is in the [privacy policy](https://nicholas-arda.gith
 
 ## Privacy
 
-No servers, no accounts, no analytics, no crash reporting. Your shortcuts and key presses never leave the device. The free version shows ads through Google AdMob and the Pro purchase goes through Google Play Billing; neither receives anything the app records. Details: [privacy policy](https://nicholas-arda.github.io/keysnap-privacy/).
+No servers, no accounts, no analytics, no crash reporting. Your shortcuts and key presses never leave the device unless you share a shortcut yourself, and then only through the app you pick. The free version shows ads through Google AdMob and the Pro purchase goes through Google Play Billing; neither receives anything the app records. Details: [privacy policy](https://nicholas-arda.github.io/keysnap-privacy/).
 
 ## Building from source
 
@@ -118,9 +122,9 @@ Android Studio with its bundled JDK is all you need. `:app` is the Kotlin and Je
 
 **Can I back up my shortcuts?** They travel with Android's own backup, so they come back when you restore a phone. The Advanced Mode pairing is deliberately not backed up, because it authorises one specific device.
 
-**Can I export/import my shortcuts to a file?** Coming soon.
+**Can I export/import my shortcuts to a file?** Yes, one at a time. Open a shortcut and tap *Share*, then save the text wherever you like. To bring it back, share that text or file to KeySnap, or use *Import* on the Shortcuts page.
 
-**Can I share my shortcuts with friends?** Coming soon.
+**Can I share my shortcuts with friends?** Yes, the same way. Anyone you send one to can read it, URLs and commands included, so check it for passwords or tokens first. A shortcut that runs commands, intents, settings changes, web requests or links arrives switched off.
 
 ## Support
 

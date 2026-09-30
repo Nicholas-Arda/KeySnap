@@ -91,6 +91,15 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <!-- Import: a shortcut shared as text or as a file from any app. Untrusted input:
+                 ShortcutShare.decode validates it, the user reviews it, and nothing is saved
+                 until they tap Done in the editor. -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+                <data android:mimeType="application/json" />
+            </intent-filter>
         </activity>
 
         <service

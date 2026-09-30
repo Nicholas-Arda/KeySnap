@@ -3,13 +3,16 @@ package com.example.viewmodel
 import android.accessibilityservice.AccessibilityService
 import android.app.Activity
 import android.content.ComponentName
+import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Vibrator
 import android.os.VibratorManager
 import android.provider.Settings
 import android.text.TextUtils
+import androidx.annotation.StringRes
 import android.view.KeyEvent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -31,6 +34,9 @@ import com.example.data.ScriptConstraintCatalog
 import com.example.data.ScriptRepository
 import com.example.data.ScriptTrigger
 import com.example.data.ShortcutScript
+import com.example.data.ImportResult
+import com.example.data.ImportedShortcut
+import com.example.data.ShortcutShare
 import com.example.data.SuggestedShortcut
 import com.example.data.TriggerPressType
 import com.example.data.getReadableKeyName
@@ -59,6 +65,7 @@ import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 enum class HijackBannerStage {
     HIDDEN,
@@ -87,6 +94,8 @@ data class ScriptDraft(
     val consumeOriginalEvent: Boolean? = null,
     val vibrateOnTrigger: Boolean? = null,
     val hapticDurationMs: Long? = null,
+    /** The recipe's own instructions and limits, kept on screen while the user fills it in. */
+    @StringRes val noteRes: Int? = null,
 )
 
 /** The one rule for "this shortcut can run", asked by both the editor's Done button and [MainViewModel.commitDraft]. */
@@ -205,9 +214,10 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
             actions = suggestion.actions,
             constraints = suggestion.constraints,
             isNew = true,
-            // An automation opens the editor instead: the user should see the condition and can
-            // finish any choice it needs (a Bluetooth device, say) before saving.
-            fromSuggestion = !suggestion.automation,
+            // An automation shows its condition, and a webhook recipe needs its URL, so both open
+            // the editor instead of saving the moment a key is chosen.
+            fromSuggestion = !suggestion.needsEditor,
+            noteRes = suggestion.noteRes,
         )
     }
 
@@ -305,9 +315,13 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
     /** From the key sheet's "use an automation instead" link: replaces whatever key was set. */
     fun draftSetAutomation() = updateDraft { it.copy(automation = true, trigger = null, surfaceOnly = false) }
 
-    /** True from the key sheet's "No spare key?" link; false from tapping the widget/tile card, back to the choice. */
+    /**
+     * True from the key sheet's "No spare key?" link; false from tapping the widget/tile card, back to
+     * the choice. A recipe picked this way leaves its one-tap flow for the editor, whose widget/tile
+     * card explains where it runs from; the user saves it with Done.
+     */
     fun draftSetSurfaceOnly(on: Boolean) = updateDraft {
-        it.copy(surfaceOnly = on, automation = false, trigger = if (on) null else it.trigger)
+        it.copy(surfaceOnly = on, automation = false, trigger = if (on) null else it.trigger, fromSuggestion = false)
     }
 
     fun draftSetPressType(type: TriggerPressType) = updateDraft { draft ->
@@ -375,6 +389,82 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
                 else -> res.getQuantityString(R.plurals.run_all, ran, ran)
             }
         }
+    }
+
+    /** The open draft as share text, or null with nothing to share. The key stays: keys belong to this phone. */
+    fun draftShareText(): String? {
+        val draft = _editingScript.value?.takeIf { it.actions.isNotEmpty() } ?: return null
+        val json = ShortcutShare.encode(
+            name = draft.name,
+            automation = draft.automation,
+            pressType = draft.trigger?.pressType ?: draft.pressType,
+            actions = draft.actions,
+            constraints = draft.constraints,
+            surfaceOnly = draft.surfaceOnly,
+        )
+        return res.getString(R.string.share_text_intro) + "\n\n" + json
+    }
+
+    private val _pendingImport = MutableStateFlow<ImportedShortcut?>(null)
+
+    /** A decoded share awaiting the user's review. Nothing is saved until the editor's Done. */
+    val pendingImport: StateFlow<ImportedShortcut?> = _pendingImport.asStateFlow()
+
+    fun importShortcutText(text: String) {
+        // A second share must not swap what the open review shows under the user's thumb.
+        if (_pendingImport.value != null) return
+        when (val result = ShortcutShare.decode(text)) {
+            is ImportResult.Ok -> _pendingImport.value = result.shortcut
+            is ImportResult.Error -> _scriptsMessage.value = ScriptsMessage(res.getString(result.messageRes))
+        }
+    }
+
+    fun importShortcutUri(uri: Uri) {
+        viewModelScope.launch {
+            // content:// only: a file:// URI shared in by another app could point at this app's own files.
+            val text = if (uri.scheme != ContentResolver.SCHEME_CONTENT) {
+                null
+            } else {
+                withContext(Dispatchers.IO) {
+                    runCatching { appContext.contentResolver.openInputStream(uri)?.use(ShortcutShare::readCapped) }.getOrNull()
+                }
+            }
+            if (text == null) {
+                _scriptsMessage.value = ScriptsMessage(res.getString(R.string.import_error_read))
+            } else {
+                importShortcutText(text)
+            }
+        }
+    }
+
+    fun dismissImport() {
+        _pendingImport.value = null
+    }
+
+    /**
+     * Opens the import as a new draft; the editor's Done saves it through [commitDraft], so an
+     * import counts against the free plan exactly like a shortcut made by hand.
+     */
+    fun confirmImport() {
+        val imported = _pendingImport.value ?: return
+        _pendingImport.value = null
+        // Replacing an open draft would throw its unsaved edits away without asking.
+        if (_editingScript.value != null) {
+            _scriptsMessage.value = ScriptsMessage(res.getString(R.string.import_error_busy))
+            return
+        }
+        _editingScript.value = ScriptDraft(
+            id = scriptRepository.newScriptId(),
+            name = imported.name,
+            enabled = imported.startsEnabled,
+            trigger = null,
+            pressType = imported.pressType,
+            automation = imported.automation,
+            surfaceOnly = imported.surfaceOnly,
+            actions = imported.actions,
+            constraints = imported.constraints,
+            isNew = true,
+        )
     }
 
     /**

@@ -905,4 +905,49 @@
     <string name="run_source_widget">Widget</string>
     <string name="run_source_tile">Quick Settings tile</string>
     <string name="widget_limit_reached">Free plan: %1$d home-screen widgets. Go Pro for unlimited widgets.</string>
+    <!-- OEM key tip -->
+    <string name="oem_key_tip">Tip: set this button to “None” in your phone\'s settings, so only KeySnap reacts to it.</string>
+    <!-- Recipe gallery -->
+    <string name="recipe_category_ifttt">Coming from IFTTT?</string>
+    <string name="recipe_category_webhook">Webhooks</string>
+    <string name="recipe_wifi_vibrate">At Work</string>
+    <string name="recipe_wifi_vibrate_subtitle">Work Wi-Fi, ringer to vibrate</string>
+    <string name="recipe_wifi_ring">Leaving Work</string>
+    <string name="recipe_wifi_ring_subtitle">Off that Wi-Fi, ringer back on</string>
+    <string name="recipe_morning_dnd_off">Morning Unplug</string>
+    <string name="recipe_morning_dnd_off_subtitle">Off charger after 06:00, DND off</string>
+    <string name="recipe_ifttt_webhook">IFTTT Applet</string>
+    <string name="recipe_ifttt_webhook_subtitle">A key calls your Webhooks URL</string>
+    <string name="recipe_home_assistant" translatable="false">Home Assistant</string>
+    <string name="recipe_home_assistant_subtitle">Paste an automation\'s webhook URL</string>
+    <string name="recipe_discord" translatable="false">Discord</string>
+    <string name="recipe_discord_subtitle">Paste a channel webhook URL</string>
+    <string name="recipe_ntfy" translatable="false">ntfy</string>
+    <string name="recipe_ntfy_subtitle">Paste your topic URL</string>
+    <string name="recipe_apps_script" translatable="false">Google Apps Script</string>
+    <string name="recipe_apps_script_subtitle">Paste your web app URL</string>
+    <string name="recipe_whatsapp">Send a WhatsApp Message</string>
+    <string name="recipe_whatsapp_subtitle">Opens a chat with your text, taps Send</string>
+    <string name="recipe_whatsapp_note">In the first step, type https://wa.me/&lt;number&gt;?text=&lt;message&gt; with the number in international format, digits only. Then place the tap on WhatsApp\'s Send button. The screen must be on and unlocked, WhatsApp appears for a moment, and the Send tap may need adjusting on your phone.</string>
+    <string name="home_recipes_all">All</string>
+    <!-- Share and import -->
+    <string name="import_error_invalid">This isn\'t a valid KeySnap shortcut.</string>
+    <string name="import_error_newer">This shortcut was made with a newer KeySnap. Update the app and try again.</string>
+    <string name="import_error_unsupported">This shortcut uses an action or condition this version of KeySnap doesn\'t have.</string>
+    <string name="import_error_too_large">That\'s too large to be a shortcut.</string>
+    <string name="import_error_hidden">This shortcut contains hidden characters that can disguise what it runs, so it wasn\'t imported.</string>
+    <string name="share_action">Share</string>
+    <string name="share_review_title">Share this shortcut?</string>
+    <string name="share_review_note">Anyone you send it to can read these addresses and commands, including any passwords or tokens in them.</string>
+    <string name="share_text_intro">KeySnap shortcut. To add it, share this message to KeySnap, or open KeySnap and paste it under Import.</string>
+    <string name="import_title">Import a shortcut</string>
+    <string name="import_body">Paste a shortcut someone shared with you, or choose a file.</string>
+    <string name="import_paste_hint">Paste the shared text here</string>
+    <string name="import_choose_file">Choose file</string>
+    <string name="import_confirm">Import</string>
+    <string name="import_review_title">Import this shortcut?</string>
+    <string name="import_review_note">It opens in the editor so you can check it and save it.</string>
+    <string name="import_review_note_privileged">It runs the commands and addresses shown above. It will be saved switched off; turn it on in My shortcuts once you trust it.</string>
+    <string name="import_error_read">Couldn\'t read that file.</string>
+    <string name="import_error_busy">Close the shortcut you\'re editing, then import again.</string>
 </resources>
