@@ -557,7 +557,6 @@
     <string name="scripts_tutorial_mini_page">Страница сценариев</string>
     <string name="scripts_tutorial_listening">Слушаем…</string>
     <string name="scripts_tutorial_key_recorded">Клавиша записана</string>
-    <string name="scripts_no_trigger">Клавиша ещё не задана</string>
     <string name="scripts_no_condition">Условие не добавлено</string>
     <string name="scripts_no_actions">Пока нет действий</string>
     <string name="scripts_last_run_failed">Последний запуск не завершён</string>
@@ -844,4 +843,18 @@
     <string name="trigger_kind_key">Нажатие клавиши</string>
     <string name="trigger_kind_automation">Автоматизация</string>
     <string name="automation_card_subtitle">Срабатывает, когда условия ниже становятся истинными</string>
+    <!-- Home-screen widget and Quick Settings tiles -->
+    <string name="surface_paused_global">KeySnap приостановлен. Возобновите его в приложении, чтобы запускать сценарии.</string>
+    <string name="surface_paused_script">«%1$s» выключен. Включите его в KeySnap, чтобы запустить.</string>
+    <string name="surface_conditions_unmet">«%1$s» не запущен: условия «Только если» не выполнены.</string>
+    <string name="surface_missing">Этот сценарий удалён. Нажмите ещё раз, чтобы выбрать другой.</string>
+    <string name="surface_choose_shortcut">Выберите сценарий</string>
+    <string name="surface_picker_empty">Сценариев пока нет. Сначала создайте его в KeySnap.</string>
+    <string name="widget_description">Запускайте любой свой сценарий одним касанием</string>
+    <string name="trigger_kind_surface">Виджет или плитка</string>
+    <string name="surface_card_subtitle">Срабатывает при нажатии на его виджет на главном экране или плитку в быстрых настройках</string>
+    <string name="trigger_picker_use_surface">Нет свободной клавиши? Используйте виджет или плитку</string>
+    <string name="run_source_widget">Виджет</string>
+    <string name="run_source_tile">Плитка быстрых настроек</string>
+    <string name="widget_limit_reached">Бесплатный план: %1$d виджета на главном экране. Перейдите на Pro для неограниченного количества виджетов.</string>
 </resources>

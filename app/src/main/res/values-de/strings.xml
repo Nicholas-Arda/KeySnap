@@ -557,7 +557,6 @@
     <string name="scripts_tutorial_mini_page">Kurzbefehle-Seite</string>
     <string name="scripts_tutorial_listening">Wird aufgezeichnet…</string>
     <string name="scripts_tutorial_key_recorded">Taste aufgezeichnet</string>
-    <string name="scripts_no_trigger">Noch keine Taste</string>
     <string name="scripts_no_condition">Keine Bedingung hinzugefügt</string>
     <string name="scripts_no_actions">Noch keine Aktionen</string>
     <string name="scripts_last_run_failed">Letzte Ausführung nicht abgeschlossen</string>
@@ -844,4 +843,18 @@
     <string name="trigger_kind_key">Tastendruck</string>
     <string name="trigger_kind_automation">Automatisierung</string>
     <string name="automation_card_subtitle">Wird ausgeführt, sobald die Bedingungen unten eintreten</string>
+    <!-- Home-screen widget and Quick Settings tiles -->
+    <string name="surface_paused_global">KeySnap ist pausiert. Setze es in der App fort, um Kurzbefehle auszuführen.</string>
+    <string name="surface_paused_script">„%1$s“ ist aus. Schalte ihn in KeySnap ein, um ihn auszuführen.</string>
+    <string name="surface_conditions_unmet">„%1$s“ wurde nicht ausgeführt: Die „Nur wenn“-Bedingungen sind nicht erfüllt.</string>
+    <string name="surface_missing">Dieser Kurzbefehl wurde gelöscht. Tippe erneut, um einen anderen zu wählen.</string>
+    <string name="surface_choose_shortcut">Kurzbefehl wählen</string>
+    <string name="surface_picker_empty">Noch keine Kurzbefehle. Erstelle zuerst einen in KeySnap.</string>
+    <string name="widget_description">Führe einen deiner Kurzbefehle mit einem Tippen aus</string>
+    <string name="trigger_kind_surface">Widget oder Kachel</string>
+    <string name="surface_card_subtitle">Wird ausgeführt, wenn du auf sein Startbildschirm-Widget oder seine Schnelleinstellungen-Kachel tippst</string>
+    <string name="trigger_picker_use_surface">Keine freie Taste? Nutze ein Widget oder eine Kachel</string>
+    <string name="run_source_widget">Widget</string>
+    <string name="run_source_tile">Schnelleinstellungen-Kachel</string>
+    <string name="widget_limit_reached">Kostenloser Plan: %1$d Startbildschirm-Widgets. Hol dir Pro für unbegrenzte Widgets.</string>
 </resources>

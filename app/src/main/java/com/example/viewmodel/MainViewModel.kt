@@ -34,6 +34,7 @@ import com.example.data.ShortcutScript
 import com.example.data.SuggestedShortcut
 import com.example.data.TriggerPressType
 import com.example.data.getReadableKeyName
+import com.example.data.isSurfaceOnly
 import com.example.service.FlashlightController
 import com.example.service.HardwareKeyTriggerCoordinator
 import com.example.service.KeyMapperAccessibilityService
@@ -76,6 +77,8 @@ data class ScriptDraft(
     val pressType: TriggerPressType = TriggerPressType.SINGLE_PRESS,
     /** Key-less: fires on the false -> true edge of the constraints; see [ShortcutScript.automation]. */
     val automation: Boolean = false,
+    /** Key-less and not an automation: runs only from a widget or tile; see [ShortcutScript.isSurfaceOnly]. */
+    val surfaceOnly: Boolean = false,
     val actions: List<ScriptAction>,
     val constraints: List<ScriptConstraint> = emptyList(),
     val isNew: Boolean,
@@ -85,6 +88,9 @@ data class ScriptDraft(
     val vibrateOnTrigger: Boolean? = null,
     val hapticDurationMs: Long? = null,
 )
+
+/** The one rule for "this shortcut can run", asked by both the editor's Done button and [MainViewModel.commitDraft]. */
+fun ScriptDraft.hasTrigger(): Boolean = trigger != null || automation || surfaceOnly
 
 class MainViewModel(
     private val repository: KeyMappingRepository,
@@ -213,6 +219,7 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
             enabled = script.enabled,
             trigger = script.triggers.firstOrNull(),
             automation = script.automation,
+            surfaceOnly = script.isSurfaceOnly,
             actions = script.actions,
             constraints = script.constraints,
             isNew = false,
@@ -285,6 +292,7 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
             draft.copy(
                 trigger = ScriptTrigger(listOf(keyCode), pressType, draft.trigger?.doublePressWindowMs, draft.trigger?.longPressThresholdMs),
                 automation = false,
+                surfaceOnly = false,
             )
         }
         // A suggestion draft is complete the moment it has a key; the editor is never shown for it.
@@ -292,10 +300,15 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
     }
 
     /** Tapping the automation card again returns the When card to its key/automation choice. */
-    fun draftToggleAutomation() = updateDraft { it.copy(automation = !it.automation, trigger = null) }
+    fun draftToggleAutomation() = updateDraft { it.copy(automation = !it.automation, trigger = null, surfaceOnly = false) }
 
     /** From the key sheet's "use an automation instead" link: replaces whatever key was set. */
-    fun draftSetAutomation() = updateDraft { it.copy(automation = true, trigger = null) }
+    fun draftSetAutomation() = updateDraft { it.copy(automation = true, trigger = null, surfaceOnly = false) }
+
+    /** True from the key sheet's "No spare key?" link; false from tapping the widget/tile card, back to the choice. */
+    fun draftSetSurfaceOnly(on: Boolean) = updateDraft {
+        it.copy(surfaceOnly = on, automation = false, trigger = if (on) null else it.trigger)
+    }
 
     fun draftSetPressType(type: TriggerPressType) = updateDraft { draft ->
         draft.trigger?.let { draft.copy(trigger = it.copy(pressType = type)) } ?: draft.copy(pressType = type)
@@ -385,9 +398,9 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
             _editorMessage.value = res.getString(R.string.editor_needs_action)
             return
         }
-        // Automations are key-less by design; anything else saved without a key is a card with an
-        // ON toggle that can never fire.
-        if (!draft.automation && draft.trigger == null) {
+        // Automations and widget/tile shortcuts are key-less by design; anything else saved without
+        // a key is a card with an ON toggle that can never fire.
+        if (!draft.hasTrigger()) {
             _editorMessage.value = res.getString(R.string.editor_needs_trigger)
             return
         }
@@ -469,11 +482,7 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
     val bridgeInfo = BridgeController.bridgeInfo
 
     private val appearancePrefs = appContext.getSharedPreferences("arda_mapper_appearance", Context.MODE_PRIVATE)
-    private val _themeMode = MutableStateFlow(
-        appearancePrefs.getString("theme_mode", null)
-            ?.let { runCatching { com.example.ui.theme.ThemeMode.valueOf(it) }.getOrNull() }
-            ?: if (appearancePrefs.getBoolean("dark_theme", true)) com.example.ui.theme.ThemeMode.DARK else com.example.ui.theme.ThemeMode.LIGHT,
-    )
+    private val _themeMode = MutableStateFlow(com.example.ui.theme.storedThemeMode(appContext))
     val themeMode: StateFlow<com.example.ui.theme.ThemeMode> = _themeMode.asStateFlow()
 
     // Setup Wizard UI State & Persistence
@@ -522,7 +531,11 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
         rewardedAdController.preload()
         purchaseManager.start()
         viewModelScope.launch {
-            scriptRepository.scripts.collect { entitlementManager.enforceLimit() }
+            scriptRepository.scripts.collect {
+                entitlementManager.enforceLimit()
+                // A rename or a delete has to show on the home screen too.
+                com.example.surface.ShortcutWidgetProvider.refreshAll(appContext)
+            }
         }
 
         // Sync auto-detected credentials with manual fields if empty or newly discovered

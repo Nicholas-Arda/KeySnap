@@ -69,6 +69,8 @@ fun TriggerPickerSheet(
     onSetPressType: (TriggerPressType) -> Unit,
     // Null for the suggestion-tile flow, which has no automation counterpart to switch to.
     onSwitchToAutomation: (() -> Unit)? = null,
+    // Null for the suggestion-tile flow too: a suggestion is saved the moment it gets a key.
+    onSwitchToSurface: (() -> Unit)? = null,
 ) {
     val colors = MaterialTheme.colorScheme
     val res = LocalContext.current.resources
@@ -163,6 +165,21 @@ fun TriggerPickerSheet(
                         .fillMaxWidth()
                         .heightIn(min = MinTouchTarget)
                         .clickable(onClickLabel = useAutomationLabel, onClick = onSwitchToAutomation)
+                        .padding(vertical = 10.dp),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = colors.primary,
+                    textAlign = TextAlign.Center,
+                )
+            }
+            if (onSwitchToSurface != null) {
+                val useSurfaceLabel = stringResource(R.string.trigger_picker_use_surface)
+                Text(
+                    useSurfaceLabel,
+                    Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = MinTouchTarget)
+                        .clickable(onClickLabel = useSurfaceLabel, onClick = onSwitchToSurface)
+                        .testTag("trigger_picker_use_surface")
                         .padding(vertical = 10.dp),
                     style = MaterialTheme.typography.labelLarge,
                     color = colors.primary,

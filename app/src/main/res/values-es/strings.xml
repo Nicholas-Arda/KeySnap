@@ -558,7 +558,6 @@
     <string name="scripts_tutorial_mini_page">Página de accesos directos</string>
     <string name="scripts_tutorial_listening">Escuchando…</string>
     <string name="scripts_tutorial_key_recorded">Tecla registrada</string>
-    <string name="scripts_no_trigger">Aún no hay tecla</string>
     <string name="scripts_no_condition">Sin condición añadida</string>
     <string name="scripts_no_actions">Aún no hay acciones</string>
     <string name="scripts_last_run_failed">La última ejecución no se completó</string>
@@ -845,4 +844,18 @@
     <string name="trigger_kind_key">Pulsación de tecla</string>
     <string name="trigger_kind_automation">Automatización</string>
     <string name="automation_card_subtitle">Se ejecuta cuando se cumplen las condiciones de abajo</string>
+    <!-- Home-screen widget and Quick Settings tiles -->
+    <string name="surface_paused_global">KeySnap está en pausa. Reanúdalo en la app para ejecutar accesos directos.</string>
+    <string name="surface_paused_script">\"%1$s\" está desactivado. Actívalo en KeySnap para ejecutarlo.</string>
+    <string name="surface_conditions_unmet">\"%1$s\" no se ejecutó: no se cumplen sus condiciones \"Solo si\".</string>
+    <string name="surface_missing">Este acceso directo se eliminó. Toca de nuevo para elegir otro.</string>
+    <string name="surface_choose_shortcut">Elige un acceso directo</string>
+    <string name="surface_picker_empty">Aún no hay accesos directos. Crea uno primero en KeySnap.</string>
+    <string name="widget_description">Ejecuta uno de tus accesos directos con un toque</string>
+    <string name="trigger_kind_surface">Widget o icono</string>
+    <string name="surface_card_subtitle">Se ejecuta al tocar su widget de la pantalla de inicio o su icono de ajustes rápidos</string>
+    <string name="trigger_picker_use_surface">¿No tienes una tecla libre? Usa un widget o un icono</string>
+    <string name="run_source_widget">Widget</string>
+    <string name="run_source_tile">Icono de ajustes rápidos</string>
+    <string name="widget_limit_reached">Plan gratuito: %1$d widgets en la pantalla de inicio. Pásate a Pro para widgets ilimitados.</string>
 </resources>

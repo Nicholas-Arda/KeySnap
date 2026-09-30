@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- No periodic updates: the app redraws widgets itself whenever the script list changes. -->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:configure="com.example.surface.ShortcutPickerActivity"
+    android:description="@string/widget_description"
+    android:initialLayout="@layout/widget_shortcut"
+    android:minWidth="40dp"
+    android:minHeight="40dp"
+    android:previewLayout="@layout/widget_shortcut"
+    android:resizeMode="horizontal|vertical"
+    android:targetCellWidth="1"
+    android:targetCellHeight="1"
+    android:updatePeriodMillis="0"
+    android:widgetCategory="home_screen"
+    android:widgetFeatures="reconfigurable" />

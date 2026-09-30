@@ -558,7 +558,6 @@
     <string name="scripts_tutorial_mini_page">Página de atalhos</string>
     <string name="scripts_tutorial_listening">Ouvindo…</string>
     <string name="scripts_tutorial_key_recorded">Tecla registrada</string>
-    <string name="scripts_no_trigger">Nenhuma tecla ainda</string>
     <string name="scripts_no_condition">Nenhuma condição adicionada</string>
     <string name="scripts_no_actions">Ainda não há ações</string>
     <string name="scripts_last_run_failed">A última execução não foi concluída</string>
@@ -845,4 +844,18 @@
     <string name="trigger_kind_key">Pressão de tecla</string>
     <string name="trigger_kind_automation">Automação</string>
     <string name="automation_card_subtitle">Executa quando as condições abaixo forem atendidas</string>
+    <!-- Home-screen widget and Quick Settings tiles -->
+    <string name="surface_paused_global">O KeySnap está pausado. Retome no app para executar atalhos.</string>
+    <string name="surface_paused_script">\"%1$s\" está desativado. Ative no KeySnap para executá-lo.</string>
+    <string name="surface_conditions_unmet">\"%1$s\" não foi executado: as condições \"Somente se\" não foram atendidas.</string>
+    <string name="surface_missing">Este atalho foi excluído. Toque de novo para escolher outro.</string>
+    <string name="surface_choose_shortcut">Escolha um atalho</string>
+    <string name="surface_picker_empty">Nenhum atalho ainda. Crie um no KeySnap primeiro.</string>
+    <string name="widget_description">Execute um dos seus atalhos com um toque</string>
+    <string name="trigger_kind_surface">Widget ou bloco</string>
+    <string name="surface_card_subtitle">Executa quando você toca no widget da tela inicial ou no bloco das configurações rápidas</string>
+    <string name="trigger_picker_use_surface">Sem tecla livre? Use um widget ou bloco</string>
+    <string name="run_source_widget">Widget</string>
+    <string name="run_source_tile">Bloco das configurações rápidas</string>
+    <string name="widget_limit_reached">Plano gratuito: %1$d widgets na tela inicial. Compre o Pro para widgets ilimitados.</string>
 </resources>

@@ -9,6 +9,7 @@ import android.os.VibratorManager
 import android.provider.Settings
 import android.util.Log
 import android.view.KeyEvent
+import com.example.data.EntitlementManager
 import com.example.data.KeyMappingConfig
 import com.example.data.KeyMappingRepository
 import com.example.data.LiveKeyEvent
@@ -41,6 +42,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 
 /**
  * Unified event pipeline for Activity, Accessibility, and Advanced Mode input sources.
@@ -325,6 +327,48 @@ object HardwareKeyTriggerCoordinator {
         executeActions(context, defaults, fired, context.getString(R.string.trigger_kind_automation), keyCode = null, pressType = null)
     }
 
+    /**
+     * Runs [scriptId] now for a home-screen widget or a Quick Settings tile ([source] is
+     * [RunRecord.SOURCE_WIDGET] or [RunRecord.SOURCE_TILE]), and hands the outcome to [onDone] on
+     * the main thread. A tap has no press timing to resolve and no second source to deduplicate
+     * against, but it keeps every other rule of a key press: [surfaceGate] for pauses and "Only
+     * if", the script's own haptic, the trigger counter, the run log, and the bridge's ownership of
+     * execution through [runChain], exactly as an automation does. A refused tap is not a run and
+     * is not logged.
+     */
+    fun runFromSurface(context: Context, scriptId: String, source: String, onDone: (SurfaceRun) -> Unit): Job =
+        coordinatorScope.launch { onDone(runSurfaceScript(context.applicationContext, scriptId, source)) }
+
+    private suspend fun runSurfaceScript(context: Context, scriptId: String, source: String): SurfaceRun {
+        // A widget or tile can start this process cold, before the Accessibility service or the
+        // app has set the pipeline up.
+        if (appContext == null) initialize(context, KeyMappingRepository.getInstance(context))
+        val scriptsRepo = scriptRepository ?: return SurfaceRun.Missing
+        val executor = actionExecutor ?: return SurfaceRun.Missing
+        val defaults = repository?.config?.value ?: return SurfaceRun.Missing
+        // The free limit works by switching scripts off, and a lapsed reward window is otherwise
+        // only applied when the app opens.
+        EntitlementManager.getInstance(context).enforceLimit()
+        val script = scriptsRepo.scripts.value.firstOrNull { it.id == scriptId } ?: return SurfaceRun.Missing
+        val evaluator = constraintEvaluator
+        surfaceGate(script, scriptsRepo.globallyEnabled.value) { candidate ->
+            evaluator == null || candidate.constraints.all(evaluator::isSatisfied)
+        }?.let { return it }
+
+        if (resolveVibrateForScript(script, defaults.vibrateOnTrigger)) {
+            vibratePhone(context, resolveHapticDurationForScript(script, defaults.hapticDurationMs))
+        }
+        // Nothing may have adopted a running bridge in a cold process yet; the probe does socket and
+        // config-file I/O, as it does off the main thread at app start.
+        withContext(Dispatchers.IO) { BridgeController.ensureAdopted(context) }
+        val run = runChain(script.actions, executor, BridgeController::runActions)
+        _triggerCount.value = _triggerCount.value + 1
+        val record = recordRun(script, keyCode = null, pressType = null, run.appResults, run.bridgeReport, source)
+        val ran = record?.actions?.count { it.ok } ?: 0
+        Log.d(TAG, "Surface run: script=${script.id} source=$source ran=$ran/${script.actions.size} bridge=${run.bridgeReport != null}")
+        return SurfaceRun.Ran(script.name, ran, script.actions.size)
+    }
+
     private fun executeActions(
         context: Context,
         config: KeyMappingConfig,
@@ -363,12 +407,13 @@ object HardwareKeyTriggerCoordinator {
         pressType: String?,
         appResults: List<Boolean?>,
         bridgeReport: List<Pair<String, Boolean>>?,
-    ) {
-        val context = appContext ?: return
+        source: String = if (keyCode != null) RunRecord.SOURCE_KEY else RunRecord.SOURCE_AUTOMATION,
+    ): RunRecord? {
+        val context = appContext ?: return null
         val record = buildRunRecord(
             scriptId = script.id,
             at = System.currentTimeMillis(),
-            source = if (keyCode != null) RunRecord.SOURCE_KEY else RunRecord.SOURCE_AUTOMATION,
+            source = source,
             keyCode = keyCode,
             pressType = pressType,
             actions = script.actions,
@@ -379,6 +424,7 @@ object HardwareKeyTriggerCoordinator {
         RunLogRepository.getInstance(context).append(record)
         RunFailureNotifier.onRun(context, script, record)
         Log.d(TAG, "Run recorded: script=${script.id} failed=${record.actions.filterNot { it.ok }.map { it.type }}")
+        return record
     }
 
     private fun runEnvironment(context: Context) = RunEnvironment(

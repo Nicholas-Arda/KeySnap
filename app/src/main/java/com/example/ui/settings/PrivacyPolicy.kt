@@ -49,9 +49,10 @@ object PrivacyPolicy {
             "confirm a purchase.",
 
         "What is stored on your device" to
-            "Your shortcuts, their triggers and any names you give to unlabelled hardware keys. " +
+            "Your shortcuts, their triggers, which shortcut each home-screen widget and Quick " +
+            "Settings tile runs, and any names you give to unlabelled hardware keys. " +
             "Your timing, haptic and appearance preferences. A history of each shortcut's last " +
-            "20 runs: when it ran, which key or automation started it, and whether each action " +
+            "20 runs: when it ran, which key, automation, widget or tile started it, and whether each action " +
             "worked, but never what an action contains, such as a URL, a command or typed text. " +
             "An ADB key pair the app generates " +
             "to authorise this one device for wireless debugging. When Advanced Mode is on, the " +

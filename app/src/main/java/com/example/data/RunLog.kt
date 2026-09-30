@@ -13,7 +13,7 @@ import io.github.nicholasarda.keysnap.R
 data class RunRecord(
     val scriptId: String,
     val at: Long,
-    /** [SOURCE_KEY] or [SOURCE_AUTOMATION]; a plain string so a newer source still reads back. */
+    /** One of the `SOURCE_` constants; a plain string so a newer source still reads back. */
     val source: String,
     val keyCode: Int? = null,
     /** A [TriggerPressType] name, for key runs. */
@@ -23,6 +23,8 @@ data class RunRecord(
     companion object {
         const val SOURCE_KEY = "key"
         const val SOURCE_AUTOMATION = "automation"
+        const val SOURCE_WIDGET = "widget"
+        const val SOURCE_TILE = "tile"
     }
 }
 

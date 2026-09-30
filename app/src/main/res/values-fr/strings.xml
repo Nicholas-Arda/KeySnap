@@ -557,7 +557,6 @@
     <string name="scripts_tutorial_mini_page">Page Raccourcis</string>
     <string name="scripts_tutorial_listening">Écoute en cours…</string>
     <string name="scripts_tutorial_key_recorded">Touche enregistrée</string>
-    <string name="scripts_no_trigger">Pas encore de touche</string>
     <string name="scripts_no_condition">Aucune condition ajoutée</string>
     <string name="scripts_no_actions">Pas encore d\'action</string>
     <string name="scripts_last_run_failed">La dernière exécution n\'a pas abouti</string>
@@ -845,4 +844,18 @@
     <string name="trigger_kind_key">Appui sur une touche</string>
     <string name="trigger_kind_automation">Automatisation</string>
     <string name="automation_card_subtitle">S\'exécute dès que les conditions ci-dessous sont remplies</string>
+    <!-- Home-screen widget and Quick Settings tiles -->
+    <string name="surface_paused_global">KeySnap est en pause. Réactivez-le dans l\'app pour exécuter des raccourcis.</string>
+    <string name="surface_paused_script">« %1$s » est désactivé. Activez-le dans KeySnap pour l\'exécuter.</string>
+    <string name="surface_conditions_unmet">« %1$s » ne s\'est pas exécuté : ses conditions « Seulement si » ne sont pas remplies.</string>
+    <string name="surface_missing">Ce raccourci a été supprimé. Touchez à nouveau pour en choisir un autre.</string>
+    <string name="surface_choose_shortcut">Choisir un raccourci</string>
+    <string name="surface_picker_empty">Aucun raccourci pour l\'instant. Créez-en d\'abord un dans KeySnap.</string>
+    <string name="widget_description">Exécutez un de vos raccourcis d\'un seul appui</string>
+    <string name="trigger_kind_surface">Widget ou tuile</string>
+    <string name="surface_card_subtitle">S\'exécute quand vous touchez son widget d\'écran d\'accueil ou sa tuile des paramètres rapides</string>
+    <string name="trigger_picker_use_surface">Pas de touche libre ? Utilisez un widget ou une tuile</string>
+    <string name="run_source_widget">Widget</string>
+    <string name="run_source_tile">Tuile des paramètres rapides</string>
+    <string name="widget_limit_reached">Offre gratuite : %1$d widgets d\'écran d\'accueil. Passez à Pro pour des widgets illimités.</string>
 </resources>

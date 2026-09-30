@@ -555,7 +555,6 @@
     <string name="scripts_tutorial_mini_page">Kısayollar sayfası</string>
     <string name="scripts_tutorial_listening">Dinleniyor…</string>
     <string name="scripts_tutorial_key_recorded">Tuş kaydedildi</string>
-    <string name="scripts_no_trigger">Henüz tuş yok</string>
     <string name="scripts_no_condition">Koşul eklenmedi</string>
     <string name="scripts_no_actions">Henüz eylem yok</string>
     <string name="scripts_last_run_failed">Son çalışma tamamlanamadı</string>
@@ -842,4 +841,18 @@
     <string name="trigger_kind_key">Tuş Basışı</string>
     <string name="trigger_kind_automation">Otomasyon</string>
     <string name="automation_card_subtitle">Aşağıdaki koşullar sağlandığı anda çalışır</string>
+    <!-- Home-screen widget and Quick Settings tiles -->
+    <string name="surface_paused_global">KeySnap duraklatıldı. Kısayolları çalıştırmak için uygulamadan devam ettirin.</string>
+    <string name="surface_paused_script">\"%1$s\" kapalı. Çalıştırmak için KeySnap\'te açın.</string>
+    <string name="surface_conditions_unmet">\"%1$s\" çalışmadı: \"Yalnızca şu durumda\" koşulları sağlanmıyor.</string>
+    <string name="surface_missing">Bu kısayol silinmiş. Başka birini seçmek için tekrar dokunun.</string>
+    <string name="surface_choose_shortcut">Bir kısayol seçin</string>
+    <string name="surface_picker_empty">Henüz kısayol yok. Önce KeySnap\'te bir tane oluşturun.</string>
+    <string name="widget_description">Kısayollarınızdan birini tek dokunuşla çalıştırın</string>
+    <string name="trigger_kind_surface">Widget veya kutucuk</string>
+    <string name="surface_card_subtitle">Ana ekran widget\'ına ya da Hızlı Ayarlar kutucuğuna dokununca çalışır</string>
+    <string name="trigger_picker_use_surface">Yedek tuş yok mu? Widget veya kutucuk kullan</string>
+    <string name="run_source_widget">Widget</string>
+    <string name="run_source_tile">Hızlı Ayarlar kutucuğu</string>
+    <string name="widget_limit_reached">Ücretsiz plan: %1$d ana ekran widget\'ı. Sınırsız widget için Pro\'ya geçin.</string>
 </resources>

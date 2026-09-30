@@ -54,6 +54,7 @@ import androidx.compose.material.icons.outlined.Keyboard
 import androidx.compose.material.icons.outlined.PlayCircleOutline
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.outlined.Widgets
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -120,6 +121,7 @@ import com.example.ui.theme.SectionLabel
 import com.example.ui.theme.categoryTileColors
 import io.github.nicholasarda.keysnap.R
 import com.example.viewmodel.ScriptDraft
+import com.example.viewmodel.hasTrigger
 
 /**
  * These two actions take no params, so [ActionEditorForms] has no form for them; "Configure" still
@@ -147,6 +149,7 @@ fun ScriptEditorScreen(
     onRemoveConstraint: (Int) -> Unit,
     onOpenTriggerPicker: () -> Unit,
     onToggleAutomation: () -> Unit,
+    onClearSurfaceOnly: () -> Unit = {},
     onPickConstraint: (String) -> Unit,
     onOpenScriptSettings: () -> Unit,
     onConfigureConstraint: (Int) -> Unit = {},
@@ -242,7 +245,7 @@ fun ScriptEditorScreen(
                     onOpenScriptSettings = onOpenScriptSettings,
                     // Same rule as MainViewModel.commitDraft: no actions, or a key shortcut with no
                     // key, is not a shortcut worth saving.
-                    canSave = draft.actions.isNotEmpty() && (draft.automation || draft.trigger != null),
+                    canSave = draft.actions.isNotEmpty() && draft.hasTrigger(),
                     onDone = onDone,
                     onClose = { requestClose() },
                 )
@@ -252,6 +255,7 @@ fun ScriptEditorScreen(
                             draft = draft,
                             onOpenTriggerPicker = onOpenTriggerPicker,
                             onToggleAutomation = onToggleAutomation,
+                            onClearSurfaceOnly = onClearSurfaceOnly,
                             onConfigureAction = onConfigureAction,
                             onRemoveAction = onRemoveAction,
                             onMoveAction = onMoveAction,
@@ -361,6 +365,7 @@ private fun ChainArea(
     draft: ScriptDraft,
     onOpenTriggerPicker: () -> Unit,
     onToggleAutomation: () -> Unit,
+    onClearSurfaceOnly: () -> Unit,
     onConfigureAction: (Int) -> Unit,
     onRemoveAction: (Int) -> Unit,
     onMoveAction: (Int, Int) -> Unit,
@@ -382,9 +387,9 @@ private fun ChainArea(
         contentPadding = PaddingValues(top = 8.dp, bottom = 24.dp),
     ) {
         item { ChainLabel(stringResource(R.string.editor_chain_when)) }
-        item { TriggerCard(draft, onOpenTriggerPicker, onToggleAutomation) }
+        item { TriggerCard(draft, onOpenTriggerPicker, onToggleAutomation, onClearSurfaceOnly) }
         // Done is disabled until both of these are filled in; say which one is missing.
-        if (!draft.automation && draft.trigger == null) {
+        if (!draft.hasTrigger()) {
             item { ChainHint(stringResource(R.string.editor_needs_trigger)) }
         }
         item { ChainLabel(stringResource(R.string.editor_chain_only_if), topPadding = 6.dp) }
@@ -474,7 +479,12 @@ private fun ChainLabel(text: String, topPadding: Dp = 0.dp) {
 }
 
 @Composable
-private fun TriggerCard(draft: ScriptDraft, onOpenKeyPicker: () -> Unit, onToggleAutomation: () -> Unit) {
+private fun TriggerCard(
+    draft: ScriptDraft,
+    onOpenKeyPicker: () -> Unit,
+    onToggleAutomation: () -> Unit,
+    onClearSurfaceOnly: () -> Unit,
+) {
     val colors = MaterialTheme.colorScheme
     val res = LocalContext.current.resources
     val trigger = draft.trigger
@@ -505,35 +515,19 @@ private fun TriggerCard(draft: ScriptDraft, onOpenKeyPicker: () -> Unit, onToggl
             Icon(Icons.Outlined.ChevronRight, null, tint = colors.onSurfaceVariant)
         }
         // Tapping the automation card clears it, back to the key/automation choice.
-        draft.automation -> Row(
-            Modifier
-                .fillMaxWidth()
-                .clip(InnerShape)
-                .background(colors.primary.copy(alpha = .12f))
-                .heightIn(min = MinTouchTarget)
-                .clickable(onClick = onToggleAutomation)
-                .testTag("assign_key_card")
-                .padding(14.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            IconTile(Icons.Outlined.AutoAwesome, size = 36.dp, selected = true)
-            Spacer(Modifier.width(12.dp))
-            Column(Modifier.weight(1f)) {
-                Text(
-                    stringResource(R.string.trigger_kind_automation),
-                    style = MaterialTheme.typography.titleSmall,
-                    color = colors.onSurface,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-                Text(
-                    stringResource(R.string.automation_card_subtitle),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = colors.onSurfaceVariant,
-                )
-            }
-            Icon(Icons.Outlined.ChevronRight, null, tint = colors.onSurfaceVariant)
-        }
+        draft.automation -> KeylessTriggerCard(
+            Icons.Outlined.AutoAwesome,
+            stringResource(R.string.trigger_kind_automation),
+            stringResource(R.string.automation_card_subtitle),
+            onToggleAutomation,
+        )
+        // Same for a widget/tile shortcut: tapping the card returns to the choice.
+        draft.surfaceOnly -> KeylessTriggerCard(
+            Icons.Outlined.Widgets,
+            stringResource(R.string.trigger_kind_surface),
+            stringResource(R.string.surface_card_subtitle),
+            onClearSurfaceOnly,
+        )
         else -> Row(
             Modifier
                 .fillMaxWidth()
@@ -555,6 +549,37 @@ private fun TriggerCard(draft: ScriptDraft, onOpenKeyPicker: () -> Unit, onToggl
                 onToggleAutomation,
             )
         }
+    }
+}
+
+/** The When card for a shortcut with no key: an automation, or one run from a widget or tile. */
+@Composable
+private fun KeylessTriggerCard(icon: ImageVector, title: String, subtitle: String, onClick: () -> Unit) {
+    val colors = MaterialTheme.colorScheme
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .clip(InnerShape)
+            .background(colors.primary.copy(alpha = .12f))
+            .heightIn(min = MinTouchTarget)
+            .clickable(onClick = onClick)
+            .testTag("assign_key_card")
+            .padding(14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        IconTile(icon, size = 36.dp, selected = true)
+        Spacer(Modifier.width(12.dp))
+        Column(Modifier.weight(1f)) {
+            Text(
+                title,
+                style = MaterialTheme.typography.titleSmall,
+                color = colors.onSurface,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Text(subtitle, style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant)
+        }
+        Icon(Icons.Outlined.ChevronRight, null, tint = colors.onSurfaceVariant)
     }
 }
 

@@ -21,6 +21,9 @@ data class ShortcutScript(
     val hapticDurationMs: Long? = null,
 )
 
+/** No key and not an automation: it runs only from a home-screen widget or a Quick Settings tile. */
+val ShortcutScript.isSurfaceOnly: Boolean get() = triggers.isEmpty() && !automation
+
 data class ScriptTrigger(
     /** A list intentionally models future simultaneous/sequential key combinations. */
     val keyCodes: List<Int>,

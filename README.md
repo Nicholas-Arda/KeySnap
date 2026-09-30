@@ -46,7 +46,7 @@ Shortcuts run in the background, and the whole thing works without an account, a
 
 ## How much control do I have?
 
-**Triggers.** Any hardware key Android reports: volume, power, camera, the assistant button, headset buttons, keys on a Bluetooth keyboard or game controller, and unlabelled OEM buttons you can name yourself. Each key can be a single press, a double press or a long press, and one shortcut can chain several. There is also an **Automation** trigger with no key at all: it fires when its conditions become true.
+**Triggers.** Any hardware key Android reports: volume, power, camera, the assistant button, headset buttons, keys on a Bluetooth keyboard or game controller, and unlabelled OEM buttons you can name yourself. Each key can be a single press, a double press or a long press, and one shortcut can chain several. There is also an **Automation** trigger with no key at all: it fires when its conditions become true. Any shortcut can also run from a **home-screen widget** or one of three **Quick Settings tiles**, and a shortcut can skip the key entirely and live only there, so a phone without a spare button still gets a one-tap way in.
 
 **Actions.** Nearly 90, in twelve groups: input and gestures, apps, flashlight, navigation, volume, display, media, connectivity, keyboard, device, sound and automation. Every action's settings are visible in the editor before it runs, and privileged ones such as shell commands, intents and HTTP requests show the exact command or URL they will execute.
 
@@ -94,7 +94,7 @@ Android Studio with its bundled JDK is all you need. `:app` is the Kotlin and Je
 
 ## FAQ
 
-**Is it free?** The free version has two shortcuts and shows ads. Pro is a one-time purchase through Google Play that removes both limits; there is no subscription.
+**Is it free?** The free version has two shortcuts and two home-screen widgets, and shows ads. Pro is a one-time purchase through Google Play that removes those limits and the ads; there is no subscription. The three Quick Settings tiles are free.
 
 **Does it need root?** No. Everyday shortcuts use the accessibility service; Advanced Mode uses Wireless Debugging, a feature already in Android's Developer options. Nothing on the phone is modified.
 

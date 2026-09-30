@@ -157,6 +157,21 @@ object BridgeController {
     }
 
     /**
+     * For a widget or tile tap, which can start this process cold: nothing has adopted a running
+     * bridge yet, so without this probe every bridge-only action in the chain would run in the app
+     * and fail. Probes only from STOPPED; ERROR and STARTING are left for the wizard to report.
+     */
+    suspend fun ensureAdopted(context: Context): Boolean {
+        if (_state.value == BridgeState.RUNNING) return true
+        if (_state.value != BridgeState.STOPPED) return false
+        if (payload == null) {
+            appContext = context.applicationContext
+            payload = BridgePayload(context)
+        }
+        return detectExistingBridge()
+    }
+
+    /**
      * Installs the payload and spawns the bridge over an authorized shell.
      *
      * Publishes the config before spawning so the bridge has a valid mapping the moment it

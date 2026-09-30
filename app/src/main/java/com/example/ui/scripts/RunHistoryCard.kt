@@ -103,6 +103,8 @@ private fun runTriggerLabel(run: RunRecord, res: Resources): String {
     val press = TriggerPressType.entries.firstOrNull { it.name == run.pressType }
     return when {
         run.source == RunRecord.SOURCE_AUTOMATION -> res.getString(R.string.trigger_kind_automation)
+        run.source == RunRecord.SOURCE_WIDGET -> res.getString(R.string.run_source_widget)
+        run.source == RunRecord.SOURCE_TILE -> res.getString(R.string.run_source_tile)
         keyCode == null -> res.getString(R.string.trigger_kind_key)
         press == null -> getReadableKeyName(res, keyCode)
         else -> "${getReadableKeyName(res, keyCode)} · ${res.getString(press.titleRes)}"

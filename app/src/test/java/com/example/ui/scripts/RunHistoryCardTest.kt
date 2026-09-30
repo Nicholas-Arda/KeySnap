@@ -56,6 +56,17 @@ class RunHistoryCardTest {
         rule.onNodeWithText(res.getQuantityString(R.plurals.run_all, 2, 2)).assertIsDisplayed()
     }
 
+    @Test fun widgetAndTileRunsNameTheirSource() {
+        show(
+            listOf(
+                RunRecord("s1", 1L, RunRecord.SOURCE_WIDGET, null, null, listOf(ActionResult("vibrate", ok = true))),
+                RunRecord("s1", 0L, RunRecord.SOURCE_TILE, null, null, listOf(ActionResult("vibrate", ok = true))),
+            ),
+        )
+        rule.onNodeWithText(res.getString(R.string.run_source_widget)).assertIsDisplayed()
+        rule.onNodeWithText(res.getString(R.string.run_source_tile)).assertIsDisplayed()
+    }
+
     @Test fun noRunsSaysSo() {
         show(emptyList())
         rule.onNodeWithText(res.getString(R.string.run_history_empty)).assertIsDisplayed()

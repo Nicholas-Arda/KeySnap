@@ -558,7 +558,6 @@
     <string name="scripts_tutorial_mini_page">Pagina Scorciatoie</string>
     <string name="scripts_tutorial_listening">In ascolto…</string>
     <string name="scripts_tutorial_key_recorded">Tasto registrato</string>
-    <string name="scripts_no_trigger">Ancora nessun tasto</string>
     <string name="scripts_no_condition">Nessuna condizione aggiunta</string>
     <string name="scripts_no_actions">Ancora nessuna azione</string>
     <string name="scripts_last_run_failed">L\'ultima esecuzione non è stata completata</string>
@@ -846,4 +845,18 @@
     <string name="trigger_kind_key">Pressione tasto</string>
     <string name="trigger_kind_automation">Automazione</string>
     <string name="automation_card_subtitle">Viene eseguita quando le condizioni qui sotto diventano vere</string>
+    <!-- Home-screen widget and Quick Settings tiles -->
+    <string name="surface_paused_global">KeySnap è in pausa. Riprendilo nell\'app per eseguire le scorciatoie.</string>
+    <string name="surface_paused_script">\"%1$s\" è disattivata. Attivala in KeySnap per eseguirla.</string>
+    <string name="surface_conditions_unmet">\"%1$s\" non è stata eseguita: le condizioni \"Solo se\" non sono soddisfatte.</string>
+    <string name="surface_missing">Questa scorciatoia è stata eliminata. Tocca di nuovo per sceglierne un\'altra.</string>
+    <string name="surface_choose_shortcut">Scegli una scorciatoia</string>
+    <string name="surface_picker_empty">Ancora nessuna scorciatoia. Creane prima una in KeySnap.</string>
+    <string name="widget_description">Esegui una delle tue scorciatoie con un tocco</string>
+    <string name="trigger_kind_surface">Widget o riquadro</string>
+    <string name="surface_card_subtitle">Viene eseguita quando tocchi il suo widget nella schermata Home o il suo riquadro nelle impostazioni rapide</string>
+    <string name="trigger_picker_use_surface">Nessun tasto libero? Usa un widget o un riquadro</string>
+    <string name="run_source_widget">Widget</string>
+    <string name="run_source_tile">Riquadro delle impostazioni rapide</string>
+    <string name="widget_limit_reached">Piano gratuito: %1$d widget nella schermata Home. Passa a Pro per widget illimitati.</string>
 </resources>

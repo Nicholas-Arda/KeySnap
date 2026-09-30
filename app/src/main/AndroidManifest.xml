@@ -122,6 +122,75 @@
                 <action android:name="com.example.action.SUBMIT_PAIRING_CODE" />
             </intent-filter>
         </receiver>
+
+        <!-- One-tap shortcut widget. Exported because the system delivers widget broadcasts to it;
+             it only draws. Runs go through ScriptRunReceiver, which is not exported. -->
+        <receiver
+            android:name="com.example.surface.ShortcutWidgetProvider"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/shortcut_widget_info" />
+        </receiver>
+
+        <receiver
+            android:name="com.example.surface.ScriptRunReceiver"
+            android:exported="false" />
+
+        <!-- Exported: the widget host starts it to configure a new widget. It binds only this
+             app's own widget ids. -->
+        <activity
+            android:name="com.example.surface.ShortcutPickerActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:taskAffinity=""
+            android:theme="@style/Theme.MyApplication">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE_PREFERENCES" />
+            </intent-filter>
+        </activity>
+
+        <!-- Three Quick Settings tiles, each running the shortcut bound to its slot. Only the system
+             can bind them (BIND_QUICK_SETTINGS_TILE); that is a protection attribute, not a
+             permission the app requests. -->
+        <service
+            android:name="com.example.surface.ShortcutTile1"
+            android:exported="true"
+            android:icon="@drawable/ic_tile_bolt"
+            android:label="@string/tile_label_1"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name="com.example.surface.ShortcutTile2"
+            android:exported="true"
+            android:icon="@drawable/ic_tile_bolt"
+            android:label="@string/tile_label_2"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name="com.example.surface.ShortcutTile3"
+            android:exported="true"
+            android:icon="@drawable/ic_tile_bolt"
+            android:label="@string/tile_label_3"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
 </application>
 
 </manifest>

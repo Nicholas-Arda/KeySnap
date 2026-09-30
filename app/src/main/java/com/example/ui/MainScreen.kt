@@ -392,6 +392,7 @@ fun MainScreen(viewModel: MainViewModel) {
                 runs = runLog.filter { it.scriptId == draft.id },
                 onOpenTriggerPicker = { showTriggerPicker = true },
                 onToggleAutomation = viewModel::draftToggleAutomation,
+                onClearSurfaceOnly = { viewModel.draftSetSurfaceOnly(false) },
                 onPickConstraint = { type ->
                     if (ConstraintEditorForms.form(type) == null) {
                         viewModel.draftAddConstraint(type)
@@ -469,6 +470,10 @@ fun MainScreen(viewModel: MainViewModel) {
                     onSwitchToAutomation = {
                         showTriggerPicker = false
                         viewModel.draftSetAutomation()
+                    },
+                    onSwitchToSurface = {
+                        showTriggerPicker = false
+                        viewModel.draftSetSurfaceOnly(true)
                     },
                 )
             }

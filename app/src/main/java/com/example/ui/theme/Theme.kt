@@ -1,6 +1,7 @@
 package com.example.ui.theme
 
 import android.app.Activity
+import android.content.Context
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.material3.MaterialTheme
@@ -24,6 +25,16 @@ enum class ThemeMode {
     SEPIA;
 
     fun next(): ThemeMode = entries[(ordinal + 1) % entries.size]
+}
+
+/**
+ * The theme the user chose, for screens outside MainActivity. MainViewModel writes it; an install
+ * that only has the old `dark_theme` flag still maps to DARK or LIGHT.
+ */
+fun storedThemeMode(context: Context): ThemeMode {
+    val prefs = context.getSharedPreferences("arda_mapper_appearance", Context.MODE_PRIVATE)
+    return prefs.getString("theme_mode", null)?.let { runCatching { ThemeMode.valueOf(it) }.getOrNull() }
+        ?: if (prefs.getBoolean("dark_theme", true)) ThemeMode.DARK else ThemeMode.LIGHT
 }
 
 /** Shared by every theme-driven crossfade, so the scheme and the page ground move together. */

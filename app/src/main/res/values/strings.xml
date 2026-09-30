@@ -583,7 +583,6 @@
     <string name="scripts_tutorial_mini_page">Shortcuts page</string>
     <string name="scripts_tutorial_listening">Listening…</string>
     <string name="scripts_tutorial_key_recorded">Key recorded</string>
-    <string name="scripts_no_trigger">No key yet</string>
     <string name="scripts_no_condition">No condition added</string>
     <string name="scripts_no_actions">No actions yet</string>
     <string name="scripts_last_run_failed">Last run didn’t finish</string>
@@ -888,4 +887,22 @@
     <string name="trigger_kind_key">Key press</string>
     <string name="trigger_kind_automation">Automation</string>
     <string name="automation_card_subtitle">Runs when the conditions below become true</string>
+    <!-- Home-screen widget and Quick Settings tiles -->
+    <string name="surface_paused_global">KeySnap is paused. Resume it in the app to run shortcuts.</string>
+    <string name="surface_paused_script">\"%1$s\" is off. Turn it on in KeySnap to run it.</string>
+    <string name="surface_conditions_unmet">\"%1$s\" did not run: its Only if conditions are not met.</string>
+    <string name="surface_missing">This shortcut was deleted. Tap again to choose another.</string>
+    <string name="surface_choose_shortcut">Choose a shortcut</string>
+    <string name="surface_picker_empty">No shortcuts yet. Create one in KeySnap first.</string>
+    <string name="widget_description">Run one of your shortcuts with a tap</string>
+    <string name="trigger_kind_surface">Widget or tile</string>
+    <string name="surface_card_subtitle">Runs when you tap its home-screen widget or Quick Settings tile</string>
+    <string name="trigger_picker_use_surface">No spare key? Use a widget or tile</string>
+    <!-- Manifest labels of the three tiles; brand name plus a digit, the same in every language. -->
+    <string name="tile_label_1" translatable="false">KeySnap 1</string>
+    <string name="tile_label_2" translatable="false">KeySnap 2</string>
+    <string name="tile_label_3" translatable="false">KeySnap 3</string>
+    <string name="run_source_widget">Widget</string>
+    <string name="run_source_tile">Quick Settings tile</string>
+    <string name="widget_limit_reached">Free plan: %1$d home-screen widgets. Go Pro for unlimited widgets.</string>
 </resources>

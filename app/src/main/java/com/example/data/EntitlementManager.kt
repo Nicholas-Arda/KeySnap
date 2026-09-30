@@ -23,6 +23,9 @@ class EntitlementManager internal constructor(
         const val REWARD_WINDOW_MS = 4 * 60 * 60 * 1000L
         const val REWARD_EXTEND_MS = 30 * 60 * 1000L
 
+        /** Home-screen widgets on the free plan. Quick Settings tiles are free: there are only three. */
+        const val FREE_WIDGET_LIMIT = 2
+
         @Volatile private var instance: EntitlementManager? = null
 
         fun getInstance(context: Context): EntitlementManager = instance ?: synchronized(this) {
@@ -57,6 +60,15 @@ class EntitlementManager internal constructor(
         _rewardExpiryAt.value = expiry
         prefs.edit().putLong(KEY_REWARD_EXPIRY_AT, expiry).apply()
     }
+
+    /**
+     * Whether home-screen widget [appWidgetId] may be bound or run, given the widgets already on the
+     * home screen with a shortcut ([boundWidgetIds]). Free keeps the first [FREE_WIDGET_LIMIT] by
+     * id: the widget host hands ids out in increasing order, so that is placement order and needs
+     * nothing stored. After a refund the later widgets stay put but refuse to run until Pro returns.
+     */
+    fun widgetAllowed(appWidgetId: Int, boundWidgetIds: Collection<Int>): Boolean =
+        _isPro.value || appWidgetId in (boundWidgetIds + appWidgetId).toSortedSet().take(FREE_WIDGET_LIMIT)
 
     /**
      * Pauses the newest scripts over the current limit, oldest-first kept. There is no background

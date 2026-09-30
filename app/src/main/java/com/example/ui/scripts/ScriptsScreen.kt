@@ -48,6 +48,7 @@ import com.example.data.ScriptActionCatalog
 import com.example.data.ScriptConstraintCatalog
 import com.example.data.ShortcutScript
 import com.example.data.getReadableKeyName
+import com.example.data.isSurfaceOnly
 import com.example.ui.components.AppAlertDialog
 import com.example.ui.components.ConsoleShape
 import com.example.ui.components.GroundedPage
@@ -228,7 +229,7 @@ private fun ScriptCard(
 }
 
 /**
- * The "key name · press type" line, plus whether the shortcut can actually fire. Shared with the
+ * The "key name · press type" line (or Automation, or Widget or tile), plus whether the shortcut can actually fire. Shared with the
  * Home shortcut rows so the two pages never describe the same trigger differently.
  */
 @Composable
@@ -241,9 +242,9 @@ fun triggerSummary(script: ShortcutScript): Pair<String, Boolean> {
         trigger != null -> "${trigger.keyCodes.joinToString("+") { getReadableKeyName(res, it) }} · ${stringResource(trigger.pressType.shortBadgeRes)}"
         automationHasCondition -> stringResource(R.string.trigger_kind_automation)
         script.automation -> "${stringResource(R.string.trigger_kind_automation)} · ${stringResource(R.string.scripts_no_condition)}"
-        else -> stringResource(R.string.scripts_no_trigger)
+        else -> stringResource(R.string.trigger_kind_surface)
     }
-    return text to (trigger != null || automationHasCondition)
+    return text to (trigger != null || automationHasCondition || script.isSurfaceOnly)
 }
 
 /**

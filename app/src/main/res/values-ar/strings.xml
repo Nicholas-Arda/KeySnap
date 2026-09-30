@@ -554,7 +554,6 @@
     <string name="scripts_tutorial_mini_page">صفحة الاختصارات</string>
     <string name="scripts_tutorial_listening">جارٍ الاستماع…</string>
     <string name="scripts_tutorial_key_recorded">تم تسجيل المفتاح</string>
-    <string name="scripts_no_trigger">لا يوجد مفتاح بعد</string>
     <string name="scripts_no_condition">لم تتم إضافة شرط</string>
     <string name="scripts_no_actions">لا توجد إجراءات بعد</string>
     <string name="scripts_last_run_failed">لم يكتمل آخر تشغيل</string>
@@ -841,4 +840,18 @@
     <string name="trigger_kind_key">ضغطة مفتاح</string>
     <string name="trigger_kind_automation">أتمتة</string>
     <string name="automation_card_subtitle">يعمل عندما تتحقق الشروط أدناه</string>
+    <!-- Home-screen widget and Quick Settings tiles -->
+    <string name="surface_paused_global">KeySnap متوقف مؤقتًا. استأنفه من التطبيق لتشغيل الاختصارات.</string>
+    <string name="surface_paused_script">«%1$s» معطَّل. فعِّله في KeySnap لتشغيله.</string>
+    <string name="surface_conditions_unmet">لم يعمل «%1$s»: شروط «فقط إذا» غير متحققة.</string>
+    <string name="surface_missing">تم حذف هذا الاختصار. انقر مرة أخرى لاختيار اختصار آخر.</string>
+    <string name="surface_choose_shortcut">اختر اختصارًا</string>
+    <string name="surface_picker_empty">لا توجد اختصارات بعد. أنشئ اختصارًا في KeySnap أولًا.</string>
+    <string name="widget_description">شغّل أحد اختصاراتك بلمسة واحدة</string>
+    <string name="trigger_kind_surface">أداة أو مربع</string>
+    <string name="surface_card_subtitle">يعمل عند النقر على أداته في الشاشة الرئيسية أو مربعه في الإعدادات السريعة</string>
+    <string name="trigger_picker_use_surface">لا يوجد مفتاح متاح؟ استخدم أداة أو مربعًا</string>
+    <string name="run_source_widget">أداة</string>
+    <string name="run_source_tile">مربع الإعدادات السريعة</string>
+    <string name="widget_limit_reached">الخطة المجانية: %1$d أداة على الشاشة الرئيسية. احصل على Pro لعدد غير محدود من الأدوات.</string>
 </resources>

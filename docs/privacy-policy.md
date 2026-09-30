@@ -14,7 +14,7 @@ KeySnap has no servers, no accounts, no analytics and no crash reporting. Nothin
 
 ## What is stored on your device
 
-Your shortcuts, their triggers and any names you give to unlabelled hardware keys. Your timing, haptic and appearance preferences. A history of each shortcut's last 20 runs: when it ran, which key or automation started it, and whether each action worked, but never what an action contains, such as a URL, a command or typed text. An ADB key pair the app generates to authorise this one device for wireless debugging. When Advanced Mode is on, the bridge program and the local token the app uses to talk to it. All of this stays in the app's private storage on this device.
+Your shortcuts, their triggers, which shortcut each home-screen widget and Quick Settings tile runs, and any names you give to unlabelled hardware keys. Your timing, haptic and appearance preferences. A history of each shortcut's last 20 runs: when it ran, which key, automation, widget or tile started it, and whether each action worked, but never what an action contains, such as a URL, a command or typed text. An ADB key pair the app generates to authorise this one device for wireless debugging. When Advanced Mode is on, the bridge program and the local token the app uses to talk to it. All of this stays in the app's private storage on this device.
 
 ## The accessibility service
 

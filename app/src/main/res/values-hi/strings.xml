@@ -557,7 +557,6 @@
     <string name="scripts_tutorial_mini_page">शॉर्टकट पेज</string>
     <string name="scripts_tutorial_listening">सुन रहा है…</string>
     <string name="scripts_tutorial_key_recorded">बटन रिकॉर्ड हो गया</string>
-    <string name="scripts_no_trigger">अभी कोई बटन नहीं</string>
     <string name="scripts_no_condition">कोई शर्त नहीं जोड़ी गई</string>
     <string name="scripts_no_actions">अभी कोई क्रिया नहीं है</string>
     <string name="scripts_last_run_failed">पिछला रन पूरा नहीं हुआ</string>
@@ -844,4 +843,18 @@
     <string name="trigger_kind_key">बटन दबाना</string>
     <string name="trigger_kind_automation">ऑटोमेशन</string>
     <string name="automation_card_subtitle">नीचे की शर्तें पूरी होते ही चलता है</string>
+    <!-- Home-screen widget and Quick Settings tiles -->
+    <string name="surface_paused_global">KeySnap रुका हुआ है। शॉर्टकट चलाने के लिए ऐप में इसे फिर से शुरू करें।</string>
+    <string name="surface_paused_script">\"%1$s\" बंद है। इसे चलाने के लिए KeySnap में चालू करें।</string>
+    <string name="surface_conditions_unmet">\"%1$s\" नहीं चला: इसकी \"केवल अगर\" शर्तें पूरी नहीं हुईं।</string>
+    <string name="surface_missing">यह शॉर्टकट डिलीट हो गया है। दूसरा चुनने के लिए फिर से टैप करें।</string>
+    <string name="surface_choose_shortcut">एक शॉर्टकट चुनें</string>
+    <string name="surface_picker_empty">अभी कोई शॉर्टकट नहीं है। पहले KeySnap में एक बनाएं।</string>
+    <string name="widget_description">एक टैप से अपना कोई शॉर्टकट चलाएं</string>
+    <string name="trigger_kind_surface">विजेट या टाइल</string>
+    <string name="surface_card_subtitle">होम स्क्रीन विजेट या क्विक सेटिंग टाइल पर टैप करने पर चलता है</string>
+    <string name="trigger_picker_use_surface">कोई खाली बटन नहीं? विजेट या टाइल इस्तेमाल करें</string>
+    <string name="run_source_widget">विजेट</string>
+    <string name="run_source_tile">क्विक सेटिंग टाइल</string>
+    <string name="widget_limit_reached">फ़्री प्लान: होम स्क्रीन पर %1$d विजेट। अनलिमिटेड विजेट के लिए Pro लें।</string>
 </resources>
