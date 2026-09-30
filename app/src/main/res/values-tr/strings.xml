@@ -22,6 +22,8 @@
     <string name="param_strength">Güç</string>
     <string name="param_key_code">Tuş kodu</string>
     <string name="param_text">Metin</string>
+    <string name="param_title">Başlık</string>
+    <string name="param_on_tap">Dokunulunca</string>
     <string name="param_taps">Dokunuş</string>
     <string name="param_interval_ms">Aralık (ms)</string>
     <string name="param_start_x">Başlangıç X</string>
@@ -48,6 +50,8 @@
     <string name="param_mode">Mod</string>
     <string name="param_stream">Kanal</string>
     <string name="param_sound">Ses</string>
+    <string name="param_image">Görsel</string>
+    <string name="param_apply_to">Uygulanacak ekran</string>
     <string name="param_times">Kez</string>
 
     <!-- Eylemler: fener -->
@@ -117,6 +121,7 @@
     <string name="action_toggle_auto_brightness">Otomatik parlaklığı aç/kapat</string>
     <string name="action_increase_brightness">Parlaklığı artır</string>
     <string name="action_decrease_brightness">Parlaklığı azalt</string>
+    <string name="action_set_wallpaper">Duvar kâğıdı ayarla</string>
 
     <!-- Eylemler: medya -->
     <string name="action_media_play">Oynat</string>
@@ -161,6 +166,7 @@
     <string name="action_disable_dnd">Rahatsız Etmeyin\'i kapat</string>
     <string name="action_open_app_drawer">Uygulama çekmecesini aç</string>
     <string name="action_dismiss_all_notifications">Tüm bildirimleri temizle</string>
+    <string name="action_show_notification">Bildirim göster</string>
     <string name="action_answer_call">Aramayı cevapla</string>
     <string name="action_end_call">Aramayı sonlandır</string>
 
@@ -305,6 +311,10 @@
     <string name="choice_ringer_normal">Normal</string>
     <string name="choice_ringer_vibrate">Titreşim</string>
     <string name="choice_ringer_silent">Sessiz</string>
+    <string name="choice_on_tap_nothing">Hiçbir şey</string>
+    <string name="choice_wallpaper_both">Ana ekran ve kilit ekranı</string>
+    <string name="choice_wallpaper_home">Ana ekran</string>
+    <string name="choice_wallpaper_lock">Kilit ekranı</string>
 
     <!-- Basma türleri -->
     <string name="press_single_title">Tek basış</string>
@@ -402,6 +412,8 @@
     <string name="action_config_record_key">Fiziksel bir tuş kaydet</string>
     <string name="action_config_choose_app">Bir uygulama seçin</string>
     <string name="action_config_enter_package">Ya da bir paket adı girin</string>
+    <string name="action_config_choose_image">Bir görsel seçin</string>
+    <string name="action_config_change_image">Görseli değiştirin</string>
     <string name="action_config_pick_on_screen">Ekrandan seç</string>
     <string name="action_config_allow_overlay">Seçmek için diğer uygulamaların üzerine çizme izni verin</string>
     <string name="action_config_point_not_set">seçilmedi</string>
@@ -595,7 +607,7 @@
     <string name="home_setup_allow_background">Arka planda çalışmasına izin ver</string>
     <string name="home_setup_done_background">İzin verildi</string>
     <string name="home_setup_step_notifications">Bildirimlere izin verin</string>
-    <string name="home_setup_why_notifications">Kurulum için ve bir kısayol çalışamadığında haber vermek için. Android sorduğunda İzin ver’e dokunun — İzin verme, kurulumu burada durdurur.</string>
+    <string name="home_setup_why_notifications">Kurulum için, bir kısayol çalışamadığında haber vermek için ve kendi kısayollarınızın gösterdiği bildirimler için. Android sorduğunda İzin ver’e dokunun — İzin verme, kurulumu burada durdurur.</string>
     <string name="home_setup_ask_now">Şimdi sor</string>
     <string name="home_setup_done_notifications">İzin verildi</string>
     <string name="home_setup_all_done">Üçü de açık. Tuşlarınız artık çalışıyor.</string>
@@ -608,7 +620,7 @@
     <string name="home_setup_why_collapsed">Daraltıldı</string>
     <string name="home_setup_whytext_accessibility">Android, donanım tuşlarını yalnızca bir erişilebilirlik servisine gösterir; KeySnap de tam olarak bunun için bir tane kullanır: bir basışı fark etmek ve kısayolunuzu çalıştırmak. Başka uygulamaların ekranlarını okumaz. Yalnızca Uzman Modu kurulumu sırasında, Kablosuz Hata Ayıklama sayfasındaki eşleştirme kodunu da okur, başka hiçbir şeyi değil.</string>
     <string name="home_setup_whytext_background">Android, boşta olduğunu düşündüğü uygulamaları kapatır; kapanmış bir uygulama da kısayollarınızı çalıştıramaz. Bu, telefonunuz uyurken KeySnap’i ayakta tutar. Arka planda bir tuşa basılmasını beklemekten başka bir şey yapmaz.</string>
-    <string name="home_setup_whytext_notifications">Uzman Modu kurulumu sırasında: eşleştirme kodu ve servisin çalışıp çalışmadığı. Sonrasında yalnızca bir kısayol çalışamadığında ve nedeni. Hatırlatma yok, tanıtım yok, başka hiçbir şey yok.</string>
+    <string name="home_setup_whytext_notifications">Uzman Modu kurulumu sırasında: eşleştirme kodu ve servisin çalışıp çalışmadığı. Sonrasında yalnızca bir kısayol çalışamadığında ve nedeni, bir de kendi kısayollarınıza eklediğiniz bildirimler. Bizden hatırlatma yok, tanıtım yok, başka hiçbir şey yok.</string>
     <string name="home_setup_illo_battery_dialog">KeySnap arka planda her zaman çalışsın mı?</string>
     <string name="home_setup_illo_battery_body">Bu, pil ömrünü kısaltabilir.</string>
     <string name="home_setup_illo_battery_deny">Reddet</string>
@@ -795,6 +807,7 @@
     <string name="run_nothing_ran">Hiçbir şey çalışmadı. Eylem ayarlarını kontrol edin.</string>
     <string name="run_partial">%2$d eylemin %1$d tanesi çalıştı</string>
     <string name="run_failure_generic">Tamamlanamadı</string>
+    <string name="run_failure_notifications_off">Bildirimler kapalı</string>
     <string name="editor_needs_action">Kaydetmeden önce en az bir eylem ekleyin.</string>
     <string name="editor_needs_trigger">Kaydetmeden önce bir tuş seçin.</string>
     <string name="saved_needs_trigger">Kaydedildi. Çalışabilmesi için bir tuş atayın.</string>
@@ -813,6 +826,8 @@
     <!-- Kablosuz ADB eşleştirme bildirimi -->
     <string name="notif_channel_pairing">ADB Eşleştirme Yardımcısı</string>
     <string name="notif_channel_pairing_description">Kablosuz ADB eşleştirme kodu girişi ve hata bildirimleri</string>
+    <string name="notif_channel_shortcuts">Kısayol bildirimleri</string>
+    <string name="notif_channel_shortcuts_description">Kısayollarınızın gösterdiği bildirimler</string>
     <string name="notif_pairing_title">ADB eşleştirmesi bekleniyor</string>
     <string name="notif_pairing_default">Sadece 6 haneli kodu girin; bağlantı noktası otomatik bulunacak.</string>
     <string name="notif_pairing_input_label">6 haneli eşleştirme kodu</string>

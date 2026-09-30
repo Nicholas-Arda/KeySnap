@@ -23,6 +23,8 @@
     <string name="param_strength">Intensidade</string>
     <string name="param_key_code">Código da tecla</string>
     <string name="param_text">Texto</string>
+    <string name="param_title">Título</string>
+    <string name="param_on_tap">Ao tocar</string>
     <string name="param_taps">Toques</string>
     <string name="param_interval_ms">Intervalo (ms)</string>
     <string name="param_start_x">X inicial</string>
@@ -49,6 +51,8 @@
     <string name="param_mode">Modo</string>
     <string name="param_stream">Fluxo</string>
     <string name="param_sound">Som</string>
+    <string name="param_image">Imagem</string>
+    <string name="param_apply_to">Aplicar em</string>
     <string name="param_times">Vezes</string>
 
     <!-- Ações: lanterna -->
@@ -118,6 +122,7 @@
     <string name="action_toggle_auto_brightness">Ativar/desativar brilho automático</string>
     <string name="action_increase_brightness">Aumentar brilho</string>
     <string name="action_decrease_brightness">Diminuir brilho</string>
+    <string name="action_set_wallpaper">Definir papel de parede</string>
 
     <!-- Ações: mídia -->
     <string name="action_media_play">Reproduzir</string>
@@ -162,6 +167,7 @@
     <string name="action_disable_dnd">Desativar não perturbe</string>
     <string name="action_open_app_drawer">Abrir gaveta de aplicativos</string>
     <string name="action_dismiss_all_notifications">Descartar todas as notificações</string>
+    <string name="action_show_notification">Mostrar notificação</string>
     <string name="action_answer_call">Atender chamada</string>
     <string name="action_end_call">Encerrar chamada</string>
 
@@ -306,6 +312,10 @@
     <string name="choice_ringer_normal">Normal</string>
     <string name="choice_ringer_vibrate">Vibrar</string>
     <string name="choice_ringer_silent">Silencioso</string>
+    <string name="choice_on_tap_nothing">Nada</string>
+    <string name="choice_wallpaper_both">Tela inicial e de bloqueio</string>
+    <string name="choice_wallpaper_home">Tela inicial</string>
+    <string name="choice_wallpaper_lock">Tela de bloqueio</string>
 
     <!-- Tipos de pressão do gatilho -->
     <string name="press_single_title">Toque único</string>
@@ -397,6 +407,8 @@
     <string name="action_config_record_key">Gravar uma tecla física</string>
     <string name="action_config_choose_app">Escolher um aplicativo</string>
     <string name="action_config_enter_package">Ou informe um nome de pacote</string>
+    <string name="action_config_choose_image">Escolher uma imagem</string>
+    <string name="action_config_change_image">Trocar imagem</string>
     <string name="action_config_pick_on_screen">Selecionar na tela</string>
     <string name="action_config_allow_overlay">Permitir desenhar sobre outros apps para selecionar</string>
     <string name="action_config_point_not_set">não definido</string>
@@ -598,7 +610,7 @@
     <string name="home_setup_allow_background">Permitir uso em segundo plano</string>
     <string name="home_setup_done_background">Permitido</string>
     <string name="home_setup_step_notifications">Permita as notificações</string>
-    <string name="home_setup_why_notifications">Para a configuração e para avisar quando um atalho não puder ser executado. Toque em Permitir quando o Android perguntar — Não permitir interrompe a configuração aqui.</string>
+    <string name="home_setup_why_notifications">Para a configuração, para avisar quando um atalho não puder ser executado e para as notificações que seus próprios atalhos mostram. Toque em Permitir quando o Android perguntar — Não permitir interrompe a configuração aqui.</string>
     <string name="home_setup_ask_now">Perguntar agora</string>
     <string name="home_setup_done_notifications">Permitidas</string>
     <string name="home_setup_all_done">Os três estão ativos. Seus botões já funcionam.</string>
@@ -611,7 +623,7 @@
     <string name="home_setup_why_collapsed">Recolhido</string>
     <string name="home_setup_whytext_accessibility">O Android mostra os botões físicos apenas a um serviço de acessibilidade, então o KeySnap usa um exatamente para isso: perceber um toque e executar o seu atalho. Ele não lê a tela de outros apps. Só durante a configuração do Modo Avançado ele também lê o código de pareamento na página de Depuração sem Fio, e nada além disso.</string>
     <string name="home_setup_whytext_background">O Android encerra apps que considera inativos, e um app encerrado não consegue executar seus atalhos. Isso mantém o KeySnap vivo enquanto o celular dorme. Em segundo plano ele não faz nada além de esperar um botão.</string>
-    <string name="home_setup_whytext_notifications">Durante a configuração do Modo Avançado: o código de pareamento e se o serviço está em execução. Depois disso, só quando um atalho não puder ser executado, e por quê. Sem lembretes, sem promoções, nada além disso, nunca.</string>
+    <string name="home_setup_whytext_notifications">Durante a configuração do Modo Avançado: o código de pareamento e se o serviço está em execução. Depois disso, só quando um atalho não puder ser executado, e por quê, e as notificações que você coloca nos seus atalhos. Sem lembretes nossos, sem promoções, nada além disso, nunca.</string>
     <string name="home_setup_illo_battery_dialog">Permitir que o KeySnap fique sempre em execução em segundo plano?</string>
     <string name="home_setup_illo_battery_body">Isso pode reduzir a duração da bateria.</string>
     <string name="home_setup_illo_battery_deny">Negar</string>
@@ -798,6 +810,7 @@
     <string name="run_nothing_ran">Nada foi executado. Verifique as configurações da ação.</string>
     <string name="run_partial">Executadas %1$d de %2$d ações</string>
     <string name="run_failure_generic">Não foi concluída</string>
+    <string name="run_failure_notifications_off">As notificações estão desativadas</string>
     <string name="editor_needs_action">Adicione pelo menos uma ação antes de salvar.</string>
     <string name="editor_needs_trigger">Escolha uma tecla antes de salvar.</string>
     <string name="saved_needs_trigger">Salvo. Atribua uma tecla para que possa ser executado.</string>
@@ -816,6 +829,8 @@
     <!-- Notificação de pareamento ADB sem fio -->
     <string name="notif_channel_pairing">Assistente de pareamento ADB</string>
     <string name="notif_channel_pairing_description">Notificações de entrada do código de pareamento ADB sem fio e de erros</string>
+    <string name="notif_channel_shortcuts">Notificações dos atalhos</string>
+    <string name="notif_channel_shortcuts_description">Notificações que seus atalhos mostram</string>
     <string name="notif_pairing_title">Aguardando pareamento ADB</string>
     <string name="notif_pairing_default">Basta digitar o código de 6 dígitos; a porta será encontrada automaticamente.</string>
     <string name="notif_pairing_input_label">Código de pareamento de 6 dígitos</string>

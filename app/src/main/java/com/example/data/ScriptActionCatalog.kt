@@ -152,6 +152,13 @@ object ScriptActionCatalog {
         ActionDescriptor("toggle_auto_brightness", R.string.action_toggle_auto_brightness, ActionCategory.DISPLAY, ActionAvailability.AVAILABLE),
         ActionDescriptor("increase_brightness", R.string.action_increase_brightness, ActionCategory.DISPLAY, ActionAvailability.AVAILABLE),
         ActionDescriptor("decrease_brightness", R.string.action_decrease_brightness, ActionCategory.DISPLAY, ActionAvailability.AVAILABLE),
+        ActionDescriptor(
+            "set_wallpaper", R.string.action_set_wallpaper, ActionCategory.DISPLAY, ActionAvailability.AVAILABLE,
+            listOf(
+                param("imageUri", R.string.param_image, ActionParameterKind.URL),
+                param("target", R.string.param_apply_to, ActionParameterKind.CHOICE, choices = listOf("both", "home", "lock")),
+            ),
+        ),
 
         // Media
         ActionDescriptor("media_play", R.string.action_media_play, ActionCategory.MEDIA, ActionAvailability.AVAILABLE),
@@ -194,6 +201,18 @@ object ScriptActionCatalog {
         ActionDescriptor("toggle_dnd", R.string.action_toggle_dnd, ActionCategory.DEVICE, ActionAvailability.AVAILABLE),
         ActionDescriptor("enable_dnd", R.string.action_enable_dnd, ActionCategory.DEVICE, ActionAvailability.AVAILABLE),
         ActionDescriptor("disable_dnd", R.string.action_disable_dnd, ActionCategory.DEVICE, ActionAvailability.AVAILABLE),
+        // "url" and "packageName" are required only while visible: the editor gates each on
+        // "onTap", and ActionEditorForms.isComplete checks visible fields only.
+        ActionDescriptor(
+            "show_notification", R.string.action_show_notification, ActionCategory.DEVICE, ActionAvailability.AVAILABLE,
+            listOf(
+                param("title", R.string.param_title, ActionParameterKind.TEXT),
+                param("text", R.string.param_text, ActionParameterKind.TEXT, required = false),
+                param("onTap", R.string.param_on_tap, ActionParameterKind.CHOICE, choices = listOf("none", "url", "app")),
+                param("url", R.string.param_url, ActionParameterKind.URL),
+                param("packageName", R.string.param_app, ActionParameterKind.PACKAGE),
+            ),
+        ),
         ActionDescriptor("open_app_drawer", R.string.action_open_app_drawer, ActionCategory.DEVICE),
         ActionDescriptor("dismiss_all_notifications", R.string.action_dismiss_all_notifications, ActionCategory.DEVICE),
         ActionDescriptor("answer_call", R.string.action_answer_call, ActionCategory.DEVICE),
@@ -238,6 +257,8 @@ object ScriptActionCatalog {
         "toggle_mapping",
         "pause_mapping",
         "resume_mapping",
+        // The picked image's content:// read grant belongs to the app UID; the shell UID cannot open it.
+        "set_wallpaper",
         // Bridge-capable, but its shell equivalent is weaker than the app's Accessibility path.
         "input_text",
         "lock_device",
@@ -246,6 +267,8 @@ object ScriptActionCatalog {
         "text_copy",
         "text_paste",
         "open_recents",
+        // Shell's `cmd notification post` would show it as coming from Shell, with no tap target.
+        "show_notification",
     )
 
     private val byType: Map<String, ActionDescriptor> = all.associateBy { it.type }

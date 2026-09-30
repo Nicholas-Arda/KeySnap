@@ -22,6 +22,8 @@
     <string name="param_strength">Stärke</string>
     <string name="param_key_code">Tastencode</string>
     <string name="param_text">Text</string>
+    <string name="param_title">Titel</string>
+    <string name="param_on_tap">Beim Antippen</string>
     <string name="param_taps">Tippanzahl</string>
     <string name="param_interval_ms">Intervall (ms)</string>
     <string name="param_start_x">Start X</string>
@@ -48,6 +50,8 @@
     <string name="param_mode">Modus</string>
     <string name="param_stream">Stream</string>
     <string name="param_sound">Sound</string>
+    <string name="param_image">Bild</string>
+    <string name="param_apply_to">Anwenden auf</string>
     <string name="param_times">Anzahl</string>
 
     <!-- Aktionen: Taschenlampe -->
@@ -117,6 +121,7 @@
     <string name="action_toggle_auto_brightness">Automatische Helligkeit umschalten</string>
     <string name="action_increase_brightness">Helligkeit erhöhen</string>
     <string name="action_decrease_brightness">Helligkeit verringern</string>
+    <string name="action_set_wallpaper">Hintergrund festlegen</string>
 
     <!-- Aktionen: Medien -->
     <string name="action_media_play">Wiedergeben</string>
@@ -161,6 +166,7 @@
     <string name="action_disable_dnd">Nicht stören deaktivieren</string>
     <string name="action_open_app_drawer">App-Übersicht öffnen</string>
     <string name="action_dismiss_all_notifications">Alle Benachrichtigungen schließen</string>
+    <string name="action_show_notification">Benachrichtigung anzeigen</string>
     <string name="action_answer_call">Anruf annehmen</string>
     <string name="action_end_call">Anruf beenden</string>
 
@@ -305,6 +311,10 @@
     <string name="choice_ringer_normal">Normal</string>
     <string name="choice_ringer_vibrate">Vibration</string>
     <string name="choice_ringer_silent">Lautlos</string>
+    <string name="choice_on_tap_nothing">Nichts</string>
+    <string name="choice_wallpaper_both">Start- und Sperrbildschirm</string>
+    <string name="choice_wallpaper_home">Startbildschirm</string>
+    <string name="choice_wallpaper_lock">Sperrbildschirm</string>
 
     <!-- Auslösertypen -->
     <string name="press_single_title">Einmal drücken</string>
@@ -396,6 +406,8 @@
     <string name="action_config_record_key">Physische Taste aufnehmen</string>
     <string name="action_config_choose_app">App auswählen</string>
     <string name="action_config_enter_package">Oder einen Paketnamen eingeben</string>
+    <string name="action_config_choose_image">Bild auswählen</string>
+    <string name="action_config_change_image">Bild ändern</string>
     <string name="action_config_pick_on_screen">Auf dem Bildschirm auswählen</string>
     <string name="action_config_allow_overlay">Anzeige über anderen Apps erlauben, um auszuwählen</string>
     <string name="action_config_point_not_set">nicht festgelegt</string>
@@ -597,7 +609,7 @@
     <string name="home_setup_allow_background">Hintergrundnutzung zulassen</string>
     <string name="home_setup_done_background">Zugelassen</string>
     <string name="home_setup_step_notifications">Benachrichtigungen zulassen</string>
-    <string name="home_setup_why_notifications">Für die Einrichtung und um dir zu sagen, wenn ein Kurzbefehl nicht ausgeführt werden konnte. Tippe auf „Zulassen“, wenn Android fragt — „Nicht zulassen“ beendet die Einrichtung hier.</string>
+    <string name="home_setup_why_notifications">Für die Einrichtung, um dir zu sagen, wenn ein Kurzbefehl nicht ausgeführt werden konnte, und für Benachrichtigungen deiner eigenen Kurzbefehle. Tippe auf „Zulassen“, wenn Android fragt — „Nicht zulassen“ beendet die Einrichtung hier.</string>
     <string name="home_setup_ask_now">Jetzt fragen</string>
     <string name="home_setup_done_notifications">Zugelassen</string>
     <string name="home_setup_all_done">Alle drei sind an. Deine Tasten funktionieren jetzt.</string>
@@ -610,7 +622,7 @@
     <string name="home_setup_why_collapsed">Eingeklappt</string>
     <string name="home_setup_whytext_accessibility">Android zeigt Hardwaretasten nur einem Bedienungshilfe-Dienst. Genau dafür nutzt KeySnap einen: einen Tastendruck bemerken und deinen Kurzbefehl ausführen. Bildschirme anderer Apps liest er nicht. Nur während der Einrichtung des Erweiterten Modus liest er zusätzlich den Kopplungscode auf der Seite für kabelloses Debugging — sonst nichts.</string>
     <string name="home_setup_whytext_background">Android beendet Apps, die es für untätig hält, und eine beendete App kann deine Kurzbefehle nicht ausführen. Das hält KeySnap am Leben, während dein Telefon schläft. Im Hintergrund tut es nichts, außer auf eine Taste zu warten.</string>
-    <string name="home_setup_whytext_notifications">Während der Einrichtung des Erweiterten Modus: der Kopplungscode und ob der Dienst läuft. Danach nur, wenn ein Kurzbefehl nicht ausgeführt werden konnte, und warum. Keine Erinnerungen, keine Werbung, sonst nie etwas.</string>
+    <string name="home_setup_whytext_notifications">Während der Einrichtung des Erweiterten Modus: der Kopplungscode und ob der Dienst läuft. Danach nur, wenn ein Kurzbefehl nicht ausgeführt werden konnte, und warum, sowie die Benachrichtigungen, die du in deine eigenen Kurzbefehle einbaust. Keine Erinnerungen von uns, keine Werbung, sonst nie etwas.</string>
     <string name="home_setup_illo_battery_dialog">Darf KeySnap immer im Hintergrund laufen?</string>
     <string name="home_setup_illo_battery_body">Das kann die Akkulaufzeit verkürzen.</string>
     <string name="home_setup_illo_battery_deny">Ablehnen</string>
@@ -797,6 +809,7 @@
     <string name="run_nothing_ran">Nichts wurde ausgeführt. Überprüfe die Aktionseinstellungen.</string>
     <string name="run_partial">%1$d von %2$d Aktionen ausgeführt</string>
     <string name="run_failure_generic">Nicht abgeschlossen</string>
+    <string name="run_failure_notifications_off">Benachrichtigungen sind deaktiviert</string>
     <string name="editor_needs_action">Füge mindestens eine Aktion hinzu, bevor du speicherst.</string>
     <string name="editor_needs_trigger">Wähle eine Taste, bevor du speicherst.</string>
     <string name="saved_needs_trigger">Gespeichert. Weise eine Taste zu, damit er ausgeführt werden kann.</string>
@@ -815,6 +828,8 @@
     <!-- Benachrichtigung zur kabellosen ADB-Kopplung -->
     <string name="notif_channel_pairing">ADB-Kopplungshilfe</string>
     <string name="notif_channel_pairing_description">Eingabe des kabellosen ADB-Kopplungscodes und Fehlerbenachrichtigungen</string>
+    <string name="notif_channel_shortcuts">Kurzbefehl-Benachrichtigungen</string>
+    <string name="notif_channel_shortcuts_description">Benachrichtigungen, die deine Kurzbefehle anzeigen</string>
     <string name="notif_pairing_title">Warten auf ADB-Kopplung</string>
     <string name="notif_pairing_default">Gib einfach den 6-stelligen Code ein; der Port wird automatisch gefunden.</string>
     <string name="notif_pairing_input_label">6-stelliger Kopplungscode</string>

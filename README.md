@@ -48,7 +48,7 @@ Shortcuts run in the background, and the whole thing works without an account, a
 
 **Triggers.** Any hardware key Android reports: volume, power, camera, the assistant button, headset buttons, keys on a Bluetooth keyboard or game controller, and unlabelled OEM buttons you can name yourself. Each key can be a single press, a double press or a long press, and one shortcut can chain several. There is also an **Automation** trigger with no key at all: it fires when its conditions become true.
 
-**Actions.** More than 90, in twelve groups: input and gestures, apps, flashlight, navigation, volume, display, media, connectivity, keyboard, device, sound and automation. Every action's settings are visible in the editor before it runs, and privileged ones such as shell commands, intents and HTTP requests show the exact command or URL they will execute.
+**Actions.** Nearly 90, in twelve groups: input and gestures, apps, flashlight, navigation, volume, display, media, connectivity, keyboard, device, sound and automation. Every action's settings are visible in the editor before it runs, and privileged ones such as shell commands, intents and HTTP requests show the exact command or URL they will execute.
 
 **Conditions.** Attach an *Only if* list to any shortcut: time of day, day of week, charging state, battery level, Wi‑Fi network, Bluetooth device, headphones, dark mode, Do Not Disturb, ringer mode, screen and lock state, orientation, which app is in the foreground, whether media is playing, and more. Around sixty in total.
 
@@ -69,9 +69,10 @@ Input capture is strictly read-only. The bridge listens to the kernel's event st
 KeySnap asks for a permission only when you use the feature that needs it, and each one is a switch you turn on yourself in Android's settings.
 
 - **Accessibility service.** The only way an app can see hardware key presses. It is restricted to reading screen content from the system Settings app alone, and uses that solely to read the pairing code from the Wireless Debugging dialog during Advanced Mode setup.
-- **Run in the background and notifications.** So Android does not put the app to sleep, so setup can show the pairing prompt, and so a shortcut that can't run can tell you why.
+- **Run in the background and notifications.** So Android does not put the app to sleep, so setup can show the pairing prompt, so a shortcut that can't run can tell you why, and so a shortcut can show a notification you wrote.
 - **Location.** Android only reveals the Wi‑Fi network name to apps holding it, so the *connected to Wi‑Fi network* condition needs it. The app never reads your position.
 - **Bluetooth, Do Not Disturb access, usage access, modify system settings, display over other apps.** Each unlocks one group of actions or conditions and is requested from inside that feature.
+- **Set wallpaper** is granted at install and used only by the *Set wallpaper* action. The picture comes from Android's photo picker, so KeySnap sees the one image you pick and never the rest of your photos.
 - **Camera** is deliberately not requested. The flashlight uses an API that needs no permission.
 
 The full list with reasons is in the [privacy policy](https://nicholas-arda.github.io/keysnap-privacy/).

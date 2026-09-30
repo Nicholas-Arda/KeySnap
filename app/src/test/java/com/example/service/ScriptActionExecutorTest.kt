@@ -1,6 +1,7 @@
 package com.example.service
 
 import android.app.NotificationManager
+import android.app.WallpaperManager
 import android.media.AudioManager
 import com.example.data.ScriptAction
 import kotlinx.coroutines.runBlocking
@@ -198,5 +199,16 @@ class ScriptActionExecutorTest {
 
         val bridged = listOf(ScriptAction("toggle_wifi"), ScriptAction("repeat_previous", mapOf("count" to "2")))
         assertEquals(listOf(null, null), executor.executeEach(bridged) { it.type != "toggle_wifi" })
+    }
+
+    @Test fun wallpaperTargetsMapToWallpaperManagerFlags() {
+        assertEquals(WallpaperManager.FLAG_SYSTEM, wallpaperFlagsFor("home"))
+        assertEquals(WallpaperManager.FLAG_LOCK, wallpaperFlagsFor("lock"))
+        assertEquals(WallpaperManager.FLAG_SYSTEM or WallpaperManager.FLAG_LOCK, wallpaperFlagsFor("both"))
+    }
+
+    @Test fun anUnknownWallpaperTargetIsRejected() {
+        assertEquals(null, wallpaperFlagsFor("sideways"))
+        assertEquals(null, wallpaperFlagsFor(null))
     }
 }

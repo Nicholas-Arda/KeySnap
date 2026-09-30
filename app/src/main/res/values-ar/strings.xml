@@ -23,6 +23,8 @@
     <string name="param_strength">الشدة</string>
     <string name="param_key_code">رمز المفتاح</string>
     <string name="param_text">النص</string>
+    <string name="param_title">العنوان</string>
+    <string name="param_on_tap">عند الضغط</string>
     <string name="param_taps">النقرات</string>
     <string name="param_interval_ms">الفاصل الزمني (مللي ثانية)</string>
     <string name="param_start_x">بداية X</string>
@@ -49,6 +51,8 @@
     <string name="param_mode">الوضع</string>
     <string name="param_stream">مسار الصوت</string>
     <string name="param_sound">الصوت</string>
+    <string name="param_image">الصورة</string>
+    <string name="param_apply_to">تطبيق على</string>
     <string name="param_times">عدد المرات</string>
 
     <!-- Actions: flashlight -->
@@ -118,6 +122,7 @@
     <string name="action_toggle_auto_brightness">تبديل السطوع التلقائي</string>
     <string name="action_increase_brightness">زيادة السطوع</string>
     <string name="action_decrease_brightness">خفض السطوع</string>
+    <string name="action_set_wallpaper">تعيين الخلفية</string>
 
     <!-- Actions: media -->
     <string name="action_media_play">تشغيل</string>
@@ -162,6 +167,7 @@
     <string name="action_disable_dnd">إيقاف عدم الإزعاج</string>
     <string name="action_open_app_drawer">فتح درج التطبيقات</string>
     <string name="action_dismiss_all_notifications">إزالة جميع الإشعارات</string>
+    <string name="action_show_notification">عرض إشعار</string>
     <string name="action_answer_call">الرد على المكالمة</string>
     <string name="action_end_call">إنهاء المكالمة</string>
 
@@ -306,6 +312,10 @@
     <string name="choice_ringer_normal">عادي</string>
     <string name="choice_ringer_vibrate">اهتزاز</string>
     <string name="choice_ringer_silent">صامت</string>
+    <string name="choice_on_tap_nothing">لا شيء</string>
+    <string name="choice_wallpaper_both">الشاشة الرئيسية وشاشة القفل</string>
+    <string name="choice_wallpaper_home">الشاشة الرئيسية</string>
+    <string name="choice_wallpaper_lock">شاشة القفل</string>
 
     <!-- Trigger press types -->
     <string name="press_single_title">ضغطة واحدة</string>
@@ -397,6 +407,8 @@
     <string name="action_config_record_key">تسجيل مفتاح فعلي</string>
     <string name="action_config_choose_app">اختر تطبيقًا</string>
     <string name="action_config_enter_package">أو أدخل اسم الحزمة</string>
+    <string name="action_config_choose_image">اختر صورة</string>
+    <string name="action_config_change_image">غيّر الصورة</string>
     <string name="action_config_pick_on_screen">اختر من الشاشة</string>
     <string name="action_config_allow_overlay">السماح بالرسم فوق التطبيقات للاختيار</string>
     <string name="action_config_point_not_set">غير محدد</string>
@@ -594,7 +606,7 @@
     <string name="home_setup_allow_background">السماح بالعمل في الخلفية</string>
     <string name="home_setup_done_background">مسموح</string>
     <string name="home_setup_step_notifications">اسمح بالإشعارات</string>
-    <string name="home_setup_why_notifications">للإعداد، ولإخبارك عندما يتعذّر تشغيل اختصار. اضغط «سماح» عندما يسأل Android — «عدم السماح» يوقف الإعداد هنا.</string>
+    <string name="home_setup_why_notifications">للإعداد، ولإخبارك عندما يتعذّر تشغيل اختصار، وللإشعارات التي تعرضها اختصاراتك. اضغط «سماح» عندما يسأل Android — «عدم السماح» يوقف الإعداد هنا.</string>
     <string name="home_setup_ask_now">اسألني الآن</string>
     <string name="home_setup_done_notifications">مسموح</string>
     <string name="home_setup_all_done">الثلاثة مفعّلة. أزرارك تعمل الآن.</string>
@@ -607,7 +619,7 @@
     <string name="home_setup_why_collapsed">مطوي</string>
     <string name="home_setup_whytext_accessibility">لا يُظهر Android أزرار الجهاز إلا لخدمة إمكانية وصول، ولهذا يستخدم KeySnap واحدة لهذا الغرض تحديدًا: ملاحظة الضغطة وتشغيل اختصارك. وهو لا يقرأ شاشات التطبيقات الأخرى. وأثناء إعداد الوضع المتقدم فقط يقرأ أيضًا رمز الإقران في صفحة تصحيح الأخطاء اللاسلكي، ولا شيء غير ذلك.</string>
     <string name="home_setup_whytext_background">يغلق Android التطبيقات التي يظنها خاملة، والتطبيق المغلق لا يستطيع تشغيل اختصاراتك. هذا يُبقي KeySnap حيًا بينما ينام هاتفك. وفي الخلفية لا يفعل شيئًا سوى انتظار ضغطة زر.</string>
-    <string name="home_setup_whytext_notifications">أثناء إعداد الوضع المتقدم: رمز الإقران وما إذا كانت الخدمة تعمل. بعد ذلك، فقط عندما يتعذّر تشغيل اختصار، والسبب. لا تذكيرات ولا عروض ولا أي شيء آخر، أبدًا.</string>
+    <string name="home_setup_whytext_notifications">أثناء إعداد الوضع المتقدم: رمز الإقران وما إذا كانت الخدمة تعمل. بعد ذلك، فقط عندما يتعذّر تشغيل اختصار، والسبب، والإشعارات التي تضيفها إلى اختصاراتك. لا تذكيرات منّا ولا عروض ولا أي شيء آخر، أبدًا.</string>
     <string name="home_setup_illo_battery_dialog">السماح لـ KeySnap بالعمل دائمًا في الخلفية؟</string>
     <string name="home_setup_illo_battery_body">قد يقلل هذا من عمر البطارية.</string>
     <string name="home_setup_illo_battery_deny">رفض</string>
@@ -794,6 +806,7 @@
     <string name="run_nothing_ran">لم يعمل أي شيء. تحقق من إعدادات الإجراء.</string>
     <string name="run_partial">تم تشغيل %1$d من %2$d إجراءات</string>
     <string name="run_failure_generic">لم يكتمل</string>
+    <string name="run_failure_notifications_off">الإشعارات متوقفة</string>
     <string name="editor_needs_action">أضف إجراءً واحدًا على الأقل قبل الحفظ.</string>
     <string name="editor_needs_trigger">اختر مفتاحًا قبل الحفظ.</string>
     <string name="saved_needs_trigger">تم الحفظ. عيّن مفتاحًا ليتمكن من العمل.</string>
@@ -812,6 +825,8 @@
     <!-- Wireless ADB pairing notification -->
     <string name="notif_channel_pairing">مساعد إقران ADB</string>
     <string name="notif_channel_pairing_description">إشعارات إدخال رمز إقران ADB اللاسلكي والأخطاء</string>
+    <string name="notif_channel_shortcuts">إشعارات الاختصارات</string>
+    <string name="notif_channel_shortcuts_description">الإشعارات التي تعرضها اختصاراتك</string>
     <string name="notif_pairing_title">في انتظار إقران ADB</string>
     <string name="notif_pairing_default">أدخل فقط الرمز المكوّن من 6 أرقام؛ سيتم العثور على المنفذ تلقائيًا.</string>
     <string name="notif_pairing_input_label">رمز الإقران المكوّن من 6 أرقام</string>

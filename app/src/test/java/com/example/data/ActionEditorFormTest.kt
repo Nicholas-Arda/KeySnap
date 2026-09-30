@@ -114,4 +114,45 @@ class ActionEditorFormTest {
         assertEquals("com.example.app", ActionEditorForms.summarize(ScriptAction("launch_app", mapOf("packageName" to "com.example.app")), res))
         assertNull(ActionEditorForms.summarize(ScriptAction("toggle_flashlight"), res))
     }
+
+    @Test fun anAppPickFieldCanBeGatedOnAChoiceLikeATextField() {
+        val form = ActionEditorForm(
+            type = "gate_test_only",
+            fields = listOf(
+                EditorField.Choice("onTap", R.string.param_direction, listOf("none" to R.string.choice_pinch_in, "app" to R.string.choice_pinch_out)),
+                EditorField.AppPick("packageName", R.string.param_app, visibleWhen = "onTap" to setOf("app")),
+            ),
+            summary = { _, _ -> "" },
+        )
+        assertFalse(ActionEditorForms.visibleFields(form, mapOf("onTap" to "none")).flatMap { it.keys }.contains("packageName"))
+        assertTrue(ActionEditorForms.visibleFields(form, mapOf("onTap" to "app")).flatMap { it.keys }.contains("packageName"))
+    }
+
+    @Test fun showNotificationNeedsOnlyATitleUntilATapTargetIsChosen() {
+        val form = ActionEditorForms.forType("show_notification")!!
+        val defaults = ActionEditorForms.defaults(form)
+        assertEquals("none", defaults["onTap"])
+        assertFalse(ActionEditorForms.isComplete(form, defaults))
+        assertTrue(ActionEditorForms.isComplete(form, defaults + ("title" to "Drink water")))
+        assertFalse(ActionEditorForms.isComplete(form, defaults + mapOf("title" to "Hi", "onTap" to "url")))
+        assertTrue(ActionEditorForms.isComplete(form, defaults + mapOf("title" to "Hi", "onTap" to "url", "url" to "https://example.com")))
+        assertFalse(ActionEditorForms.isComplete(form, defaults + mapOf("title" to "Hi", "onTap" to "app")))
+        assertTrue(ActionEditorForms.isComplete(form, defaults + mapOf("title" to "Hi", "onTap" to "app", "packageName" to "com.example.app")))
+    }
+
+    @Test fun showNotificationSummaryShowsTheLiteralUrl() {
+        val url = "https://example.com/hook?token=abc"
+        assertEquals("Hi · $url", ActionEditorForms.summarize(ScriptAction("show_notification", mapOf("title" to "Hi", "onTap" to "url", "url" to url)), res))
+        // A URL left behind after switching the tap target back to Nothing is not shown.
+        assertEquals("Hi", ActionEditorForms.summarize(ScriptAction("show_notification", mapOf("title" to "Hi", "onTap" to "none", "url" to "https://old.example")), res))
+    }
+
+    @Test fun setWallpaperIsIncompleteUntilAnImageIsPickedAndDefaultsToBothScreens() {
+        val form = ActionEditorForms.forType("set_wallpaper")!!
+        val defaults = ActionEditorForms.defaults(form)
+        assertEquals("both", defaults["target"])
+        assertFalse(ActionEditorForms.isComplete(form, defaults))
+        assertTrue(ActionEditorForms.isComplete(form, defaults + ("imageUri" to "content://media/picker/0/1")))
+        assertEquals("Lock screen", ActionEditorForms.summarize(ScriptAction("set_wallpaper", mapOf("imageUri" to "content://x/1", "target" to "lock")), res))
+    }
 }

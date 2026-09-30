@@ -35,7 +35,7 @@ class ConstraintEditorFormTest {
     @Test fun constraintFormsUseOnlyFieldsTheConstraintSheetRenders() {
         formTypes.forEach { type ->
             ConstraintEditorForms.form(type)!!.fields.forEach { field ->
-                assertFalse("$type uses an action-only field", field is EditorField.KeyCodePick || field is EditorField.Point || field is EditorField.TwoPoints)
+                assertFalse("$type uses an action-only field", field is EditorField.KeyCodePick || field is EditorField.Point || field is EditorField.TwoPoints || field is EditorField.ImagePick)
             }
         }
     }

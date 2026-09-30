@@ -88,6 +88,7 @@ class LocalizationTest {
                         is EditorField.BluetoothDevicePick -> listOf(field.labelRes)
                         is EditorField.TimeRange -> listOf(field.startLabelRes, field.endLabelRes)
                         is EditorField.DaySet -> listOf(field.labelRes)
+                        is EditorField.ImagePick -> listOf(field.labelRes)
                     }
                     labels.forEach { assertTrue("[$tag] $type field label", res.getString(it).isNotBlank()) }
                 }

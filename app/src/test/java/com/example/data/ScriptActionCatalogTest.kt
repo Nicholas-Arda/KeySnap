@@ -115,6 +115,8 @@ class ScriptActionCatalogTest {
                 "disable_bluetooth",
                 "cycle_ringer_mode",
                 "change_ringer_mode",
+                "show_notification",
+                "set_wallpaper",
             ),
             available.toSet(),
         )
@@ -193,6 +195,7 @@ class ScriptActionCatalogTest {
                 "toggle_mapping",
                 "pause_mapping",
                 "resume_mapping",
+                "set_wallpaper",
                 "input_text",
                 "lock_device",
                 "take_screenshot",
@@ -200,6 +203,7 @@ class ScriptActionCatalogTest {
                 "text_copy",
                 "text_paste",
                 "open_recents",
+                "show_notification",
             ),
             ScriptActionCatalog.UNSUPPORTED_BY_BRIDGE,
         )
@@ -208,5 +212,15 @@ class ScriptActionCatalogTest {
     @Test fun everyUnsupportedByBridgeActionIsAvailable() {
         val available = ScriptActionCatalog.all.filter { it.availability == ActionAvailability.AVAILABLE }.map { it.type }.toSet()
         assertTrue(ScriptActionCatalog.UNSUPPORTED_BY_BRIDGE.all { it in available })
+    }
+
+    /** CLAUDE.md's mirror table: every AVAILABLE id has a BridgeConfig.ACTION_* constant. */
+    @Test fun everyAvailableTypeHasABridgeConfigConstant() {
+        val bridgeIds = com.example.bridge.BridgeConfig::class.java.fields
+            .filter { it.name.startsWith("ACTION_") && it.type == String::class.java }
+            .map { it.get(null) as String }
+            .toSet()
+        val available = ScriptActionCatalog.all.filter { it.availability == ActionAvailability.AVAILABLE }.map { it.type }
+        assertEquals(emptyList<String>(), available.filterNot { it in bridgeIds })
     }
 }

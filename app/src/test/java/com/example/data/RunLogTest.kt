@@ -68,6 +68,13 @@ class RunLogTest {
         assertEquals(RunFailure.ADVANCED_MODE_OFF, failureReason("shell_command", allGranted))
     }
 
+    @Test fun aShortcutNotificationThatCouldNotPostBlamesBlockedNotifications() {
+        assertEquals(RunFailure.NOTIFICATIONS_OFF, failureReason("show_notification", allGranted.copy(notifications = false)))
+        assertEquals(RunFailure.FAILED, failureReason("show_notification", allGranted))
+        // Only the action that posts one; nothing else needs notifications to run.
+        assertEquals(RunFailure.FAILED, failureReason("launch_app", allGranted.copy(notifications = false)))
+    }
+
     @Test fun aFailureWhileAdvancedModeIsOnIsNeverBlamedOnAdvancedModeBeingOff() {
         // The app ran the whole chain although the bridge was up (its RUN request fell through).
         val env = allGranted.copy(advancedMode = true)
@@ -90,7 +97,7 @@ class RunLogTest {
     }
 
     @Test fun reasonSetsNameOnlyAvailableActionsAndNoAppRunActionIsBlamedOnAdvancedMode() {
-        (ADVANCED_MODE_TYPES + ACCESSIBILITY_TYPES + DND_ACCESS_TYPES + WRITE_SETTINGS_TYPES).forEach {
+        (ADVANCED_MODE_TYPES + ACCESSIBILITY_TYPES + DND_ACCESS_TYPES + WRITE_SETTINGS_TYPES + NOTIFICATION_TYPES).forEach {
             assertTrue(it, ScriptActionCatalog.isAvailable(it))
         }
         assertTrue((ADVANCED_MODE_TYPES intersect ScriptActionCatalog.UNSUPPORTED_BY_BRIDGE).isEmpty())

@@ -22,6 +22,8 @@
     <string name="param_strength">तीव्रता</string>
     <string name="param_key_code">की कोड</string>
     <string name="param_text">टेक्स्ट</string>
+    <string name="param_title">शीर्षक</string>
+    <string name="param_on_tap">टैप करने पर</string>
     <string name="param_taps">टैप</string>
     <string name="param_interval_ms">अंतराल (ms)</string>
     <string name="param_start_x">शुरुआती X</string>
@@ -48,6 +50,8 @@
     <string name="param_mode">मोड</string>
     <string name="param_stream">स्ट्रीम</string>
     <string name="param_sound">ध्वनि</string>
+    <string name="param_image">इमेज</string>
+    <string name="param_apply_to">इस पर लागू करें</string>
     <string name="param_times">बार</string>
 
     <!-- क्रियाएं: टॉर्च -->
@@ -117,6 +121,7 @@
     <string name="action_toggle_auto_brightness">ऑटो-ब्राइटनेस चालू/बंद करें</string>
     <string name="action_increase_brightness">ब्राइटनेस बढ़ाएं</string>
     <string name="action_decrease_brightness">ब्राइटनेस घटाएं</string>
+    <string name="action_set_wallpaper">वॉलपेपर सेट करें</string>
 
     <!-- क्रियाएं: मीडिया -->
     <string name="action_media_play">प्ले करें</string>
@@ -161,6 +166,7 @@
     <string name="action_disable_dnd">डू नॉट डिस्टर्ब बंद करें</string>
     <string name="action_open_app_drawer">ऐप ड्रॉअर खोलें</string>
     <string name="action_dismiss_all_notifications">सभी सूचनाएं हटाएं</string>
+    <string name="action_show_notification">सूचना दिखाएं</string>
     <string name="action_answer_call">कॉल रिसीव करें</string>
     <string name="action_end_call">कॉल समाप्त करें</string>
 
@@ -305,6 +311,10 @@
     <string name="choice_ringer_normal">नॉर्मल</string>
     <string name="choice_ringer_vibrate">वाइब्रेट</string>
     <string name="choice_ringer_silent">साइलेंट</string>
+    <string name="choice_on_tap_nothing">कुछ नहीं</string>
+    <string name="choice_wallpaper_both">होम और लॉक स्क्रीन</string>
+    <string name="choice_wallpaper_home">होम स्क्रीन</string>
+    <string name="choice_wallpaper_lock">लॉक स्क्रीन</string>
 
     <!-- ट्रिगर प्रेस टाइप -->
     <string name="press_single_title">सिंगल प्रेस</string>
@@ -396,6 +406,8 @@
     <string name="action_config_record_key">एक भौतिक बटन रिकॉर्ड करें</string>
     <string name="action_config_choose_app">एक ऐप चुनें</string>
     <string name="action_config_enter_package">या एक पैकेज नाम डालें</string>
+    <string name="action_config_choose_image">एक इमेज चुनें</string>
+    <string name="action_config_change_image">इमेज बदलें</string>
     <string name="action_config_pick_on_screen">स्क्रीन पर चुनें</string>
     <string name="action_config_allow_overlay">चुनने के लिए अन्य ऐप पर दिखाने की अनुमति दें</string>
     <string name="action_config_point_not_set">सेट नहीं है</string>
@@ -597,7 +609,7 @@
     <string name="home_setup_allow_background">बैकग्राउंड में चलने दें</string>
     <string name="home_setup_done_background">अनुमति दी गई</string>
     <string name="home_setup_step_notifications">सूचनाओं की अनुमति दें</string>
-    <string name="home_setup_why_notifications">सेटअप के लिए, और यह बताने के लिए कि कोई शॉर्टकट कब नहीं चल पाया। Android पूछे तो “अनुमति दें” पर टैप करें — “अनुमति न दें” यहीं सेटअप रोक देगा।</string>
+    <string name="home_setup_why_notifications">सेटअप के लिए, यह बताने के लिए कि कोई शॉर्टकट कब नहीं चल पाया, और आपके अपने शॉर्टकट की सूचनाओं के लिए। Android पूछे तो “अनुमति दें” पर टैप करें — “अनुमति न दें” यहीं सेटअप रोक देगा।</string>
     <string name="home_setup_ask_now">अभी पूछें</string>
     <string name="home_setup_done_notifications">अनुमति है</string>
     <string name="home_setup_all_done">तीनों चालू हैं। आपके बटन अब काम करते हैं।</string>
@@ -610,7 +622,7 @@
     <string name="home_setup_why_collapsed">बंद किया हुआ</string>
     <string name="home_setup_whytext_accessibility">Android हार्डवेयर बटन सिर्फ़ एक ऐक्सेसिबिलिटी सेवा को दिखाता है, इसलिए KeySnap ठीक इसी काम के लिए एक सेवा इस्तेमाल करता है: बटन दबना पहचानना और आपका शॉर्टकट चलाना। यह दूसरे ऐप्स की स्क्रीन नहीं पढ़ता। सिर्फ़ उन्नत मोड सेटअप के दौरान यह वायरलेस डिबगिंग पेज पर दिख रहा पेयरिंग कोड भी पढ़ता है, और कुछ नहीं।</string>
     <string name="home_setup_whytext_background">Android उन ऐप्स को बंद कर देता है जिन्हें वह निष्क्रिय समझता है, और बंद ऐप आपके शॉर्टकट नहीं चला सकता। इससे आपका फ़ोन सोते समय भी KeySnap चलता रहता है। बैकग्राउंड में यह बटन दबने का इंतज़ार करने के अलावा कुछ नहीं करता।</string>
-    <string name="home_setup_whytext_notifications">उन्नत मोड सेटअप के दौरान: पेयरिंग कोड और सेवा चल रही है या नहीं। उसके बाद सिर्फ़ तब, जब कोई शॉर्टकट नहीं चल पाया, और क्यों। कोई रिमाइंडर नहीं, कोई प्रचार नहीं, और कभी कुछ और नहीं।</string>
+    <string name="home_setup_whytext_notifications">उन्नत मोड सेटअप के दौरान: पेयरिंग कोड और सेवा चल रही है या नहीं। उसके बाद सिर्फ़ तब, जब कोई शॉर्टकट नहीं चल पाया, और क्यों, और वे सूचनाएं जो आप अपने शॉर्टकट में डालते हैं। हमारी ओर से कोई रिमाइंडर नहीं, कोई प्रचार नहीं, और कभी कुछ और नहीं।</string>
     <string name="home_setup_illo_battery_dialog">KeySnap को हमेशा बैकग्राउंड में चलने दें?</string>
     <string name="home_setup_illo_battery_body">इससे बैटरी जल्दी खर्च हो सकती है।</string>
     <string name="home_setup_illo_battery_deny">अस्वीकार करें</string>
@@ -797,6 +809,7 @@
     <string name="run_nothing_ran">कुछ नहीं चला। क्रिया की सेटिंग जांचें।</string>
     <string name="run_partial">%2$d में से %1$d क्रियाएं चलीं</string>
     <string name="run_failure_generic">पूरा नहीं हुआ</string>
+    <string name="run_failure_notifications_off">सूचनाएं बंद हैं</string>
     <string name="editor_needs_action">सेव करने से पहले कम से कम एक क्रिया जोड़ें।</string>
     <string name="editor_needs_trigger">सेव करने से पहले एक बटन चुनें।</string>
     <string name="saved_needs_trigger">सेव हो गया। इसे चलाने के लिए एक बटन असाइन करें।</string>
@@ -815,6 +828,8 @@
     <!-- वायरलेस ADB पेयरिंग सूचना -->
     <string name="notif_channel_pairing">ADB पेयरिंग हेल्पर</string>
     <string name="notif_channel_pairing_description">वायरलेस ADB पेयरिंग कोड डालने और त्रुटि की सूचनाएं</string>
+    <string name="notif_channel_shortcuts">शॉर्टकट सूचनाएं</string>
+    <string name="notif_channel_shortcuts_description">आपके शॉर्टकट जो सूचनाएं दिखाते हैं</string>
     <string name="notif_pairing_title">ADB पेयरिंग का इंतज़ार हो रहा है</string>
     <string name="notif_pairing_default">बस 6 अंकों का कोड डालें; पोर्ट अपने आप मिल जाएगा।</string>
     <string name="notif_pairing_input_label">6 अंकों का पेयरिंग कोड</string>

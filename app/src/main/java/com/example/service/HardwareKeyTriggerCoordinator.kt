@@ -386,6 +386,7 @@ object HardwareKeyTriggerCoordinator {
         dndAccess = context.getSystemService(NotificationManager::class.java)?.isNotificationPolicyAccessGranted == true,
         writeSettings = Settings.System.canWrite(context),
         advancedMode = _isAdvancedBridgeActive.value,
+        notifications = context.getSystemService(NotificationManager::class.java)?.let(::shortcutNotificationsAllowed) == true,
     )
 
     fun vibratePhone(context: Context, durationMs: Long = 50) {

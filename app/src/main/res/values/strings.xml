@@ -23,6 +23,8 @@
     <string name="param_strength">Strength</string>
     <string name="param_key_code">Key code</string>
     <string name="param_text">Text</string>
+    <string name="param_title">Title</string>
+    <string name="param_on_tap">When tapped</string>
     <string name="param_x" translatable="false">X</string>
     <string name="param_y" translatable="false">Y</string>
     <string name="param_taps">Taps</string>
@@ -53,6 +55,8 @@
     <string name="param_mode">Mode</string>
     <string name="param_stream">Stream</string>
     <string name="param_sound">Sound</string>
+    <string name="param_image">Image</string>
+    <string name="param_apply_to">Apply to</string>
     <string name="param_times">Times</string>
 
     <!-- Actions: flashlight -->
@@ -122,6 +126,7 @@
     <string name="action_toggle_auto_brightness">Toggle auto-brightness</string>
     <string name="action_increase_brightness">Increase brightness</string>
     <string name="action_decrease_brightness">Decrease brightness</string>
+    <string name="action_set_wallpaper">Set wallpaper</string>
 
     <!-- Actions: media -->
     <string name="action_media_play">Play</string>
@@ -166,6 +171,7 @@
     <string name="action_disable_dnd">Disable do not disturb</string>
     <string name="action_open_app_drawer">Open app drawer</string>
     <string name="action_dismiss_all_notifications">Dismiss all notifications</string>
+    <string name="action_show_notification">Show notification</string>
     <string name="action_answer_call">Answer call</string>
     <string name="action_end_call">End call</string>
 
@@ -323,6 +329,10 @@
     <string name="choice_ringer_normal">Normal</string>
     <string name="choice_ringer_vibrate">Vibrate</string>
     <string name="choice_ringer_silent">Silent</string>
+    <string name="choice_on_tap_nothing">Nothing</string>
+    <string name="choice_wallpaper_both">Home and lock screens</string>
+    <string name="choice_wallpaper_home">Home screen</string>
+    <string name="choice_wallpaper_lock">Lock screen</string>
 
     <!-- Trigger press types -->
     <string name="press_single_title">Single press</string>
@@ -421,6 +431,8 @@
     <string name="action_config_record_key">Record a physical key</string>
     <string name="action_config_choose_app">Choose an app</string>
     <string name="action_config_enter_package">Or enter a package name</string>
+    <string name="action_config_choose_image">Choose an image</string>
+    <string name="action_config_change_image">Change image</string>
     <string name="action_config_pick_on_screen">Pick on screen</string>
     <string name="action_config_allow_overlay">Allow drawing over apps to pick</string>
     <string name="action_config_point_not_set">not set</string>
@@ -623,7 +635,7 @@
     <string name="home_setup_allow_background">Allow background use</string>
     <string name="home_setup_done_background">Allowed</string>
     <string name="home_setup_step_notifications">Allow notifications</string>
-    <string name="home_setup_why_notifications">For setup, and to tell you when a shortcut couldn’t run. Tap Allow when Android asks — Don’t allow stops setup here.</string>
+    <string name="home_setup_why_notifications">For setup, to tell you when a shortcut couldn’t run, and for notifications your own shortcuts show. Tap Allow when Android asks — Don’t allow stops setup here.</string>
     <string name="home_setup_ask_now">Ask me now</string>
     <string name="home_setup_done_notifications">Allowed</string>
     <string name="home_setup_all_done">All three are on. Your buttons work now.</string>
@@ -635,7 +647,7 @@
     <string name="home_setup_why_collapsed">Collapsed</string>
     <string name="home_setup_whytext_accessibility">Android shows hardware buttons only to an accessibility service, so KeySnap uses one for exactly that: noticing a press and running your shortcut. It does not read other apps\' screens. During Advanced Mode setup it also reads the pairing code on the Wireless Debugging page, and nothing else.</string>
     <string name="home_setup_whytext_background">Android closes apps it thinks are idle, and a closed app cannot run your shortcuts. This keeps KeySnap alive while your phone sleeps. In the background it does nothing but wait for a button.</string>
-    <string name="home_setup_whytext_notifications">During Advanced Mode setup: the pairing code and whether the service is running. After that, only when a shortcut couldn’t run, and why. No reminders, no promotions, nothing else, ever.</string>
+    <string name="home_setup_whytext_notifications">During Advanced Mode setup: the pairing code and whether the service is running. After that, only when a shortcut couldn’t run, and why, and the notifications you add to your own shortcuts. No reminders from us, no promotions, nothing else, ever.</string>
     <string name="home_setup_illo_downloaded_apps">Downloaded apps</string>
     <string name="home_setup_illo_battery_dialog">Let KeySnap always run in background?</string>
     <string name="home_setup_illo_battery_body">This may reduce battery life.</string>
@@ -841,6 +853,7 @@
     <string name="run_nothing_ran">Nothing ran. Check the action settings.</string>
     <string name="run_partial">Ran %1$d of %2$d actions</string>
     <string name="run_failure_generic">Didn’t complete</string>
+    <string name="run_failure_notifications_off">Notifications are turned off</string>
     <string name="editor_needs_action">Add at least one action before saving.</string>
     <string name="editor_needs_trigger">Choose a key before saving.</string>
     <string name="saved_needs_trigger">Saved. Assign a key so it can run.</string>
@@ -859,6 +872,8 @@
     <!-- Wireless ADB pairing notification -->
     <string name="notif_channel_pairing">ADB Pairing Helper</string>
     <string name="notif_channel_pairing_description">Wireless ADB pairing code entry and error notifications</string>
+    <string name="notif_channel_shortcuts">Shortcut notifications</string>
+    <string name="notif_channel_shortcuts_description">Notifications that your shortcuts show</string>
     <string name="notif_pairing_title">Waiting for ADB pairing</string>
     <string name="notif_pairing_default">Just enter the 6-digit code; the port will be found automatically.</string>
     <string name="notif_pairing_input_label">6-digit pairing code</string>

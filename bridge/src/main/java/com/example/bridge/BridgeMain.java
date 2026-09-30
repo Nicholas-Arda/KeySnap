@@ -707,6 +707,17 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
                 || BridgeConfig.ACTION_PLAY_SOUND.equals(action.type)) {
             return false;
         }
+        // Posted from the app so it carries KeySnap's name, the "Shortcut notifications" channel
+        // the user can mute, and the tap target; shell's `cmd notification post` would show it as
+        // coming from Shell with none of those. See ScriptActionCatalog.UNSUPPORTED_BY_BRIDGE.
+        if (BridgeConfig.ACTION_SHOW_NOTIFICATION.equals(action.type)) {
+            return false;
+        }
+        // The picked image is a content:// URI whose read grant belongs to the app's UID; this
+        // shell-UID process cannot open it. Only reachable through WallpaperManager in the app path.
+        if (BridgeConfig.ACTION_SET_WALLPAPER.equals(action.type)) {
+            return false;
+        }
         // The app owns shortcut_scripts_v1 and rewrites bridge_config.json from it; this process
         // only reads that file and has no path to write a pause/resume back into the app's state.
         // Only reachable through ScriptRepository in the app/Accessibility path.

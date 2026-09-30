@@ -39,6 +39,7 @@ enum class RunFailure(@StringRes val labelRes: Int) {
     ACCESSIBILITY_OFF(R.string.badge_accessibility),
     DND_ACCESS_MISSING(R.string.badge_notification_policy),
     WRITE_SETTINGS_MISSING(R.string.badge_write_settings),
+    NOTIFICATIONS_OFF(R.string.run_failure_notifications_off),
     FAILED(R.string.run_failure_generic),
     ;
 
@@ -57,6 +58,8 @@ data class RunEnvironment(
     val dndAccess: Boolean,
     val writeSettings: Boolean,
     val advancedMode: Boolean = false,
+    /** Whether a shortcut's own notification could be seen; see `shortcutNotificationsAllowed`. */
+    val notifications: Boolean = true,
 )
 
 // Which prerequisite explains an app-side failure. These mirror ScriptActionExecutor.android:
@@ -87,6 +90,8 @@ internal val WRITE_SETTINGS_TYPES = setOf(
     "change_brightness", "toggle_auto_brightness", "increase_brightness", "decrease_brightness",
 )
 
+internal val NOTIFICATION_TYPES = setOf("show_notification")
+
 internal const val MAX_RUNS_PER_SCRIPT = 20
 internal const val MAX_RUNS = 200
 
@@ -95,6 +100,7 @@ internal fun failureReason(type: String, env: RunEnvironment): RunFailure = when
     type in ACCESSIBILITY_TYPES && !env.accessibility -> RunFailure.ACCESSIBILITY_OFF
     type in DND_ACCESS_TYPES && !env.dndAccess -> RunFailure.DND_ACCESS_MISSING
     type in WRITE_SETTINGS_TYPES && !env.writeSettings -> RunFailure.WRITE_SETTINGS_MISSING
+    type in NOTIFICATION_TYPES && !env.notifications -> RunFailure.NOTIFICATIONS_OFF
     else -> RunFailure.FAILED
 }
 

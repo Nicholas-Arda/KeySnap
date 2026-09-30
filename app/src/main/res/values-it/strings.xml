@@ -21,6 +21,8 @@
     <string name="param_strength">Intensità</string>
     <string name="param_key_code">Codice tasto</string>
     <string name="param_text">Testo</string>
+    <string name="param_title">Titolo</string>
+    <string name="param_on_tap">Al tocco</string>
     <string name="param_taps">Tocchi</string>
     <string name="param_interval_ms">Intervallo (ms)</string>
     <string name="param_start_x">X iniziale</string>
@@ -47,6 +49,8 @@
     <string name="param_mode">Modalità</string>
     <string name="param_stream">Canale</string>
     <string name="param_sound">Suono</string>
+    <string name="param_image">Immagine</string>
+    <string name="param_apply_to">Applica a</string>
     <string name="param_times">Volte</string>
 
     <!-- Azioni: torcia -->
@@ -116,6 +120,7 @@
     <string name="action_toggle_auto_brightness">Attiva/disattiva luminosità automatica</string>
     <string name="action_increase_brightness">Aumenta luminosità</string>
     <string name="action_decrease_brightness">Diminuisci luminosità</string>
+    <string name="action_set_wallpaper">Imposta sfondo</string>
 
     <!-- Azioni: media -->
     <string name="action_media_play">Riproduci</string>
@@ -160,6 +165,7 @@
     <string name="action_disable_dnd">Disattiva non disturbare</string>
     <string name="action_open_app_drawer">Apri elenco app</string>
     <string name="action_dismiss_all_notifications">Cancella tutte le notifiche</string>
+    <string name="action_show_notification">Mostra notifica</string>
     <string name="action_answer_call">Rispondi alla chiamata</string>
     <string name="action_end_call">Termina chiamata</string>
 
@@ -304,6 +310,10 @@
     <string name="choice_ringer_normal">Normale</string>
     <string name="choice_ringer_vibrate">Vibrazione</string>
     <string name="choice_ringer_silent">Silenzioso</string>
+    <string name="choice_on_tap_nothing">Niente</string>
+    <string name="choice_wallpaper_both">Schermata Home e di blocco</string>
+    <string name="choice_wallpaper_home">Schermata Home</string>
+    <string name="choice_wallpaper_lock">Schermata di blocco</string>
 
     <!-- Tipi di pressione del trigger -->
     <string name="press_single_title">Pressione singola</string>
@@ -395,6 +405,8 @@
     <string name="action_config_record_key">Registra un tasto fisico</string>
     <string name="action_config_choose_app">Scegli un\'app</string>
     <string name="action_config_enter_package">Oppure inserisci un nome di pacchetto</string>
+    <string name="action_config_choose_image">Scegli un\'immagine</string>
+    <string name="action_config_change_image">Cambia immagine</string>
     <string name="action_config_pick_on_screen">Scegli sullo schermo</string>
     <string name="action_config_allow_overlay">Consenti la sovrapposizione ad altre app per scegliere</string>
     <string name="action_config_point_not_set">non impostato</string>
@@ -598,7 +610,7 @@
     <string name="home_setup_allow_background">Consenti l\'uso in background</string>
     <string name="home_setup_done_background">Consentito</string>
     <string name="home_setup_step_notifications">Consenti le notifiche</string>
-    <string name="home_setup_why_notifications">Per la configurazione e per avvisarti quando una scorciatoia non è stata eseguita. Tocca Consenti quando Android lo chiede — Non consentire interrompe qui la configurazione.</string>
+    <string name="home_setup_why_notifications">Per la configurazione, per avvisarti quando una scorciatoia non è stata eseguita e per le notifiche delle tue scorciatoie. Tocca Consenti quando Android lo chiede — Non consentire interrompe qui la configurazione.</string>
     <string name="home_setup_ask_now">Chiedimelo ora</string>
     <string name="home_setup_done_notifications">Consentite</string>
     <string name="home_setup_all_done">Tutti e tre sono attivi. I tuoi tasti ora funzionano.</string>
@@ -611,7 +623,7 @@
     <string name="home_setup_why_collapsed">Compresso</string>
     <string name="home_setup_whytext_accessibility">Android mostra i tasti fisici solo a un servizio di accessibilità, quindi KeySnap ne usa uno esattamente per questo: accorgersi di una pressione ed eseguire la tua scorciatoia. Non legge lo schermo delle altre app. Solo durante la configurazione della Modalità avanzata legge anche il codice di accoppiamento nella pagina del Debug wireless, e nient\'altro.</string>
     <string name="home_setup_whytext_background">Android chiude le app che crede inattive, e un\'app chiusa non può eseguire le tue scorciatoie. Questo tiene vivo KeySnap mentre il telefono dorme. In background non fa altro che aspettare un tasto.</string>
-    <string name="home_setup_whytext_notifications">Durante la configurazione della Modalità avanzata: il codice di accoppiamento e se il servizio è attivo. Dopo, solo quando una scorciatoia non è stata eseguita, e perché. Nessun promemoria, nessuna promozione, nient\'altro, mai.</string>
+    <string name="home_setup_whytext_notifications">Durante la configurazione della Modalità avanzata: il codice di accoppiamento e se il servizio è attivo. Dopo, solo quando una scorciatoia non è stata eseguita, e perché, e le notifiche che metti nelle tue scorciatoie. Nessun promemoria da parte nostra, nessuna promozione, nient\'altro, mai.</string>
     <string name="home_setup_illo_battery_dialog">Consentire a KeySnap di essere sempre attivo in background?</string>
     <string name="home_setup_illo_battery_body">Potrebbe ridurre la durata della batteria.</string>
     <string name="home_setup_illo_battery_deny">Rifiuta</string>
@@ -798,6 +810,7 @@
     <string name="run_nothing_ran">Nessuna azione eseguita. Controlla le impostazioni dell\'azione.</string>
     <string name="run_partial">Eseguite %1$d azioni su %2$d</string>
     <string name="run_failure_generic">Non completata</string>
+    <string name="run_failure_notifications_off">Le notifiche sono disattivate</string>
     <string name="editor_needs_action">Aggiungi almeno un\'azione prima di salvare.</string>
     <string name="editor_needs_trigger">Scegli un tasto prima di salvare.</string>
     <string name="saved_needs_trigger">Salvata. Assegna un tasto perché possa essere eseguita.</string>
@@ -817,6 +830,8 @@
     <!-- Notifica di accoppiamento ADB wireless -->
     <string name="notif_channel_pairing">Assistente di accoppiamento ADB</string>
     <string name="notif_channel_pairing_description">Inserimento del codice di accoppiamento ADB wireless e notifiche di errore</string>
+    <string name="notif_channel_shortcuts">Notifiche delle scorciatoie</string>
+    <string name="notif_channel_shortcuts_description">Notifiche mostrate dalle tue scorciatoie</string>
     <string name="notif_pairing_title">In attesa dell\'accoppiamento ADB</string>
     <string name="notif_pairing_default">Inserisci solo il codice a 6 cifre; la porta verrà trovata automaticamente.</string>
     <string name="notif_pairing_input_label">Codice di accoppiamento a 6 cifre</string>

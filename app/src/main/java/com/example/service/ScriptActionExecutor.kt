@@ -2,7 +2,10 @@ package com.example.service
 
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.GestureDescription
+import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
+import android.app.WallpaperManager
 import android.content.Context
 import android.content.Intent
 import android.graphics.Path
@@ -17,13 +20,17 @@ import android.provider.MediaStore
 import android.provider.Settings
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityNodeInfo
+import androidx.core.app.NotificationCompat
+import com.example.data.AppLocale
 import com.example.data.ScriptAction
 import com.example.data.ScriptRepository
+import io.github.nicholasarda.keysnap.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import java.net.HttpURLConnection
 import java.net.URL
+import java.util.concurrent.atomic.AtomicInteger
 
 fun interface ScriptActionHandler {
     suspend fun execute(action: ScriptAction): Boolean
@@ -108,6 +115,27 @@ internal const val MAX_BRIGHTNESS = 255
 internal const val BRIGHTNESS_STEP = 26
 
 /**
+ * Kept apart from the setup, pairing and run-failure channels so the user can mute shortcut
+ * notifications alone.
+ */
+internal const val SHORTCUT_NOTIFICATION_CHANNEL_ID = "shortcut_notifications"
+
+/**
+ * Every shortcut notification is posted under this tag, so its ids can never replace the app's
+ * untagged setup/pairing notifications or [RunFailureNotifier]'s tagged ones.
+ */
+private const val SHORTCUT_NOTIFICATION_TAG = "shortcut_notification"
+
+/**
+ * True when a shortcut's notification can be seen: the app's notifications are on (POST_NOTIFICATIONS
+ * granted on 13+) and the user has not switched the shortcut channel off. Shared with the run log,
+ * so a failed "Show notification" says why.
+ */
+internal fun shortcutNotificationsAllowed(manager: NotificationManager): Boolean =
+    manager.areNotificationsEnabled() &&
+        manager.getNotificationChannel(SHORTCUT_NOTIFICATION_CHANNEL_ID)?.importance != NotificationManager.IMPORTANCE_NONE
+
+/**
  * The `screen_brightness` value a brightness action should land on, mirroring the bridge's
  * `setBrightness` clamp so a script lands identically in both modes. Pure so it can be unit-tested
  * without a live ContentResolver.
@@ -119,6 +147,17 @@ internal fun brightnessLevelFor(current: Int, delta: Int): Int = (current + delt
  * `(user_rotation + 1) % 4`. Pure so it can be unit-tested without a live ContentResolver.
  */
 internal fun nextUserRotation(current: Int): Int = (current + 1) % 4
+
+/**
+ * A `set_wallpaper` "target" param to [WallpaperManager]'s which-flags, or `null` for an unknown
+ * value. Pure so it can be unit-tested without a live WallpaperManager.
+ */
+internal fun wallpaperFlagsFor(target: String?): Int? = when (target) {
+    "home" -> WallpaperManager.FLAG_SYSTEM
+    "lock" -> WallpaperManager.FLAG_LOCK
+    "both" -> WallpaperManager.FLAG_SYSTEM or WallpaperManager.FLAG_LOCK
+    else -> null
+}
 
 internal fun wordBoundsAtCursor(text: String, cursor: Int): IntRange? {
     if (text.isEmpty()) return null
@@ -246,6 +285,7 @@ class ScriptActionExecutor(private val handler: ScriptActionHandler) {
                 "toggle_dnd" -> setDndEnabled(ctx, null)
                 "enable_dnd" -> setDndEnabled(ctx, true)
                 "disable_dnd" -> setDndEnabled(ctx, false)
+                "show_notification" -> showNotification(ctx, action.params)
                 "text_cut" -> KeyMapperAccessibilityService.performFocusedEditAction(AccessibilityNodeInfo.ACTION_CUT)
                 "text_copy" -> KeyMapperAccessibilityService.performFocusedEditAction(AccessibilityNodeInfo.ACTION_COPY)
                 "text_paste" -> KeyMapperAccessibilityService.performFocusedEditAction(AccessibilityNodeInfo.ACTION_PASTE)
@@ -280,6 +320,7 @@ class ScriptActionExecutor(private val handler: ScriptActionHandler) {
                 "toggle_auto_brightness" -> toggleSystemFlag(ctx, Settings.System.SCREEN_BRIGHTNESS_MODE)
                 "increase_brightness" -> adjustBrightness(ctx, BRIGHTNESS_STEP)
                 "decrease_brightness" -> adjustBrightness(ctx, -BRIGHTNESS_STEP)
+                "set_wallpaper" -> setWallpaper(ctx, action.params)
                 "play_sound" -> playSound(ctx, action.params["uri"])
                 "text_to_speech" -> TextToSpeechController.speak(ctx, action.params["text"])
                 "stop_text_to_speech" -> TextToSpeechController.stop()
@@ -364,6 +405,50 @@ class ScriptActionExecutor(private val handler: ScriptActionHandler) {
             if (!hasNotificationPolicyAccess(context)) return false
             val manager = context.getSystemService(NotificationManager::class.java) ?: return false
             manager.setInterruptionFilter(dndFilterFor(manager.currentInterruptionFilter, enabled))
+            return true
+        }
+
+        /** Unique per process and unlikely to repeat across restarts, so back-to-back notifications
+         *  neither replace each other nor share a PendingIntent. */
+        private val notificationIds = AtomicInteger(System.currentTimeMillis().toInt())
+
+        /**
+         * Title, text and tap target are user payload: never log them. The URL is passed through
+         * exactly as written. An app that is no longer installed leaves the notification without a
+         * tap target instead of dropping it.
+         */
+        private fun showNotification(context: Context, params: Map<String, String>): Boolean {
+            val title = params["title"]?.takeIf { it.isNotBlank() } ?: return false
+            val manager = context.getSystemService(NotificationManager::class.java) ?: return false
+            val localized = AppLocale.wrap(context)
+            manager.createNotificationChannel(
+                NotificationChannel(
+                    SHORTCUT_NOTIFICATION_CHANNEL_ID,
+                    localized.getString(R.string.notif_channel_shortcuts),
+                    NotificationManager.IMPORTANCE_DEFAULT,
+                ).apply { description = localized.getString(R.string.notif_channel_shortcuts_description) },
+            )
+            // POST_NOTIFICATIONS denied (13+), the app's notifications off, or this channel muted.
+            if (!shortcutNotificationsAllowed(manager)) return false
+            val id = notificationIds.incrementAndGet()
+            val tap = when (params["onTap"]) {
+                "url" -> params["url"]?.takeIf { it.isNotBlank() }?.let { Intent(Intent.ACTION_VIEW, Uri.parse(it)) }
+                "app" -> params["packageName"]?.takeIf { it.isNotBlank() }?.let { context.packageManager.getLaunchIntentForPackage(it) }
+                else -> null
+            }
+            val builder = NotificationCompat.Builder(context, SHORTCUT_NOTIFICATION_CHANNEL_ID)
+                .setSmallIcon(android.R.drawable.ic_dialog_info)
+                .setContentTitle(title)
+                .setAutoCancel(true)
+            params["text"]?.takeIf { it.isNotBlank() }?.let {
+                builder.setContentText(it).setStyle(NotificationCompat.BigTextStyle().bigText(it))
+            }
+            tap?.let {
+                builder.setContentIntent(
+                    PendingIntent.getActivity(context, id, it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK), PendingIntent.FLAG_IMMUTABLE),
+                )
+            }
+            manager.notify(SHORTCUT_NOTIFICATION_TAG, id, builder.build())
             return true
         }
 
@@ -588,6 +673,26 @@ class ScriptActionExecutor(private val handler: ScriptActionHandler) {
                     player.prepare()
                     player.start()
                     true
+                } catch (e: Exception) {
+                    false
+                }
+            }
+        }
+
+        /**
+         * Everything is inside the try: a deleted photo, a backup restored onto another phone, a
+         * lost grant or a dead wallpaper service must fail the action, not the whole chain. The
+         * image URI is user data: never log it.
+         */
+        private suspend fun setWallpaper(context: Context, params: Map<String, String>): Boolean {
+            val uri = params["imageUri"]?.takeIf { it.isNotBlank() } ?: return false
+            val flags = wallpaperFlagsFor(params["target"]) ?: return false
+            return withContext(Dispatchers.IO) {
+                try {
+                    val manager = WallpaperManager.getInstance(context)
+                    // A work profile or device policy can forbid it; setStream would then quietly do nothing.
+                    if (!manager.isWallpaperSupported || !manager.isSetWallpaperAllowed) return@withContext false
+                    context.contentResolver.openInputStream(Uri.parse(uri))?.use { manager.setStream(it, null, true, flags) != 0 } ?: false
                 } catch (e: Exception) {
                     false
                 }

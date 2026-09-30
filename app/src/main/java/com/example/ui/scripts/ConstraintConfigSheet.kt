@@ -137,7 +137,7 @@ fun ConstraintConfigSheet(
                     is EditorField.TimeRange -> TimeRangeFieldRow(field, values)
                     is EditorField.DaySet -> DaySetFieldRow(field, values)
                     // Never declared by a constraint form; [ConstraintEditorFormTest] guards this.
-                    is EditorField.KeyCodePick, is EditorField.Point, is EditorField.TwoPoints -> Unit
+                    is EditorField.KeyCodePick, is EditorField.Point, is EditorField.TwoPoints, is EditorField.ImagePick -> Unit
                 }
             }
 

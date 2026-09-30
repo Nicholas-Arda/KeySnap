@@ -86,9 +86,12 @@ object PrivacyPolicy {
         "Permissions and why" to
             "Internet, network state, Wi-Fi state and multicast: to find and connect to your " +
             "device's own wireless debugging service on the local network. Notifications: to " +
-            "show the pairing code prompt and the setup notification, and to tell you when a " +
-            "shortcut's action could not run and why. Vibrate: for the " +
-            "confirmation buzz when a shortcut fires. Display over other apps: only when you tap " +
+            "show the pairing code prompt and the setup notification, to tell you when a " +
+            "shortcut's action could not run and why, and to show the notifications you put " +
+            "into your own shortcuts. Vibrate: for the confirmation buzz when a shortcut fires. " +
+            "Set wallpaper: for the \"Set wallpaper\" action; the image comes from Android's photo " +
+            "picker, so the app can read only the picture you choose, and only on this device. " +
+            "Display over other apps: only when you tap " +
             "\"Pick on screen\" to choose tap coordinates; the manual X/Y fields work without " +
             "it. Bluetooth: to list your paired devices and notice when one connects, for the " +
             "Bluetooth device conditions. Location: Android only reveals the name of the Wi-Fi " +

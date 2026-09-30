@@ -42,7 +42,12 @@ sealed interface EditorField {
 
     data class KeyCodePick(val key: String, @StringRes val labelRes: Int) : EditorField
 
-    data class AppPick(val key: String, @StringRes val labelRes: Int) : EditorField
+    data class AppPick(
+        val key: String,
+        @StringRes val labelRes: Int,
+        /** Same gate as [Text.visibleWhen], e.g. a notification's app only when "When tapped" is App. */
+        val visibleWhen: Pair<String, Set<String>>? = null,
+    ) : EditorField
 
     data class Point(val xKey: String, val yKey: String, @StringRes val labelRes: Int) : EditorField
 
@@ -74,6 +79,12 @@ sealed interface EditorField {
 
     /** Days of the week persisted as comma-separated `mon,tue,…,sun`. */
     data class DaySet(val key: String, @StringRes val labelRes: Int) : EditorField
+
+    /**
+     * One image from the system photo picker, persisted as its `content://` URI string. The sheet
+     * persists the read grant, because the shortcut runs long after the picking process is gone.
+     */
+    data class ImagePick(val key: String, @StringRes val labelRes: Int) : EditorField
 }
 
 /** Every param key this field writes. A point writes two, a two-point field writes four. */
@@ -89,6 +100,7 @@ val EditorField.keys: List<String>
         is EditorField.BluetoothDevicePick -> listOf(addressKey, nameKey)
         is EditorField.TimeRange -> listOf(startKey, endKey)
         is EditorField.DaySet -> listOf(key)
+        is EditorField.ImagePick -> listOf(key)
     }
 
 data class ActionEditorForm(
@@ -330,6 +342,56 @@ object ActionEditorForms {
             .map { ActionEditorForm(type = it, fields = emptyList(), requirementRes = WRITE_SETTINGS_BADGE, summary = { _, _ -> "" }) }
             .toTypedArray(),
         ActionEditorForm(
+            type = "set_wallpaper",
+            fields = listOf(
+                EditorField.ImagePick("imageUri", R.string.param_image),
+                EditorField.Choice(
+                    "target", R.string.param_apply_to,
+                    listOf(
+                        "both" to R.string.choice_wallpaper_both,
+                        "home" to R.string.choice_wallpaper_home,
+                        "lock" to R.string.choice_wallpaper_lock,
+                    ),
+                ),
+            ),
+            summary = { res, params ->
+                res.choice(
+                    params.value("target"),
+                    "both" to R.string.choice_wallpaper_both,
+                    "home" to R.string.choice_wallpaper_home,
+                    "lock" to R.string.choice_wallpaper_lock,
+                )
+            },
+        ),
+        ActionEditorForm(
+            type = "show_notification",
+            fields = listOf(
+                EditorField.Text("title", R.string.param_title),
+                EditorField.Text("text", R.string.param_text, multiline = true),
+                EditorField.Choice(
+                    "onTap", R.string.param_on_tap,
+                    listOf(
+                        "none" to R.string.choice_on_tap_nothing,
+                        "url" to R.string.action_open_url,
+                        "app" to R.string.action_launch_app,
+                    ),
+                ),
+                EditorField.Text("url", R.string.param_url, hintRes = R.string.hint_url_example, visibleWhen = "onTap" to setOf("url")),
+                EditorField.AppPick("packageName", R.string.field_app_to_open, visibleWhen = "onTap" to setOf("app")),
+            ),
+            // The literal URL, per CLAUDE.md's legibility rule for actions that open one.
+            summary = { _, params ->
+                joinSummary(
+                    params.value("title"),
+                    when (params["onTap"]) {
+                        "url" -> params.value("url")
+                        "app" -> params.value("packageName")
+                        else -> ""
+                    },
+                )
+            },
+        ),
+        ActionEditorForm(
             type = "play_sound",
             fields = listOf(EditorField.Text("uri", R.string.param_sound, hintRes = R.string.hint_sound_uri)),
             summary = { _, params -> params.value("uri") },
@@ -378,17 +440,22 @@ object ActionEditorForms {
     }
 
     /**
-     * Hides fields gated on another field's current value, e.g. an HTTP body for GET.
+     * Hides fields gated on another field's current value, e.g. an HTTP body for GET or a
+     * notification's app while "When tapped" is Nothing.
      *
-     * Only [EditorField.Text] is checked for `visibleWhen` here; a future gated [EditorField.Choice]
-     * or [EditorField.Number] would be silently treated as always-visible. That matters because both
-     * [isComplete] and [missingRequired] derive their visible-field set from this function — a
-     * required param that is actually hidden-but-gated on such a field would never be excluded from
-     * the required set, permanently disabling Save.
+     * Only [EditorField.Text] and [EditorField.AppPick] are checked for `visibleWhen` here. A future
+     * gated [EditorField.Choice] or [EditorField.Number] would be silently treated as always visible.
+     * That matters because both [isComplete] and [missingRequired] derive their visible-field set
+     * from this function: a required param that is actually hidden-but-gated on such a field would
+     * never be excluded from the required set, which permanently disables Save.
      */
     fun visibleFields(form: ActionEditorForm, values: Map<String, String>): List<EditorField> =
         form.fields.filter { field ->
-            val gate = (field as? EditorField.Text)?.visibleWhen ?: return@filter true
+            val gate = when (field) {
+                is EditorField.Text -> field.visibleWhen
+                is EditorField.AppPick -> field.visibleWhen
+                else -> null
+            } ?: return@filter true
             values[gate.first] in gate.second
         }
 

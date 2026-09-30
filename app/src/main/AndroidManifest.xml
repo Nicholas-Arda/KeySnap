@@ -42,6 +42,11 @@
          ACTION_MANAGE_WRITE_SETTINGS, and it is what lets the brightness and screen-rotation
          actions run without Advanced Mode. Every write is gated on canWrite. -->
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <!-- Normal permission, granted at install: the set_wallpaper action's WallpaperManager.setStream
+         needs it. The image comes from the system photo picker, which needs no storage permission;
+         READ_MEDIA_IMAGES is deliberately not declared, because it would put "photos and videos" on
+         the store listing and require Play's photo-permissions declaration. -->
+    <uses-permission android:name="android.permission.SET_WALLPAPER" />
 
     <!-- The torch runs through CameraManager.setTorchMode, which needs no permission. CAMERA is
          deliberately not declared: it would put "take pictures and videos" on the store listing

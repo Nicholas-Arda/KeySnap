@@ -1,5 +1,12 @@
 package com.example.ui.scripts
 
+import android.content.Intent
+import android.net.Uri
+import android.util.Size
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -20,6 +27,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.outlined.MyLocation
+import androidx.compose.material.icons.outlined.Photo
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -38,10 +46,15 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -63,6 +76,8 @@ import com.example.service.TwoPointGesture
 import com.example.ui.components.InnerShape
 import com.example.ui.theme.SectionLabel
 import io.github.nicholasarda.keysnap.R
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 /**
  * Collects one action's parameters before it joins the Do chain, and reopens for editing from the
@@ -195,6 +210,7 @@ fun ActionConfigSheet(
                             onRequestPermission = onRequestOverlayPermission,
                         )
                     }
+                    is EditorField.ImagePick -> ImageFieldRow(field, values)
                     // Constraint-only fields; listed so the sealed `when` stays exhaustive.
                     is EditorField.BluetoothDevicePick -> BluetoothDeviceFieldRow(field, values)
                     is EditorField.TimeRange -> TimeRangeFieldRow(field, values)
@@ -419,5 +435,51 @@ private fun PointFieldRow(
             color = colors.onSurfaceVariant.copy(alpha = 0.6f),
             modifier = Modifier.padding(start = 4.dp).testTag("config_point_readout_${pointKeys.first()}"),
         )
+    }
+}
+
+/**
+ * One image from the system photo picker, which needs no storage permission. The read grant is
+ * persisted: without it the URI dies with this process, and the shortcut runs long after that.
+ */
+@Composable
+private fun ImageFieldRow(field: EditorField.ImagePick, values: MutableMap<String, String>) {
+    val colors = MaterialTheme.colorScheme
+    val context = LocalContext.current
+    val picker = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        if (uri != null) {
+            // ponytail: grants are never released when the action is deleted or re-picked. Android
+            // keeps at most 5,000 media grants per app and drops the oldest, so release them on
+            // delete if that ever bites.
+            runCatching { context.contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION) }
+            values[field.key] = uri.toString()
+        }
+    }
+    val current = values[field.key].orEmpty()
+    val thumbnail by produceState<ImageBitmap?>(null, current) {
+        value = if (current.isEmpty()) {
+            null
+        } else {
+            withContext(Dispatchers.IO) {
+                runCatching { context.contentResolver.loadThumbnail(Uri.parse(current), Size(256, 256), null).asImageBitmap() }.getOrNull()
+            }
+        }
+    }
+    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        Text(stringResource(field.labelRes), style = SectionLabel, color = colors.onSurfaceVariant)
+        thumbnail?.let {
+            Image(it, contentDescription = null, modifier = Modifier.size(96.dp).clip(InnerShape), contentScale = ContentScale.Crop)
+        }
+        TextButton(
+            onClick = { picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
+            modifier = Modifier.testTag("config_pick_image_${field.key}"),
+        ) {
+            Icon(Icons.Outlined.Photo, null, tint = colors.primary, modifier = Modifier.size(18.dp))
+            Spacer(Modifier.width(6.dp))
+            Text(
+                stringResource(if (current.isEmpty()) R.string.action_config_choose_image else R.string.action_config_change_image),
+                color = colors.primary,
+            )
+        }
     }
 }

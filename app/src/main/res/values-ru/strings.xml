@@ -22,6 +22,8 @@
     <string name="param_strength">Сила</string>
     <string name="param_key_code">Код клавиши</string>
     <string name="param_text">Текст</string>
+    <string name="param_title">Заголовок</string>
+    <string name="param_on_tap">При нажатии</string>
     <string name="param_taps">Количество нажатий</string>
     <string name="param_interval_ms">Интервал (мс)</string>
     <string name="param_start_x">Начало X</string>
@@ -48,6 +50,8 @@
     <string name="param_mode">Режим</string>
     <string name="param_stream">Канал</string>
     <string name="param_sound">Звук</string>
+    <string name="param_image">Изображение</string>
+    <string name="param_apply_to">Применить к</string>
     <string name="param_times">Количество раз</string>
 
     <!-- Действия: фонарик -->
@@ -117,6 +121,7 @@
     <string name="action_toggle_auto_brightness">Переключить автояркость</string>
     <string name="action_increase_brightness">Увеличить яркость</string>
     <string name="action_decrease_brightness">Уменьшить яркость</string>
+    <string name="action_set_wallpaper">Установить обои</string>
 
     <!-- Действия: медиа -->
     <string name="action_media_play">Воспроизвести</string>
@@ -161,6 +166,7 @@
     <string name="action_disable_dnd">Выключить режим «Не беспокоить»</string>
     <string name="action_open_app_drawer">Открыть список приложений</string>
     <string name="action_dismiss_all_notifications">Закрыть все уведомления</string>
+    <string name="action_show_notification">Показать уведомление</string>
     <string name="action_answer_call">Ответить на звонок</string>
     <string name="action_end_call">Завершить звонок</string>
 
@@ -305,6 +311,10 @@
     <string name="choice_ringer_normal">Обычный</string>
     <string name="choice_ringer_vibrate">Вибрация</string>
     <string name="choice_ringer_silent">Без звука</string>
+    <string name="choice_on_tap_nothing">Ничего</string>
+    <string name="choice_wallpaper_both">Главный экран и экран блокировки</string>
+    <string name="choice_wallpaper_home">Главный экран</string>
+    <string name="choice_wallpaper_lock">Экран блокировки</string>
 
     <!-- Типы нажатий триггера -->
     <string name="press_single_title">Одно нажатие</string>
@@ -396,6 +406,8 @@
     <string name="action_config_record_key">Записать физическую клавишу</string>
     <string name="action_config_choose_app">Выберите приложение</string>
     <string name="action_config_enter_package">Или введите имя пакета</string>
+    <string name="action_config_choose_image">Выберите изображение</string>
+    <string name="action_config_change_image">Выберите другое изображение</string>
     <string name="action_config_pick_on_screen">Выбрать на экране</string>
     <string name="action_config_allow_overlay">Разрешить показ поверх других приложений для выбора</string>
     <string name="action_config_point_not_set">не задано</string>
@@ -597,7 +609,7 @@
     <string name="home_setup_allow_background">Разрешить работу в фоне</string>
     <string name="home_setup_done_background">Разрешено</string>
     <string name="home_setup_step_notifications">Разрешите уведомления</string>
-    <string name="home_setup_why_notifications">Для настройки и чтобы сообщить, когда сценарий не удалось выполнить. Нажмите «Разрешить», когда Android спросит, — «Запретить» остановит настройку здесь.</string>
+    <string name="home_setup_why_notifications">Для настройки, чтобы сообщить, когда сценарий не удалось выполнить, и для уведомлений ваших собственных сценариев. Нажмите «Разрешить», когда Android спросит, — «Запретить» остановит настройку здесь.</string>
     <string name="home_setup_ask_now">Спросить сейчас</string>
     <string name="home_setup_done_notifications">Разрешены</string>
     <string name="home_setup_all_done">Все три включены. Ваши кнопки работают.</string>
@@ -610,7 +622,7 @@
     <string name="home_setup_why_collapsed">Свёрнуто</string>
     <string name="home_setup_whytext_accessibility">Android показывает аппаратные кнопки только службе специальных возможностей, поэтому KeySnap использует её именно для этого: заметить нажатие и запустить ваш сценарий. Экраны других приложений она не читает. Только во время настройки Расширенного режима она также считывает код сопряжения на странице беспроводной отладки — и больше ничего.</string>
     <string name="home_setup_whytext_background">Android закрывает приложения, которые считает бездействующими, а закрытое приложение не может выполнять ваши сценарии. Это оставляет KeySnap работать, пока телефон спит. В фоне он только ждёт нажатия кнопки.</string>
-    <string name="home_setup_whytext_notifications">Во время настройки Расширенного режима: код сопряжения и состояние службы. После этого — только когда сценарий не удалось выполнить, и почему. Никаких напоминаний, никакой рекламы, ничего больше — никогда.</string>
+    <string name="home_setup_whytext_notifications">Во время настройки Расширенного режима: код сопряжения и состояние службы. После этого — только когда сценарий не удалось выполнить, и почему, а также уведомления, которые вы добавили в свои сценарии. Никаких напоминаний от нас, никакой рекламы, ничего больше — никогда.</string>
     <string name="home_setup_illo_battery_dialog">Разрешить KeySnap всегда работать в фоне?</string>
     <string name="home_setup_illo_battery_body">Это может сократить время работы батареи.</string>
     <string name="home_setup_illo_battery_deny">Запретить</string>
@@ -797,6 +809,7 @@
     <string name="run_nothing_ran">Ничего не выполнилось. Проверьте настройки действия.</string>
     <string name="run_partial">Выполнено %1$d из %2$d действий</string>
     <string name="run_failure_generic">Не выполнено</string>
+    <string name="run_failure_notifications_off">Уведомления отключены</string>
     <string name="editor_needs_action">Добавьте хотя бы одно действие перед сохранением.</string>
     <string name="editor_needs_trigger">Выберите клавишу перед сохранением.</string>
     <string name="saved_needs_trigger">Сохранено. Назначьте клавишу, чтобы он мог сработать.</string>
@@ -815,6 +828,8 @@
     <!-- Уведомление сопряжения беспроводного ADB -->
     <string name="notif_channel_pairing">Помощник сопряжения ADB</string>
     <string name="notif_channel_pairing_description">Ввод кода сопряжения по беспроводному ADB и уведомления об ошибках</string>
+    <string name="notif_channel_shortcuts">Уведомления сценариев</string>
+    <string name="notif_channel_shortcuts_description">Уведомления, которые показывают ваши сценарии</string>
     <string name="notif_pairing_title">Ожидание сопряжения ADB</string>
     <string name="notif_pairing_default">Просто введите 6-значный код; порт будет найден автоматически.</string>
     <string name="notif_pairing_input_label">6-значный код сопряжения</string>

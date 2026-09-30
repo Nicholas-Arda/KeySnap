@@ -49,6 +49,7 @@ import androidx.compose.material.icons.outlined.LockOpen
 import androidx.compose.material.icons.outlined.MusicNote
 import androidx.compose.material.icons.outlined.Navigation
 import androidx.compose.material.icons.outlined.Nfc
+import androidx.compose.material.icons.outlined.NotificationsActive
 import androidx.compose.material.icons.outlined.NotificationsOff
 import androidx.compose.material.icons.outlined.OpenInNew
 import androidx.compose.material.icons.outlined.Pause
@@ -81,6 +82,7 @@ import androidx.compose.material.icons.outlined.VolumeDown
 import androidx.compose.material.icons.outlined.VolumeMute
 import androidx.compose.material.icons.outlined.VolumeOff
 import androidx.compose.material.icons.outlined.VolumeUp
+import androidx.compose.material.icons.outlined.Wallpaper
 import androidx.compose.material.icons.outlined.Wifi
 import androidx.compose.material.icons.outlined.WifiOff
 import androidx.compose.material.icons.outlined.WifiTethering
@@ -152,6 +154,7 @@ private val perActionIcons: Map<String, ImageVector> = mapOf(
     "toggle_auto_brightness" to Icons.Outlined.BrightnessAuto,
     "increase_brightness" to Icons.Outlined.BrightnessHigh,
     "decrease_brightness" to Icons.Outlined.BrightnessLow,
+    "set_wallpaper" to Icons.Outlined.Wallpaper,
     // Media
     "media_play" to Icons.Filled.PlayArrow,
     "media_pause" to Icons.Outlined.Pause,
@@ -192,6 +195,7 @@ private val perActionIcons: Map<String, ImageVector> = mapOf(
     "disable_dnd" to Icons.Outlined.DoNotDisturbOff,
     "open_app_drawer" to Icons.Filled.Apps,
     "dismiss_all_notifications" to Icons.Outlined.NotificationsOff,
+    "show_notification" to Icons.Outlined.NotificationsActive,
     "answer_call" to Icons.Filled.Call,
     "end_call" to Icons.Outlined.CallEnd,
     // Sound

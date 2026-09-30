@@ -87,6 +87,8 @@ public final class BridgeConfig {
     public static final String ACTION_TEXT_TO_SPEECH = "text_to_speech";
     public static final String ACTION_STOP_TEXT_TO_SPEECH = "stop_text_to_speech";
     public static final String ACTION_PLAY_SOUND = "play_sound";
+    public static final String ACTION_SHOW_NOTIFICATION = "show_notification";
+    public static final String ACTION_SET_WALLPAPER = "set_wallpaper";
     public static final String ACTION_REPEAT_PREVIOUS = "repeat_previous";
     public static final String ACTION_TOGGLE_MAPPING = "toggle_mapping";
     public static final String ACTION_PAUSE_MAPPING = "pause_mapping";

@@ -22,6 +22,8 @@
     <string name="param_strength">Intensité</string>
     <string name="param_key_code">Code de touche</string>
     <string name="param_text">Texte</string>
+    <string name="param_title">Titre</string>
+    <string name="param_on_tap">Au toucher</string>
     <string name="param_taps">Appuis</string>
     <string name="param_interval_ms">Intervalle (ms)</string>
     <string name="param_start_x">X de départ</string>
@@ -48,6 +50,8 @@
     <string name="param_mode">Mode</string>
     <string name="param_stream">Flux</string>
     <string name="param_sound">Son</string>
+    <string name="param_image">Image</string>
+    <string name="param_apply_to">Appliquer à</string>
     <string name="param_times">Fois</string>
 
     <!-- Actions : lampe torche -->
@@ -117,6 +121,7 @@
     <string name="action_toggle_auto_brightness">Activer/désactiver la luminosité automatique</string>
     <string name="action_increase_brightness">Augmenter la luminosité</string>
     <string name="action_decrease_brightness">Diminuer la luminosité</string>
+    <string name="action_set_wallpaper">Définir le fond d\'écran</string>
 
     <!-- Actions : média -->
     <string name="action_media_play">Lecture</string>
@@ -161,6 +166,7 @@
     <string name="action_disable_dnd">Désactiver Ne pas déranger</string>
     <string name="action_open_app_drawer">Ouvrir le tiroir d\'applications</string>
     <string name="action_dismiss_all_notifications">Effacer toutes les notifications</string>
+    <string name="action_show_notification">Afficher une notification</string>
     <string name="action_answer_call">Répondre à l\'appel</string>
     <string name="action_end_call">Raccrocher</string>
 
@@ -305,6 +311,10 @@
     <string name="choice_ringer_normal">Normal</string>
     <string name="choice_ringer_vibrate">Vibreur</string>
     <string name="choice_ringer_silent">Silencieux</string>
+    <string name="choice_on_tap_nothing">Rien</string>
+    <string name="choice_wallpaper_both">Écran d\'accueil et de verrouillage</string>
+    <string name="choice_wallpaper_home">Écran d\'accueil</string>
+    <string name="choice_wallpaper_lock">Écran de verrouillage</string>
 
     <!-- Types d\'appui de déclencheur -->
     <string name="press_single_title">Appui simple</string>
@@ -396,6 +406,8 @@
     <string name="action_config_record_key">Enregistrer une touche physique</string>
     <string name="action_config_choose_app">Choisir une application</string>
     <string name="action_config_enter_package">Ou saisissez un nom de package</string>
+    <string name="action_config_choose_image">Choisir une image</string>
+    <string name="action_config_change_image">Changer d\'image</string>
     <string name="action_config_pick_on_screen">Choisir à l\'écran</string>
     <string name="action_config_allow_overlay">Autoriser l\'affichage par-dessus les applications pour choisir</string>
     <string name="action_config_point_not_set">non défini</string>
@@ -597,7 +609,7 @@
     <string name="home_setup_allow_background">Autoriser l\'arrière-plan</string>
     <string name="home_setup_done_background">Autorisé</string>
     <string name="home_setup_step_notifications">Autorisez les notifications</string>
-    <string name="home_setup_why_notifications">Pour la configuration, et pour vous prévenir quand un raccourci n\'a pas pu s\'exécuter. Touchez Autoriser quand Android le demande — Refuser arrête la configuration ici.</string>
+    <string name="home_setup_why_notifications">Pour la configuration, pour vous prévenir quand un raccourci n\'a pas pu s\'exécuter, et pour les notifications de vos propres raccourcis. Touchez Autoriser quand Android le demande — Refuser arrête la configuration ici.</string>
     <string name="home_setup_ask_now">Demander maintenant</string>
     <string name="home_setup_done_notifications">Autorisées</string>
     <string name="home_setup_all_done">Les trois sont activés. Vos boutons fonctionnent.</string>
@@ -610,7 +622,7 @@
     <string name="home_setup_why_collapsed">Réduit</string>
     <string name="home_setup_whytext_accessibility">Android ne montre les boutons physiques qu\'à un service d\'accessibilité : KeySnap en utilise un exactement pour ça, remarquer un appui et lancer votre raccourci. Il ne lit pas l\'écran des autres applis. Pendant la configuration du mode avancé uniquement, il lit aussi le code d\'appairage sur la page de débogage sans fil, et rien d\'autre.</string>
     <string name="home_setup_whytext_background">Android ferme les applis qu\'il croit inactives, et une appli fermée ne peut pas lancer vos raccourcis. Cela garde KeySnap en vie pendant que votre téléphone dort. En arrière-plan, il ne fait qu\'attendre un appui.</string>
-    <string name="home_setup_whytext_notifications">Pendant la configuration du mode avancé : le code d\'appairage et l\'état du service. Ensuite, seulement quand un raccourci n\'a pas pu s\'exécuter, et pourquoi. Aucun rappel, aucune promotion, rien d\'autre, jamais.</string>
+    <string name="home_setup_whytext_notifications">Pendant la configuration du mode avancé : le code d\'appairage et l\'état du service. Ensuite, seulement quand un raccourci n\'a pas pu s\'exécuter, et pourquoi, et les notifications que vous mettez dans vos propres raccourcis. Aucun rappel de notre part, aucune promotion, rien d\'autre, jamais.</string>
     <string name="home_setup_illo_battery_dialog">Autoriser KeySnap à toujours fonctionner en arrière-plan ?</string>
     <string name="home_setup_illo_battery_body">Cela peut réduire l\'autonomie.</string>
     <string name="home_setup_illo_battery_deny">Refuser</string>
@@ -797,6 +809,7 @@
     <string name="run_nothing_ran">Rien ne s\'est exécuté. Vérifiez les paramètres de l\'action.</string>
     <string name="run_partial">%1$d action(s) sur %2$d exécutée(s)</string>
     <string name="run_failure_generic">Non terminée</string>
+    <string name="run_failure_notifications_off">Les notifications sont désactivées</string>
     <string name="editor_needs_action">Ajoutez au moins une action avant d\'enregistrer.</string>
     <string name="editor_needs_trigger">Choisissez une touche avant d\'enregistrer.</string>
     <string name="saved_needs_trigger">Enregistré. Attribuez une touche pour qu\'il puisse s\'exécuter.</string>
@@ -816,6 +829,8 @@
     <!-- Notification d\'appairage ADB sans fil -->
     <string name="notif_channel_pairing">Assistant d\'appairage ADB</string>
     <string name="notif_channel_pairing_description">Saisie du code d\'appairage ADB sans fil et notifications d\'erreur</string>
+    <string name="notif_channel_shortcuts">Notifications des raccourcis</string>
+    <string name="notif_channel_shortcuts_description">Notifications affichées par vos raccourcis</string>
     <string name="notif_pairing_title">En attente de l\'appairage ADB</string>
     <string name="notif_pairing_default">Saisissez simplement le code à 6 chiffres ; le port sera trouvé automatiquement.</string>
     <string name="notif_pairing_input_label">Code d\'appairage à 6 chiffres</string>
