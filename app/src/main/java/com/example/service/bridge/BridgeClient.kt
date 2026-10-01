@@ -4,8 +4,10 @@ import android.util.Log
 import com.example.bridge.BridgeProtocol
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.BufferedReader
 import java.io.BufferedWriter
@@ -220,6 +222,15 @@ class BridgeClient(
      */
     suspend fun stream(listener: Listener): BridgeStatus? = withContext(Dispatchers.IO) {
         val session = openSession() ?: return@withContext null
+        // Cancellation cannot interrupt a blocking socket read; closing the socket is what ends it.
+        // Without this every cancelled stream kept one IO thread and one bridge connection forever.
+        val closer = launch {
+            try {
+                awaitCancellation()
+            } finally {
+                session.close()
+            }
+        }
         try {
             while (currentCoroutineContext().isActive) {
                 val line = session.reader.readLine() ?: break
@@ -232,6 +243,7 @@ class BridgeClient(
             Log.d(TAG, "Bridge stream ended: ${e.message}")
             session.status
         } finally {
+            closer.cancel()
             session.close()
         }
     }

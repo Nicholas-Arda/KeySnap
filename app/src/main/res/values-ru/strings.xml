@@ -271,6 +271,7 @@
     <string name="hint_reply_chat">Название чата точно как в уведомлении</string>
     <string name="summary_reply_trigger_chat">чат, который его запустил</string>
     <string name="helper_reply_chat_trigger">Пусто: ответ уйдёт в чат, уведомление которого запустило этот сценарий.</string>
+    <string name="warning_reply_every_chat">Отвечает во все чаты этого приложения. Выберите контакт в условии, чтобы отвечать только одному человеку.</string>
     <string name="helper_reply_chat_required">Обязательно: выбрать чат за вас может только условие «Получено уведомление».</string>
     <string name="action_send_message">Отправить сообщение</string>
     <string name="param_to">Кому</string>
@@ -462,8 +463,10 @@
     <string name="field_days">Дни</string>
     <string name="constraint_needs_usage_access">Нужен доступ к данным об использовании, чтобы приложение видело, какое приложение на переднем плане.</string>
     <string name="constraint_needs_notification_access">Нужен доступ к уведомлениям. KeySnap сверяет каждое новое уведомление выбранного приложения с этим условием прямо на телефоне. Он хранит только время совпадения и то, какое это было уведомление, чтобы ответ нашёл этот чат. Содержимое уведомлений не сохраняется, не записывается в журнал и не отправляется.</string>
-    <string name="field_notification_contains">Заголовок или текст содержит</string>
-    <string name="hint_notification_contains_any">Пусто: любое уведомление этого приложения</string>
+    <string name="field_notification_contact">Контакт</string>
+    <string name="hint_notification_contact_any">Пусто: любой</string>
+    <string name="field_notification_contains">Сообщение содержит</string>
+    <string name="hint_notification_contains_any">Пусто: любое сообщение</string>
     <string name="helper_notification_received">Срабатывает, когда приходит новое уведомление от этого приложения. Несколько за 10 секунд считаются одним. Только в автоматизациях.</string>
     <string name="field_feed_url">Адрес ленты</string>
     <string name="helper_rss_new_item">Проверяется не чаще раза в 15 минут, пока есть интернет. Срабатывает один раз на каждую проверку, нашедшую новые записи; записи, которые уже были в ленте при сохранении, не считаются. Адрес должен начинаться с https:// и используется ровно так, как вы его ввели. Только в автоматизациях.</string>
@@ -907,6 +910,18 @@
     <string name="run_source_widget">Виджет</string>
     <string name="run_source_tile">Плитка быстрых настроек</string>
     <string name="widget_limit_reached">Бесплатный план: %1$d виджета на главном экране. Перейдите на Pro для неограниченного количества виджетов.</string>
+    <!-- Widget style step -->
+    <string name="widget_style_title">Стиль виджета</string>
+    <string name="widget_style_color">Цвет</string>
+    <string name="widget_color_blue">Синий</string>
+    <string name="widget_color_wallpaper">Обои</string>
+    <string name="widget_color_dark">Тёмный</string>
+    <string name="widget_color_light">Светлый</string>
+    <string name="widget_style_opacity">Непрозрачность фона</string>
+    <string name="widget_style_show_label">Показывать название</string>
+    <string name="widget_style_custom_label">Своё название</string>
+    <string name="widget_style_custom_label_hint">Оставьте пустым, чтобы использовать название сценария</string>
+    <string name="widget_style_show_icon">Показывать значок</string>
     <!-- OEM key tip -->
     <string name="oem_key_tip">Совет: в настройках телефона выберите для этой кнопки «Нет», чтобы на неё реагировал только KeySnap.</string>
     <!-- Recipe gallery -->

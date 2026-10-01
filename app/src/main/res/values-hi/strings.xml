@@ -271,6 +271,7 @@
     <string name="hint_reply_chat">चैट का नाम, ठीक वैसा जैसा सूचना में दिखता है</string>
     <string name="summary_reply_trigger_chat">जिस चैट ने इसे चलाया</string>
     <string name="helper_reply_chat_trigger">खाली: उसी चैट को जवाब देता है जिसकी सूचना ने यह शॉर्टकट चलाया।</string>
+    <string name="warning_reply_every_chat">इस ऐप की हर चैट को जवाब देता है। सिर्फ़ एक व्यक्ति को जवाब देने के लिए शर्त में एक संपर्क चुनें।</string>
     <string name="helper_reply_chat_required">ज़रूरी: आपके लिए चैट सिर्फ़ “सूचना आई” शर्त ही चुन सकती है।</string>
     <string name="action_send_message">मैसेज भेजें</string>
     <string name="param_to">किसे</string>
@@ -462,8 +463,10 @@
     <string name="field_days">दिन</string>
     <string name="constraint_needs_usage_access">यह देखने के लिए कि कौन सा ऐप सामने है, उपयोग एक्सेस चाहिए।</string>
     <string name="constraint_needs_notification_access">सूचना एक्सेस चाहिए। KeySnap आपके चुने ऐप की हर नई सूचना को आपके फ़ोन पर ही इस शर्त से मिलाता है। वह सिर्फ़ मिलान का समय और यह रखता है कि वह कौन-सी सूचना थी, ताकि जवाब उस चैट तक पहुँच सके। सूचना की सामग्री कभी सेव, लॉग या भेजी नहीं जाती।</string>
-    <string name="field_notification_contains">शीर्षक या टेक्स्ट में है</string>
-    <string name="hint_notification_contains_any">खाली: इस ऐप की कोई भी सूचना</string>
+    <string name="field_notification_contact">संपर्क</string>
+    <string name="hint_notification_contact_any">खाली: कोई भी</string>
+    <string name="field_notification_contains">मैसेज में है</string>
+    <string name="hint_notification_contains_any">खाली: कोई भी मैसेज</string>
     <string name="helper_notification_received">इस ऐप से नई सूचना आने पर चलता है। 10 सेकंड के अंदर आई कई सूचनाएं एक मानी जाती हैं। सिर्फ़ ऑटोमेशन में।</string>
     <string name="field_feed_url">फ़ीड का पता</string>
     <string name="helper_rss_new_item">ऑनलाइन रहते हुए ज़्यादा से ज़्यादा हर 15 मिनट में जाँचा जाता है। नए आइटम मिलने वाली हर जाँच पर एक बार चलता है; सेव करते समय फ़ीड में पहले से मौजूद आइटम नहीं गिने जाते। पता https:// से शुरू होना चाहिए और ठीक वैसे ही इस्तेमाल होता है जैसे आपने लिखा। सिर्फ़ ऑटोमेशन में।</string>
@@ -907,6 +910,18 @@
     <string name="run_source_widget">विजेट</string>
     <string name="run_source_tile">क्विक सेटिंग टाइल</string>
     <string name="widget_limit_reached">फ़्री प्लान: होम स्क्रीन पर %1$d विजेट। अनलिमिटेड विजेट के लिए Pro लें।</string>
+    <!-- Widget style step -->
+    <string name="widget_style_title">विजेट स्टाइल</string>
+    <string name="widget_style_color">रंग</string>
+    <string name="widget_color_blue">नीला</string>
+    <string name="widget_color_wallpaper">वॉलपेपर</string>
+    <string name="widget_color_dark">डार्क</string>
+    <string name="widget_color_light">लाइट</string>
+    <string name="widget_style_opacity">बैकग्राउंड की अपारदर्शिता</string>
+    <string name="widget_style_show_label">नाम दिखाएं</string>
+    <string name="widget_style_custom_label">कस्टम नाम</string>
+    <string name="widget_style_custom_label_hint">शॉर्टकट का नाम इस्तेमाल करने के लिए खाली छोड़ें</string>
+    <string name="widget_style_show_icon">आइकन दिखाएं</string>
     <!-- OEM key tip -->
     <string name="oem_key_tip">टिप: फ़ोन की सेटिंग में इस बटन को “कोई नहीं” पर सेट करें, ताकि सिर्फ़ KeySnap इस पर प्रतिक्रिया दे।</string>
     <!-- Recipe gallery -->

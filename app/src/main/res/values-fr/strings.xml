@@ -271,6 +271,7 @@
     <string name="hint_reply_chat">Le nom de la discussion, tel que la notification l\'affiche</string>
     <string name="summary_reply_trigger_chat">la discussion qui l\'a déclenché</string>
     <string name="helper_reply_chat_trigger">Vide : répond à la discussion dont la notification a déclenché ce raccourci.</string>
+    <string name="warning_reply_every_chat">Répond à toutes les discussions de cette application. Choisissez un contact dans la condition pour ne répondre qu\'à une personne.</string>
     <string name="helper_reply_chat_required">Obligatoire : seule une condition « Notification reçue » peut choisir la discussion pour vous.</string>
     <string name="action_send_message">Envoyer un message</string>
     <string name="param_to">À</string>
@@ -462,8 +463,10 @@
     <string name="field_days">Jours</string>
     <string name="constraint_needs_usage_access">Nécessite l\'accès aux données d\'utilisation pour que l\'application voie quelle application est au premier plan.</string>
     <string name="constraint_needs_notification_access">Nécessite l\'accès aux notifications. KeySnap compare chaque nouvelle notification de l\'application choisie à cette condition, sur votre téléphone. Il ne garde que l\'heure de la correspondance et la notification concernée, pour qu\'une réponse retrouve cette discussion. Aucun contenu de notification n\'est enregistré, journalisé ni envoyé.</string>
-    <string name="field_notification_contains">Le titre ou le texte contient</string>
-    <string name="hint_notification_contains_any">Vide : toute notification de cette application</string>
+    <string name="field_notification_contact">Contact</string>
+    <string name="hint_notification_contact_any">Vide : tout le monde</string>
+    <string name="field_notification_contains">Le message contient</string>
+    <string name="hint_notification_contains_any">Vide : tout message</string>
     <string name="helper_notification_received">S\'exécute à l\'arrivée d\'une nouvelle notification de cette application. Plusieurs en 10 secondes comptent pour une. Automatisations uniquement.</string>
     <string name="field_feed_url">Adresse du flux</string>
     <string name="helper_rss_new_item">Vérifié au plus toutes les 15 minutes, lorsque l\'appareil est en ligne. S\'exécute une fois par vérification qui trouve de nouveaux éléments ; ceux déjà présents dans le flux à l\'enregistrement ne comptent pas. L\'adresse doit commencer par https:// et est utilisée exactement telle que vous l\'avez saisie. Automatisations uniquement.</string>
@@ -908,6 +911,18 @@
     <string name="run_source_widget">Widget</string>
     <string name="run_source_tile">Tuile des paramètres rapides</string>
     <string name="widget_limit_reached">Offre gratuite : %1$d widgets d\'écran d\'accueil. Passez à Pro pour des widgets illimités.</string>
+    <!-- Widget style step -->
+    <string name="widget_style_title">Style du widget</string>
+    <string name="widget_style_color">Couleur</string>
+    <string name="widget_color_blue">Bleu</string>
+    <string name="widget_color_wallpaper">Fond d\'écran</string>
+    <string name="widget_color_dark">Sombre</string>
+    <string name="widget_color_light">Clair</string>
+    <string name="widget_style_opacity">Opacité du fond</string>
+    <string name="widget_style_show_label">Afficher le nom</string>
+    <string name="widget_style_custom_label">Nom personnalisé</string>
+    <string name="widget_style_custom_label_hint">Laissez vide pour utiliser le nom du raccourci</string>
+    <string name="widget_style_show_icon">Afficher l\'icône</string>
     <!-- OEM key tip -->
     <string name="oem_key_tip">Astuce : réglez ce bouton sur « Aucun » dans les paramètres du téléphone, pour que seul KeySnap y réagisse.</string>
     <!-- Recipe gallery -->

@@ -54,6 +54,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.dp
+import com.example.data.ActionEditorForms
 import com.example.data.ConstraintEditorForms
 import com.example.data.EntitlementManager
 import com.example.data.ScriptActionCatalog
@@ -543,6 +544,7 @@ fun MainScreen(viewModel: MainViewModel) {
                         viewModel.draftShareText()?.let { shareShortcutText(context, it) }
                     },
                     onDismiss = { confirmShare = false },
+                    repliesToEveryChat = ActionEditorForms.repliesToEveryChat(draft.automation, draft.constraints, draft.actions),
                 )
             }
         }
@@ -581,6 +583,7 @@ fun MainScreen(viewModel: MainViewModel) {
             confirmLabel = stringResource(R.string.import_confirm),
             onConfirm = viewModel::confirmImport,
             onDismiss = viewModel::dismissImport,
+            repliesToEveryChat = ActionEditorForms.repliesToEveryChat(imported.automation, imported.constraints, imported.actions),
         )
     }
     if (showAccessibilityDisclosure) {

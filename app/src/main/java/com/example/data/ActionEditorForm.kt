@@ -21,6 +21,8 @@ sealed interface EditorField {
         @StringRes val helperRes: Int? = null,
         /** Shown only while [visibleWhen]'s param holds one of its values, e.g. a body for POST. */
         val visibleWhen: Pair<String, Set<String>>? = null,
+        /** Adds a "pick from contacts" button that fills in the contact's display name; typing still works. */
+        val pickContact: Boolean = false,
     ) : EditorField
 
     data class Number(
@@ -569,6 +571,23 @@ object ActionEditorForms {
             .filter { isRequired(action.type, it, startsFromNotification) && it.key in visible && action.params[it.key].isNullOrBlank() }
             .map { it.key }
     }
+
+    /**
+     * Index of the Reply to notification that answers every chat in its app, or -1: an empty chat
+     * replies to whichever chat triggered the run, and a notification condition with no contact
+     * lets every chat trigger it. A "contains" word does not narrow it: anyone can send that word.
+     * Allowed (an auto-responder), but the editor says so.
+     */
+    fun everyChatReplyIndex(automation: Boolean, constraints: List<ScriptConstraint>, actions: List<ScriptAction>): Int {
+        if (!ScriptConstraintCatalog.startsFromNotification(automation, constraints)) return -1
+        val filtered = constraints.any {
+            it.type == ScriptConstraintCatalog.NOTIFICATION_RECEIVED && !it.params["contact"].isNullOrBlank()
+        }
+        return if (filtered) -1 else actions.indexOfFirst { it.type == REPLY && it.params[REPLY_CHAT].isNullOrBlank() }
+    }
+
+    fun repliesToEveryChat(automation: Boolean, constraints: List<ScriptConstraint>, actions: List<ScriptAction>): Boolean =
+        everyChatReplyIndex(automation, constraints, actions) >= 0
 
     /** The chain row's second line, or null when the action takes no configuration at all. */
     fun summarize(action: ScriptAction, resources: Resources): String? =

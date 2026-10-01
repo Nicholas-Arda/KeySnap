@@ -56,6 +56,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.platform.LocalConfiguration
@@ -170,6 +171,7 @@ fun ActionConfigSheet(
                 .navigationBarsPadding()
                 .padding(horizontal = 16.dp)
                 .heightIn(max = sheetMaxHeight)
+                .nestedScroll(rememberSheetContentScroll())
                 .verticalScroll(rememberScrollState())
                 .testTag("action_config_sheet"),
             verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -323,6 +325,7 @@ internal fun TextFieldRow(field: EditorField.Text, values: MutableMap<String, St
             singleLine = !field.multiline,
             minLines = if (field.multiline) 3 else 1,
         )
+        if (field.pickContact) PickContactButton("config_pick_contact_${field.key}") { name, _ -> values[field.key] = name }
         field.helperRes?.let { Text(stringResource(it), style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant) }
     }
 }
@@ -482,36 +485,43 @@ private fun PointFieldRow(
 }
 
 /**
- * The system contact picker returns one phone row with a one-time read grant, so no contacts
- * permission. Typing a number instead drops the picked name, which would no longer match it.
+ * Opens the system contact picker, which returns one phone row with a one-time read grant, so no
+ * contacts permission. [onPicked] gets the display name and the number.
  */
 @Composable
-private fun ContactFieldRow(field: EditorField.ContactPick, values: MutableMap<String, String>) {
+private fun PickContactButton(testTag: String, onPicked: (name: String, number: String) -> Unit) {
     val colors = MaterialTheme.colorScheme
     val context = LocalContext.current
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         val uri = result.data?.data ?: return@rememberLauncherForActivityResult
         runCatching {
             context.contentResolver.query(uri, arrayOf(Phone.NUMBER, Phone.DISPLAY_NAME), null, null, null)?.use { row ->
-                if (row.moveToFirst()) {
-                    values[field.numberKey] = row.getString(0).orEmpty()
-                    values[field.nameKey] = row.getString(1).orEmpty()
-                }
+                if (row.moveToFirst()) onPicked(row.getString(1).orEmpty(), row.getString(0).orEmpty())
             }
         }
     }
+    TextButton(
+        onClick = { runCatching { picker.launch(Intent(Intent.ACTION_PICK).setType(Phone.CONTENT_TYPE)) } },
+        modifier = Modifier.testTag(testTag),
+    ) {
+        Icon(Icons.Outlined.Contacts, null, tint = colors.primary, modifier = Modifier.size(18.dp))
+        Spacer(Modifier.width(6.dp))
+        Text(stringResource(R.string.action_config_pick_contact), color = colors.primary)
+    }
+}
+
+/** Typing a number instead of picking drops the picked name, which would no longer match it. */
+@Composable
+private fun ContactFieldRow(field: EditorField.ContactPick, values: MutableMap<String, String>) {
+    val colors = MaterialTheme.colorScheme
     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
         Text(stringResource(field.labelRes), style = SectionLabel, color = colors.onSurfaceVariant)
         values[field.nameKey]?.takeIf { it.isNotBlank() }?.let {
             Text(it, style = MaterialTheme.typography.bodyLarge, color = colors.onSurface)
         }
-        TextButton(
-            onClick = { runCatching { picker.launch(Intent(Intent.ACTION_PICK).setType(Phone.CONTENT_TYPE)) } },
-            modifier = Modifier.testTag("config_pick_contact_${field.numberKey}"),
-        ) {
-            Icon(Icons.Outlined.Contacts, null, tint = colors.primary, modifier = Modifier.size(18.dp))
-            Spacer(Modifier.width(6.dp))
-            Text(stringResource(R.string.action_config_pick_contact), color = colors.primary)
+        PickContactButton("config_pick_contact_${field.numberKey}") { name, number ->
+            values[field.numberKey] = number
+            values[field.nameKey] = name
         }
         OutlinedTextField(
             value = values[field.numberKey].orEmpty(),

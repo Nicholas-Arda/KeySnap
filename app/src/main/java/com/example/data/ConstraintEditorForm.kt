@@ -62,13 +62,14 @@ object ConstraintEditorForms {
             type = ScriptConstraintCatalog.NOTIFICATION_RECEIVED,
             fields = listOf(
                 appField,
+                EditorField.Text("contact", R.string.field_notification_contact, hintRes = R.string.hint_notification_contact_any, pickContact = true),
                 EditorField.Text("contains", R.string.field_notification_contains, hintRes = R.string.hint_notification_contains_any),
             ),
             helperRes = R.string.helper_notification_received,
             required = setOf("packageName"),
             summary = { res, params, apps ->
                 val contains = params.value("contains")
-                listOf(appSummary(res, params, apps), if (contains.isEmpty()) "" else "“$contains”")
+                listOf(appSummary(res, params, apps), params.value("contact"), if (contains.isEmpty()) "" else "“$contains”")
                     .filter { it.isNotEmpty() }
                     .joinToString(" · ")
             },

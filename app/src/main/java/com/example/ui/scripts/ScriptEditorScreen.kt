@@ -55,6 +55,7 @@ import androidx.compose.material.icons.outlined.PlayCircleOutline
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Share
+import androidx.compose.material.icons.outlined.WarningAmber
 import androidx.compose.material.icons.outlined.Widgets
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -401,23 +402,27 @@ private fun ChainArea(
         item { ChainLabel(stringResource(R.string.editor_chain_only_if), topPadding = 6.dp) }
         item { ConstraintsCard(draft.constraints, onOpenConstraintPicker, onRemoveConstraint, onConfigureConstraint, installedApps) }
         item { ChainLabel(stringResource(R.string.editor_chain_do), topPadding = 6.dp) }
+        val everyChatIndex = ActionEditorForms.everyChatReplyIndex(draft.automation, draft.constraints, draft.actions)
         // Keyed on instance identity, which survives a reorder: draftMoveAction moves the same
         // ScriptAction objects, and only an edited action becomes a new instance.
         itemsIndexed(draft.actions, key = { _, action -> System.identityHashCode(action) }) { index, action ->
-            ActionChainCard(
-                action = action,
-                index = index,
-                total = draft.actions.size,
-                menuOpen = openMenuFor == index,
-                advancedModeActive = advancedModeActive,
-                startsFromNotification = ScriptConstraintCatalog.startsFromNotification(draft.automation, draft.constraints),
-                onOpenMenu = { openMenuFor = index },
-                onDismissMenu = { openMenuFor = null },
-                onConfigure = { onConfigureAction(index) },
-                onRemove = { onRemoveAction(index) },
-                onMoveUp = { onMoveAction(index, index - 1) },
-                onMoveDown = { onMoveAction(index, index + 1) },
-            )
+            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                ActionChainCard(
+                    action = action,
+                    index = index,
+                    total = draft.actions.size,
+                    menuOpen = openMenuFor == index,
+                    advancedModeActive = advancedModeActive,
+                    startsFromNotification = ScriptConstraintCatalog.startsFromNotification(draft.automation, draft.constraints),
+                    onOpenMenu = { openMenuFor = index },
+                    onDismissMenu = { openMenuFor = null },
+                    onConfigure = { onConfigureAction(index) },
+                    onRemove = { onRemoveAction(index) },
+                    onMoveUp = { onMoveAction(index, index - 1) },
+                    onMoveDown = { onMoveAction(index, index + 1) },
+                )
+                if (index == everyChatIndex) EveryChatWarning()
+            }
         }
         item { AddActionRow(onOpenAddAction) }
         if (draft.actions.isEmpty()) {
@@ -439,6 +444,17 @@ private fun ChainHint(text: String) {
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
+}
+
+/** See [ActionEditorForms.everyChatReplyIndex]; also shown in the import/share review. */
+@Composable
+internal fun EveryChatWarning(modifier: Modifier = Modifier) {
+    val color = MaterialTheme.colorScheme.error
+    Row(modifier.testTag("every_chat_warning"), verticalAlignment = Alignment.CenterVertically) {
+        Icon(Icons.Outlined.WarningAmber, null, tint = color, modifier = Modifier.size(18.dp))
+        Spacer(Modifier.width(8.dp))
+        Text(stringResource(R.string.warning_reply_every_chat), style = MaterialTheme.typography.bodySmall, color = color)
+    }
 }
 
 /** Dashed, Shortcuts-style call to action that opens the full-screen action catalog. */

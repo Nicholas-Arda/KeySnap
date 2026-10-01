@@ -26,12 +26,18 @@ internal object NotificationMatches {
      * least one condition matched. [key] is the notification's StatusBarNotification key.
      */
     @Synchronized
-    fun record(conditions: List<ScriptConstraint>, packageName: String, key: String, nowMs: Long, readContent: () -> String): Boolean {
+    fun record(
+        conditions: List<ScriptConstraint>,
+        packageName: String,
+        key: String,
+        nowMs: Long,
+        readContent: () -> NotificationContent,
+    ): Boolean {
         lastMatch.keys.retainAll(conditions.toSet())
         val forApp = conditions.filter { it.params["packageName"]?.trim() == packageName }
         if (forApp.isEmpty()) return false
         val content = readContent()
-        val matched = forApp.filter { contentMatches(it.params["contains"], content) }
+        val matched = forApp.filter { notificationMatches(it.params, content) }
         matched.forEach { lastMatch[it] = Match(nowMs, key) }
         return matched.isNotEmpty()
     }
@@ -54,9 +60,24 @@ internal object NotificationMatches {
     fun clearForTest() = lastMatch.clear()
 }
 
-/** A blank [needle] matches anything; otherwise a case-insensitive substring of title and text. */
-internal fun contentMatches(needle: String?, content: String): Boolean =
-    needle.isNullOrBlank() || content.contains(needle.trim(), ignoreCase = true)
+/** What a notification condition reads: its [titles] (title, conversation title) and its message [text]. */
+internal data class NotificationContent(val titles: List<String>, val text: String)
+
+/**
+ * A condition's "contact" must name the chat exactly, as a reply's chat does ([isChatNamed]); its
+ * "contains" is a case-insensitive substring of the message text only. Blank means any; both set,
+ * both must match.
+ */
+internal fun notificationMatches(params: Map<String, String>, content: NotificationContent): Boolean {
+    val contact = params["contact"]
+    val needle = params["contains"]
+    return (contact.isNullOrBlank() || isChatNamed(content.titles, contact)) &&
+        (needle.isNullOrBlank() || content.text.contains(needle.trim(), ignoreCase = true))
+}
+
+/** Trimmed and ignoring case, but whole: "Ali" never matches "Alice". */
+internal fun isChatNamed(titles: List<String>, chat: String): Boolean =
+    titles.any { it.trim().equals(chat.trim(), ignoreCase = true) }
 
 /**
  * One active notification that has a free-text Reply button: its system [key] and its [titles]
@@ -71,8 +92,7 @@ internal data class ReplyCandidate<T>(val key: String, val titles: List<String>,
  */
 internal fun <T> pickReplyTarget(candidates: List<ReplyCandidate<T>>, chat: String?, triggerKey: String?): ReplyCandidate<T>? {
     if (chat.isNullOrBlank()) return triggerKey?.let { key -> candidates.firstOrNull { it.key == key } }
-    val wanted = chat.trim()
     return candidates
-        .filter { candidate -> candidate.titles.any { it.trim().equals(wanted, ignoreCase = true) } }
+        .filter { isChatNamed(it.titles, chat) }
         .maxByOrNull { it.postTime }
 }

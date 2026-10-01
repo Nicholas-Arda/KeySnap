@@ -32,7 +32,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -41,10 +45,12 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.res.stringResource
 import io.github.nicholasarda.keysnap.R
+import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import com.example.data.InstalledApp
 import com.example.data.InstalledAppsRepository
 import com.example.ui.components.MinTouchTarget
+import kotlin.coroutines.cancellation.CancellationException
 
 private val IconSize = 40.dp
 
@@ -102,7 +108,7 @@ fun AppPickerSheet(
                 when {
                     apps.isEmpty() -> LoadingApps()
                     filtered.isEmpty() -> NoMatches(query)
-                    else -> LazyColumn(Modifier.fillMaxWidth()) {
+                    else -> LazyColumn(Modifier.fillMaxWidth().nestedScroll(rememberSheetContentScroll())) {
                         items(filtered.size, key = { filtered[it].packageName }) { index ->
                             AppRow(
                                 app = filtered[index],
@@ -115,6 +121,35 @@ fun AppPickerSheet(
                 }
             }
             Spacer(Modifier.height(8.dp))
+        }
+    }
+}
+
+/**
+ * For the scrolling content of a [ModalBottomSheet]. M3 (1.3) settles the sheet after every fling
+ * of its content, even one that never moved the sheet, and while that 300 ms no-op animation runs
+ * the sheet starts dragging on the next touch and the list's touch-slop check gives the gesture up
+ * to it: a quick second swipe up went nowhere and a swipe down dragged the sheet away mid-list.
+ *
+ * The sheet's post-fling is called whatever a nearer connection consumes, so a fling that never
+ * handed drag to the sheet ends here instead — the same way a touch interrupting a fling ends it.
+ * Only a gesture that did move the sheet (content at its top, finger pulling down) reaches the sheet
+ * to settle or dismiss it. Nothing is lost: the sheet consumed all leftover velocity anyway.
+ */
+@Composable
+internal fun rememberSheetContentScroll(): NestedScrollConnection = remember {
+    object : NestedScrollConnection {
+        var draggedSheet = false
+
+        override fun onPostScroll(consumed: Offset, available: Offset, source: NestedScrollSource): Offset {
+            if (source == NestedScrollSource.UserInput && available.y > 0f) draggedSheet = true
+            return Offset.Zero
+        }
+
+        override suspend fun onPostFling(consumed: Velocity, available: Velocity): Velocity {
+            if (!draggedSheet) throw CancellationException("Content fling kept from the sheet")
+            draggedSheet = false
+            return Velocity.Zero
         }
     }
 }

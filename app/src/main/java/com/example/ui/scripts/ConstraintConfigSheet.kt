@@ -55,6 +55,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -110,6 +111,7 @@ fun ConstraintConfigSheet(
                 .navigationBarsPadding()
                 .padding(horizontal = 16.dp)
                 .heightIn(max = sheetMaxHeight)
+                .nestedScroll(rememberSheetContentScroll())
                 .verticalScroll(rememberScrollState())
                 .testTag("constraint_config_sheet"),
             verticalArrangement = Arrangement.spacedBy(12.dp),

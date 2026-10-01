@@ -82,6 +82,9 @@ object ShortcutShare {
         "set_wallpaper" to setOf("imageUri"),
         "play_sound" to setOf("uri"),
         "send_message" to setOf("contactName", "number"),
+        // A chat is a third party's name too. Left empty, a reply answers whichever chat triggered
+        // it; PRIVILEGED keeps such an import switched off and the review shows the every-chat warning.
+        "reply_to_notification" to setOf("chat"),
     )
 
     private val adapter = Moshi.Builder().build().adapter(SharedShortcut::class.java)
@@ -179,6 +182,8 @@ object ShortcutShare {
     private fun portableConstraintParams(type: String, params: Map<String, String>): Map<String, String> = when (type) {
         ScriptConstraintCatalog.RSS_NEW_ITEM -> params - "url"
         ScriptConstraintCatalog.CALENDAR_EVENT_ACTIVE -> params - "calendar"
+        // A contact's name is a third party's data, like a message's recipient.
+        ScriptConstraintCatalog.NOTIFICATION_RECEIVED -> params - "contact"
         else -> params
     }
 

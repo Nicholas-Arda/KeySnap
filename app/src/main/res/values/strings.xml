@@ -278,6 +278,7 @@
     <string name="hint_reply_chat">The chat name, exactly as the notification shows it</string>
     <string name="summary_reply_trigger_chat">the chat that triggered it</string>
     <string name="helper_reply_chat_trigger">Empty: replies to the chat whose notification triggered this shortcut.</string>
+    <string name="warning_reply_every_chat">Replies to every chat in this app. Choose a contact in the condition to answer only one person.</string>
     <string name="helper_reply_chat_required">Required: only a “Notification received” condition can choose the chat for you.</string>
     <string name="action_send_message">Send a message</string>
     <string name="param_to">To</string>
@@ -487,8 +488,10 @@
     <string name="field_days">Days</string>
     <string name="constraint_needs_usage_access">Needs Usage access so the app can see which app is in front.</string>
     <string name="constraint_needs_notification_access">Needs notification access. KeySnap checks each new notification from the app you chose against this condition, on your phone. It keeps only when one matched and which notification it was, so a reply can find that chat. No notification content is saved, logged or sent.</string>
-    <string name="field_notification_contains">Title or text contains</string>
-    <string name="hint_notification_contains_any">Empty: any notification from this app</string>
+    <string name="field_notification_contact">Contact</string>
+    <string name="hint_notification_contact_any">Empty: anyone</string>
+    <string name="field_notification_contains">Message contains</string>
+    <string name="hint_notification_contains_any">Empty: any message</string>
     <string name="helper_notification_received">Runs when a new notification from this app arrives. Several within 10 seconds count as one. Automations only.</string>
     <string name="field_feed_url">Feed address</string>
     <string name="helper_rss_new_item">Checked at most every 15 minutes while online. Runs once for each check that finds new items; items already in the feed when you save do not count. The address must start with https:// and is used exactly as you typed it. Automations only.</string>
@@ -955,6 +958,19 @@
     <string name="run_source_widget">Widget</string>
     <string name="run_source_tile">Quick Settings tile</string>
     <string name="widget_limit_reached">Free plan: %1$d home-screen widgets. Go Pro for unlimited widgets.</string>
+    <!-- Widget style step -->
+    <string name="widget_style_title">Widget style</string>
+    <string name="widget_style_color">Color</string>
+    <string name="widget_color_blue">Blue</string>
+    <string name="widget_color_wallpaper">Wallpaper</string>
+    <string name="widget_color_dark">Dark</string>
+    <string name="widget_color_light">Light</string>
+    <string name="widget_style_opacity">Background opacity</string>
+    <string name="widget_style_show_label">Show name</string>
+    <string name="widget_style_custom_label">Custom name</string>
+    <string name="widget_style_custom_label_hint">Leave empty to use the shortcut\'s name</string>
+    <string name="widget_style_show_icon">Show icon</string>
+    <string name="widget_style_percent" translatable="false">%1$d%%</string>
     <!-- OEM key tip -->
     <string name="oem_key_tip">Tip: set this button to “None” in your phone\'s settings, so only KeySnap reacts to it.</string>
     <!-- Recipe gallery -->

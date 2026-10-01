@@ -281,10 +281,12 @@ object BridgeController {
             _statusMessage.value = "Advanced Mode is still running. Try turning it off again."
             return false
         }
-        streamJob?.cancel()
-        streamJob = null
-        watchdogJob?.cancel()
-        watchdogJob = null
+        synchronized(this) {
+            streamJob?.cancel()
+            streamJob = null
+            watchdogJob?.cancel()
+            watchdogJob = null
+        }
         HardwareKeyTriggerCoordinator.setAdvancedBridgeActive(false)
         payload?.uninstall()
         setStopped(if (requested) "Advanced Mode stopped." else "No running bridge found.")
@@ -358,8 +360,11 @@ object BridgeController {
         startWatchdog()
     }
 
+    // Adoption runs from several callers at once (every initialize() starts two probes), so this must
+    // not race, and a live stream is kept: its loop already reconnects to whatever bridge answers.
+    @Synchronized
     private fun startStreaming() {
-        streamJob?.cancel()
+        if (streamJob?.isActive == true) return
         streamJob = scope.launch {
             while (isActive) {
                 val result = client()?.stream(telemetryListener)
@@ -379,8 +384,9 @@ object BridgeController {
      * claiming Advanced Mode is active. Probing the port is the only reliable signal, since the app
      * has no parent/child relationship with the process.
      */
+    @Synchronized
     private fun startWatchdog() {
-        watchdogJob?.cancel()
+        if (watchdogJob?.isActive == true) return
         watchdogJob = scope.launch {
             while (isActive) {
                 delay(5_000)

@@ -270,6 +270,7 @@
     <string name="hint_reply_chat">Il nome della chat, esattamente come nella notifica</string>
     <string name="summary_reply_trigger_chat">la chat che l\'ha attivata</string>
     <string name="helper_reply_chat_trigger">Vuoto: risponde alla chat la cui notifica ha attivato questa scorciatoia.</string>
+    <string name="warning_reply_every_chat">Risponde a ogni chat di questa app. Scegli un contatto nella condizione per rispondere a una sola persona.</string>
     <string name="helper_reply_chat_required">Obbligatorio: solo una condizione “Notifica ricevuta” può scegliere la chat per te.</string>
     <string name="action_send_message">Invia un messaggio</string>
     <string name="param_to">A</string>
@@ -461,8 +462,10 @@
     <string name="field_days">Giorni</string>
     <string name="constraint_needs_usage_access">Richiede l\'accesso ai dati di utilizzo perché l\'app possa vedere quale app è in primo piano.</string>
     <string name="constraint_needs_notification_access">Richiede l\'accesso alle notifiche. KeySnap confronta ogni nuova notifica dell\'app scelta con questa condizione, sul tuo telefono. Conserva solo l\'ora della corrispondenza e quale notifica era, così una risposta può trovare quella chat. Il contenuto delle notifiche non viene mai salvato, registrato o inviato.</string>
-    <string name="field_notification_contains">Il titolo o il testo contiene</string>
-    <string name="hint_notification_contains_any">Vuoto: qualsiasi notifica di questa app</string>
+    <string name="field_notification_contact">Contatto</string>
+    <string name="hint_notification_contact_any">Vuoto: chiunque</string>
+    <string name="field_notification_contains">Il messaggio contiene</string>
+    <string name="hint_notification_contains_any">Vuoto: qualsiasi messaggio</string>
     <string name="helper_notification_received">Si esegue quando arriva una nuova notifica da questa app. Più notifiche entro 10 secondi contano come una. Solo nelle automazioni.</string>
     <string name="field_feed_url">Indirizzo del feed</string>
     <string name="helper_rss_new_item">Controllato al massimo ogni 15 minuti quando sei online. Si esegue una volta per ogni controllo che trova nuovi elementi; quelli già presenti nel feed al salvataggio non contano. L\'indirizzo deve iniziare con https:// e viene usato esattamente come l\'hai scritto. Solo nelle automazioni.</string>
@@ -909,6 +912,18 @@
     <string name="run_source_widget">Widget</string>
     <string name="run_source_tile">Riquadro delle impostazioni rapide</string>
     <string name="widget_limit_reached">Piano gratuito: %1$d widget nella schermata Home. Passa a Pro per widget illimitati.</string>
+    <!-- Widget style step -->
+    <string name="widget_style_title">Stile del widget</string>
+    <string name="widget_style_color">Colore</string>
+    <string name="widget_color_blue">Blu</string>
+    <string name="widget_color_wallpaper">Sfondo</string>
+    <string name="widget_color_dark">Scuro</string>
+    <string name="widget_color_light">Chiaro</string>
+    <string name="widget_style_opacity">Opacità dello sfondo</string>
+    <string name="widget_style_show_label">Mostra nome</string>
+    <string name="widget_style_custom_label">Nome personalizzato</string>
+    <string name="widget_style_custom_label_hint">Lascia vuoto per usare il nome della scorciatoia</string>
+    <string name="widget_style_show_icon">Mostra icona</string>
     <!-- OEM key tip -->
     <string name="oem_key_tip">Suggerimento: imposta questo tasto su “Nessuno” nelle impostazioni del telefono, così reagisce solo KeySnap.</string>
     <!-- Recipe gallery -->

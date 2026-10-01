@@ -308,7 +308,7 @@ class ConstraintEvaluatorTest {
         NotificationMatches.clearForTest()
         val c = ScriptConstraint("notification_received", mapOf("packageName" to "com.whatsapp"))
         assertFalse(evaluator.isSatisfied(c))
-        NotificationMatches.record(listOf(c), "com.whatsapp", "key", SystemClock.elapsedRealtime()) { "x" }
+        NotificationMatches.record(listOf(c), "com.whatsapp", "key", SystemClock.elapsedRealtime()) { NotificationContent(emptyList(), "x") }
         assertTrue(evaluator.isSatisfied(c))
     }
 

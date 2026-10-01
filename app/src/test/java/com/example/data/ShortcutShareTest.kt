@@ -175,11 +175,26 @@ class ShortcutShareTest {
             ScriptConstraint("notification_received", mapOf("packageName" to "com.whatsapp", "contains" to "annem")),
             ScriptConstraint("cooldown", mapOf("minutes" to "10")),
         )
-        val back = ok(encode(actions = listOf(reply), constraints = constraints, automation = true))
-        assertEquals(listOf(reply), back.actions)
+        val text = encode(actions = listOf(reply), constraints = constraints, automation = true)
+        val back = ok(text)
+        assertEquals(listOf(reply - "chat"), back.actions)
         assertEquals(constraints, back.constraints)
         assertFalse(back.startsEnabled)
         assertTrue("reply_to_notification" in ScriptActionCatalog.REVIEWED_LITERALLY)
+    }
+
+    private operator fun ScriptAction.minus(key: String) = copy(params = params - key)
+
+    /** Contact and chat names are third-party data: absent from the payload, and the import answers every chat, so it arrives off with the warning. */
+    @Test fun aContactAndAChatStayOnThisPhone() {
+        val reply = ScriptAction("reply_to_notification", mapOf("packageName" to "com.whatsapp", "chat" to "Annem", "text" to "On my way"))
+        val constraints = listOf(ScriptConstraint("notification_received", mapOf("packageName" to "com.whatsapp", "contact" to "Ayse")))
+        val text = encode(actions = listOf(reply), constraints = constraints, automation = true)
+        assertFalse(text.contains("Annem"))
+        assertFalse(text.contains("Ayse"))
+        val back = ok(text)
+        assertFalse(back.startsEnabled)
+        assertTrue(ActionEditorForms.repliesToEveryChat(back.automation, back.constraints, back.actions))
     }
 
     @Test fun privilegedImportsNeverStartEnabled() {

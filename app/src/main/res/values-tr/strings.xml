@@ -271,6 +271,7 @@
     <string name="hint_reply_chat">Sohbet adı, bildirimde göründüğü gibi tam olarak</string>
     <string name="summary_reply_trigger_chat">tetikleyen sohbet</string>
     <string name="helper_reply_chat_trigger">Boş: bu kısayolu tetikleyen bildirimin sohbetine yanıt verir.</string>
+    <string name="warning_reply_every_chat">Bu uygulamadaki her sohbete yanıt verir. Yalnızca bir kişiye yanıt vermek için koşulda bir kişi seçin.</string>
     <string name="helper_reply_chat_required">Zorunlu: sohbeti sizin yerinize yalnızca “Bildirim geldi” koşulu seçebilir.</string>
     <string name="action_send_message">Mesaj gönder</string>
     <string name="param_to">Kime</string>
@@ -468,8 +469,10 @@
     <string name="field_days">Günler</string>
     <string name="constraint_needs_usage_access">Hangi uygulamanın önde olduğunu görebilmesi için Kullanım erişimi gerekir.</string>
     <string name="constraint_needs_notification_access">Bildirim erişimi gerekir. KeySnap seçtiğiniz uygulamanın her yeni bildirimini telefonunuzda bu koşulla karşılaştırır. Yalnızca eşleştiği zamanı ve hangi bildirim olduğunu tutar; böylece yanıt o sohbeti bulabilir. Bildirim içeriği kaydedilmez, günlüğe yazılmaz ya da gönderilmez.</string>
-    <string name="field_notification_contains">Başlık ya da metin içeriyor</string>
-    <string name="hint_notification_contains_any">Boş: bu uygulamanın her bildirimi</string>
+    <string name="field_notification_contact">Kişi</string>
+    <string name="hint_notification_contact_any">Boş: herkes</string>
+    <string name="field_notification_contains">Mesaj içeriyor</string>
+    <string name="hint_notification_contains_any">Boş: her mesaj</string>
     <string name="helper_notification_received">Bu uygulamadan yeni bir bildirim gelince çalışır. 10 saniye içinde gelenler tek sayılır. Yalnızca otomasyonlarda.</string>
     <string name="field_feed_url">Akış adresi</string>
     <string name="helper_rss_new_item">İnternet varken en sık 15 dakikada bir kontrol edilir. Yeni öğe bulan her kontrolde bir kez çalışır; kaydettiğinizde akışta zaten olan öğeler sayılmaz. Adres https:// ile başlamalı ve tam yazdığınız gibi kullanılır. Yalnızca otomasyonlarda.</string>
@@ -905,6 +908,18 @@
     <string name="run_source_widget">Widget</string>
     <string name="run_source_tile">Hızlı Ayarlar kutucuğu</string>
     <string name="widget_limit_reached">Ücretsiz plan: %1$d ana ekran widget\'ı. Sınırsız widget için Pro\'ya geçin.</string>
+    <!-- Widget style step -->
+    <string name="widget_style_title">Widget stili</string>
+    <string name="widget_style_color">Renk</string>
+    <string name="widget_color_blue">Mavi</string>
+    <string name="widget_color_wallpaper">Duvar kâğıdı</string>
+    <string name="widget_color_dark">Koyu</string>
+    <string name="widget_color_light">Açık</string>
+    <string name="widget_style_opacity">Arka plan opaklığı</string>
+    <string name="widget_style_show_label">Adı göster</string>
+    <string name="widget_style_custom_label">Özel ad</string>
+    <string name="widget_style_custom_label_hint">Kısayolun adını kullanmak için boş bırakın</string>
+    <string name="widget_style_show_icon">Simgeyi göster</string>
     <!-- OEM key tip -->
     <string name="oem_key_tip">İpucu: Telefon ayarlarında bu tuşu “Yok” olarak ayarlayın; böylece yalnızca KeySnap tepki verir.</string>
     <!-- Recipe gallery -->

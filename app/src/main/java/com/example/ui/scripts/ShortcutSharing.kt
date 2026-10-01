@@ -53,6 +53,7 @@ fun ShortcutReviewDialog(
     confirmLabel: String,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
+    repliesToEveryChat: Boolean = false,
 ) {
     val colors = MaterialTheme.colorScheme
     AlertDialog(
@@ -90,6 +91,7 @@ fun ShortcutReviewDialog(
                         }
                     }
                 }
+                if (repliesToEveryChat) EveryChatWarning(Modifier.padding(top = 12.dp))
                 Text(note, Modifier.padding(top = 12.dp), style = MaterialTheme.typography.bodySmall)
             }
         },

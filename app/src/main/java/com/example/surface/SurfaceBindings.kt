@@ -23,7 +23,14 @@ object SurfaceBindings {
         prefs(context).edit().putString("widget_$appWidgetId", scriptId).apply()
 
     fun unbindWidget(context: Context, appWidgetId: Int) =
-        prefs(context).edit().remove("widget_$appWidgetId").apply()
+        prefs(context).edit().remove("widget_$appWidgetId").remove("widget_style_$appWidgetId").apply()
+
+    /** Null for a widget placed before styles existed, which keeps its original look. */
+    fun widgetStyle(context: Context, appWidgetId: Int): WidgetStyle? =
+        WidgetStyle.decode(prefs(context).getString("widget_style_$appWidgetId", null))
+
+    fun setWidgetStyle(context: Context, appWidgetId: Int, style: WidgetStyle) =
+        prefs(context).edit().putString("widget_style_$appWidgetId", style.encode()).apply()
 
     fun tileScript(context: Context, slot: Int): String? = prefs(context).getString("tile_$slot", null)
 

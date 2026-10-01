@@ -43,7 +43,7 @@ object ScriptConstraintCatalog {
     /** Per-script "at most once every N minutes"; param `minutes`. Gated by the coordinator, not the evaluator. */
     const val COOLDOWN = "cooldown"
 
-    /** "A notification from app `packageName` whose title or text contains `contains` arrived in the last 10 s." */
+    /** "A notification from app `packageName`, from chat `contact`, whose message contains `contains`, arrived in the last 10 s." */
     const val NOTIFICATION_RECEIVED = "notification_received"
 
     /** "A check of the RSS/Atom feed at `url` just found an item not seen before." */

@@ -271,6 +271,7 @@
     <string name="hint_reply_chat">Der Chatname, genau wie in der Benachrichtigung</string>
     <string name="summary_reply_trigger_chat">der auslösende Chat</string>
     <string name="helper_reply_chat_trigger">Leer: antwortet dem Chat, dessen Benachrichtigung diesen Kurzbefehl ausgelöst hat.</string>
+    <string name="warning_reply_every_chat">Antwortet jedem Chat in dieser App. Wähle in der Bedingung einen Kontakt, um nur einer Person zu antworten.</string>
     <string name="helper_reply_chat_required">Pflichtfeld: Nur eine Bedingung „Benachrichtigung erhalten“ kann den Chat für dich wählen.</string>
     <string name="action_send_message">Nachricht senden</string>
     <string name="param_to">An</string>
@@ -462,8 +463,10 @@
     <string name="field_days">Tage</string>
     <string name="constraint_needs_usage_access">Benötigt Nutzungszugriff, damit die App sehen kann, welche App im Vordergrund ist.</string>
     <string name="constraint_needs_notification_access">Benötigt Benachrichtigungszugriff. KeySnap prüft jede neue Benachrichtigung der gewählten App auf deinem Telefon gegen diese Bedingung. Es behält nur, wann eine passte und welche Benachrichtigung es war, damit eine Antwort diesen Chat findet. Kein Benachrichtigungsinhalt wird gespeichert, protokolliert oder gesendet.</string>
-    <string name="field_notification_contains">Titel oder Text enthält</string>
-    <string name="hint_notification_contains_any">Leer: jede Benachrichtigung dieser App</string>
+    <string name="field_notification_contact">Kontakt</string>
+    <string name="hint_notification_contact_any">Leer: alle</string>
+    <string name="field_notification_contains">Nachricht enthält</string>
+    <string name="hint_notification_contains_any">Leer: jede Nachricht</string>
     <string name="helper_notification_received">Läuft, wenn eine neue Benachrichtigung dieser App eintrifft. Mehrere innerhalb von 10 Sekunden zählen als eine. Nur in Automatisierungen.</string>
     <string name="field_feed_url">Feed-Adresse</string>
     <string name="helper_rss_new_item">Wird höchstens alle 15 Minuten geprüft, solange du online bist. Läuft einmal pro Prüfung, die neue Einträge findet; Einträge, die beim Speichern schon im Feed sind, zählen nicht. Die Adresse muss mit https:// beginnen und wird genau so verwendet, wie du sie eingegeben hast. Nur in Automatisierungen.</string>
@@ -907,6 +910,18 @@
     <string name="run_source_widget">Widget</string>
     <string name="run_source_tile">Schnelleinstellungen-Kachel</string>
     <string name="widget_limit_reached">Kostenloser Plan: %1$d Startbildschirm-Widgets. Hol dir Pro für unbegrenzte Widgets.</string>
+    <!-- Widget style step -->
+    <string name="widget_style_title">Widget-Stil</string>
+    <string name="widget_style_color">Farbe</string>
+    <string name="widget_color_blue">Blau</string>
+    <string name="widget_color_wallpaper">Hintergrundbild</string>
+    <string name="widget_color_dark">Dunkel</string>
+    <string name="widget_color_light">Hell</string>
+    <string name="widget_style_opacity">Deckkraft des Hintergrunds</string>
+    <string name="widget_style_show_label">Namen anzeigen</string>
+    <string name="widget_style_custom_label">Eigener Name</string>
+    <string name="widget_style_custom_label_hint">Leer lassen, um den Namen des Kurzbefehls zu verwenden</string>
+    <string name="widget_style_show_icon">Symbol anzeigen</string>
     <!-- OEM key tip -->
     <string name="oem_key_tip">Tipp: Stell diese Taste in den Einstellungen deines Telefons auf „Keine“, damit nur KeySnap darauf reagiert.</string>
     <!-- Recipe gallery -->

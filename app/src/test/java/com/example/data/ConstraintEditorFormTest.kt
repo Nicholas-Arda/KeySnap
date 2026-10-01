@@ -119,6 +119,10 @@ class ConstraintEditorFormTest {
         assertEquals("AA:BB", ConstraintEditorForms.summarize(ScriptConstraint("bluetooth_device_connected", mapOf("address" to "AA:BB")), res))
         assertEquals("Example · “annem”", ConstraintEditorForms.summarize(ScriptConstraint("notification_received", mapOf("packageName" to "com.example.app", "contains" to "annem")), res, apps))
         assertEquals("Example", ConstraintEditorForms.summarize(ScriptConstraint("notification_received", mapOf("packageName" to "com.example.app")), res, apps))
+        assertEquals(
+            "Example · Annem · “acil”",
+            ConstraintEditorForms.summarize(ScriptConstraint("notification_received", mapOf("packageName" to "com.example.app", "contact" to "Annem", "contains" to "acil")), res, apps),
+        )
         assertEquals("Home", ConstraintEditorForms.summarize(ScriptConstraint("connected_to_wifi_network", mapOf("ssid" to "Home")), res))
         assertNull(ConstraintEditorForms.summarize(ScriptConstraint("flashlight_on"), res))
         // Non-empty is all that is asserted for resource-driven summaries: their wording is translated.

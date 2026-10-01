@@ -99,10 +99,29 @@ data class ScriptDraft(
     val hapticDurationMs: Long? = null,
     /** The recipe's own instructions and limits, kept on screen while the user fills it in. */
     @StringRes val noteRes: Int? = null,
+    /** The user deleted the cooldown in this editing session, so [withReplyCooldown] leaves it out. Never persisted. */
+    val cooldownRemoved: Boolean = false,
 )
 
 /** The one rule for "this shortcut can run", asked by both the editor's Done button and [MainViewModel.commitDraft]. */
 fun ScriptDraft.hasTrigger(): Boolean = trigger != null || automation || surfaceOnly
+
+private fun ScriptDraft.repliesToEveryChat(): Boolean = ActionEditorForms.repliesToEveryChat(automation, constraints, actions)
+
+/**
+ * The edit that turned [before] into this draft made it reply to every chat in an app: add "At most
+ * once every 10 minutes" so an auto-responder cannot flood a chat, unless the draft already has a
+ * cooldown or the user removed it in this session. Only on that edge, so a saved shortcut opened
+ * as it is stays untouched.
+ */
+fun ScriptDraft.withReplyCooldown(before: ScriptDraft): ScriptDraft =
+    if (cooldownRemoved || before.repliesToEveryChat() || !repliesToEveryChat() ||
+        constraints.any { it.type == ScriptConstraintCatalog.COOLDOWN }
+    ) {
+        this
+    } else {
+        copy(constraints = constraints + ScriptConstraint(ScriptConstraintCatalog.COOLDOWN, mapOf("minutes" to "10")))
+    }
 
 class MainViewModel(
     private val repository: KeyMappingRepository,
@@ -248,7 +267,7 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
     }
 
     private fun updateDraft(transform: (ScriptDraft) -> ScriptDraft) {
-        _editingScript.value = _editingScript.value?.let(transform)
+        _editingScript.value = _editingScript.value?.let { before -> transform(before).withReplyCooldown(before) }
     }
 
     fun draftSetName(name: String) = updateDraft { it.copy(name = name) }
@@ -366,7 +385,10 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
     }
 
     fun draftRemoveConstraint(index: Int) = updateDraft { draft ->
-        draft.copy(constraints = draft.constraints.filterIndexed { i, _ -> i != index })
+        draft.copy(
+            constraints = draft.constraints.filterIndexed { i, _ -> i != index },
+            cooldownRemoved = draft.cooldownRemoved || draft.constraints.getOrNull(index)?.type == ScriptConstraintCatalog.COOLDOWN,
+        )
     }
 
     /** Runs the chain once from the editor and reports what happened - a silent Run reads as broken. */

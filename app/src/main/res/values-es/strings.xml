@@ -272,6 +272,7 @@
     <string name="hint_reply_chat">El nombre del chat, tal como aparece en la notificación</string>
     <string name="summary_reply_trigger_chat">el chat que lo activó</string>
     <string name="helper_reply_chat_trigger">Vacío: responde al chat cuya notificación activó este acceso directo.</string>
+    <string name="warning_reply_every_chat">Responde a todos los chats de esta app. Elige un contacto en la condición para responder solo a una persona.</string>
     <string name="helper_reply_chat_required">Obligatorio: solo una condición “Notificación recibida” puede elegir el chat por ti.</string>
     <string name="action_send_message">Enviar un mensaje</string>
     <string name="param_to">Para</string>
@@ -463,8 +464,10 @@
     <string name="field_days">Días</string>
     <string name="constraint_needs_usage_access">Necesita acceso de uso para que la app pueda ver qué app está en primer plano.</string>
     <string name="constraint_needs_notification_access">Necesita acceso a las notificaciones. KeySnap compara cada notificación nueva de la app elegida con esta condición, en tu teléfono. Solo guarda cuándo coincidió una y cuál fue, para que una respuesta encuentre ese chat. No se guarda, registra ni envía el contenido de ninguna notificación.</string>
-    <string name="field_notification_contains">El título o el texto contiene</string>
-    <string name="hint_notification_contains_any">Vacío: cualquier notificación de esta app</string>
+    <string name="field_notification_contact">Contacto</string>
+    <string name="hint_notification_contact_any">Vacío: cualquiera</string>
+    <string name="field_notification_contains">El mensaje contiene</string>
+    <string name="hint_notification_contains_any">Vacío: cualquier mensaje</string>
     <string name="helper_notification_received">Se ejecuta cuando llega una notificación nueva de esta app. Varias en 10 segundos cuentan como una. Solo en automatizaciones.</string>
     <string name="field_feed_url">Dirección del feed</string>
     <string name="helper_rss_new_item">Se comprueba como mucho cada 15 minutos mientras hay conexión. Se ejecuta una vez por cada comprobación que encuentra elementos nuevos; los que ya estaban en el feed al guardar no cuentan. La dirección debe empezar por https:// y se usa exactamente como la escribiste. Solo en automatizaciones.</string>
@@ -908,6 +911,18 @@
     <string name="run_source_widget">Widget</string>
     <string name="run_source_tile">Icono de ajustes rápidos</string>
     <string name="widget_limit_reached">Plan gratuito: %1$d widgets en la pantalla de inicio. Pásate a Pro para widgets ilimitados.</string>
+    <!-- Widget style step -->
+    <string name="widget_style_title">Estilo del widget</string>
+    <string name="widget_style_color">Color</string>
+    <string name="widget_color_blue">Azul</string>
+    <string name="widget_color_wallpaper">Fondo de pantalla</string>
+    <string name="widget_color_dark">Oscuro</string>
+    <string name="widget_color_light">Claro</string>
+    <string name="widget_style_opacity">Opacidad del fondo</string>
+    <string name="widget_style_show_label">Mostrar nombre</string>
+    <string name="widget_style_custom_label">Nombre personalizado</string>
+    <string name="widget_style_custom_label_hint">Déjalo vacío para usar el nombre del acceso directo</string>
+    <string name="widget_style_show_icon">Mostrar icono</string>
     <!-- OEM key tip -->
     <string name="oem_key_tip">Consejo: configura este botón como “Ninguno” en los ajustes del teléfono para que solo KeySnap responda a él.</string>
     <!-- Recipe gallery -->

@@ -8,45 +8,75 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.MainActivity
 import com.example.data.AppLocale
 import com.example.data.EntitlementManager
 import com.example.data.ScriptRepository
 import com.example.data.ShortcutScript
+import com.example.ui.components.ConsoleSwitch
 import com.example.ui.components.InnerShape
 import com.example.ui.components.MinTouchTarget
+import com.example.ui.scripts.actionIconFor
 import com.example.ui.scripts.triggerSummary
 import com.example.ui.theme.MyApplicationTheme
 import com.example.ui.theme.storedThemeMode
 import io.github.nicholasarda.keysnap.R
+import kotlin.math.roundToInt
 
 /**
  * Picks which shortcut a widget or a Quick Settings tile runs. Exported, because the widget host
@@ -81,7 +111,10 @@ class ShortcutPickerActivity : ComponentActivity() {
                     WidgetLimitScreen(onUnlockPro = ::openProInApp, onCancel = ::finish)
                 } else {
                     val list by scripts.collectAsState()
-                    ShortcutPickerScreen(list) { scriptId -> bind(target, scriptId) }
+                    when (target) {
+                        is Target.Tile -> ShortcutPickerScreen(list) { scriptId -> bind(target, scriptId) }
+                        is Target.Widget -> WidgetConfig(target, list)
+                    }
                 }
             }
         }
@@ -106,15 +139,41 @@ class ShortcutPickerActivity : ComponentActivity() {
         intent.getParcelableExtra(Intent.EXTRA_COMPONENT_NAME)
     }
 
-    private fun bind(target: Target, scriptId: String) {
-        when (target) {
-            is Target.Widget -> {
-                SurfaceBindings.bindWidget(this, target.id, scriptId)
-                ShortcutWidgetProvider.render(this, target.id)
-                setResult(RESULT_OK, Intent().putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, target.id))
-            }
-            is Target.Tile -> SurfaceBindings.bindTile(this, target.slot, scriptId)
+    /**
+     * Pick a shortcut, then style the widget. Reconfiguring a widget whose shortcut still exists
+     * opens straight on its style, with its stored values; Back from the style returns to the list.
+     */
+    @Composable
+    private fun WidgetConfig(target: Target.Widget, scripts: List<ShortcutScript>) {
+        var scriptId by rememberSaveable { mutableStateOf(SurfaceBindings.widgetScript(this, target.id)) }
+        var style by rememberSaveable(stateSaver = WidgetStyleSaver) {
+            mutableStateOf(SurfaceBindings.widgetStyle(this, target.id) ?: WidgetStyle())
         }
+        val script = scripts.firstOrNull { it.id == scriptId }
+        if (script == null) {
+            ShortcutPickerScreen(scripts) { scriptId = it }
+        } else {
+            BackHandler { scriptId = null }
+            WidgetStyleScreen(
+                script = script,
+                style = style,
+                onStyle = { style = it },
+                onChangeShortcut = { scriptId = null },
+                onDone = { bindWidget(target, script.id, style) },
+            )
+        }
+    }
+
+    private fun bind(target: Target.Tile, scriptId: String) {
+        SurfaceBindings.bindTile(this, target.slot, scriptId)
+        finish()
+    }
+
+    private fun bindWidget(target: Target.Widget, scriptId: String, style: WidgetStyle) {
+        SurfaceBindings.bindWidget(this, target.id, scriptId)
+        SurfaceBindings.setWidgetStyle(this, target.id, style)
+        ShortcutWidgetProvider.render(this, target.id)
+        setResult(RESULT_OK, Intent().putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, target.id))
         finish()
     }
 
@@ -211,5 +270,145 @@ internal fun WidgetLimitScreen(onUnlockPro: () -> Unit, onCancel: () -> Unit) {
             onClick = onCancel,
             modifier = Modifier.fillMaxWidth().heightIn(min = MinTouchTarget).testTag("widget_limit_cancel"),
         ) { Text(stringResource(R.string.common_cancel)) }
+    }
+}
+
+private val WidgetStyleSaver = Saver<WidgetStyle, String>(save = { it.encode() }, restore = { WidgetStyle.decode(it) })
+
+private val WidgetColor.titleRes: Int
+    get() = when (this) {
+        WidgetColor.BLUE -> R.string.widget_color_blue
+        WidgetColor.WALLPAPER -> R.string.widget_color_wallpaper
+        WidgetColor.DARK -> R.string.widget_color_dark
+        WidgetColor.LIGHT -> R.string.widget_color_light
+    }
+
+/** The widget's look: a live preview at one cell and at two, and the four choices under it. */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+internal fun WidgetStyleScreen(
+    script: ShortcutScript,
+    style: WidgetStyle,
+    onStyle: (WidgetStyle) -> Unit,
+    onChangeShortcut: () -> Unit,
+    onDone: () -> Unit,
+) {
+    val colors = MaterialTheme.colorScheme
+    Column(
+        Modifier
+            .fillMaxSize()
+            .background(colors.background)
+            .statusBarsPadding()
+            .navigationBarsPadding()
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Text(
+            stringResource(R.string.widget_style_title),
+            Modifier.padding(top = 16.dp, bottom = 4.dp),
+            style = MaterialTheme.typography.titleLarge,
+            color = colors.onSurface,
+        )
+        Row(
+            Modifier.fillMaxWidth().padding(vertical = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            WidgetPreview(script, style, compact = true, Modifier.size(72.dp))
+            WidgetPreview(script, style, compact = false, Modifier.size(width = 152.dp, height = 72.dp))
+        }
+        Text(stringResource(R.string.widget_style_color), style = MaterialTheme.typography.titleSmall, color = colors.onSurface)
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            WidgetColor.entries.forEach { color ->
+                FilterChip(
+                    selected = style.color == color,
+                    onClick = { onStyle(style.copy(color = color)) },
+                    label = { Text(stringResource(color.titleRes), style = MaterialTheme.typography.labelMedium) },
+                    leadingIcon = {
+                        Box(Modifier.size(14.dp).clip(CircleShape).background(colorResource(color.ground)))
+                    },
+                    modifier = Modifier.testTag("widget_color_${color.name.lowercase()}"),
+                    border = null,
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = colors.primary,
+                        selectedLabelColor = colors.onPrimary,
+                        containerColor = colors.surfaceVariant,
+                        labelColor = colors.onSurfaceVariant,
+                    ),
+                )
+            }
+        }
+        val opacityTitle = stringResource(R.string.widget_style_opacity)
+        val opacityValue = stringResource(R.string.widget_style_percent, style.opacity)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(opacityTitle, Modifier.weight(1f), style = MaterialTheme.typography.titleSmall, color = colors.onSurface)
+            Text(opacityValue, style = MaterialTheme.typography.labelLarge, color = colors.primary)
+        }
+        Slider(
+            value = style.opacity.toFloat(),
+            onValueChange = { onStyle(style.copy(opacity = it.roundToInt())) },
+            valueRange = 0f..100f,
+            modifier = Modifier.testTag("widget_opacity_slider").semantics {
+                contentDescription = opacityTitle
+                stateDescription = opacityValue
+            },
+        )
+        ConsoleSwitch(stringResource(R.string.widget_style_show_label), style.showLabel) {
+            onStyle(style.copy(showLabel = it))
+        }
+        OutlinedTextField(
+            value = style.customLabel,
+            onValueChange = { onStyle(style.copy(customLabel = it)) },
+            modifier = Modifier.fillMaxWidth().testTag("widget_custom_label_field"),
+            label = { Text(stringResource(R.string.widget_style_custom_label)) },
+            placeholder = { Text(script.name, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+            supportingText = { Text(stringResource(R.string.widget_style_custom_label_hint)) },
+            singleLine = true,
+        )
+        ConsoleSwitch(stringResource(R.string.widget_style_show_icon), style.showIcon) {
+            onStyle(style.copy(showIcon = it))
+        }
+        Button(
+            onClick = onDone,
+            modifier = Modifier.fillMaxWidth().heightIn(min = MinTouchTarget).testTag("widget_style_done"),
+        ) { Text(stringResource(R.string.common_done)) }
+        TextButton(
+            onClick = onChangeShortcut,
+            modifier = Modifier.fillMaxWidth().heightIn(min = MinTouchTarget).padding(bottom = 8.dp)
+                .testTag("widget_style_change_shortcut"),
+        ) { Text(stringResource(R.string.surface_choose_shortcut)) }
+    }
+}
+
+/** Draws what [ShortcutWidgetProvider.render] will, from the same colour resources and [WidgetStyle.parts]. */
+@Composable
+private fun WidgetPreview(script: ShortcutScript, style: WidgetStyle, compact: Boolean, modifier: Modifier) {
+    val content = colorResource(style.color.content)
+    val label = style.customLabel.ifBlank { script.name }
+    val (showIcon, showLabel) = style.parts(compact)
+    Box(
+        modifier
+            .clip(RoundedCornerShape(16.dp))
+            .background(colorResource(style.color.ground).copy(alpha = style.opacity / 100f))
+            .padding(6.dp)
+            .clearAndSetSemantics { },
+        contentAlignment = Alignment.Center,
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            if (showIcon) {
+                Icon(actionIconFor(script.actions.firstOrNull()?.type.orEmpty()), null, Modifier.size(36.dp), tint = content)
+            }
+            if (showLabel) {
+                Text(
+                    label,
+                    color = content,
+                    fontSize = 12.sp,
+                    textAlign = TextAlign.Center,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+        }
     }
 }

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Material You primary (tone 40): white text stays readable on it. The launcher resolves it,
+         so a widget follows a wallpaper change without being redrawn. -->
+    <color name="widget_wallpaper">@android:color/system_accent1_600</color>
+</resources>

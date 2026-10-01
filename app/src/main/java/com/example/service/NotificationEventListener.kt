@@ -40,11 +40,13 @@ class NotificationEventListener : NotificationListenerService() {
         if (sbn.isOngoing || notification.flags and Notification.FLAG_GROUP_SUMMARY != 0) return
         onPosted(this, sbn.packageName, sbn.key) {
             val extras = notification.extras
-            listOfNotNull(
-                extras.getCharSequence(Notification.EXTRA_TITLE),
-                extras.getCharSequence(Notification.EXTRA_TEXT),
-                extras.getCharSequence(Notification.EXTRA_BIG_TEXT),
-            ).joinToString("\n")
+            NotificationContent(
+                titlesOf(notification),
+                listOfNotNull(
+                    extras.getCharSequence(Notification.EXTRA_TEXT),
+                    extras.getCharSequence(Notification.EXTRA_BIG_TEXT),
+                ).joinToString("\n"),
+            )
         }
     }
 
@@ -73,16 +75,18 @@ class NotificationEventListener : NotificationListenerService() {
             }
             val candidates = active.filter { it.packageName == packageName }.mapNotNull { sbn ->
                 val action = replyActionOf(sbn.notification) ?: return@mapNotNull null
-                val extras = sbn.notification.extras
-                val titles = listOfNotNull(
-                    extras.getCharSequence(Notification.EXTRA_TITLE),
-                    extras.getCharSequence(Notification.EXTRA_CONVERSATION_TITLE),
-                ).map { it.toString() }
-                ReplyCandidate(sbn.key, titles, sbn.postTime, action)
+                ReplyCandidate(sbn.key, titlesOf(sbn.notification), sbn.postTime, action)
             }
             val target = pickReplyTarget(candidates, params["chat"], params[TRIGGER_NOTIFICATION_PARAM]) ?: return false
             return send(context, target.action, text)
         }
+
+        /** The chat a notification is from, as both a condition's contact and a reply's chat match it. */
+        private fun titlesOf(notification: Notification): List<String> =
+            listOfNotNull(
+                notification.extras.getCharSequence(Notification.EXTRA_TITLE),
+                notification.extras.getCharSequence(Notification.EXTRA_CONVERSATION_TITLE),
+            ).map { it.toString() }
 
         private fun replyActionOf(notification: Notification): Notification.Action? =
             (notification.actions.orEmpty().toList() + Notification.WearableExtender(notification).actions)
@@ -123,7 +127,7 @@ class NotificationEventListener : NotificationListenerService() {
         }
 
         /** Split from the callback so the edge behaviour is testable without a StatusBarNotification. */
-        internal fun onPosted(context: Context, packageName: String, key: String, readContent: () -> String) {
+        internal fun onPosted(context: Context, packageName: String, key: String, readContent: () -> NotificationContent) {
             // KeySnap's own notifications (show_notification, run-failure alerts) never count, or a
             // shortcut that shows one could trigger itself.
             if (packageName == context.packageName) return

@@ -9,4 +9,9 @@
     <color name="white">#FFFFFFFF</color>
     <!-- The launcher icon's ground (ic_launcher_background); the widget uses it in day and night. -->
     <color name="keysnap_blue">#FF006EFD</color>
+    <!-- Widget colour presets (WidgetColor). Wallpaper is Material You on API 31+, see values-v31. -->
+    <color name="widget_wallpaper">@color/keysnap_blue</color>
+    <color name="widget_dark">#FF1C1C1E</color>
+    <color name="widget_light">#FFF4F5F7</color>
+    <color name="widget_on_light">#FF1C1C1E</color>
 </resources>

@@ -20,7 +20,7 @@ import org.robolectric.Shadows.shadowOf
 @RunWith(RobolectricTestRunner::class)
 class NotificationAutomationTest {
     private lateinit var context: Context
-    private val condition = ScriptConstraint("notification_received", mapOf("packageName" to "com.whatsapp", "contains" to "annem"))
+    private val condition = ScriptConstraint("notification_received", mapOf("packageName" to "com.whatsapp", "contact" to "annem"))
 
     @Before fun setUp() {
         context = ApplicationProvider.getApplicationContext()
@@ -89,8 +89,11 @@ class NotificationAutomationTest {
         vibrateOnTrigger = false,
     )
 
+    /** [content] is "title\ntext". */
     private fun post(packageName: String, content: String) {
-        NotificationEventListener.onPosted(context, packageName, "0|$packageName|1|null|10001") { content }
+        NotificationEventListener.onPosted(context, packageName, "0|$packageName|1|null|10001") {
+            NotificationContent(listOf(content.substringBefore("\n")), content.substringAfter("\n", ""))
+        }
         idle()
     }
 

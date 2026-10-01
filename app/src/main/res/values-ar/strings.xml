@@ -272,6 +272,7 @@
     <string name="hint_reply_chat">اسم الدردشة كما يظهر في الإشعار تمامًا</string>
     <string name="summary_reply_trigger_chat">الدردشة التي شغّلته</string>
     <string name="helper_reply_chat_trigger">فارغ: يرد على الدردشة التي شغّل إشعارها هذا الاختصار.</string>
+    <string name="warning_reply_every_chat">يرد على كل دردشة في هذا التطبيق. اختر جهة اتصال في الشرط للرد على شخص واحد فقط.</string>
     <string name="helper_reply_chat_required">مطلوب: وحده شرط «وصل إشعار» يمكنه اختيار الدردشة نيابةً عنك.</string>
     <string name="action_send_message">إرسال رسالة</string>
     <string name="param_to">إلى</string>
@@ -463,8 +464,10 @@
     <string name="field_days">الأيام</string>
     <string name="constraint_needs_usage_access">يحتاج إلى إذن الوصول إلى بيانات الاستخدام ليتمكن التطبيق من معرفة التطبيق الظاهر في المقدمة.</string>
     <string name="constraint_needs_notification_access">يحتاج إلى إذن الوصول إلى الإشعارات. يقارن KeySnap كل إشعار جديد من التطبيق الذي اخترته بهذا الشرط على هاتفك. ولا يحتفظ إلا بوقت التطابق وبأي إشعار كان، كي يجد الرد تلك الدردشة. لا يُحفظ محتوى أي إشعار ولا يُسجَّل ولا يُرسَل.</string>
-    <string name="field_notification_contains">العنوان أو النص يحتوي على</string>
-    <string name="hint_notification_contains_any">فارغ: أي إشعار من هذا التطبيق</string>
+    <string name="field_notification_contact">جهة الاتصال</string>
+    <string name="hint_notification_contact_any">فارغ: أي شخص</string>
+    <string name="field_notification_contains">الرسالة تحتوي على</string>
+    <string name="hint_notification_contains_any">فارغ: أي رسالة</string>
     <string name="helper_notification_received">يعمل عند وصول إشعار جديد من هذا التطبيق. تُحتسب عدة إشعارات خلال 10 ثوانٍ مرة واحدة. للأتمتة فقط.</string>
     <string name="field_feed_url">عنوان الموجز</string>
     <string name="helper_rss_new_item">يُفحص مرة كل 15 دقيقة على الأكثر أثناء الاتصال بالإنترنت. يعمل مرة واحدة لكل فحص يجد عناصر جديدة، ولا تُحتسب العناصر الموجودة في الموجز عند الحفظ. يجب أن يبدأ العنوان بـ https:// ويُستخدم تماماً كما كتبته. للأتمتة فقط.</string>
@@ -904,6 +907,18 @@
     <string name="run_source_widget">أداة</string>
     <string name="run_source_tile">مربع الإعدادات السريعة</string>
     <string name="widget_limit_reached">الخطة المجانية: %1$d أداة على الشاشة الرئيسية. احصل على Pro لعدد غير محدود من الأدوات.</string>
+    <!-- Widget style step -->
+    <string name="widget_style_title">نمط الأداة</string>
+    <string name="widget_style_color">اللون</string>
+    <string name="widget_color_blue">أزرق</string>
+    <string name="widget_color_wallpaper">خلفية الشاشة</string>
+    <string name="widget_color_dark">داكن</string>
+    <string name="widget_color_light">فاتح</string>
+    <string name="widget_style_opacity">عتامة الخلفية</string>
+    <string name="widget_style_show_label">إظهار الاسم</string>
+    <string name="widget_style_custom_label">اسم مخصص</string>
+    <string name="widget_style_custom_label_hint">اتركه فارغًا لاستخدام اسم الاختصار</string>
+    <string name="widget_style_show_icon">إظهار الأيقونة</string>
     <!-- OEM key tip -->
     <string name="oem_key_tip">نصيحة: اضبط هذا الزر على “بلا” في إعدادات هاتفك، ليستجيب له KeySnap وحده.</string>
     <!-- Recipe gallery -->
