@@ -190,4 +190,62 @@ class ShortcutShareTest {
             assertFalse(type, shortcut.startsEnabled)
         }
     }
+
+    /**
+     * A message's contact is a third party's name and number: it never leaves this phone. The app
+     * and the text travel, and the text is shown as written in the share and import review.
+     */
+    @Test fun aMessagesContactStaysOnThisPhone() {
+        val message = ScriptAction(
+            "send_message",
+            mapOf("contactName" to "Annem", "number" to "+905551234567", "packageName" to "com.example.chat", "text" to "On my way"),
+        )
+        val json = encode(actions = listOf(message))
+        assertFalse(json.contains("Annem"))
+        assertFalse(json.contains("5551234567"))
+        assertEquals(mapOf("packageName" to "com.example.chat", "text" to "On my way"), ok(json).actions.single().params)
+        val crafted = json.replace("\"text\":\"On my way\"", "\"text\":\"On my way\",\"number\":\"123\"")
+        assertEquals(mapOf("packageName" to "com.example.chat", "text" to "On my way"), ok(crafted).actions.single().params)
+        // The share review prints what actually travels.
+        assertEquals(mapOf("packageName" to "com.example.chat", "text" to "On my way"), ShortcutShare.portable(message).params)
+        assertTrue("send_message" in ScriptActionCatalog.REVIEWED_LITERALLY)
+        // An imported automation could follow it with taps on Send, so it arrives off.
+        assertFalse(ok(json).startsEnabled)
+    }
+
+    /**
+     * A feed address can carry a private token, and a crafted share must not make this phone poll a
+     * host the user never typed, so it travels neither way; the recipient's editor asks for their own.
+     */
+    @Test fun aFeedAddressNeverTravels() {
+        val feed = ScriptConstraint("rss_new_item", mapOf("url" to "https://example.org/feed?token=s3cret"))
+        val json = encode(constraints = listOf(feed), automation = true)
+        assertFalse(json.contains("s3cret"))
+        assertEquals(emptyMap<String, String>(), ok(json).constraints.single().params)
+        val crafted = json.replace("\"type\":\"rss_new_item\",\"params\":{}", "\"type\":\"rss_new_item\",\"params\":{\"url\":\"https://tracker.example\"}")
+        assertTrue(crafted.contains("tracker"))
+        assertEquals(emptyMap<String, String>(), ok(crafted).constraints.single().params)
+    }
+
+    /** A calendar's name is often an email address and stays on this phone; the title filter travels. */
+    @Test fun aCalendarNameNeverTravelsButTheTitleFilterDoes() {
+        val meeting = ScriptConstraint("calendar_event_active", mapOf("calendar" to "me@work.example", "title" to "Standup"))
+        val json = encode(constraints = listOf(meeting), automation = true)
+        assertFalse(json.contains("me@work.example"))
+        assertEquals(mapOf("title" to "Standup"), ok(json).constraints.single().params)
+        val crafted = json.replace("\"title\":\"Standup\"", "\"title\":\"Standup\",\"calendar\":\"other@example.org\"")
+        assertTrue(crafted.contains("other@example.org"))
+        assertEquals(mapOf("title" to "Standup"), ok(crafted).constraints.single().params)
+    }
+
+    /** The editor saves an automation-only condition only on an automation; an import may not either. */
+    @Test fun anAutomationOnlyConditionOnAKeyShortcutIsRefused() {
+        ScriptConstraintCatalog.AUTOMATION_ONLY.forEach { type ->
+            val keyed = encode(constraints = listOf(ScriptConstraint(type, mapOf("packageName" to "com.example.chat"))))
+            assertEquals(type, R.string.import_error_invalid, error(keyed))
+            val surface = encode(constraints = listOf(ScriptConstraint(type)), surfaceOnly = true)
+            assertEquals(type, R.string.import_error_invalid, error(surface))
+            assertTrue(type, ok(encode(constraints = listOf(ScriptConstraint(type)), automation = true)).automation)
+        }
+    }
 }

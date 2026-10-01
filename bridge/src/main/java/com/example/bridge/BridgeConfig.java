@@ -117,6 +117,7 @@ public final class BridgeConfig {
     public static final String ACTION_SWIPE_SCREEN = "swipe_screen";
     public static final String ACTION_PINCH_SCREEN = "pinch_screen";
     public static final String ACTION_REPLY_TO_NOTIFICATION = "reply_to_notification";
+    public static final String ACTION_SEND_MESSAGE = "send_message";
 
     /** Mirrors ScriptActionExecutor's MAX_TAP_COUNT and DEFAULT_TAP_INTERVAL_MS exactly. */
     public static final int MAX_TAP_COUNT = 20;

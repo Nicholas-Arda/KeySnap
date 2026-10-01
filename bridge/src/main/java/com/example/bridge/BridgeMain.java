@@ -750,6 +750,12 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
         if (BridgeConfig.ACTION_REPLY_TO_NOTIFICATION.equals(action.type)) {
             return false;
         }
+        // Choosing how to open the chat needs the app's PackageManager (the default SMS app, which
+        // apps take an smsto: link) and the SIM country for the number; the activity is started
+        // from the app process. Left to the app path. See ScriptActionCatalog.UNSUPPORTED_BY_BRIDGE.
+        if (BridgeConfig.ACTION_SEND_MESSAGE.equals(action.type)) {
+            return false;
+        }
         BridgeLog.w("Unknown action type: " + action.type);
         return false;
     }

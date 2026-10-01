@@ -34,7 +34,8 @@ data class ConstraintDescriptor(
 
 /**
  * Single source of truth for constraint type ids. A script only fires while every one of its
- * constraints is satisfied. `BridgeConfig` (Java) mirrors the AVAILABLE subset and must never
+ * constraints is satisfied. `BridgeConfig` (Java) mirrors the AVAILABLE subset minus
+ * [AUTOMATION_ONLY] (it keeps a defensive constant for [NOTIFICATION_RECEIVED]) and must never
  * diverge from it, since a script authored here is later matched and executed by the bridge.
  */
 object ScriptConstraintCatalog {
@@ -44,6 +45,12 @@ object ScriptConstraintCatalog {
 
     /** "A notification from app `packageName` whose title or text contains `contains` arrived in the last 10 s." */
     const val NOTIFICATION_RECEIVED = "notification_received"
+
+    /** "A check of the RSS/Atom feed at `url` just found an item not seen before." */
+    const val RSS_NEW_ITEM = "rss_new_item"
+
+    /** "A non-all-day, non-cancelled calendar event is in progress"; optional `calendar` and `title` filters (contains). */
+    const val CALENDAR_EVENT_ACTIVE = "calendar_event_active"
 
     val all: List<ConstraintDescriptor> = listOf(
         // Apps
@@ -86,6 +93,7 @@ object ScriptConstraintCatalog {
         ConstraintDescriptor("mobile_data_off", R.string.constraint_mobile_data_off, ConstraintCategory.CONNECTIVITY, ConstraintAvailability.AVAILABLE),
         ConstraintDescriptor("airplane_mode_on", R.string.constraint_airplane_mode_on, ConstraintCategory.CONNECTIVITY, ConstraintAvailability.AVAILABLE),
         ConstraintDescriptor("airplane_mode_off", R.string.constraint_airplane_mode_off, ConstraintCategory.CONNECTIVITY, ConstraintAvailability.AVAILABLE),
+        ConstraintDescriptor(RSS_NEW_ITEM, R.string.constraint_rss_new_item, ConstraintCategory.CONNECTIVITY, ConstraintAvailability.AVAILABLE),
 
         // Keyboard
         ConstraintDescriptor("input_method_chosen", R.string.constraint_input_method_chosen, ConstraintCategory.KEYBOARD),
@@ -132,6 +140,7 @@ object ScriptConstraintCatalog {
         // Time
         ConstraintDescriptor("time", R.string.constraint_time, ConstraintCategory.TIME, ConstraintAvailability.AVAILABLE),
         ConstraintDescriptor("day_of_week", R.string.constraint_day_of_week, ConstraintCategory.TIME, ConstraintAvailability.AVAILABLE),
+        ConstraintDescriptor(CALENDAR_EVENT_ACTIVE, R.string.constraint_calendar_event_active, ConstraintCategory.TIME, ConstraintAvailability.AVAILABLE),
         ConstraintDescriptor(COOLDOWN, R.string.constraint_cooldown, ConstraintCategory.TIME, ConstraintAvailability.AVAILABLE),
     )
 
@@ -144,8 +153,9 @@ object ScriptConstraintCatalog {
 
     /**
      * Constraints that can wake a key-less (automation) script: states Android announces with a
-     * broadcast or callback, on which `DeviceEventReceiver` re-evaluates — nothing polls — or the
-     * NotificationEventListener callback for notifications. An
+     * broadcast or callback, on which `DeviceEventReceiver` re-evaluates — nothing polls — or, for
+     * the [AUTOMATION_ONLY] types, their own wake-up (the NotificationEventListener callback, the
+     * RSS feed job, the calendar alarm). An
      * automation needs at least one of these; the others still gate it. Foreground app, media,
      * keyboard, mobile data and time are left out for that reason; add one only together with its
      * wake-up source.
@@ -163,16 +173,25 @@ object ScriptConstraintCatalog {
         "headphones_connected", "headphones_disconnected",
         "airplane_mode_on", "airplane_mode_off",
         "location_on", "location_off",
-        NOTIFICATION_RECEIVED,
+        NOTIFICATION_RECEIVED, RSS_NEW_ITEM, CALENDAR_EVENT_ACTIVE,
     )
 
     fun isAutomation(type: String): Boolean = type in AUTOMATION_TYPES && isAvailable(type)
 
     /**
-     * Offered and saved only on key-less automations: the detached bridge has no notification
-     * listener, so on a key shortcut it would decide differently from the app.
+     * Offered and saved only on key-less automations, and evaluated only in the app: the detached
+     * bridge has no notification listener and reads no feed or calendar, so on a key shortcut it
+     * would decide differently from the app (for a type it has no constant for, "unknown never blocks").
      */
-    val AUTOMATION_ONLY: Set<String> = setOf(NOTIFICATION_RECEIVED)
+    val AUTOMATION_ONLY: Set<String> = setOf(NOTIFICATION_RECEIVED, RSS_NEW_ITEM, CALENDAR_EVENT_ACTIVE)
+
+    /**
+     * True when this shortcut's automation fires only on a notification, so a reply with no chat
+     * named can answer the chat that triggered it. Every other run (a key, a widget, a tile, Run
+     * once) has no triggering notification, and such a reply fails rather than pick another chat.
+     */
+    fun startsFromNotification(automation: Boolean, constraints: List<ScriptConstraint>): Boolean =
+        automation && constraints.any { it.type == NOTIFICATION_RECEIVED }
 
     /** Titles are localized, so search matches against the strings the user is actually reading. */
     fun search(query: String, resources: Resources): List<ConstraintDescriptor> {

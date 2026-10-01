@@ -137,6 +137,32 @@ class BridgePayloadTest {
         assertEquals(900L, parsed.longPressThresholdFor(24))
     }
 
+    /** Automation conditions (a feed address, a calendar name) never reach the shell-readable file. */
+    @Test
+    fun keyLessScriptsAreNotWrittenToTheConfigFile() {
+        val payload = BridgePayload(context)
+        val automation = ShortcutScript(
+            id = "automation",
+            name = "Feed",
+            triggers = emptyList(),
+            actions = listOf(ScriptAction.ToggleFlashlight),
+            constraints = listOf(
+                com.example.data.ScriptConstraint("rss_new_item", mapOf("url" to "https://example.org/feed?token=s3cret")),
+                com.example.data.ScriptConstraint("calendar_event_active", mapOf("calendar" to "me@work.example")),
+            ),
+            automation = true,
+        )
+        val surfaceOnly = automation.copy(id = "tile", automation = false, constraints = emptyList())
+        payload.writeConfig(listOf(automation, surfaceOnly, flashlightScript()), globallyEnabled = true, config = KeyMappingConfig())
+
+        val raw = payload.configFile()!!.readText()
+        assertFalse(raw.contains("s3cret"))
+        assertFalse(raw.contains("me@work.example"))
+        assertFalse(raw.contains("\"automation\""))
+        assertFalse(raw.contains("\"tile\""))
+        assertEquals(listOf("script-1"), BridgeConfig.read(payload.configFile()!!).scripts.map { it.id })
+    }
+
     @Test
     fun spawnCommandDetachesTheBridgeFromTheAdbSession() {
         val command = BridgePayload(context).spawnCommand()
@@ -147,5 +173,52 @@ class BridgePayloadTest {
         assertTrue(command.contains("nohup"))
         assertTrue(command.contains("</dev/null"))
         assertTrue(command.contains(BridgeProtocol.SPAWN_MARKER))
+    }
+
+    private val personalActions = listOf(
+        ScriptAction("toggle_flashlight"),
+        ScriptAction(
+            "send_message",
+            mapOf("number" to "+905551234567", "contactName" to "Ayse", "text" to "secret hello", "packageName" to "com.chat.app"),
+        ),
+        ScriptAction("delay", mapOf("duration" to "250")),
+        ScriptAction("reply_to_notification", mapOf("text" to "secret reply")),
+    )
+
+    private fun assertOnlyBridgeParamsKept(parsed: List<Pair<String, Map<String, String>>>) {
+        assertEquals(listOf("toggle_flashlight", "send_message", "delay", "reply_to_notification"), parsed.map { it.first })
+        assertTrue(parsed[1].second.isEmpty())
+        assertTrue(parsed[3].second.isEmpty())
+        assertEquals(mapOf("duration" to "250"), parsed[2].second)
+    }
+
+    @Test
+    fun bridgeNeverRunsActionsKeepTheirSlotButNotTheirParamsInTheConfigFile() {
+        val payload = BridgePayload(context)
+        val script = ShortcutScript(
+            id = "script-3",
+            name = "Personal",
+            enabled = true,
+            triggers = listOf(ScriptTrigger(listOf(24), TriggerPressType.SINGLE_PRESS)),
+            actions = personalActions,
+        )
+        payload.writeConfig(listOf(script), globallyEnabled = true, config = KeyMappingConfig())
+
+        val raw = payload.configFile()!!.readText()
+        assertFalse(raw.contains("secret"))
+        assertFalse(raw.contains("+905551234567"))
+        assertFalse(raw.contains("Ayse"))
+        val actions = BridgeConfig.read(payload.configFile()!!).scripts.single().actions
+        assertOnlyBridgeParamsKept(actions.map { it.type to it.params })
+    }
+
+    @Test
+    fun bridgeNeverRunsActionsKeepTheirSlotButNotTheirParamsInARunRequest() {
+        val body = org.json.JSONObject().put(
+            "actions",
+            org.json.JSONArray().apply { personalActions.forEach { put(it.toBridgeJson()) } },
+        ).toString()
+        assertFalse(body.contains("secret"))
+        assertOnlyBridgeParamsKept(BridgeConfig.parseActions(body).map { it.type to it.params })
     }
 }

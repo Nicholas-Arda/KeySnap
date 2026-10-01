@@ -66,6 +66,7 @@ import androidx.compose.material.icons.outlined.SelectAll
 import androidx.compose.material.icons.outlined.SignalCellularAlt
 import androidx.compose.material.icons.outlined.SkipNext
 import androidx.compose.material.icons.outlined.SkipPrevious
+import androidx.compose.material.icons.outlined.Sms
 import androidx.compose.material.icons.outlined.StayCurrentLandscape
 import androidx.compose.material.icons.outlined.StayCurrentPortrait
 import androidx.compose.material.icons.outlined.Stop
@@ -109,6 +110,7 @@ private val perActionIcons: Map<String, ImageVector> = mapOf(
     "launch_app_shortcut" to Icons.Outlined.OpenInNew,
     "open_url" to Icons.Outlined.Link,
     "reply_to_notification" to Icons.AutoMirrored.Outlined.Reply,
+    "send_message" to Icons.Outlined.Sms,
     "http_request" to Icons.Outlined.Http,
     "shell_command" to Icons.Outlined.Terminal,
     "send_intent" to Icons.Outlined.Code,

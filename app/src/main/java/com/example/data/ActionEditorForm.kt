@@ -85,6 +85,12 @@ sealed interface EditorField {
      * persists the read grant, because the shortcut runs long after the picking process is gone.
      */
     data class ImagePick(val key: String, @StringRes val labelRes: Int) : EditorField
+
+    /**
+     * A phone number, from the system contact picker or typed. The picker's result carries a
+     * one-time read grant, so no contacts permission; the name is kept only for the summary.
+     */
+    data class ContactPick(val numberKey: String, val nameKey: String, @StringRes val labelRes: Int) : EditorField
 }
 
 /** Every param key this field writes. A point writes two, a two-point field writes four. */
@@ -101,6 +107,7 @@ val EditorField.keys: List<String>
         is EditorField.TimeRange -> listOf(startKey, endKey)
         is EditorField.DaySet -> listOf(key)
         is EditorField.ImagePick -> listOf(key)
+        is EditorField.ContactPick -> listOf(numberKey, nameKey)
     }
 
 data class ActionEditorForm(
@@ -263,7 +270,24 @@ object ActionEditorForms {
                 val text = params.value("text")
                 joinSummary(
                     params.value("packageName"),
-                    params.value("chat").ifEmpty { res.getString(R.string.summary_reply_newest_chat) },
+                    params.value("chat").ifEmpty { res.getString(R.string.summary_reply_trigger_chat) },
+                    if (text.isEmpty()) "" else "“$text”",
+                )
+            },
+        ),
+        ActionEditorForm(
+            type = "send_message",
+            fields = listOf(
+                EditorField.ContactPick("number", "contactName", R.string.param_to),
+                EditorField.AppPick("packageName", R.string.field_send_with),
+                EditorField.Text("text", R.string.param_message, multiline = true),
+            ),
+            helperRes = R.string.helper_send_message,
+            summary = { _, params ->
+                val text = params.value("text")
+                joinSummary(
+                    params.value("contactName").ifEmpty { params.value("number") },
+                    params.value("packageName"),
                     if (text.isEmpty()) "" else "“$text”",
                 )
             },
@@ -468,8 +492,10 @@ object ActionEditorForms {
      * That matters because both [isComplete] and [missingRequired] derive their visible-field set
      * from this function: a required param that is actually hidden-but-gated on such a field would
      * never be excluded from the required set, which permanently disables Save.
+     *
+     * A reply's chat field also says what leaving it empty means for this shortcut; see [isRequired].
      */
-    fun visibleFields(form: ActionEditorForm, values: Map<String, String>): List<EditorField> =
+    fun visibleFields(form: ActionEditorForm, values: Map<String, String>, startsFromNotification: Boolean = false): List<EditorField> =
         form.fields.filter { field ->
             val gate = when (field) {
                 is EditorField.Text -> field.visibleWhen
@@ -477,13 +503,27 @@ object ActionEditorForms {
                 else -> null
             } ?: return@filter true
             values[gate.first] in gate.second
+        }.map { field ->
+            if (form.type == REPLY && field is EditorField.Text && field.key == REPLY_CHAT) {
+                field.copy(helperRes = if (startsFromNotification) R.string.helper_reply_chat_trigger else R.string.helper_reply_chat_required)
+            } else {
+                field
+            }
         }
 
+    /**
+     * The catalog's required flag, plus a reply's chat unless a notification starts the shortcut
+     * ([ScriptConstraintCatalog.startsFromNotification]): an empty chat means "the chat that
+     * triggered this run", and any other run has none, so it would only ever fail.
+     */
+    private fun isRequired(type: String, spec: ActionParameterSpec, startsFromNotification: Boolean): Boolean =
+        spec.required || (type == REPLY && spec.key == REPLY_CHAT && !startsFromNotification)
+
     /** True once every *required, visible* param holds a non-blank value. */
-    fun isComplete(form: ActionEditorForm, values: Map<String, String>): Boolean {
+    fun isComplete(form: ActionEditorForm, values: Map<String, String>, startsFromNotification: Boolean = false): Boolean {
         val required = ScriptActionCatalog.descriptor(form.type)
             ?.parameters.orEmpty()
-            .filter { it.required }
+            .filter { isRequired(form.type, it, startsFromNotification) }
             .map { it.key }
             .toSet()
         val visible = visibleFields(form, values).flatMap { it.keys }.toSet()
@@ -494,16 +534,19 @@ object ActionEditorForms {
      * Required params the saved action is still missing. Non-empty means the editor shows
      * "Tap to configure" — the recovery path for scripts saved before forms existed.
      */
-    fun missingRequired(action: ScriptAction): List<String> {
+    fun missingRequired(action: ScriptAction, startsFromNotification: Boolean = false): List<String> {
         val form = byType[action.type] ?: return emptyList()
         val visible = visibleFields(form, action.params).flatMap { it.keys }.toSet()
         return ScriptActionCatalog.descriptor(action.type)
             ?.parameters.orEmpty()
-            .filter { it.required && it.key in visible && action.params[it.key].isNullOrBlank() }
+            .filter { isRequired(action.type, it, startsFromNotification) && it.key in visible && action.params[it.key].isNullOrBlank() }
             .map { it.key }
     }
 
     /** The chain row's second line, or null when the action takes no configuration at all. */
     fun summarize(action: ScriptAction, resources: Resources): String? =
         byType[action.type]?.summary?.invoke(resources, action.params)?.takeIf { it.isNotBlank() }
+
+    private const val REPLY = "reply_to_notification"
+    private const val REPLY_CHAT = "chat"
 }

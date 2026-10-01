@@ -138,7 +138,8 @@ fun ConstraintConfigSheet(
                     is EditorField.TimeRange -> TimeRangeFieldRow(field, values)
                     is EditorField.DaySet -> DaySetFieldRow(field, values)
                     // Never declared by a constraint form; [ConstraintEditorFormTest] guards this.
-                    is EditorField.KeyCodePick, is EditorField.Point, is EditorField.TwoPoints, is EditorField.ImagePick -> Unit
+                    is EditorField.KeyCodePick, is EditorField.Point, is EditorField.TwoPoints, is EditorField.ImagePick,
+                    is EditorField.ContactPick -> Unit
                 }
             }
 
@@ -190,6 +191,17 @@ private fun PermissionHints(constraintType: String, ssid: String, context: Conte
                 PermissionHint(stringResource(R.string.constraint_needs_notification_access)) {
                     runCatching { launcher.launch(NotificationEventListener.accessSettingsIntent(context)) }
                         .onFailure { launcher.launch(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)) }
+                }
+            }
+        }
+        constraintType == ScriptConstraintCatalog.CALENDAR_EVENT_ACTIVE -> {
+            var granted by remember {
+                mutableStateOf(context.checkSelfPermission(Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED)
+            }
+            val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted = it }
+            if (!granted) {
+                PermissionHint(stringResource(R.string.constraint_needs_calendar)) {
+                    launcher.launch(Manifest.permission.READ_CALENDAR)
                 }
             }
         }

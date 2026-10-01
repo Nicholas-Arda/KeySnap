@@ -4,6 +4,8 @@ import android.content.Context
 import android.util.Log
 import com.example.bridge.BridgeProtocol
 import com.example.data.KeyMappingConfig
+import com.example.data.ScriptAction
+import com.example.data.ScriptActionCatalog
 import com.example.data.ShortcutScript
 import org.json.JSONArray
 import org.json.JSONObject
@@ -166,7 +168,10 @@ class BridgePayload(context: Context) {
             root.put("longPressThresholdMs", config.longPressThresholdMs)
 
             val scriptArray = JSONArray()
-            scripts.forEach { script ->
+            // Only key shortcuts: the bridge drops a trigger-less script anyway, and an automation's
+            // conditions (a feed address, a calendar name) have no business in a shell-readable file.
+            // Automations and widget/tile runs reach the bridge as RUN requests carrying their actions.
+            scripts.filter { it.triggers.isNotEmpty() }.forEach { script ->
                 val triggers = JSONArray()
                 script.triggers.forEach { trigger ->
                     val triggerJson = JSONObject()
@@ -177,11 +182,7 @@ class BridgePayload(context: Context) {
                     triggers.put(triggerJson)
                 }
                 val actions = JSONArray()
-                script.actions.forEach { action ->
-                    val paramsJson = JSONObject()
-                    action.params.forEach { (key, value) -> paramsJson.put(key, value) }
-                    actions.put(JSONObject().put("type", action.type).put("params", paramsJson))
-                }
+                script.actions.forEach { action -> actions.put(action.toBridgeJson()) }
                 val constraints = JSONArray()
                 script.constraints.forEach { constraint ->
                     val paramsJson = JSONObject()
@@ -228,4 +229,17 @@ class BridgePayload(context: Context) {
             "sleep 1; " +
             "echo ${BridgeProtocol.SPAWN_MARKER} spawned"
     }
+}
+
+/**
+ * The action as the bridge receives it, in the config file and in a Run-once request. Types the
+ * bridge never runs keep their slot (results are reported by position) but carry no params, so
+ * message text, numbers and reply text are not copied into a file the shell UID can read.
+ */
+internal fun ScriptAction.toBridgeJson(): JSONObject {
+    val paramsJson = JSONObject()
+    if (type !in ScriptActionCatalog.UNSUPPORTED_BY_BRIDGE) {
+        params.forEach { (key, value) -> paramsJson.put(key, value) }
+    }
+    return JSONObject().put("type", type).put("params", paramsJson)
 }

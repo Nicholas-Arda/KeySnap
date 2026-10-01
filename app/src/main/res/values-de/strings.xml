@@ -248,11 +248,13 @@
     <string name="constraint_location_on">Standort ist an</string>
     <string name="constraint_location_off">Standort ist aus</string>
     <string name="constraint_day_of_week">Wochentag</string>
+    <string name="constraint_calendar_event_active">Kalendertermin läuft</string>
     <string name="constraint_cooldown">Höchstens einmal alle N Minuten</string>
     <string name="constraint_mobile_data_on">Mobile Daten sind an</string>
     <string name="constraint_mobile_data_off">Mobile Daten sind aus</string>
     <string name="constraint_airplane_mode_on">Flugmodus ist an</string>
     <string name="constraint_airplane_mode_off">Flugmodus ist aus</string>
+    <string name="constraint_rss_new_item">Neuer Eintrag in einem RSS-Feed</string>
     <string name="constraint_ringer_normal">Klingelton ist an</string>
     <string name="constraint_ringer_vibrate">Klingelton auf Vibration</string>
     <string name="constraint_ringer_silent">Klingelton ist lautlos</string>
@@ -266,8 +268,21 @@
     <string name="badge_accessibility">Erfordert den Bedienungshilfen-Dienst</string>
     <string name="badge_notification_policy">Erfordert Zugriff auf „Nicht stören“</string>
     <string name="badge_notification_access">Erfordert Benachrichtigungszugriff</string>
-    <string name="hint_reply_chat">Teil des Chatnamens. Leer: der neueste Chat</string>
-    <string name="summary_reply_newest_chat">neuester Chat</string>
+    <string name="hint_reply_chat">Der Chatname, genau wie in der Benachrichtigung</string>
+    <string name="summary_reply_trigger_chat">der auslösende Chat</string>
+    <string name="helper_reply_chat_trigger">Leer: antwortet dem Chat, dessen Benachrichtigung diesen Kurzbefehl ausgelöst hat.</string>
+    <string name="helper_reply_chat_required">Pflichtfeld: Nur eine Bedingung „Benachrichtigung erhalten“ kann den Chat für dich wählen.</string>
+    <string name="action_send_message">Nachricht senden</string>
+    <string name="param_to">An</string>
+    <string name="param_message">Nachricht</string>
+    <string name="field_send_with">Senden mit</string>
+    <string name="helper_send_message">Öffnet den Chat mit deiner Nachricht bereits eingetippt; du tippst auf Senden.</string>
+    <string name="action_config_pick_contact">Aus Kontakten wählen</string>
+    <string name="action_config_type_number">Oder eine Nummer eingeben</string>
+    <string name="helper_message_number">Leer: Du wählst die Person in der App.</string>
+    <string name="message_number_needs_country_code">Ergänze die Landesvorwahl (sie beginnt mit +).</string>
+    <string name="message_number_not_used">Diese App lässt dich die Person selbst wählen; die Nummer wird nicht verwendet.</string>
+    <string name="action_config_what_will_run">Wird ausgeführt: %1$s</string>
     <string name="helper_reply_to_notification">Sendet deinen Text über die eigene Antworten-Schaltfläche der Benachrichtigung, ohne die App zu öffnen. Funktioniert nur, solange für diesen Chat eine Benachrichtigung angezeigt wird, und kann keinen neuen Chat beginnen. KeySnap liest Benachrichtigungen nur auf deinem Telefon, um sie zu finden; nichts wird gespeichert oder anderswohin gesendet. Füge „Höchstens einmal alle N Minuten“ hinzu, damit ein aktiver Chat nicht immer wieder beantwortet wird.</string>
     <string name="badge_write_settings">Erfordert die Berechtigung zum Ändern der Systemeinstellungen</string>
 
@@ -442,10 +457,19 @@
     <string name="field_time_end">Bis</string>
     <string name="field_days">Tage</string>
     <string name="constraint_needs_usage_access">Benötigt Nutzungszugriff, damit die App sehen kann, welche App im Vordergrund ist.</string>
-    <string name="constraint_needs_notification_access">Benötigt Benachrichtigungszugriff. KeySnap prüft jede neue Benachrichtigung der gewählten App auf deinem Telefon gegen diese Bedingung und behält nur den Zeitpunkt eines Treffers. Nichts wird gespeichert, protokolliert oder gesendet.</string>
+    <string name="constraint_needs_notification_access">Benötigt Benachrichtigungszugriff. KeySnap prüft jede neue Benachrichtigung der gewählten App auf deinem Telefon gegen diese Bedingung. Es behält nur, wann eine passte und welche Benachrichtigung es war, damit eine Antwort diesen Chat findet. Kein Benachrichtigungsinhalt wird gespeichert, protokolliert oder gesendet.</string>
     <string name="field_notification_contains">Titel oder Text enthält</string>
     <string name="hint_notification_contains_any">Leer: jede Benachrichtigung dieser App</string>
     <string name="helper_notification_received">Läuft, wenn eine neue Benachrichtigung dieser App eintrifft. Mehrere innerhalb von 10 Sekunden zählen als eine. Nur in Automatisierungen.</string>
+    <string name="field_feed_url">Feed-Adresse</string>
+    <string name="helper_rss_new_item">Wird höchstens alle 15 Minuten geprüft, solange du online bist. Läuft einmal pro Prüfung, die neue Einträge findet; Einträge, die beim Speichern schon im Feed sind, zählen nicht. Die Adresse muss mit https:// beginnen und wird genau so verwendet, wie du sie eingegeben hast. Nur in Automatisierungen.</string>
+    <string name="field_calendar_name">Kalendername enthält</string>
+    <string name="hint_calendar_any">Für einen beliebigen Kalender leer lassen</string>
+    <string name="field_event_title">Termintitel enthält</string>
+    <string name="hint_event_any">Für einen beliebigen Termin leer lassen</string>
+    <string name="constraint_summary_any_event">Beliebiger Termin</string>
+    <string name="helper_calendar_event_active">Läuft, wenn ein passender Termin beginnt. Während das Telefon ruht, kann es später laufen; ein kurzer Termin kann also verpasst werden. Ganztägige und abgesagte Termine werden ignoriert, direkt aufeinanderfolgende zählen als einer. Nur in Automatisierungen.</string>
+    <string name="constraint_needs_calendar">Benötigt die Berechtigung, deinen Kalender zu lesen. Termine werden auf diesem Telefon mit dieser Bedingung verglichen und nie gespeichert, protokolliert oder gesendet.</string>
     <string name="field_cooldown_minutes">Minuten zwischen Ausführungen</string>
     <string name="helper_cooldown">Wird übersprungen, wenn dieser Kurzbefehl vor weniger als so vielen Minuten ausgeführt wurde. Der Zähler beginnt neu, wenn das Telefon oder KeySnap neu startet.</string>
     <string name="constraint_summary_cooldown">Höchstens alle %1$d Min.</string>
@@ -754,7 +778,7 @@
     <string name="about_traffic_device">Dein eigenes Telefon</string>
     <string name="about_traffic_device_body">Kopplung per kabellosem Debugging. Nur im lokalen Netzwerk.</string>
     <string name="about_traffic_yours">Adressen, die du selbst eingetippt hast</string>
-    <string name="about_traffic_yours_body">Eine HTTP- oder URL-Aktion geht genau dorthin, wohin du sie geschrieben hast, unverändert.</string>
+    <string name="about_traffic_yours_body">Eine HTTP- oder URL-Aktion oder ein RSS-Feed, dem eine Automatisierung folgt, geht genau dorthin, wohin du sie geschrieben hast, unverändert.</string>
     <string name="about_traffic_google">Google-Anzeigen und Google Play</string>
     <string name="about_traffic_google_body">Um die Anzeige in der kostenlosen Version zu zeigen und zu prüfen, ob du Pro gekauft hast. Keiner von beiden erhält je einen Tastendruck oder einen Kurzbefehl.</string>
     <string name="about_traffic_all">Das ist die ganze Liste.</string>
@@ -826,7 +850,7 @@
     <string name="run_failure_notifications_off">Benachrichtigungen sind deaktiviert</string>
     <string name="editor_needs_action">Füge mindestens eine Aktion hinzu, bevor du speicherst.</string>
     <string name="editor_needs_trigger">Wähle eine Taste, bevor du speicherst.</string>
-    <string name="editor_notification_needs_automation">„Benachrichtigung erhalten“ funktioniert nur in einer Automatisierung. Entferne diese Bedingung oder wechsle zu Automatisierung.</string>
+    <string name="editor_condition_needs_automation">„%1$s“ funktioniert nur in einer Automatisierung. Entferne diese Bedingung oder wechsle zu Automatisierung.</string>
     <string name="saved_needs_trigger">Gespeichert. Weise eine Taste zu, damit er ausgeführt werden kann.</string>
     <string name="saved_named">„%1$s“ gespeichert</string>
     <string name="saved_needs_condition">Gespeichert. Füge eine Bedingung hinzu, die sich von selbst ändert, z. B. Wird geladen oder Bluetooth-Gerät verbunden, damit es ausgeführt werden kann.</string>
@@ -876,7 +900,6 @@
     <!-- OEM key tip -->
     <string name="oem_key_tip">Tipp: Stell diese Taste in den Einstellungen deines Telefons auf „Keine“, damit nur KeySnap darauf reagiert.</string>
     <!-- Recipe gallery -->
-    <string name="recipe_category_ifttt">Kommst du von IFTTT?</string>
     <string name="recipe_category_webhook">Webhooks</string>
     <string name="recipe_wifi_vibrate">Bei der Arbeit</string>
     <string name="recipe_wifi_vibrate_subtitle">Arbeits-WLAN: Klingelton auf Vibration</string>
@@ -884,15 +907,20 @@
     <string name="recipe_wifi_ring_subtitle">WLAN verlassen: Klingelton wieder an</string>
     <string name="recipe_morning_dnd_off">Morgens abstecken</string>
     <string name="recipe_morning_dnd_off_subtitle">Nach 06:00 vom Ladegerät: Nicht stören aus</string>
-    <string name="recipe_ifttt_webhook">IFTTT-Applet</string>
-    <string name="recipe_ifttt_webhook_subtitle">Eine Taste ruft deine Webhooks-URL auf</string>
-    <string name="recipe_home_assistant_subtitle">Webhook-URL einer Automation einfügen</string>
-    <string name="recipe_discord_subtitle">Webhook-URL eines Kanals einfügen</string>
-    <string name="recipe_ntfy_subtitle">URL deines Topics einfügen</string>
-    <string name="recipe_apps_script_subtitle">URL deiner Web-App einfügen</string>
-    <string name="recipe_whatsapp">WhatsApp-Nachricht senden</string>
-    <string name="recipe_whatsapp_subtitle">Öffnet einen Chat mit deinem Text, tippt Senden</string>
-    <string name="recipe_whatsapp_note">Gib im ersten Schritt https://wa.me/&lt;nummer&gt;?text=&lt;nachricht&gt; ein, die Nummer international und nur mit Ziffern. Setze dann das Antippen auf die Senden-Schaltfläche von WhatsApp. Der Bildschirm muss an und entsperrt sein, WhatsApp erscheint kurz, und das Antippen von Senden muss auf deinem Telefon eventuell angepasst werden.</string>
+    <string name="recipe_smart_home_subtitle">Webhook-URL einer Automation einfügen</string>
+    <string name="recipe_chat_channel_subtitle">Webhook-URL eines Kanals einfügen</string>
+    <string name="recipe_phone_notification_subtitle">URL deines Topics einfügen</string>
+    <string name="recipe_spreadsheet_subtitle">URL deiner Web-App einfügen</string>
+    <string name="recipe_category_routines">Alltagsroutinen</string>
+    <string name="recipe_web_address">Webadresse aufrufen</string>
+    <string name="recipe_web_address_subtitle">Eine Taste ruft eine eingefügte URL auf</string>
+    <string name="recipe_smart_home">Smart-Home-Anfrage</string>
+    <string name="recipe_chat_channel">In einen Chat-Kanal posten</string>
+    <string name="recipe_phone_notification">Benachrichtigung ans Handy senden</string>
+    <string name="recipe_spreadsheet">Zeile in Tabelle einfügen</string>
+    <string name="recipe_send_message">Nachricht senden</string>
+    <string name="recipe_send_message_subtitle">Öffnet einen Chat mit deinem Text</string>
+    <string name="recipe_send_message_note">Wähle einen Kontakt, die App zum Senden und deine Nachricht. Der Chat öffnet sich mit der Nachricht bereits eingetippt; du tippst auf Senden.</string>
     <string name="home_recipes_all">Alle</string>
     <!-- Share and import -->
     <string name="import_error_invalid">Das ist kein gültiger KeySnap-Kurzbefehl.</string>

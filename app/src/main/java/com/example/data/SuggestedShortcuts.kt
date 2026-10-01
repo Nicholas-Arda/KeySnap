@@ -23,7 +23,7 @@ enum class RecipeCategory(@StringRes val titleRes: Int) {
     SINGLE(R.string.home_suggestions_group_single),
     MULTI(R.string.home_suggestions_group_multi),
     AUTOMATION(R.string.home_suggestions_group_automation),
-    IFTTT(R.string.recipe_category_ifttt),
+    ROUTINES(R.string.recipe_category_routines),
     WEBHOOK(R.string.recipe_category_webhook),
 }
 
@@ -149,7 +149,7 @@ object SuggestedShortcuts {
             automation = true,
             // No address: the editor asks for the device before the script can be saved.
             constraints = listOf(ScriptConstraint("bluetooth_device_connected")),
-            category = RecipeCategory.IFTTT,
+            category = RecipeCategory.ROUTINES,
         ),
         SuggestedShortcut(
             id = "suggestion_camera",
@@ -213,7 +213,7 @@ object SuggestedShortcuts {
                 ScriptConstraint("charging"),
                 ScriptConstraint("time", mapOf("start" to "22:00", "end" to "07:00")),
             ),
-            category = RecipeCategory.IFTTT,
+            category = RecipeCategory.ROUTINES,
         ),
         SuggestedShortcut(
             id = "suggestion_bluetooth",
@@ -245,20 +245,18 @@ object SuggestedShortcuts {
             iconType = "disable_wifi",
             actions = listOf(ScriptAction("disable_bluetooth"), ScriptAction("disable_wifi"), brightness(20)),
         ),
-        // WhatsApp without an action of its own: the user's wa.me link opens the chat with the text
-        // typed in, then a tap on Send. A tap rather than an Enter key press: Enter only sends
-        // when WhatsApp's "Enter is send" setting is on (it is off by default), and a tap runs
-        // with or without Advanced Mode. The link and the tap position are left for the user.
+        // Opens the chat with the message typed in; the user taps Send. Contact, app and text are
+        // left blank: the user picks them on their own phone, so no app is named here.
         SuggestedShortcut(
-            id = "recipe_whatsapp",
-            titleRes = R.string.recipe_whatsapp,
-            subtitleRes = R.string.recipe_whatsapp_subtitle,
-            iconType = "open_url",
-            actions = listOf(ScriptAction("open_url"), delay(3000), ScriptAction("tap_screen")),
-            noteRes = R.string.recipe_whatsapp_note,
+            id = "recipe_send_message",
+            titleRes = R.string.recipe_send_message,
+            subtitleRes = R.string.recipe_send_message_subtitle,
+            iconType = "send_message",
+            actions = listOf(ScriptAction("send_message")),
+            noteRes = R.string.recipe_send_message_note,
         ),
-        // Coming from IFTTT?: the phone applets people run there most, rebuilt from local
-        // conditions. IFTTT's geofence becomes a Wi-Fi network, the place signal KeySnap has.
+        // Everyday routines: the phone automations people most often set up elsewhere, rebuilt from
+        // local conditions. A geofence becomes a Wi-Fi network, the place signal KeySnap has.
         SuggestedShortcut(
             id = "recipe_wifi_vibrate",
             titleRes = R.string.recipe_wifi_vibrate,
@@ -268,7 +266,7 @@ object SuggestedShortcuts {
             automation = true,
             // No SSID: the editor opens on the condition and the subtitle asks for the work network.
             constraints = listOf(ScriptConstraint("connected_to_wifi_network")),
-            category = RecipeCategory.IFTTT,
+            category = RecipeCategory.ROUTINES,
         ),
         SuggestedShortcut(
             id = "recipe_wifi_ring",
@@ -278,7 +276,7 @@ object SuggestedShortcuts {
             actions = listOf(ScriptAction("change_ringer_mode", mapOf("mode" to "normal"))),
             automation = true,
             constraints = listOf(ScriptConstraint("disconnected_from_wifi_network")),
-            category = RecipeCategory.IFTTT,
+            category = RecipeCategory.ROUTINES,
         ),
         SuggestedShortcut(
             id = "recipe_morning_dnd_off",
@@ -291,48 +289,50 @@ object SuggestedShortcuts {
                 ScriptConstraint("discharging"),
                 ScriptConstraint("time", mapOf("start" to "06:00", "end" to "10:00")),
             ),
-            category = RecipeCategory.IFTTT,
-        ),
-        // IFTTT's Button widget, as a physical key: the user's own Webhooks URL fires their applet.
-        SuggestedShortcut(
-            id = "recipe_ifttt_webhook",
-            titleRes = R.string.recipe_ifttt_webhook,
-            subtitleRes = R.string.recipe_ifttt_webhook_subtitle,
-            iconType = "http_request",
-            actions = listOf(webhook("GET")),
-            category = RecipeCategory.IFTTT,
+            category = RecipeCategory.ROUTINES,
         ),
         // Webhooks: every URL is blank (CLAUDE.md forbids shipping an endpoint the user did not
         // enter), so each of these opens the editor on it. Bodies are form-encoded because the HTTP
-        // action sets no Content-Type and HttpURLConnection then sends form-urlencoded.
+        // action sets no Content-Type and HttpURLConnection then sends form-urlencoded. Titles say
+        // what the request does, never which service takes it. Code-only notes on what each was
+        // shaped for: an IFTTT Webhooks applet (GET), a Home Assistant automation webhook, a
+        // Discord channel webhook (its "content" field), an ntfy topic, a Google Apps Script web app.
         SuggestedShortcut(
-            id = "recipe_home_assistant",
-            titleRes = R.string.recipe_home_assistant,
-            subtitleRes = R.string.recipe_home_assistant_subtitle,
+            id = "recipe_web_address",
+            titleRes = R.string.recipe_web_address,
+            subtitleRes = R.string.recipe_web_address_subtitle,
+            iconType = "http_request",
+            actions = listOf(webhook("GET")),
+            category = RecipeCategory.WEBHOOK,
+        ),
+        SuggestedShortcut(
+            id = "recipe_smart_home",
+            titleRes = R.string.recipe_smart_home,
+            subtitleRes = R.string.recipe_smart_home_subtitle,
             iconType = "http_request",
             actions = listOf(webhook("POST")),
             category = RecipeCategory.WEBHOOK,
         ),
         SuggestedShortcut(
-            id = "recipe_discord",
-            titleRes = R.string.recipe_discord,
-            subtitleRes = R.string.recipe_discord_subtitle,
+            id = "recipe_chat_channel",
+            titleRes = R.string.recipe_chat_channel,
+            subtitleRes = R.string.recipe_chat_channel_subtitle,
             iconType = "http_request",
             actions = listOf(webhook("POST", "content=Sent from KeySnap")),
             category = RecipeCategory.WEBHOOK,
         ),
         SuggestedShortcut(
-            id = "recipe_ntfy",
-            titleRes = R.string.recipe_ntfy,
-            subtitleRes = R.string.recipe_ntfy_subtitle,
+            id = "recipe_phone_notification",
+            titleRes = R.string.recipe_phone_notification,
+            subtitleRes = R.string.recipe_phone_notification_subtitle,
             iconType = "http_request",
             actions = listOf(webhook("POST", "Sent from KeySnap")),
             category = RecipeCategory.WEBHOOK,
         ),
         SuggestedShortcut(
-            id = "recipe_apps_script",
-            titleRes = R.string.recipe_apps_script,
-            subtitleRes = R.string.recipe_apps_script_subtitle,
+            id = "recipe_spreadsheet",
+            titleRes = R.string.recipe_spreadsheet,
+            subtitleRes = R.string.recipe_spreadsheet_subtitle,
             iconType = "http_request",
             actions = listOf(webhook("POST", "source=KeySnap")),
             category = RecipeCategory.WEBHOOK,

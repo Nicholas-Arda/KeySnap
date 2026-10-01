@@ -248,11 +248,13 @@
     <string name="constraint_location_on">Konum açık</string>
     <string name="constraint_location_off">Konum kapalı</string>
     <string name="constraint_day_of_week">Haftanın günü</string>
+    <string name="constraint_calendar_event_active">Takvim etkinliği sürüyor</string>
     <string name="constraint_cooldown">En fazla N dakikada bir</string>
     <string name="constraint_mobile_data_on">Mobil veri açık</string>
     <string name="constraint_mobile_data_off">Mobil veri kapalı</string>
     <string name="constraint_airplane_mode_on">Uçak modu açık</string>
     <string name="constraint_airplane_mode_off">Uçak modu kapalı</string>
+    <string name="constraint_rss_new_item">RSS akışında yeni öğe</string>
     <string name="constraint_ringer_normal">Zil sesi açık</string>
     <string name="constraint_ringer_vibrate">Zil titreşimde</string>
     <string name="constraint_ringer_silent">Zil sessizde</string>
@@ -266,8 +268,21 @@
     <string name="badge_accessibility">Erişilebilirlik hizmeti gerektirir</string>
     <string name="badge_notification_policy">Rahatsız Etmeyin erişimi gerektirir</string>
     <string name="badge_notification_access">Bildirim erişimi gerektirir</string>
-    <string name="hint_reply_chat">Sohbet adının bir kısmı. Boş: en yeni sohbet</string>
-    <string name="summary_reply_newest_chat">en yeni sohbet</string>
+    <string name="hint_reply_chat">Sohbet adı, bildirimde göründüğü gibi tam olarak</string>
+    <string name="summary_reply_trigger_chat">tetikleyen sohbet</string>
+    <string name="helper_reply_chat_trigger">Boş: bu kısayolu tetikleyen bildirimin sohbetine yanıt verir.</string>
+    <string name="helper_reply_chat_required">Zorunlu: sohbeti sizin yerinize yalnızca “Bildirim geldi” koşulu seçebilir.</string>
+    <string name="action_send_message">Mesaj gönder</string>
+    <string name="param_to">Kime</string>
+    <string name="param_message">Mesaj</string>
+    <string name="field_send_with">Gönderilecek uygulama</string>
+    <string name="helper_send_message">Sohbeti mesajınız yazılmış olarak açar; Gönder\'e siz dokunursunuz.</string>
+    <string name="action_config_pick_contact">Kişilerden seç</string>
+    <string name="action_config_type_number">Ya da bir numara yazın</string>
+    <string name="helper_message_number">Boş: kişiyi uygulamada siz seçersiniz.</string>
+    <string name="message_number_needs_country_code">Numaraya ülke kodunu ekleyin (+ ile başlar).</string>
+    <string name="message_number_not_used">Bu uygulama kişiyi kendisi seçtirir; numara kullanılmaz.</string>
+    <string name="action_config_what_will_run">Çalışacak olan: %1$s</string>
     <string name="helper_reply_to_notification">Metninizi uygulamayı açmadan, bildirimin kendi Yanıtla düğmesiyle gönderir. Yalnızca o sohbetin bildirimi görünürken çalışır, yeni sohbet başlatamaz. KeySnap bildirimleri yalnızca onu bulmak için telefonunuzda okur; hiçbir şey kaydedilmez ya da başka yere gönderilmez. Kalabalık bir sohbete art arda yanıt gitmesin diye “En fazla N dakikada bir” koşulunu ekleyin.</string>
     <string name="badge_write_settings">Sistem ayarlarını değiştirme izni gerektirir</string>
 
@@ -448,10 +463,19 @@
     <string name="field_time_end">Bitiş</string>
     <string name="field_days">Günler</string>
     <string name="constraint_needs_usage_access">Hangi uygulamanın önde olduğunu görebilmesi için Kullanım erişimi gerekir.</string>
-    <string name="constraint_needs_notification_access">Bildirim erişimi gerekir. KeySnap seçtiğiniz uygulamanın her yeni bildirimini telefonunuzda bu koşulla karşılaştırır ve yalnızca eşleştiği zamanı tutar. Hiçbir şey kaydedilmez, günlüğe yazılmaz ya da gönderilmez.</string>
+    <string name="constraint_needs_notification_access">Bildirim erişimi gerekir. KeySnap seçtiğiniz uygulamanın her yeni bildirimini telefonunuzda bu koşulla karşılaştırır. Yalnızca eşleştiği zamanı ve hangi bildirim olduğunu tutar; böylece yanıt o sohbeti bulabilir. Bildirim içeriği kaydedilmez, günlüğe yazılmaz ya da gönderilmez.</string>
     <string name="field_notification_contains">Başlık ya da metin içeriyor</string>
     <string name="hint_notification_contains_any">Boş: bu uygulamanın her bildirimi</string>
     <string name="helper_notification_received">Bu uygulamadan yeni bir bildirim gelince çalışır. 10 saniye içinde gelenler tek sayılır. Yalnızca otomasyonlarda.</string>
+    <string name="field_feed_url">Akış adresi</string>
+    <string name="helper_rss_new_item">İnternet varken en sık 15 dakikada bir kontrol edilir. Yeni öğe bulan her kontrolde bir kez çalışır; kaydettiğinizde akışta zaten olan öğeler sayılmaz. Adres https:// ile başlamalı ve tam yazdığınız gibi kullanılır. Yalnızca otomasyonlarda.</string>
+    <string name="field_calendar_name">Takvim adı içeriyor</string>
+    <string name="hint_calendar_any">Herhangi bir takvim için boş bırakın</string>
+    <string name="field_event_title">Etkinlik başlığı içeriyor</string>
+    <string name="hint_event_any">Herhangi bir etkinlik için boş bırakın</string>
+    <string name="constraint_summary_any_event">Herhangi bir etkinlik</string>
+    <string name="helper_calendar_event_active">Eşleşen bir etkinlik başlayınca çalışır. Telefon boştayken daha geç çalışabilir, bu yüzden kısa bir etkinlik kaçabilir. Tüm gün süren ve iptal edilen etkinlikler sayılmaz, arka arkaya gelen etkinlikler tek sayılır. Yalnızca otomasyonlarda.</string>
+    <string name="constraint_needs_calendar">Takviminizi okuma izni gerekir. Etkinlikler bu telefonda bu koşulla karşılaştırılır; asla kaydedilmez, günlüğe yazılmaz veya gönderilmez.</string>
     <string name="field_cooldown_minutes">İki çalışma arası dakika</string>
     <string name="helper_cooldown">Bu kısayol bu kadar dakikadan daha kısa süre önce çalıştıysa atlanır. Telefon ya da KeySnap yeniden başlarsa süre sıfırlanır.</string>
     <string name="constraint_summary_cooldown">En fazla %1$d dakikada bir</string>
@@ -752,7 +776,7 @@
     <string name="about_traffic_device">Kendi telefonunuz</string>
     <string name="about_traffic_device_body">Kablosuz Hata Ayıklama eşleştirmesi. Yalnızca yerel ağ.</string>
     <string name="about_traffic_yours">Kendi yazdığınız adresler</string>
-    <string name="about_traffic_yours_body">Bir HTTP veya URL açma eylemi, tam olarak yazdığınız yere, değiştirilmeden gider.</string>
+    <string name="about_traffic_yours_body">Bir HTTP veya URL açma eylemi ya da bir otomasyonun takip ettiği RSS akışı, tam olarak yazdığınız yere, değiştirilmeden gider.</string>
     <string name="about_traffic_google">Google reklamları ve Google Play</string>
     <string name="about_traffic_google_body">Ücretsiz sürümde reklamı göstermek ve Pro satın alıp almadığınızı sormak için. İkisi de bir tuş basışını veya kısayolu almaz.</string>
     <string name="about_traffic_all">Listenin tamamı bu.</string>
@@ -824,7 +848,7 @@
     <string name="run_failure_notifications_off">Bildirimler kapalı</string>
     <string name="editor_needs_action">Kaydetmeden önce en az bir eylem ekleyin.</string>
     <string name="editor_needs_trigger">Kaydetmeden önce bir tuş seçin.</string>
-    <string name="editor_notification_needs_automation">Bildirim geldi koşulu yalnızca otomasyonda çalışır. O koşulu kaldırın ya da Otomasyon\'a geçin.</string>
+    <string name="editor_condition_needs_automation">%1$s koşulu yalnızca otomasyonda çalışır. O koşulu kaldırın ya da Otomasyon\'a geçin.</string>
     <string name="saved_needs_trigger">Kaydedildi. Çalışabilmesi için bir tuş atayın.</string>
     <string name="saved_named">\"%1$s\" kaydedildi</string>
     <string name="saved_needs_condition">Kaydedildi. Çalışabilmesi için kendiliğinden değişen bir koşul ekleyin, örneğin Şarjda veya Bluetooth cihazı bağlı.</string>
@@ -874,7 +898,6 @@
     <!-- OEM key tip -->
     <string name="oem_key_tip">İpucu: Telefon ayarlarında bu tuşu “Yok” olarak ayarlayın; böylece yalnızca KeySnap tepki verir.</string>
     <!-- Recipe gallery -->
-    <string name="recipe_category_ifttt">IFTTT\'den mi geliyorsunuz?</string>
     <string name="recipe_category_webhook">Webhook\'lar</string>
     <string name="recipe_wifi_vibrate">İşteyken</string>
     <string name="recipe_wifi_vibrate_subtitle">İş WiFi\'ında zil titreşime</string>
@@ -882,15 +905,20 @@
     <string name="recipe_wifi_ring_subtitle">O WiFi\'dan çıkınca zil açılır</string>
     <string name="recipe_morning_dnd_off">Sabah Şarjdan Çıkış</string>
     <string name="recipe_morning_dnd_off_subtitle">06:00 sonrası şarjdan çıkınca DND kapat</string>
-    <string name="recipe_ifttt_webhook">IFTTT Applet\'i</string>
-    <string name="recipe_ifttt_webhook_subtitle">Tuş, Webhooks adresinizi çağırır</string>
-    <string name="recipe_home_assistant_subtitle">Otomasyonun webhook adresini yapıştırın</string>
-    <string name="recipe_discord_subtitle">Kanal webhook adresini yapıştırın</string>
-    <string name="recipe_ntfy_subtitle">Konu (topic) adresinizi yapıştırın</string>
-    <string name="recipe_apps_script_subtitle">Web uygulaması adresini yapıştırın</string>
-    <string name="recipe_whatsapp">WhatsApp mesajı gönder</string>
-    <string name="recipe_whatsapp_subtitle">Sohbeti metninizle açar, Gönder\'e dokunur</string>
-    <string name="recipe_whatsapp_note">İlk adıma https://wa.me/&lt;numara&gt;?text=&lt;mesaj&gt; yazın; numara ülke koduyla, yalnızca rakam olsun. Sonra dokunmayı WhatsApp\'ın Gönder düğmesine yerleştirin. Ekran açık ve kilitsiz olmalı, WhatsApp kısa bir an görünür ve Gönder dokunuşunun telefonunuza göre ayarlanması gerekebilir.</string>
+    <string name="recipe_smart_home_subtitle">Otomasyonun webhook adresini yapıştırın</string>
+    <string name="recipe_chat_channel_subtitle">Kanal webhook adresini yapıştırın</string>
+    <string name="recipe_phone_notification_subtitle">Konu (topic) adresinizi yapıştırın</string>
+    <string name="recipe_spreadsheet_subtitle">Web uygulaması adresini yapıştırın</string>
+    <string name="recipe_category_routines">Gündelik rutinler</string>
+    <string name="recipe_web_address">Web Adresi Çağır</string>
+    <string name="recipe_web_address_subtitle">Tuş, yapıştırdığınız adresi çağırır</string>
+    <string name="recipe_smart_home">Akıllı Ev İsteği</string>
+    <string name="recipe_chat_channel">Sohbet Kanalına Gönder</string>
+    <string name="recipe_phone_notification">Telefonuma Bildirim Gönder</string>
+    <string name="recipe_spreadsheet">Tabloya Satır Ekle</string>
+    <string name="recipe_send_message">Mesaj Gönder</string>
+    <string name="recipe_send_message_subtitle">Sohbeti metniniz yazılmış olarak açar</string>
+    <string name="recipe_send_message_note">Bir kişi, gönderilecek uygulamayı ve mesajınızı seçin. Sohbet mesaj yazılmış olarak açılır; Gönder\'e siz dokunursunuz.</string>
     <string name="home_recipes_all">Tümü</string>
     <!-- Share and import -->
     <string name="import_error_invalid">Bu geçerli bir KeySnap kısayolu değil.</string>

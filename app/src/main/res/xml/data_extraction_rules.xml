@@ -3,7 +3,8 @@
    The ADB RSA private key and the bridge control token authorize privileged access to one
    specific device. They must never leave it, so both cloud backup and device-to-device transfer
    exclude them; a restored install simply pairs again. The run log is excluded too: the privacy
-   policy promises it stays on this phone. Everything else — scripts, timings,
+   policy promises it stays on this phone, and so is the RSS feed cache (rss_feed_state.xml),
+   which only remembers which items a feed held at its last check. Everything else — scripts, timings,
    theme — is user work and is worth restoring.
 -->
 <data-extraction-rules>
@@ -12,6 +13,7 @@
         <exclude domain="sharedpref" path="arda_mapper_adb_prefs.xml" />
         <exclude domain="sharedpref" path="arda_mapper_bridge_prefs.xml" />
         <exclude domain="sharedpref" path="keysnap_run_log.xml" />
+        <exclude domain="sharedpref" path="rss_feed_state.xml" />
         <exclude domain="external" path="bridge" />
     </cloud-backup>
     <device-transfer>
@@ -19,6 +21,7 @@
         <exclude domain="sharedpref" path="arda_mapper_adb_prefs.xml" />
         <exclude domain="sharedpref" path="arda_mapper_bridge_prefs.xml" />
         <exclude domain="sharedpref" path="keysnap_run_log.xml" />
+        <exclude domain="sharedpref" path="rss_feed_state.xml" />
         <exclude domain="external" path="bridge" />
     </device-transfer>
 </data-extraction-rules>

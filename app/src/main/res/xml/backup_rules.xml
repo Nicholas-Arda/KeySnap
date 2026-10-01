@@ -2,12 +2,14 @@
 <!--
    Pre-Android-12 backup agent. Mirrors data_extraction_rules.xml: device-scoped ADB credentials
    and the bridge control token never leave the device they authorize. The run log is excluded
-   too: the privacy policy promises it stays on this phone.
+   too: the privacy policy promises it stays on this phone, and so is the RSS feed cache
+   (rss_feed_state.xml), which only remembers which items a feed held at its last check.
 -->
 <full-backup-content>
     <exclude domain="sharedpref" path="arda_mapper_adb_crypto.xml" />
     <exclude domain="sharedpref" path="arda_mapper_adb_prefs.xml" />
     <exclude domain="sharedpref" path="arda_mapper_bridge_prefs.xml" />
     <exclude domain="sharedpref" path="keysnap_run_log.xml" />
+    <exclude domain="sharedpref" path="rss_feed_state.xml" />
     <exclude domain="external" path="bridge" />
 </full-backup-content>

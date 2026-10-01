@@ -1,5 +1,6 @@
 package com.example.data
 
+import io.github.nicholasarda.keysnap.R
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -21,8 +22,23 @@ class ConstraintEditorFormTest {
         "connected_to_wifi_network", "disconnected_from_wifi_network",
         "bluetooth_device_connected", "bluetooth_device_disconnected",
         "battery_above", "battery_below", "time", "day_of_week", "cooldown",
-        "notification_received",
+        "notification_received", "rss_new_item", "calendar_event_active",
     )
+
+    @Test fun aCalendarConditionNeedsNothingAndSummarisesItsFilters() {
+        assertTrue(ConstraintEditorForms.isComplete("calendar_event_active", emptyMap()))
+        assertEquals(res.getString(R.string.constraint_summary_any_event), ConstraintEditorForms.summarize(ScriptConstraint("calendar_event_active"), res))
+        assertEquals("Work · Standup", ConstraintEditorForms.summarize(ScriptConstraint("calendar_event_active", mapOf("calendar" to "Work", "title" to "Standup")), res))
+    }
+
+    @Test fun anRssFeedNeedsAnHttpsAddressAndIsNeverRewritten() {
+        assertFalse(ConstraintEditorForms.isComplete("rss_new_item", emptyMap()))
+        assertFalse(ConstraintEditorForms.isComplete("rss_new_item", mapOf("url" to "http://example.com/feed")))
+        assertFalse(ConstraintEditorForms.isComplete("rss_new_item", mapOf("url" to "example.com/feed")))
+        assertTrue(ConstraintEditorForms.isComplete("rss_new_item", mapOf("url" to "https://example.com/feed?token=a")))
+        val typed = "HTTPS://Example.com/Feed?x=1"
+        assertEquals(typed, ConstraintEditorForms.summarize(ScriptConstraint("rss_new_item", mapOf("url" to typed)), res))
+    }
 
     @Test fun everyFormTypeExistsInTheCatalogAndIsAvailable() {
         formTypes.forEach { type ->

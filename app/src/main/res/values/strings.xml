@@ -255,11 +255,13 @@
     <string name="constraint_location_on">Location is on</string>
     <string name="constraint_location_off">Location is off</string>
     <string name="constraint_day_of_week">Day of the week</string>
+    <string name="constraint_calendar_event_active">Calendar event in progress</string>
     <string name="constraint_cooldown">At most once every N minutes</string>
     <string name="constraint_mobile_data_on">Mobile data is on</string>
     <string name="constraint_mobile_data_off">Mobile data is off</string>
     <string name="constraint_airplane_mode_on">Airplane mode is on</string>
     <string name="constraint_airplane_mode_off">Airplane mode is off</string>
+    <string name="constraint_rss_new_item">New item in an RSS feed</string>
     <string name="constraint_ringer_normal">Ringer is on</string>
     <string name="constraint_ringer_vibrate">Ringer is on vibrate</string>
     <string name="constraint_ringer_silent">Ringer is silent</string>
@@ -273,8 +275,21 @@
     <string name="badge_accessibility">Requires the Accessibility service</string>
     <string name="badge_notification_policy">Requires Do Not Disturb access</string>
     <string name="badge_notification_access">Requires notification access</string>
-    <string name="hint_reply_chat">Part of the chat name. Empty: the newest chat</string>
-    <string name="summary_reply_newest_chat">newest chat</string>
+    <string name="hint_reply_chat">The chat name, exactly as the notification shows it</string>
+    <string name="summary_reply_trigger_chat">the chat that triggered it</string>
+    <string name="helper_reply_chat_trigger">Empty: replies to the chat whose notification triggered this shortcut.</string>
+    <string name="helper_reply_chat_required">Required: only a “Notification received” condition can choose the chat for you.</string>
+    <string name="action_send_message">Send a message</string>
+    <string name="param_to">To</string>
+    <string name="param_message">Message</string>
+    <string name="field_send_with">Send with</string>
+    <string name="helper_send_message">Opens the chat with your message typed; you tap Send.</string>
+    <string name="action_config_pick_contact">Pick from contacts</string>
+    <string name="action_config_type_number">Or type a number</string>
+    <string name="helper_message_number">Empty: you choose the person in the app.</string>
+    <string name="message_number_needs_country_code">Add the country code to the number (it starts with +).</string>
+    <string name="message_number_not_used">This app picks the person itself; the number is not used.</string>
+    <string name="action_config_what_will_run">What will run: %1$s</string>
     <string name="helper_reply_to_notification">Sends your text through the notification\'s own Reply button, without opening the app. Works only while that chat has a notification showing, and cannot start a new chat. KeySnap reads notifications on your phone only to find it; nothing is saved or sent anywhere else. Add “At most once every N minutes” so a busy chat is not answered again and again.</string>
     <string name="badge_write_settings">Requires permission to modify system settings</string>
 
@@ -467,10 +482,19 @@
     <string name="field_time_end">Until</string>
     <string name="field_days">Days</string>
     <string name="constraint_needs_usage_access">Needs Usage access so the app can see which app is in front.</string>
-    <string name="constraint_needs_notification_access">Needs notification access. KeySnap checks each new notification from the app you chose against this condition, on your phone, and keeps only the time it matched. Nothing is saved, logged or sent.</string>
+    <string name="constraint_needs_notification_access">Needs notification access. KeySnap checks each new notification from the app you chose against this condition, on your phone. It keeps only when one matched and which notification it was, so a reply can find that chat. No notification content is saved, logged or sent.</string>
     <string name="field_notification_contains">Title or text contains</string>
     <string name="hint_notification_contains_any">Empty: any notification from this app</string>
     <string name="helper_notification_received">Runs when a new notification from this app arrives. Several within 10 seconds count as one. Automations only.</string>
+    <string name="field_feed_url">Feed address</string>
+    <string name="helper_rss_new_item">Checked at most every 15 minutes while online. Runs once for each check that finds new items; items already in the feed when you save do not count. The address must start with https:// and is used exactly as you typed it. Automations only.</string>
+    <string name="field_calendar_name">Calendar name contains</string>
+    <string name="hint_calendar_any">Leave empty for any calendar</string>
+    <string name="field_event_title">Event title contains</string>
+    <string name="hint_event_any">Leave empty for any event</string>
+    <string name="constraint_summary_any_event">Any event</string>
+    <string name="helper_calendar_event_active">Runs when a matching event starts. While the phone is idle it can run later than that, so a short event can be missed. All-day and cancelled events are ignored, and back-to-back events count as one. Automations only.</string>
+    <string name="constraint_needs_calendar">Needs permission to read your calendar. Events are checked against this condition on this phone and are never saved, logged or sent.</string>
     <string name="field_cooldown_minutes">Minutes between runs</string>
     <string name="helper_cooldown">Skipped if this shortcut ran less than this many minutes ago. The timer starts over if the phone or KeySnap restarts.</string>
     <string name="constraint_summary_cooldown">At most every %1$d min</string>
@@ -794,7 +818,7 @@
     <string name="about_traffic_device">Your own phone</string>
     <string name="about_traffic_device_body">Wireless Debugging pairing. Local network only.</string>
     <string name="about_traffic_yours">Addresses you typed yourself</string>
-    <string name="about_traffic_yours_body">An HTTP or Open URL action goes exactly where you wrote it, unchanged.</string>
+    <string name="about_traffic_yours_body">An HTTP or Open URL action, or an RSS feed an automation follows, goes exactly where you wrote it, unchanged.</string>
     <string name="about_traffic_google">Google ads and Google Play</string>
     <string name="about_traffic_google_body">To show the ad in the free version and to check whether you bought Pro. Neither ever receives a key press or a shortcut.</string>
     <string name="about_traffic_all">That is the whole list.</string>
@@ -870,7 +894,7 @@
     <string name="run_failure_notifications_off">Notifications are turned off</string>
     <string name="editor_needs_action">Add at least one action before saving.</string>
     <string name="editor_needs_trigger">Choose a key before saving.</string>
-    <string name="editor_notification_needs_automation">Notification received works only in an automation. Remove that condition or switch to Automation.</string>
+    <string name="editor_condition_needs_automation">%1$s works only in an automation. Remove that condition or switch to Automation.</string>
     <string name="saved_needs_trigger">Saved. Assign a key so it can run.</string>
     <string name="saved_named">Saved \"%1$s\"</string>
     <string name="saved_needs_condition">Saved. Add a condition that changes on its own, like Charging or Bluetooth device connected, so it can run.</string>
@@ -924,7 +948,6 @@
     <!-- OEM key tip -->
     <string name="oem_key_tip">Tip: set this button to “None” in your phone\'s settings, so only KeySnap reacts to it.</string>
     <!-- Recipe gallery -->
-    <string name="recipe_category_ifttt">Coming from IFTTT?</string>
     <string name="recipe_category_webhook">Webhooks</string>
     <string name="recipe_wifi_vibrate">At Work</string>
     <string name="recipe_wifi_vibrate_subtitle">Work Wi-Fi, ringer to vibrate</string>
@@ -932,19 +955,20 @@
     <string name="recipe_wifi_ring_subtitle">Off that Wi-Fi, ringer back on</string>
     <string name="recipe_morning_dnd_off">Morning Unplug</string>
     <string name="recipe_morning_dnd_off_subtitle">Off charger after 06:00, DND off</string>
-    <string name="recipe_ifttt_webhook">IFTTT Applet</string>
-    <string name="recipe_ifttt_webhook_subtitle">A key calls your Webhooks URL</string>
-    <string name="recipe_home_assistant" translatable="false">Home Assistant</string>
-    <string name="recipe_home_assistant_subtitle">Paste an automation\'s webhook URL</string>
-    <string name="recipe_discord" translatable="false">Discord</string>
-    <string name="recipe_discord_subtitle">Paste a channel webhook URL</string>
-    <string name="recipe_ntfy" translatable="false">ntfy</string>
-    <string name="recipe_ntfy_subtitle">Paste your topic URL</string>
-    <string name="recipe_apps_script" translatable="false">Google Apps Script</string>
-    <string name="recipe_apps_script_subtitle">Paste your web app URL</string>
-    <string name="recipe_whatsapp">Send a WhatsApp Message</string>
-    <string name="recipe_whatsapp_subtitle">Opens a chat with your text, taps Send</string>
-    <string name="recipe_whatsapp_note">In the first step, type https://wa.me/&lt;number&gt;?text=&lt;message&gt; with the number in international format, digits only. Then place the tap on WhatsApp\'s Send button. The screen must be on and unlocked, WhatsApp appears for a moment, and the Send tap may need adjusting on your phone.</string>
+    <string name="recipe_smart_home_subtitle">Paste an automation\'s webhook URL</string>
+    <string name="recipe_chat_channel_subtitle">Paste a channel webhook URL</string>
+    <string name="recipe_phone_notification_subtitle">Paste your topic URL</string>
+    <string name="recipe_spreadsheet_subtitle">Paste your web app URL</string>
+    <string name="recipe_category_routines">Everyday routines</string>
+    <string name="recipe_web_address">Call a Web Address</string>
+    <string name="recipe_web_address_subtitle">A key calls a URL you paste</string>
+    <string name="recipe_smart_home">Smart-Home Request</string>
+    <string name="recipe_chat_channel">Post to a Chat Channel</string>
+    <string name="recipe_phone_notification">Send a Notification to My Phone</string>
+    <string name="recipe_spreadsheet">Add a Row to a Spreadsheet</string>
+    <string name="recipe_send_message">Send a Message</string>
+    <string name="recipe_send_message_subtitle">Opens a chat with your text typed in</string>
+    <string name="recipe_send_message_note">Pick a contact, the app to send with, and your message. The chat opens with the message typed in; you tap Send.</string>
     <string name="home_recipes_all">All</string>
     <!-- Share and import -->
     <string name="import_error_invalid">This isn\'t a valid KeySnap shortcut.</string>

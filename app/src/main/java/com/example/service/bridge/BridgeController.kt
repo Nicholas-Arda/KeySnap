@@ -270,11 +270,7 @@ object BridgeController {
         val payload = JSONObject().put(
             "actions",
             JSONArray().apply {
-                actions.forEach { action ->
-                    val params = JSONObject()
-                    action.params.forEach { (key, value) -> params.put(key, value) }
-                    put(JSONObject().put("type", action.type).put("params", params))
-                }
+                actions.forEach { action -> put(action.toBridgeJson()) }
             },
         )
         return client()?.requestRun(payload.toString())

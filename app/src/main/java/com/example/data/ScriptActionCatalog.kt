@@ -113,6 +113,18 @@ object ScriptActionCatalog {
                 param("text", R.string.param_text, ActionParameterKind.TEXT),
             ),
         ),
+        // Opens a chat in the picked app with the text typed in; the user taps Send. Nothing is sent
+        // for them, so no SMS permission. "contactName" is only for display; an empty "number"
+        // leaves the recipient to be chosen inside the app. App-only (see UNSUPPORTED_BY_BRIDGE).
+        ActionDescriptor(
+            "send_message", R.string.action_send_message, ActionCategory.APPS, ActionAvailability.AVAILABLE,
+            listOf(
+                param("contactName", R.string.param_to, ActionParameterKind.TEXT, required = false),
+                param("number", R.string.param_to, ActionParameterKind.TEXT, required = false),
+                param("packageName", R.string.param_app, ActionParameterKind.PACKAGE),
+                param("text", R.string.param_message, ActionParameterKind.TEXT),
+            ),
+        ),
         ActionDescriptor("interact_with_app_element", R.string.action_interact_with_app_element, ActionCategory.APPS, parameters = listOf(param("packageName", R.string.param_app, ActionParameterKind.PACKAGE), param("element", R.string.param_element, ActionParameterKind.TEXT))),
         ActionDescriptor("launch_voice_assistant", R.string.action_launch_voice_assistant, ActionCategory.APPS, ActionAvailability.AVAILABLE),
         ActionDescriptor("launch_device_assistant", R.string.action_launch_device_assistant, ActionCategory.APPS, ActionAvailability.AVAILABLE),
@@ -271,6 +283,8 @@ object ScriptActionCatalog {
         // Needs the bound notification listener and the chat app's PendingIntent, neither of which
         // the shell-UID process has.
         "reply_to_notification",
+        // Needs the app's PackageManager to pick how to open the chat (see BridgeMain).
+        "send_message",
         // The picked image's content:// read grant belongs to the app UID; the shell UID cannot open it.
         "set_wallpaper",
         // Bridge-capable, but its shell equivalent is weaker than the app's Accessibility path.
@@ -292,7 +306,9 @@ object ScriptActionCatalog {
      * show_notification is here for its tap target, a user-typed URL that opens like open_url.
      * reply_to_notification is here because it sends user-typed text into the user's own chats, as
      * them: an imported one must arrive off with its text shown, never answer anyone on arrival.
-     * App-only: the bridge has no use for it, so nothing mirrors it.
+     * send_message likewise puts user-typed text into the user's own messaging app; an imported
+     * automation could follow it with taps on Send, so it too arrives off.
+     * App-only: the bridge has no use for these two, so nothing mirrors them.
      */
     val PRIVILEGED: Set<String> = setOf(
         "shell_command",
@@ -303,6 +319,7 @@ object ScriptActionCatalog {
         "open_url",
         "show_notification",
         "reply_to_notification",
+        "send_message",
     )
 
     /**

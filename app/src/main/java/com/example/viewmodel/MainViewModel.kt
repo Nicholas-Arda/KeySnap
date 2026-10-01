@@ -41,6 +41,7 @@ import com.example.data.SuggestedShortcut
 import com.example.data.TriggerPressType
 import com.example.data.getReadableKeyName
 import com.example.data.isSurfaceOnly
+import com.example.service.CalendarCondition
 import com.example.service.FlashlightController
 import com.example.service.HardwareKeyTriggerCoordinator
 import com.example.service.KeyMapperAccessibilityService
@@ -494,14 +495,17 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
             _editorMessage.value = res.getString(R.string.editor_needs_trigger)
             return
         }
-        // The bridge never sees notifications, so a key shortcut gated on one would behave
-        // differently in Advanced Mode. The picker hides it there; a draft switched from
-        // Automation to a key with it still attached is stopped here.
-        if (!draft.automation && draft.constraints.any { it.type in ScriptConstraintCatalog.AUTOMATION_ONLY }) {
-            _editorMessage.value = res.getString(R.string.editor_notification_needs_automation)
+        // The bridge never sees notifications, feeds or the calendar, so a key shortcut gated on one would behave
+        // differently in Advanced Mode. The picker hides them there; a draft switched from
+        // Automation to a key with one still attached is stopped here.
+        val automationOnly = draft.constraints.firstOrNull { it.type in ScriptConstraintCatalog.AUTOMATION_ONLY }
+        if (!draft.automation && automationOnly != null) {
+            val title = ScriptConstraintCatalog.descriptor(automationOnly.type)?.titleRes?.let(res::getString).orEmpty()
+            _editorMessage.value = res.getString(R.string.editor_condition_needs_automation, title)
             return
         }
-        val unconfigured = draft.actions.count { ActionEditorForms.missingRequired(it).isNotEmpty() }
+        val fromNotification = ScriptConstraintCatalog.startsFromNotification(draft.automation, draft.constraints)
+        val unconfigured = draft.actions.count { ActionEditorForms.missingRequired(it, fromNotification).isNotEmpty() }
         val overLimit = draft.enabled && !entitlementManager.isPro.value &&
             scriptRepository.scripts.value.count { it.enabled && it.id != draft.id } >= entitlementManager.activeScriptLimit
         val name = draft.name.ifBlank { nextUnnamedShortcutName() }
@@ -744,6 +748,9 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
         val runningFromService = KeyMapperAccessibilityService.isServiceActive.value
         val enabledInSettings = isAccessibilityServiceEnabled(appContext, KeyMapperAccessibilityService::class.java)
         _isServiceActive.value = runningFromService || enabledInSettings
+        // The calendar permission may have been granted (or revoked) after a calendar condition was
+        // saved; nothing else would arm or cancel its alarm until the next edit.
+        CalendarCondition.sync(appContext, scriptRepository.scripts.value)
     }
 
     private fun addKeyEvent(event: LiveKeyEvent) {

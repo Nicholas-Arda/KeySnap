@@ -249,11 +249,13 @@
     <string name="constraint_location_on">الموقع مفعّل</string>
     <string name="constraint_location_off">الموقع معطّل</string>
     <string name="constraint_day_of_week">يوم الأسبوع</string>
+    <string name="constraint_calendar_event_active">حدث في التقويم جارٍ الآن</string>
     <string name="constraint_cooldown">مرة واحدة كل N دقيقة على الأكثر</string>
     <string name="constraint_mobile_data_on">بيانات الجوال مفعّلة</string>
     <string name="constraint_mobile_data_off">بيانات الجوال معطّلة</string>
     <string name="constraint_airplane_mode_on">وضع الطيران مفعّل</string>
     <string name="constraint_airplane_mode_off">وضع الطيران معطّل</string>
+    <string name="constraint_rss_new_item">عنصر جديد في موجز RSS</string>
     <string name="constraint_ringer_normal">الرنين مفعّل</string>
     <string name="constraint_ringer_vibrate">الرنين على الاهتزاز</string>
     <string name="constraint_ringer_silent">الرنين صامت</string>
@@ -267,8 +269,21 @@
     <string name="badge_accessibility">يتطلب خدمة إمكانية الوصول</string>
     <string name="badge_notification_policy">يتطلب إذن الوصول إلى عدم الإزعاج</string>
     <string name="badge_notification_access">يتطلب إذن الوصول إلى الإشعارات</string>
-    <string name="hint_reply_chat">جزء من اسم الدردشة. فارغ: أحدث دردشة</string>
-    <string name="summary_reply_newest_chat">أحدث دردشة</string>
+    <string name="hint_reply_chat">اسم الدردشة كما يظهر في الإشعار تمامًا</string>
+    <string name="summary_reply_trigger_chat">الدردشة التي شغّلته</string>
+    <string name="helper_reply_chat_trigger">فارغ: يرد على الدردشة التي شغّل إشعارها هذا الاختصار.</string>
+    <string name="helper_reply_chat_required">مطلوب: وحده شرط «وصل إشعار» يمكنه اختيار الدردشة نيابةً عنك.</string>
+    <string name="action_send_message">إرسال رسالة</string>
+    <string name="param_to">إلى</string>
+    <string name="param_message">الرسالة</string>
+    <string name="field_send_with">الإرسال عبر</string>
+    <string name="helper_send_message">يفتح الدردشة ورسالتك مكتوبة فيها؛ وأنت تنقر على إرسال.</string>
+    <string name="action_config_pick_contact">الاختيار من جهات الاتصال</string>
+    <string name="action_config_type_number">أو اكتب رقمًا</string>
+    <string name="helper_message_number">فارغ: تختار الشخص داخل التطبيق.</string>
+    <string name="message_number_needs_country_code">أضف رمز الدولة إلى الرقم (يبدأ بـ +).</string>
+    <string name="message_number_not_used">يتيح لك هذا التطبيق اختيار الشخص بنفسه؛ لا يُستخدم الرقم.</string>
+    <string name="action_config_what_will_run">ما سيُنفَّذ: %1$s</string>
     <string name="helper_reply_to_notification">يرسل نصك عبر زر «رد» الخاص بالإشعار نفسه، دون فتح التطبيق. يعمل فقط أثناء ظهور إشعار لتلك الدردشة، ولا يمكنه بدء دردشة جديدة. يقرأ KeySnap الإشعارات على هاتفك فقط للعثور عليها؛ لا يُحفظ أي شيء ولا يُرسل إلى أي مكان آخر. أضف «مرة واحدة كل N دقيقة على الأكثر» حتى لا يتم الرد على دردشة نشطة مرارًا وتكرارًا.</string>
     <string name="badge_write_settings">يتطلب إذنًا لتعديل إعدادات النظام</string>
 
@@ -443,10 +458,19 @@
     <string name="field_time_end">إلى</string>
     <string name="field_days">الأيام</string>
     <string name="constraint_needs_usage_access">يحتاج إلى إذن الوصول إلى بيانات الاستخدام ليتمكن التطبيق من معرفة التطبيق الظاهر في المقدمة.</string>
-    <string name="constraint_needs_notification_access">يحتاج إلى إذن الوصول إلى الإشعارات. يقارن KeySnap كل إشعار جديد من التطبيق الذي اخترته بهذا الشرط على هاتفك، ولا يحتفظ إلا بوقت التطابق. لا يُحفظ أي شيء ولا يُسجَّل ولا يُرسَل.</string>
+    <string name="constraint_needs_notification_access">يحتاج إلى إذن الوصول إلى الإشعارات. يقارن KeySnap كل إشعار جديد من التطبيق الذي اخترته بهذا الشرط على هاتفك. ولا يحتفظ إلا بوقت التطابق وبأي إشعار كان، كي يجد الرد تلك الدردشة. لا يُحفظ محتوى أي إشعار ولا يُسجَّل ولا يُرسَل.</string>
     <string name="field_notification_contains">العنوان أو النص يحتوي على</string>
     <string name="hint_notification_contains_any">فارغ: أي إشعار من هذا التطبيق</string>
     <string name="helper_notification_received">يعمل عند وصول إشعار جديد من هذا التطبيق. تُحتسب عدة إشعارات خلال 10 ثوانٍ مرة واحدة. للأتمتة فقط.</string>
+    <string name="field_feed_url">عنوان الموجز</string>
+    <string name="helper_rss_new_item">يُفحص مرة كل 15 دقيقة على الأكثر أثناء الاتصال بالإنترنت. يعمل مرة واحدة لكل فحص يجد عناصر جديدة، ولا تُحتسب العناصر الموجودة في الموجز عند الحفظ. يجب أن يبدأ العنوان بـ https:// ويُستخدم تماماً كما كتبته. للأتمتة فقط.</string>
+    <string name="field_calendar_name">اسم التقويم يحتوي على</string>
+    <string name="hint_calendar_any">اتركه فارغًا لأي تقويم</string>
+    <string name="field_event_title">عنوان الحدث يحتوي على</string>
+    <string name="hint_event_any">اتركه فارغًا لأي حدث</string>
+    <string name="constraint_summary_any_event">أي حدث</string>
+    <string name="helper_calendar_event_active">يعمل عند بدء حدث مطابق. أثناء خمول الهاتف قد يعمل في وقت لاحق، لذا قد يفوته حدث قصير. تُتجاهل أحداث اليوم الكامل والأحداث الملغاة، وتُحتسب الأحداث المتتالية حدثًا واحدًا. للأتمتة فقط.</string>
+    <string name="constraint_needs_calendar">يحتاج إلى إذن قراءة تقويمك. تُطابَق الأحداث مع هذا الشرط على هذا الهاتف، ولا تُحفظ أو تُسجَّل أو تُرسَل أبدًا.</string>
     <string name="field_cooldown_minutes">الدقائق بين مرات التشغيل</string>
     <string name="helper_cooldown">يتم تخطيه إذا عمل هذا الاختصار قبل أقل من هذا العدد من الدقائق. يبدأ العد من جديد إذا أُعيد تشغيل الهاتف أو KeySnap.</string>
     <string name="constraint_summary_cooldown">مرة كل %1$d دقيقة على الأكثر</string>
@@ -751,7 +775,7 @@
     <string name="about_traffic_device">هاتفك أنت</string>
     <string name="about_traffic_device_body">إقران تصحيح الأخطاء اللاسلكي. الشبكة المحلية فقط.</string>
     <string name="about_traffic_yours">العناوين التي كتبتها بنفسك</string>
-    <string name="about_traffic_yours_body">أي إجراء HTTP أو فتح رابط يذهب تماماً إلى حيث كتبته، دون تغيير.</string>
+    <string name="about_traffic_yours_body">أي إجراء HTTP أو فتح رابط، أو موجز RSS تتابعه أتمتة، يذهب تماماً إلى حيث كتبته، دون تغيير.</string>
     <string name="about_traffic_google">إعلانات Google و Google Play</string>
     <string name="about_traffic_google_body">لعرض الإعلان في النسخة المجانية وللتحقق مما إذا كنت قد اشتريت Pro. ولا يتلقى أي منهما ضغطة مفتاح أو اختصاراً على الإطلاق.</string>
     <string name="about_traffic_all">هذه هي القائمة كاملة.</string>
@@ -823,7 +847,7 @@
     <string name="run_failure_notifications_off">الإشعارات متوقفة</string>
     <string name="editor_needs_action">أضف إجراءً واحدًا على الأقل قبل الحفظ.</string>
     <string name="editor_needs_trigger">اختر مفتاحًا قبل الحفظ.</string>
-    <string name="editor_notification_needs_automation">شرط «وصل إشعار» يعمل في الأتمتة فقط. أزل هذا الشرط أو انتقل إلى «أتمتة».</string>
+    <string name="editor_condition_needs_automation">شرط «%1$s» يعمل في الأتمتة فقط. أزل هذا الشرط أو انتقل إلى «أتمتة».</string>
     <string name="saved_needs_trigger">تم الحفظ. عيّن مفتاحًا ليتمكن من العمل.</string>
     <string name="saved_named">تم حفظ «%1$s»</string>
     <string name="saved_needs_condition">تم الحفظ. أضف شرطًا يتغير من تلقاء نفسه، مثل «قيد الشحن» أو «جهاز بلوتوث متصل»، ليتمكن من العمل.</string>
@@ -873,7 +897,6 @@
     <!-- OEM key tip -->
     <string name="oem_key_tip">نصيحة: اضبط هذا الزر على “بلا” في إعدادات هاتفك، ليستجيب له KeySnap وحده.</string>
     <!-- Recipe gallery -->
-    <string name="recipe_category_ifttt">قادم من IFTTT؟</string>
     <string name="recipe_category_webhook">Webhooks</string>
     <string name="recipe_wifi_vibrate">في العمل</string>
     <string name="recipe_wifi_vibrate_subtitle">شبكة Wi-Fi العمل: الرنين إلى اهتزاز</string>
@@ -881,15 +904,20 @@
     <string name="recipe_wifi_ring_subtitle">خارج تلك الشبكة: يعود الرنين</string>
     <string name="recipe_morning_dnd_off">فصل الشاحن صباحًا</string>
     <string name="recipe_morning_dnd_off_subtitle">بعد 06:00 دون شاحن: إيقاف عدم الإزعاج</string>
-    <string name="recipe_ifttt_webhook">تطبيق IFTTT مصغّر</string>
-    <string name="recipe_ifttt_webhook_subtitle">مفتاح يستدعي عنوان Webhooks الخاص بك</string>
-    <string name="recipe_home_assistant_subtitle">الصق عنوان webhook لأتمتة</string>
-    <string name="recipe_discord_subtitle">الصق عنوان webhook لقناة</string>
-    <string name="recipe_ntfy_subtitle">الصق عنوان الموضوع الخاص بك</string>
-    <string name="recipe_apps_script_subtitle">الصق عنوان تطبيق الويب الخاص بك</string>
-    <string name="recipe_whatsapp">إرسال رسالة WhatsApp</string>
-    <string name="recipe_whatsapp_subtitle">يفتح محادثة بنصك وينقر على إرسال</string>
-    <string name="recipe_whatsapp_note">في الخطوة الأولى اكتب https://wa.me/&lt;الرقم&gt;?text=&lt;الرسالة&gt; مع الرقم بالصيغة الدولية وبالأرقام فقط. ثم ضع النقرة على زر الإرسال في WhatsApp. يجب أن تكون الشاشة مشغّلة وغير مقفلة، ويظهر WhatsApp للحظة، وقد تحتاج نقرة الإرسال إلى تعديل على هاتفك.</string>
+    <string name="recipe_smart_home_subtitle">الصق عنوان webhook لأتمتة</string>
+    <string name="recipe_chat_channel_subtitle">الصق عنوان webhook لقناة</string>
+    <string name="recipe_phone_notification_subtitle">الصق عنوان الموضوع الخاص بك</string>
+    <string name="recipe_spreadsheet_subtitle">الصق عنوان تطبيق الويب الخاص بك</string>
+    <string name="recipe_category_routines">روتين يومي</string>
+    <string name="recipe_web_address">استدعاء عنوان ويب</string>
+    <string name="recipe_web_address_subtitle">مفتاح يستدعي عنوان URL تلصقه</string>
+    <string name="recipe_smart_home">طلب للمنزل الذكي</string>
+    <string name="recipe_chat_channel">النشر في قناة دردشة</string>
+    <string name="recipe_phone_notification">إرسال إشعار إلى هاتفي</string>
+    <string name="recipe_spreadsheet">إضافة صف إلى جدول بيانات</string>
+    <string name="recipe_send_message">إرسال رسالة</string>
+    <string name="recipe_send_message_subtitle">يفتح محادثة ونصك مكتوب فيها</string>
+    <string name="recipe_send_message_note">اختر جهة اتصال والتطبيق الذي ترسل به ورسالتك. تُفتح الدردشة والرسالة مكتوبة فيها؛ وأنت تنقر على إرسال.</string>
     <string name="home_recipes_all">الكل</string>
     <!-- Share and import -->
     <string name="import_error_invalid">هذا ليس اختصار KeySnap صالحًا.</string>

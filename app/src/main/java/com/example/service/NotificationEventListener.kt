@@ -20,7 +20,8 @@ import com.example.data.ScriptRepository
 /**
  * Notification access, used only by the "Notification received" condition and the "Reply to
  * notification" action. A notification's text is read only for an app some condition names,
- * matched in memory and dropped; [NotificationMatches] keeps the time of a match and nothing else.
+ * matched in memory and dropped; [NotificationMatches] keeps the time and system key of a match,
+ * nothing of its content.
  * Nothing here may log a title, text, sender, chat or reply.
  */
 class NotificationEventListener : NotificationListenerService() {
@@ -37,7 +38,7 @@ class NotificationEventListener : NotificationListenerService() {
         val notification = sbn.notification ?: return
         // Ongoing (media, progress) and group summaries re-post constantly and carry no message.
         if (sbn.isOngoing || notification.flags and Notification.FLAG_GROUP_SUMMARY != 0) return
-        onPosted(this, sbn.packageName) {
+        onPosted(this, sbn.packageName, sbn.key) {
             val extras = notification.extras
             listOfNotNull(
                 extras.getCharSequence(Notification.EXTRA_TITLE),
@@ -56,7 +57,9 @@ class NotificationEventListener : NotificationListenerService() {
         /**
          * Sends `text` through a chat notification's own Reply button, like replying from the
          * shade. False when access is off, no notification from `packageName` has a Reply
-         * button, or `chat` matches none. Never logs the text, the chat or the app.
+         * button, or no chat is chosen: a named chat must match exactly, and an empty one means
+         * only the notification that started this run ([TRIGGER_NOTIFICATION_PARAM]). Never logs
+         * the text, the chat or the app.
          */
         fun reply(context: Context, params: Map<String, String>): Boolean {
             val listener = instance ?: return false
@@ -71,13 +74,13 @@ class NotificationEventListener : NotificationListenerService() {
             val candidates = active.filter { it.packageName == packageName }.mapNotNull { sbn ->
                 val action = replyActionOf(sbn.notification) ?: return@mapNotNull null
                 val extras = sbn.notification.extras
-                val title = listOfNotNull(
+                val titles = listOfNotNull(
                     extras.getCharSequence(Notification.EXTRA_TITLE),
                     extras.getCharSequence(Notification.EXTRA_CONVERSATION_TITLE),
-                ).joinToString(" ")
-                ReplyCandidate(title, sbn.postTime, action)
+                ).map { it.toString() }
+                ReplyCandidate(sbn.key, titles, sbn.postTime, action)
             }
-            val target = pickReplyTarget(candidates, params["chat"]) ?: return false
+            val target = pickReplyTarget(candidates, params["chat"], params[TRIGGER_NOTIFICATION_PARAM]) ?: return false
             return send(context, target.action, text)
         }
 
@@ -120,14 +123,14 @@ class NotificationEventListener : NotificationListenerService() {
         }
 
         /** Split from the callback so the edge behaviour is testable without a StatusBarNotification. */
-        internal fun onPosted(context: Context, packageName: String, readContent: () -> String) {
+        internal fun onPosted(context: Context, packageName: String, key: String, readContent: () -> String) {
             // KeySnap's own notifications (show_notification, run-failure alerts) never count, or a
             // shortcut that shows one could trigger itself.
             if (packageName == context.packageName) return
             val conditions = ScriptRepository.getInstance(context).scripts.value
                 .flatMap { it.constraints }
                 .filter { it.type == ScriptConstraintCatalog.NOTIFICATION_RECEIVED }
-            if (NotificationMatches.record(conditions, packageName, SystemClock.elapsedRealtime(), readContent)) {
+            if (NotificationMatches.record(conditions, packageName, key, SystemClock.elapsedRealtime(), readContent)) {
                 HardwareKeyTriggerCoordinator.reevaluateAutomations()
                 // Nothing announces the window closing; without this re-check the condition would
                 // still read true at the next match, and that match would not be an edge.

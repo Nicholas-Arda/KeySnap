@@ -57,6 +57,8 @@ import androidx.compose.ui.unit.dp
 import com.example.data.ConstraintEditorForms
 import com.example.data.EntitlementManager
 import com.example.data.ScriptActionCatalog
+import com.example.data.ScriptConstraintCatalog
+import com.example.data.ShortcutShare
 import com.example.data.latestFailedScriptIds
 import com.example.ui.components.AppBottomBar
 import com.example.ui.components.AdvancedActivationBanner
@@ -440,6 +442,7 @@ fun MainScreen(viewModel: MainViewModel) {
                     actionType = type,
                     initialParams = index?.let { draft.actions.getOrNull(it)?.params }.orEmpty(),
                     isEdit = index != null,
+                    startsFromNotification = ScriptConstraintCatalog.startsFromNotification(draft.automation, draft.constraints),
                     isRecordingKey = isRecordingKey,
                     installedApps = installedApps,
                     canDrawOverlays = canDrawOverlays,
@@ -532,7 +535,7 @@ fun MainScreen(viewModel: MainViewModel) {
                     title = stringResource(R.string.share_review_title),
                     name = draft.name,
                     automation = draft.automation,
-                    actions = draft.actions,
+                    actions = draft.actions.map(ShortcutShare::portable),
                     note = stringResource(R.string.share_review_note),
                     confirmLabel = stringResource(R.string.share_action),
                     onConfirm = {

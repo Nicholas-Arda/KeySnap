@@ -22,6 +22,7 @@ import androidx.compose.material.icons.outlined.MusicNote
 import androidx.compose.material.icons.outlined.MusicOff
 import androidx.compose.material.icons.outlined.PhoneAndroid
 import androidx.compose.material.icons.outlined.PhoneCallback
+import androidx.compose.material.icons.outlined.RssFeed
 import androidx.compose.material.icons.outlined.ScreenRotation
 import androidx.compose.material.icons.outlined.StayCurrentPortrait
 import androidx.compose.material.icons.outlined.TabletMac
@@ -40,6 +41,7 @@ import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material.icons.outlined.DoNotDisturbOff
 import androidx.compose.material.icons.outlined.DoNotDisturbOn
+import androidx.compose.material.icons.outlined.Event
 import androidx.compose.material.icons.outlined.Headset
 import androidx.compose.material.icons.outlined.HeadsetOff
 import androidx.compose.material.icons.outlined.LightMode
@@ -91,6 +93,7 @@ private val perConstraintIcons: Map<String, ImageVector> = mapOf(
     "mobile_data_off" to Icons.Outlined.SignalCellularOff,
     "airplane_mode_on" to Icons.Outlined.AirplanemodeActive,
     "airplane_mode_off" to Icons.Outlined.AirplanemodeInactive,
+    "rss_new_item" to Icons.Outlined.RssFeed,
     // Keyboard
     "input_method_chosen" to Icons.Outlined.Keyboard,
     "input_method_not_chosen" to Icons.Outlined.KeyboardHide,
@@ -130,6 +133,7 @@ private val perConstraintIcons: Map<String, ImageVector> = mapOf(
     // Time
     "time" to Icons.Outlined.Timer,
     "day_of_week" to Icons.Outlined.DateRange,
+    "calendar_event_active" to Icons.Outlined.Event,
     "cooldown" to Icons.Outlined.HourglassEmpty,
 )
 

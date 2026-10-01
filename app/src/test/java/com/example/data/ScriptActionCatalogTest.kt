@@ -118,6 +118,7 @@ class ScriptActionCatalogTest {
                 "change_ringer_mode",
                 "show_notification",
                 "set_wallpaper",
+                "send_message",
             ),
             available.toSet(),
         )
@@ -197,6 +198,7 @@ class ScriptActionCatalogTest {
                 "pause_mapping",
                 "resume_mapping",
                 "set_wallpaper",
+                "send_message",
                 "input_text",
                 "lock_device",
                 "take_screenshot",
@@ -229,13 +231,13 @@ class ScriptActionCatalogTest {
     /**
      * CLAUDE.md "Privileged actions must stay legible": the import review and recipe tests key off
      * this set. show_notification is in it because its tap target is a user-typed URL, like open_url;
-     * reply_to_notification because it sends user-typed text to a real person's chat.
+     * reply_to_notification and send_message because they put user-typed text into a real person's chat.
      */
     @Test fun privilegedActionsAreAvailableCatalogEntries() {
         assertEquals(
             setOf(
                 "shell_command", "modify_setting", "force_stop_app", "send_intent", "http_request", "open_url", "show_notification",
-                "reply_to_notification",
+                "reply_to_notification", "send_message",
             ),
             ScriptActionCatalog.PRIVILEGED,
         )

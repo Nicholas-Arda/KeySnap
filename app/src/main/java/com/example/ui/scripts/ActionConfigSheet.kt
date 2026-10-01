@@ -2,6 +2,7 @@ package com.example.ui.scripts
 
 import android.content.Intent
 import android.net.Uri
+import android.provider.ContactsContract.CommonDataKinds.Phone
 import android.util.Size
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -26,6 +27,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.outlined.Contacts
 import androidx.compose.material.icons.outlined.MyLocation
 import androidx.compose.material.icons.outlined.Photo
 import androidx.compose.material3.Button
@@ -75,6 +77,7 @@ import com.example.service.PickedPoints
 import com.example.service.PointPickMode
 import com.example.service.ScreenPointPicker
 import com.example.service.TwoPointGesture
+import com.example.service.messageLaunchFor
 import com.example.ui.components.InnerShape
 import com.example.ui.theme.SectionLabel
 import io.github.nicholasarda.keysnap.R
@@ -92,6 +95,8 @@ fun ActionConfigSheet(
     actionType: String,
     initialParams: Map<String, String>,
     isEdit: Boolean,
+    /** See [com.example.data.ScriptConstraintCatalog.startsFromNotification]: decides whether a reply needs a chat. */
+    startsFromNotification: Boolean,
     isRecordingKey: Boolean,
     installedApps: List<InstalledApp>,
     canDrawOverlays: Boolean,
@@ -143,8 +148,8 @@ fun ActionConfigSheet(
     }
 
     val snapshot = values.toMap()
-    val visible = ActionEditorForms.visibleFields(form, snapshot)
-    val complete = ActionEditorForms.isComplete(form, snapshot)
+    val visible = ActionEditorForms.visibleFields(form, snapshot, startsFromNotification)
+    val complete = ActionEditorForms.isComplete(form, snapshot, startsFromNotification)
 
     // The Direction chip sits outside the overlay's own windows, so it stays tappable while the
     // overlay is up — the connector's arrows must track that live, not just whatever direction was
@@ -215,10 +220,33 @@ fun ActionConfigSheet(
                         )
                     }
                     is EditorField.ImagePick -> ImageFieldRow(field, values)
+                    is EditorField.ContactPick -> ContactFieldRow(field, values)
                     // Constraint-only fields; listed so the sealed `when` stays exhaustive.
                     is EditorField.BluetoothDevicePick -> BluetoothDeviceFieldRow(field, values)
                     is EditorField.TimeRange -> TimeRangeFieldRow(field, values)
                     is EditorField.DaySet -> DaySetFieldRow(field, values)
+                }
+            }
+            // CLAUDE.md "Privileged actions must stay legible": the literal link or intent, before it runs.
+            if (actionType == "send_message") {
+                val launch = remember(snapshot) { messageLaunchFor(context, snapshot) }
+                val hasNumber = !snapshot["number"].isNullOrBlank()
+                launch?.let {
+                    Text(
+                        stringResource(R.string.action_config_what_will_run, it.describe()),
+                        Modifier.testTag("config_what_will_run"),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = colors.onSurfaceVariant,
+                    )
+                }
+                val warning = when {
+                    launch == null && hasNumber && !snapshot["packageName"].isNullOrBlank() && !snapshot["text"].isNullOrBlank() ->
+                        R.string.message_number_needs_country_code
+                    launch != null && launch.uri == null && hasNumber -> R.string.message_number_not_used
+                    else -> null
+                }
+                warning?.let {
+                    Text(stringResource(it), style = MaterialTheme.typography.bodySmall, color = colors.error)
                 }
             }
 
@@ -438,6 +466,53 @@ private fun PointFieldRow(
             style = MaterialTheme.typography.labelSmall,
             color = colors.onSurfaceVariant.copy(alpha = 0.6f),
             modifier = Modifier.padding(start = 4.dp).testTag("config_point_readout_${pointKeys.first()}"),
+        )
+    }
+}
+
+/**
+ * The system contact picker returns one phone row with a one-time read grant, so no contacts
+ * permission. Typing a number instead drops the picked name, which would no longer match it.
+ */
+@Composable
+private fun ContactFieldRow(field: EditorField.ContactPick, values: MutableMap<String, String>) {
+    val colors = MaterialTheme.colorScheme
+    val context = LocalContext.current
+    val picker = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        val uri = result.data?.data ?: return@rememberLauncherForActivityResult
+        runCatching {
+            context.contentResolver.query(uri, arrayOf(Phone.NUMBER, Phone.DISPLAY_NAME), null, null, null)?.use { row ->
+                if (row.moveToFirst()) {
+                    values[field.numberKey] = row.getString(0).orEmpty()
+                    values[field.nameKey] = row.getString(1).orEmpty()
+                }
+            }
+        }
+    }
+    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        Text(stringResource(field.labelRes), style = SectionLabel, color = colors.onSurfaceVariant)
+        values[field.nameKey]?.takeIf { it.isNotBlank() }?.let {
+            Text(it, style = MaterialTheme.typography.bodyLarge, color = colors.onSurface)
+        }
+        TextButton(
+            onClick = { runCatching { picker.launch(Intent(Intent.ACTION_PICK).setType(Phone.CONTENT_TYPE)) } },
+            modifier = Modifier.testTag("config_pick_contact_${field.numberKey}"),
+        ) {
+            Icon(Icons.Outlined.Contacts, null, tint = colors.primary, modifier = Modifier.size(18.dp))
+            Spacer(Modifier.width(6.dp))
+            Text(stringResource(R.string.action_config_pick_contact), color = colors.primary)
+        }
+        OutlinedTextField(
+            value = values[field.numberKey].orEmpty(),
+            onValueChange = {
+                values[field.numberKey] = it
+                values.remove(field.nameKey)
+            },
+            modifier = Modifier.fillMaxWidth().testTag("config_field_${field.numberKey}"),
+            label = { Text(stringResource(R.string.action_config_type_number)) },
+            supportingText = { Text(stringResource(R.string.helper_message_number)) },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
         )
     }
 }

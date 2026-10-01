@@ -308,8 +308,13 @@ class ConstraintEvaluatorTest {
         NotificationMatches.clearForTest()
         val c = ScriptConstraint("notification_received", mapOf("packageName" to "com.whatsapp"))
         assertFalse(evaluator.isSatisfied(c))
-        NotificationMatches.record(listOf(c), "com.whatsapp", SystemClock.elapsedRealtime()) { "x" }
+        NotificationMatches.record(listOf(c), "com.whatsapp", "key", SystemClock.elapsedRealtime()) { "x" }
         assertTrue(evaluator.isSatisfied(c))
+    }
+
+    /** Automation-only: without READ_CALENDAR it reads false, never "unknown never blocks". */
+    @Test fun calendarConditionReadsFalseWithoutACalendarToRead() {
+        assertFalse(evaluator.isSatisfied(ScriptConstraint("calendar_event_active")))
     }
 
     @Test fun cooldownItselfNeverBlocksTheEvaluator() {

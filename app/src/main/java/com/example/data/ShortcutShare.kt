@@ -75,11 +75,13 @@ object ShortcutShare {
      * Action parameters that point at something on this phone only: the wallpaper image is a
      * content:// read grant held by this install, and a sound is a picked file or ringtone here, or a
      * URL a crafted share could use to make every press contact a host the user never typed. The
-     * recipient's editor asks for their own.
+     * recipient's editor asks for their own. A message's contact is a third party's name and number:
+     * personal data that means nothing on another phone, so it never leaves this one.
      */
     private val PHONE_BOUND_PARAMS: Map<String, Set<String>> = mapOf(
         "set_wallpaper" to setOf("imageUri"),
         "play_sound" to setOf("uri"),
+        "send_message" to setOf("contactName", "number"),
     )
 
     private val adapter = Moshi.Builder().build().adapter(SharedShortcut::class.java)
@@ -106,7 +108,7 @@ object ShortcutShare {
             constraints = constraints.map {
                 PersistedScriptConstraint(
                     it.type,
-                    if (it.type.startsWith("bluetooth_device_")) it.params - setOf("address", "name") else it.params,
+                    if (it.type.startsWith("bluetooth_device_")) it.params - setOf("address", "name") else portableConstraintParams(it.type, it.params),
                 )
             },
         ),
@@ -122,6 +124,9 @@ object ShortcutShare {
         if (shared.keysnap > FORMAT_VERSION) return ImportResult.Error(R.string.import_error_newer)
         if (shared.keysnap != FORMAT_VERSION || shared.actions.isEmpty() || hasHiddenNull(shared)) return invalid
         if (shared.automation && shared.surfaceOnly) return invalid
+        // The editor refuses to save these on anything but an automation (MainViewModel.commitDraft);
+        // an import must not be a way around that.
+        if (!shared.automation && shared.constraints.any { it.type in ScriptConstraintCatalog.AUTOMATION_ONLY }) return invalid
         val paramTexts = (shared.actions.map { it.params } + shared.constraints.map { it.params }).flatMap { it.keys + it.values }
         if (shared.name.any { it in HIDDEN } || paramTexts.any { value -> value.any(::hiddenInParam) }) {
             return ImportResult.Error(R.string.import_error_hidden)
@@ -141,7 +146,7 @@ object ShortcutShare {
         }
         val constraints = shared.constraints.map {
             if (!ScriptConstraintCatalog.isAvailable(it.type)) return unsupported
-            ScriptConstraint(it.type, it.params)
+            ScriptConstraint(it.type, portableConstraintParams(it.type, it.params))
         }
         val name = shared.name.filterNot { it.isISOControl() }.trim().take(MAX_NAME_LENGTH)
         return ImportResult.Ok(ImportedShortcut(name, shared.automation, pressType, actions, constraints, shared.surfaceOnly))
@@ -164,6 +169,21 @@ object ShortcutShare {
 
     private fun portableParams(type: String, params: Map<String, String>): Map<String, String> =
         PHONE_BOUND_PARAMS[type]?.let { params - it } ?: params
+
+    /**
+     * A feed address can carry a private token, and from a crafted share it would make this phone
+     * poll a host the user never typed every 15 minutes. A calendar's name is often its owner's
+     * email address. Neither means anything on another phone; the recipient's editor asks for
+     * their own. An event-title filter is the shortcut's own logic and travels.
+     */
+    private fun portableConstraintParams(type: String, params: Map<String, String>): Map<String, String> = when (type) {
+        ScriptConstraintCatalog.RSS_NEW_ITEM -> params - "url"
+        ScriptConstraintCatalog.CALENDAR_EVENT_ACTIVE -> params - "calendar"
+        else -> params
+    }
+
+    /** [action] as it travels in a share, so the share review shows what actually leaves the phone. */
+    fun portable(action: ScriptAction): ScriptAction = action.copy(params = portableParams(action.type, action.params))
 
     /** Moshi does not enforce nullability inside lists and maps, so a crafted file can hide a null there. */
     private fun hasHiddenNull(shared: SharedShortcut): Boolean {

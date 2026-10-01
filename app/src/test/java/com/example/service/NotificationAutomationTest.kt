@@ -90,7 +90,7 @@ class NotificationAutomationTest {
     )
 
     private fun post(packageName: String, content: String) {
-        NotificationEventListener.onPosted(context, packageName) { content }
+        NotificationEventListener.onPosted(context, packageName, "0|$packageName|1|null|10001") { content }
         idle()
     }
 

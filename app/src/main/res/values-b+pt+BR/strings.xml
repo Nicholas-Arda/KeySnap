@@ -249,11 +249,13 @@
     <string name="constraint_location_on">Localização está ativada</string>
     <string name="constraint_location_off">Localização está desativada</string>
     <string name="constraint_day_of_week">Dia da semana</string>
+    <string name="constraint_calendar_event_active">Evento da agenda em andamento</string>
     <string name="constraint_cooldown">No máximo uma vez a cada N minutos</string>
     <string name="constraint_mobile_data_on">Dados móveis estão ativados</string>
     <string name="constraint_mobile_data_off">Dados móveis estão desativados</string>
     <string name="constraint_airplane_mode_on">Modo avião está ativado</string>
     <string name="constraint_airplane_mode_off">Modo avião está desativado</string>
+    <string name="constraint_rss_new_item">Novo item em um feed RSS</string>
     <string name="constraint_ringer_normal">Toque está ativado</string>
     <string name="constraint_ringer_vibrate">Toque está no vibrar</string>
     <string name="constraint_ringer_silent">Toque está no silencioso</string>
@@ -267,8 +269,21 @@
     <string name="badge_accessibility">Requer o serviço de Acessibilidade</string>
     <string name="badge_notification_policy">Requer acesso a Não Perturbe</string>
     <string name="badge_notification_access">Requer acesso a notificações</string>
-    <string name="hint_reply_chat">Parte do nome da conversa. Vazio: a conversa mais recente</string>
-    <string name="summary_reply_newest_chat">conversa mais recente</string>
+    <string name="hint_reply_chat">O nome da conversa, exatamente como aparece na notificação</string>
+    <string name="summary_reply_trigger_chat">a conversa que o acionou</string>
+    <string name="helper_reply_chat_trigger">Vazio: responde à conversa cuja notificação acionou este atalho.</string>
+    <string name="helper_reply_chat_required">Obrigatório: só uma condição “Notificação recebida” pode escolher a conversa por você.</string>
+    <string name="action_send_message">Enviar uma mensagem</string>
+    <string name="param_to">Para</string>
+    <string name="param_message">Mensagem</string>
+    <string name="field_send_with">Enviar com</string>
+    <string name="helper_send_message">Abre a conversa com sua mensagem já digitada; você toca em Enviar.</string>
+    <string name="action_config_pick_contact">Escolher nos contatos</string>
+    <string name="action_config_type_number">Ou digite um número</string>
+    <string name="helper_message_number">Vazio: você escolhe a pessoa no app.</string>
+    <string name="message_number_needs_country_code">Adicione o código do país ao número (começa com +).</string>
+    <string name="message_number_not_used">Este app deixa você escolher a pessoa; o número não é usado.</string>
+    <string name="action_config_what_will_run">O que vai rodar: %1$s</string>
     <string name="helper_reply_to_notification">Envia seu texto pelo próprio botão Responder da notificação, sem abrir o app. Só funciona enquanto essa conversa tem uma notificação visível e não pode iniciar uma conversa nova. O KeySnap lê as notificações no seu telefone só para encontrá-la; nada é salvo ou enviado para outro lugar. Adicione “No máximo uma vez a cada N minutos” para que uma conversa movimentada não seja respondida várias vezes.</string>
     <string name="badge_write_settings">Requer permissão para modificar as configurações do sistema</string>
 
@@ -443,10 +458,19 @@
     <string name="field_time_end">Até</string>
     <string name="field_days">Dias</string>
     <string name="constraint_needs_usage_access">Precisa do acesso de uso para que o app veja qual app está em primeiro plano.</string>
-    <string name="constraint_needs_notification_access">Precisa do acesso a notificações. O KeySnap compara cada nova notificação do app escolhido com esta condição, no seu telefone, e guarda só o horário em que ela correspondeu. Nada é salvo, registrado ou enviado.</string>
+    <string name="constraint_needs_notification_access">Precisa do acesso a notificações. O KeySnap compara cada nova notificação do app escolhido com esta condição, no seu telefone. Guarda só o horário em que uma correspondeu e qual notificação era, para que uma resposta encontre essa conversa. Nenhum conteúdo de notificação é salvo, registrado ou enviado.</string>
     <string name="field_notification_contains">Título ou texto contém</string>
     <string name="hint_notification_contains_any">Vazio: qualquer notificação deste app</string>
     <string name="helper_notification_received">Executa quando chega uma nova notificação deste app. Várias em 10 segundos contam como uma. Só em automações.</string>
+    <string name="field_feed_url">Endereço do feed</string>
+    <string name="helper_rss_new_item">Verificado no máximo a cada 15 minutos, com internet. Executa uma vez a cada verificação que encontra itens novos; itens que já estavam no feed ao salvar não contam. O endereço precisa começar com https:// e é usado exatamente como você digitou. Só em automações.</string>
+    <string name="field_calendar_name">Nome da agenda contém</string>
+    <string name="hint_calendar_any">Deixe vazio para qualquer agenda</string>
+    <string name="field_event_title">Título do evento contém</string>
+    <string name="hint_event_any">Deixe vazio para qualquer evento</string>
+    <string name="constraint_summary_any_event">Qualquer evento</string>
+    <string name="helper_calendar_event_active">Executa quando começa um evento correspondente. Com o celular ocioso, pode executar mais tarde, então um evento curto pode passar. Eventos de dia inteiro e cancelados são ignorados, e eventos seguidos contam como um. Só em automações.</string>
+    <string name="constraint_needs_calendar">Precisa de permissão para ler sua agenda. Os eventos são comparados com esta condição neste celular e nunca são salvos, registrados ou enviados.</string>
     <string name="field_cooldown_minutes">Minutos entre execuções</string>
     <string name="helper_cooldown">Ignorado se este atalho foi executado há menos minutos do que isso. A contagem recomeça se o telefone ou o KeySnap reiniciar.</string>
     <string name="constraint_summary_cooldown">No máximo a cada %1$d min</string>
@@ -755,7 +779,7 @@
     <string name="about_traffic_device">Seu próprio telefone</string>
     <string name="about_traffic_device_body">Pareamento por Depuração sem Fio. Somente rede local.</string>
     <string name="about_traffic_yours">Endereços que você mesmo digitou</string>
-    <string name="about_traffic_yours_body">Uma ação HTTP ou Abrir URL vai exatamente para onde você escreveu, sem alterações.</string>
+    <string name="about_traffic_yours_body">Uma ação HTTP ou Abrir URL, ou um feed RSS que uma automação acompanha, vai exatamente para onde você escreveu, sem alterações.</string>
     <string name="about_traffic_google">Anúncios do Google e Google Play</string>
     <string name="about_traffic_google_body">Para exibir o anúncio na versão gratuita e verificar se você comprou o Pro. Nenhum dos dois recebe uma tecla pressionada ou um atalho.</string>
     <string name="about_traffic_all">Essa é a lista inteira.</string>
@@ -827,7 +851,7 @@
     <string name="run_failure_notifications_off">As notificações estão desativadas</string>
     <string name="editor_needs_action">Adicione pelo menos uma ação antes de salvar.</string>
     <string name="editor_needs_trigger">Escolha uma tecla antes de salvar.</string>
-    <string name="editor_notification_needs_automation">Notificação recebida só funciona em uma automação. Remova essa condição ou mude para Automação.</string>
+    <string name="editor_condition_needs_automation">%1$s só funciona em uma automação. Remova essa condição ou mude para Automação.</string>
     <string name="saved_needs_trigger">Salvo. Atribua uma tecla para que possa ser executado.</string>
     <string name="saved_named">\"%1$s\" salvo</string>
     <string name="saved_needs_condition">Salvo. Adicione uma condição que muda sozinha, como Carregando ou Dispositivo Bluetooth conectado, para que possa ser executado.</string>
@@ -877,7 +901,6 @@
     <!-- OEM key tip -->
     <string name="oem_key_tip">Dica: defina este botão como “Nenhum” nas configurações do celular, para que só o KeySnap responda a ele.</string>
     <!-- Recipe gallery -->
-    <string name="recipe_category_ifttt">Vindo do IFTTT?</string>
     <string name="recipe_category_webhook">Webhooks</string>
     <string name="recipe_wifi_vibrate">No trabalho</string>
     <string name="recipe_wifi_vibrate_subtitle">Wi-Fi do trabalho: toque no vibrar</string>
@@ -885,15 +908,20 @@
     <string name="recipe_wifi_ring_subtitle">Fora desse Wi-Fi: toque de volta</string>
     <string name="recipe_morning_dnd_off">Desconectar de manhã</string>
     <string name="recipe_morning_dnd_off_subtitle">Fora do carregador após 06:00: Não perturbe desativado</string>
-    <string name="recipe_ifttt_webhook">Applet do IFTTT</string>
-    <string name="recipe_ifttt_webhook_subtitle">Uma tecla chama sua URL do Webhooks</string>
-    <string name="recipe_home_assistant_subtitle">Cole a URL de webhook de uma automação</string>
-    <string name="recipe_discord_subtitle">Cole a URL de webhook de um canal</string>
-    <string name="recipe_ntfy_subtitle">Cole a URL do seu tópico</string>
-    <string name="recipe_apps_script_subtitle">Cole a URL do seu app da web</string>
-    <string name="recipe_whatsapp">Enviar mensagem no WhatsApp</string>
-    <string name="recipe_whatsapp_subtitle">Abre uma conversa com seu texto e toca em Enviar</string>
-    <string name="recipe_whatsapp_note">No primeiro passo, digite https://wa.me/&lt;número&gt;?text=&lt;mensagem&gt; com o número no formato internacional, só dígitos. Depois posicione o toque no botão Enviar do WhatsApp. A tela precisa estar ligada e desbloqueada, o WhatsApp aparece por um instante e o toque em Enviar pode precisar de ajuste no seu celular.</string>
+    <string name="recipe_smart_home_subtitle">Cole a URL de webhook de uma automação</string>
+    <string name="recipe_chat_channel_subtitle">Cole a URL de webhook de um canal</string>
+    <string name="recipe_phone_notification_subtitle">Cole a URL do seu tópico</string>
+    <string name="recipe_spreadsheet_subtitle">Cole a URL do seu app da web</string>
+    <string name="recipe_category_routines">Rotinas do dia a dia</string>
+    <string name="recipe_web_address">Chamar um endereço web</string>
+    <string name="recipe_web_address_subtitle">Uma tecla chama uma URL que você cola</string>
+    <string name="recipe_smart_home">Pedido para a casa inteligente</string>
+    <string name="recipe_chat_channel">Postar em um canal de chat</string>
+    <string name="recipe_phone_notification">Enviar uma notificação ao meu celular</string>
+    <string name="recipe_spreadsheet">Adicionar uma linha a uma planilha</string>
+    <string name="recipe_send_message">Enviar uma mensagem</string>
+    <string name="recipe_send_message_subtitle">Abre uma conversa com seu texto já digitado</string>
+    <string name="recipe_send_message_note">Escolha um contato, o app de envio e sua mensagem. A conversa abre com a mensagem já digitada; você toca em Enviar.</string>
     <string name="home_recipes_all">Todos</string>
     <!-- Share and import -->
     <string name="import_error_invalid">Este não é um atalho válido do KeySnap.</string>

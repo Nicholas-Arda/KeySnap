@@ -157,4 +157,49 @@ class ActionEditorFormTest {
         assertTrue(ActionEditorForms.isComplete(form, defaults + ("imageUri" to "content://media/picker/0/1")))
         assertEquals("Lock screen", ActionEditorForms.summarize(ScriptAction("set_wallpaper", mapOf("imageUri" to "content://x/1", "target" to "lock")), res))
     }
+
+    /** An empty chat means "the chat that triggered this run", which only a notification automation has. */
+    @Test fun aReplyNeedsAChatUnlessANotificationStartsTheShortcut() {
+        val form = ActionEditorForms.forType("reply_to_notification")!!
+        val values = mapOf("packageName" to "com.example.chat", "text" to "On my way")
+        assertFalse(ActionEditorForms.isComplete(form, values))
+        assertFalse(ActionEditorForms.isComplete(form, values + ("chat" to "  ")))
+        assertTrue(ActionEditorForms.isComplete(form, values + ("chat" to "Annem")))
+        assertTrue(ActionEditorForms.isComplete(form, values, startsFromNotification = true))
+        val reply = ScriptAction("reply_to_notification", values)
+        assertEquals(listOf("chat"), ActionEditorForms.missingRequired(reply))
+        assertEquals(emptyList<String>(), ActionEditorForms.missingRequired(reply, startsFromNotification = true))
+
+        fun chatHelper(fromNotification: Boolean) = ActionEditorForms.visibleFields(form, values, fromNotification)
+            .filterIsInstance<EditorField.Text>().single { it.key == "chat" }.helperRes
+        assertEquals(R.string.helper_reply_chat_trigger, chatHelper(true))
+        assertEquals(R.string.helper_reply_chat_required, chatHelper(false))
+        assertEquals("com.example.chat · the chat that triggered it · “On my way”", ActionEditorForms.summarize(reply, res))
+    }
+
+    @Test fun onlyANotificationAutomationStartsFromANotification() {
+        val notification = listOf(ScriptConstraint("notification_received", mapOf("packageName" to "com.example.chat")))
+        assertTrue(ScriptConstraintCatalog.startsFromNotification(automation = true, constraints = notification))
+        assertFalse(ScriptConstraintCatalog.startsFromNotification(automation = false, constraints = notification))
+        assertFalse(ScriptConstraintCatalog.startsFromNotification(automation = true, constraints = listOf(ScriptConstraint("charging"))))
+    }
+
+    /** The app and the text are required; an empty recipient is chosen inside the app. */
+    @Test fun sendMessageNeedsAnAppAndTextButNotARecipient() {
+        val form = ActionEditorForms.forType("send_message")!!
+        assertFalse(ActionEditorForms.isComplete(form, emptyMap()))
+        assertFalse(ActionEditorForms.isComplete(form, mapOf("packageName" to "com.example.chat")))
+        assertFalse(ActionEditorForms.isComplete(form, mapOf("text" to "Hi")))
+        assertTrue(ActionEditorForms.isComplete(form, mapOf("packageName" to "com.example.chat", "text" to "Hi")))
+        assertEquals(listOf("packageName", "text"), ActionEditorForms.missingRequired(ScriptAction("send_message")))
+        assertEquals(listOf("number", "contactName"), form.fields.first().keys)
+        assertEquals(
+            "Annem · com.example.chat · “On my way”",
+            ActionEditorForms.summarize(
+                ScriptAction("send_message", mapOf("contactName" to "Annem", "number" to "+905551234567", "packageName" to "com.example.chat", "text" to "On my way")),
+                res,
+            ),
+        )
+        assertEquals("+905551234567 · com.example.chat · “Hi”", ActionEditorForms.summarize(ScriptAction("send_message", mapOf("number" to "+905551234567", "packageName" to "com.example.chat", "text" to "Hi")), res))
+    }
 }

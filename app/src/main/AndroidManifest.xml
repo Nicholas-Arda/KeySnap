@@ -36,6 +36,9 @@
          unknown. -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <!-- Read-only, for the calendar_event_active condition; requested when the user adds it.
+         Events are matched on the device and are never stored, logged or sent. -->
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
 
     <!-- Special permission: declaring it only makes the app eligible for the "Modify system
          settings" list. The grant (Settings.System.canWrite) is a user action via
@@ -60,6 +63,11 @@
         <intent>
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
+        <!-- "Send a message": which picked app opens an smsto: chat. Visibility only, not a permission. -->
+        <intent>
+            <action android:name="android.intent.action.SENDTO" />
+            <data android:scheme="smsto" />
         </intent>
     </queries>
 
@@ -122,6 +130,17 @@
 
         <service
             android:name="com.example.service.ScreenPointPickerService"
+            android:exported="false" />
+
+        <!-- Checks the RSS feeds automations follow, at most every 15 minutes and only while online. -->
+        <service
+            android:name="com.example.service.RssPollJobService"
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            android:exported="false" />
+
+        <!-- Re-evaluates automations when a calendar condition's event starts or ends. -->
+        <receiver
+            android:name="com.example.service.CalendarAlarmReceiver"
             android:exported="false" />
 
         <!-- Notification access, a special access the user grants in Settings. Used only by the

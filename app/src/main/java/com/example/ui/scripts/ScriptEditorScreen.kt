@@ -410,6 +410,7 @@ private fun ChainArea(
                 total = draft.actions.size,
                 menuOpen = openMenuFor == index,
                 advancedModeActive = advancedModeActive,
+                startsFromNotification = ScriptConstraintCatalog.startsFromNotification(draft.automation, draft.constraints),
                 onOpenMenu = { openMenuFor = index },
                 onDismissMenu = { openMenuFor = null },
                 onConfigure = { onConfigureAction(index) },
@@ -702,6 +703,7 @@ private fun ActionChainCard(
     total: Int,
     menuOpen: Boolean,
     advancedModeActive: Boolean,
+    startsFromNotification: Boolean,
     onOpenMenu: () -> Unit,
     onDismissMenu: () -> Unit,
     onConfigure: () -> Unit,
@@ -715,7 +717,7 @@ private fun ActionChainCard(
     val configurable = ActionEditorForms.isConfigurable(action.type) || action.type in ASSISTANT_SETTINGS_ACTION_TYPES
     // Scripts saved before configuration existed can be missing required params; surface that
     // rather than letting the action fail silently at run time.
-    val incomplete = ActionEditorForms.missingRequired(action).isNotEmpty()
+    val incomplete = ActionEditorForms.missingRequired(action, startsFromNotification).isNotEmpty()
     val summary = ActionEditorForms.summarize(action, LocalContext.current.resources)
     val connectorColor = colors.outline.copy(alpha = .5f)
     Box(

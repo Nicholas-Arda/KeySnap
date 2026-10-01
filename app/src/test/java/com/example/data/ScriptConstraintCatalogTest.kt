@@ -22,7 +22,8 @@ class ScriptConstraintCatalogTest {
      * Pinned deliberately: BridgeConfig's CONSTRAINT_* constants and
      * com.example.bridge.ConstraintEvaluator mirror this exact set, so a constraint authored in
      * the app is evaluated identically by the detached bridge. Changing this set means changing
-     * both sides.
+     * both sides. The AUTOMATION_ONLY types are app-only and the bridge never runs a key-less
+     * script; of those, only notification_received has a bridge constant (a defensive `false`).
      */
     @Test fun theAvailableSetIsExactlyWhatBothEvaluatorsImplement() {
         val available = ScriptConstraintCatalog.all.filter { it.availability == ConstraintAvailability.AVAILABLE }.map { it.type }
@@ -55,7 +56,7 @@ class ScriptConstraintCatalogTest {
                 "location_on", "location_off",
                 "time", "day_of_week", "cooldown",
             ),
-            available.toSet(),
+            available.toSet() - (ScriptConstraintCatalog.AUTOMATION_ONLY - ScriptConstraintCatalog.NOTIFICATION_RECEIVED),
         )
     }
 
@@ -83,9 +84,12 @@ class ScriptConstraintCatalogTest {
         }
     }
 
-    @Test fun notificationReceivedIsAnAutomationOnlyTrigger() {
-        assertTrue(ScriptConstraintCatalog.isAutomation(ScriptConstraintCatalog.NOTIFICATION_RECEIVED))
-        assertEquals(setOf("notification_received"), ScriptConstraintCatalog.AUTOMATION_ONLY)
+    /** App-only; grows with each automation-only condition. On a key the bridge would read these differently. */
+    @Test fun theAutomationOnlySetIsPinnedAndEachCanWakeAnAutomation() {
+        assertEquals(setOf("notification_received", "rss_new_item", "calendar_event_active"), ScriptConstraintCatalog.AUTOMATION_ONLY)
+        ScriptConstraintCatalog.AUTOMATION_ONLY.forEach { type ->
+            assertTrue("$type must be able to wake an automation", ScriptConstraintCatalog.isAutomation(type))
+        }
     }
 
     @Test fun everyCategoryHasAtLeastOneEntry() {

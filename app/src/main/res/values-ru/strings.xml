@@ -248,11 +248,13 @@
     <string name="constraint_location_on">Геолокация включена</string>
     <string name="constraint_location_off">Геолокация выключена</string>
     <string name="constraint_day_of_week">День недели</string>
+    <string name="constraint_calendar_event_active">Идёт событие календаря</string>
     <string name="constraint_cooldown">Не чаще раза в N минут</string>
     <string name="constraint_mobile_data_on">Мобильный интернет включён</string>
     <string name="constraint_mobile_data_off">Мобильный интернет выключен</string>
     <string name="constraint_airplane_mode_on">Режим полёта включён</string>
     <string name="constraint_airplane_mode_off">Режим полёта выключен</string>
+    <string name="constraint_rss_new_item">Новая запись в RSS-ленте</string>
     <string name="constraint_ringer_normal">Звонок включён</string>
     <string name="constraint_ringer_vibrate">Звонок в режиме вибрации</string>
     <string name="constraint_ringer_silent">Звонок без звука</string>
@@ -266,8 +268,21 @@
     <string name="badge_accessibility">Требует службу специальных возможностей</string>
     <string name="badge_notification_policy">Требует доступ к режиму «Не беспокоить»</string>
     <string name="badge_notification_access">Требует доступ к уведомлениям</string>
-    <string name="hint_reply_chat">Часть названия чата. Пусто: самый новый чат</string>
-    <string name="summary_reply_newest_chat">самый новый чат</string>
+    <string name="hint_reply_chat">Название чата точно как в уведомлении</string>
+    <string name="summary_reply_trigger_chat">чат, который его запустил</string>
+    <string name="helper_reply_chat_trigger">Пусто: ответ уйдёт в чат, уведомление которого запустило этот сценарий.</string>
+    <string name="helper_reply_chat_required">Обязательно: выбрать чат за вас может только условие «Получено уведомление».</string>
+    <string name="action_send_message">Отправить сообщение</string>
+    <string name="param_to">Кому</string>
+    <string name="param_message">Сообщение</string>
+    <string name="field_send_with">Через приложение</string>
+    <string name="helper_send_message">Открывает чат с уже набранным сообщением; «Отправить» нажимаете вы.</string>
+    <string name="action_config_pick_contact">Выбрать из контактов</string>
+    <string name="action_config_type_number">Или введите номер</string>
+    <string name="helper_message_number">Пусто: получателя вы выберете в приложении.</string>
+    <string name="message_number_needs_country_code">Добавьте к номеру код страны (он начинается с +).</string>
+    <string name="message_number_not_used">Это приложение само предложит выбрать получателя; номер не используется.</string>
+    <string name="action_config_what_will_run">Будет выполнено: %1$s</string>
     <string name="helper_reply_to_notification">Отправляет ваш текст через кнопку «Ответить» в самом уведомлении, не открывая приложение. Работает, только пока у этого чата видно уведомление, и не может начать новый чат. KeySnap читает уведомления на телефоне только чтобы его найти; ничего не сохраняется и никуда не отправляется. Добавьте «Не чаще раза в N минут», чтобы на активный чат не отвечать снова и снова.</string>
     <string name="badge_write_settings">Требуется разрешение на изменение системных настроек</string>
 
@@ -442,10 +457,19 @@
     <string name="field_time_end">До</string>
     <string name="field_days">Дни</string>
     <string name="constraint_needs_usage_access">Нужен доступ к данным об использовании, чтобы приложение видело, какое приложение на переднем плане.</string>
-    <string name="constraint_needs_notification_access">Нужен доступ к уведомлениям. KeySnap сверяет каждое новое уведомление выбранного приложения с этим условием прямо на телефоне и хранит только время совпадения. Ничего не сохраняется, не записывается в журнал и не отправляется.</string>
+    <string name="constraint_needs_notification_access">Нужен доступ к уведомлениям. KeySnap сверяет каждое новое уведомление выбранного приложения с этим условием прямо на телефоне. Он хранит только время совпадения и то, какое это было уведомление, чтобы ответ нашёл этот чат. Содержимое уведомлений не сохраняется, не записывается в журнал и не отправляется.</string>
     <string name="field_notification_contains">Заголовок или текст содержит</string>
     <string name="hint_notification_contains_any">Пусто: любое уведомление этого приложения</string>
     <string name="helper_notification_received">Срабатывает, когда приходит новое уведомление от этого приложения. Несколько за 10 секунд считаются одним. Только в автоматизациях.</string>
+    <string name="field_feed_url">Адрес ленты</string>
+    <string name="helper_rss_new_item">Проверяется не чаще раза в 15 минут, пока есть интернет. Срабатывает один раз на каждую проверку, нашедшую новые записи; записи, которые уже были в ленте при сохранении, не считаются. Адрес должен начинаться с https:// и используется ровно так, как вы его ввели. Только в автоматизациях.</string>
+    <string name="field_calendar_name">Название календаря содержит</string>
+    <string name="hint_calendar_any">Оставьте пустым для любого календаря</string>
+    <string name="field_event_title">Название события содержит</string>
+    <string name="hint_event_any">Оставьте пустым для любого события</string>
+    <string name="constraint_summary_any_event">Любое событие</string>
+    <string name="helper_calendar_event_active">Срабатывает, когда начинается подходящее событие. Пока телефон бездействует, это может произойти позже, поэтому короткое событие можно пропустить. События на весь день и отменённые не учитываются, а идущие подряд считаются одним. Только в автоматизациях.</string>
+    <string name="constraint_needs_calendar">Нужно разрешение на чтение календаря. События сравниваются с этим условием на этом телефоне и никогда не сохраняются, не записываются в журнал и не отправляются.</string>
     <string name="field_cooldown_minutes">Минут между запусками</string>
     <string name="helper_cooldown">Пропускается, если этот сценарий запускался меньше указанного числа минут назад. Отсчёт начинается заново после перезапуска телефона или KeySnap.</string>
     <string name="constraint_summary_cooldown">Не чаще раза в %1$d мин</string>
@@ -754,7 +778,7 @@
     <string name="about_traffic_device">Ваш собственный телефон</string>
     <string name="about_traffic_device_body">Сопряжение по беспроводной отладке. Только локальная сеть.</string>
     <string name="about_traffic_yours">Адреса, которые вы ввели сами</string>
-    <string name="about_traffic_yours_body">Действие HTTP или «Открыть URL» уходит ровно туда, как вы его написали, без изменений.</string>
+    <string name="about_traffic_yours_body">Действие HTTP или «Открыть URL», а также RSS-лента, за которой следит автоматизация, обращаются ровно по адресу, который вы написали, без изменений.</string>
     <string name="about_traffic_google">Реклама Google и Google Play</string>
     <string name="about_traffic_google_body">Чтобы показать рекламу в бесплатной версии и узнать, куплена ли версия Pro. Ни один из них никогда не получает нажатие клавиши или сценарий.</string>
     <string name="about_traffic_all">Это весь список.</string>
@@ -826,7 +850,7 @@
     <string name="run_failure_notifications_off">Уведомления отключены</string>
     <string name="editor_needs_action">Добавьте хотя бы одно действие перед сохранением.</string>
     <string name="editor_needs_trigger">Выберите клавишу перед сохранением.</string>
-    <string name="editor_notification_needs_automation">«Получено уведомление» работает только в автоматизации. Удалите это условие или переключитесь на «Автоматизация».</string>
+    <string name="editor_condition_needs_automation">«%1$s» работает только в автоматизации. Удалите это условие или переключитесь на «Автоматизация».</string>
     <string name="saved_needs_trigger">Сохранено. Назначьте клавишу, чтобы он мог сработать.</string>
     <string name="saved_named">Сохранено: «%1$s»</string>
     <string name="saved_needs_condition">Сохранено. Добавьте условие, которое меняется само, например «Заряжается» или «Bluetooth-устройство подключено», чтобы сценарий мог сработать.</string>
@@ -876,7 +900,6 @@
     <!-- OEM key tip -->
     <string name="oem_key_tip">Совет: в настройках телефона выберите для этой кнопки «Нет», чтобы на неё реагировал только KeySnap.</string>
     <!-- Recipe gallery -->
-    <string name="recipe_category_ifttt">Переходите с IFTTT?</string>
     <string name="recipe_category_webhook">Webhooks</string>
     <string name="recipe_wifi_vibrate">На работе</string>
     <string name="recipe_wifi_vibrate_subtitle">Рабочий Wi-Fi: звонок на вибрацию</string>
@@ -884,15 +907,20 @@
     <string name="recipe_wifi_ring_subtitle">Вне этого Wi-Fi: звонок снова включён</string>
     <string name="recipe_morning_dnd_off">Утром с зарядки</string>
     <string name="recipe_morning_dnd_off_subtitle">С зарядки после 06:00: Не беспокоить выкл.</string>
-    <string name="recipe_ifttt_webhook">Апплет IFTTT</string>
-    <string name="recipe_ifttt_webhook_subtitle">Кнопка вызывает ваш URL Webhooks</string>
-    <string name="recipe_home_assistant_subtitle">Вставьте URL вебхука автоматизации</string>
-    <string name="recipe_discord_subtitle">Вставьте URL вебхука канала</string>
-    <string name="recipe_ntfy_subtitle">Вставьте URL вашей темы</string>
-    <string name="recipe_apps_script_subtitle">Вставьте URL вашего веб-приложения</string>
-    <string name="recipe_whatsapp">Отправить сообщение WhatsApp</string>
-    <string name="recipe_whatsapp_subtitle">Открывает чат с вашим текстом и нажимает «Отправить»</string>
-    <string name="recipe_whatsapp_note">На первом шаге введите https://wa.me/&lt;номер&gt;?text=&lt;сообщение&gt;, номер в международном формате, только цифры. Затем поставьте нажатие на кнопку «Отправить» в WhatsApp. Экран должен быть включён и разблокирован, WhatsApp ненадолго появится, а нажатие на «Отправить» может потребоваться подстроить под ваш телефон.</string>
+    <string name="recipe_smart_home_subtitle">Вставьте URL вебхука автоматизации</string>
+    <string name="recipe_chat_channel_subtitle">Вставьте URL вебхука канала</string>
+    <string name="recipe_phone_notification_subtitle">Вставьте URL вашей темы</string>
+    <string name="recipe_spreadsheet_subtitle">Вставьте URL вашего веб-приложения</string>
+    <string name="recipe_category_routines">Повседневные дела</string>
+    <string name="recipe_web_address">Вызвать веб-адрес</string>
+    <string name="recipe_web_address_subtitle">Кнопка вызывает вставленный вами URL</string>
+    <string name="recipe_smart_home">Запрос к умному дому</string>
+    <string name="recipe_chat_channel">Написать в канал чата</string>
+    <string name="recipe_phone_notification">Уведомление на мой телефон</string>
+    <string name="recipe_spreadsheet">Добавить строку в таблицу</string>
+    <string name="recipe_send_message">Отправить сообщение</string>
+    <string name="recipe_send_message_subtitle">Открывает чат с уже набранным текстом</string>
+    <string name="recipe_send_message_note">Выберите контакт, приложение для отправки и сообщение. Чат откроется с уже набранным сообщением; «Отправить» нажимаете вы.</string>
     <string name="home_recipes_all">Все</string>
     <!-- Share and import -->
     <string name="import_error_invalid">Это не сценарий KeySnap.</string>

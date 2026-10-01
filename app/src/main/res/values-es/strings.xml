@@ -249,11 +249,13 @@
     <string name="constraint_location_on">Ubicación activada</string>
     <string name="constraint_location_off">Ubicación desactivada</string>
     <string name="constraint_day_of_week">Día de la semana</string>
+    <string name="constraint_calendar_event_active">Evento del calendario en curso</string>
     <string name="constraint_cooldown">Como máximo una vez cada N minutos</string>
     <string name="constraint_mobile_data_on">Datos móviles activados</string>
     <string name="constraint_mobile_data_off">Datos móviles desactivados</string>
     <string name="constraint_airplane_mode_on">Modo avión activado</string>
     <string name="constraint_airplane_mode_off">Modo avión desactivado</string>
+    <string name="constraint_rss_new_item">Nuevo elemento en un feed RSS</string>
     <string name="constraint_ringer_normal">Timbre activado</string>
     <string name="constraint_ringer_vibrate">Timbre en vibración</string>
     <string name="constraint_ringer_silent">Timbre en silencio</string>
@@ -267,8 +269,21 @@
     <string name="badge_accessibility">Requiere el servicio de accesibilidad</string>
     <string name="badge_notification_policy">Requiere acceso a No molestar</string>
     <string name="badge_notification_access">Requiere acceso a las notificaciones</string>
-    <string name="hint_reply_chat">Parte del nombre del chat. Vacío: el chat más reciente</string>
-    <string name="summary_reply_newest_chat">chat más reciente</string>
+    <string name="hint_reply_chat">El nombre del chat, tal como aparece en la notificación</string>
+    <string name="summary_reply_trigger_chat">el chat que lo activó</string>
+    <string name="helper_reply_chat_trigger">Vacío: responde al chat cuya notificación activó este acceso directo.</string>
+    <string name="helper_reply_chat_required">Obligatorio: solo una condición “Notificación recibida” puede elegir el chat por ti.</string>
+    <string name="action_send_message">Enviar un mensaje</string>
+    <string name="param_to">Para</string>
+    <string name="param_message">Mensaje</string>
+    <string name="field_send_with">Enviar con</string>
+    <string name="helper_send_message">Abre el chat con tu mensaje ya escrito; tú tocas Enviar.</string>
+    <string name="action_config_pick_contact">Elegir de los contactos</string>
+    <string name="action_config_type_number">O escribe un número</string>
+    <string name="helper_message_number">Vacío: eliges a la persona en la app.</string>
+    <string name="message_number_needs_country_code">Añade el prefijo del país al número (empieza por +).</string>
+    <string name="message_number_not_used">Esta app te deja elegir a la persona; el número no se usa.</string>
+    <string name="action_config_what_will_run">Lo que se ejecutará: %1$s</string>
     <string name="helper_reply_to_notification">Envía tu texto con el propio botón Responder de la notificación, sin abrir la app. Solo funciona mientras ese chat tenga una notificación visible y no puede iniciar un chat nuevo. KeySnap lee las notificaciones en tu teléfono solo para encontrarla; no se guarda ni se envía nada a ningún otro sitio. Añade “Como máximo una vez cada N minutos” para que un chat con mucha actividad no reciba respuesta una y otra vez.</string>
     <string name="badge_write_settings">Requiere permiso para modificar los ajustes del sistema</string>
 
@@ -443,10 +458,19 @@
     <string name="field_time_end">Hasta</string>
     <string name="field_days">Días</string>
     <string name="constraint_needs_usage_access">Necesita acceso de uso para que la app pueda ver qué app está en primer plano.</string>
-    <string name="constraint_needs_notification_access">Necesita acceso a las notificaciones. KeySnap compara cada notificación nueva de la app elegida con esta condición, en tu teléfono, y solo guarda la hora en que coincidió. No se guarda, registra ni envía nada.</string>
+    <string name="constraint_needs_notification_access">Necesita acceso a las notificaciones. KeySnap compara cada notificación nueva de la app elegida con esta condición, en tu teléfono. Solo guarda cuándo coincidió una y cuál fue, para que una respuesta encuentre ese chat. No se guarda, registra ni envía el contenido de ninguna notificación.</string>
     <string name="field_notification_contains">El título o el texto contiene</string>
     <string name="hint_notification_contains_any">Vacío: cualquier notificación de esta app</string>
     <string name="helper_notification_received">Se ejecuta cuando llega una notificación nueva de esta app. Varias en 10 segundos cuentan como una. Solo en automatizaciones.</string>
+    <string name="field_feed_url">Dirección del feed</string>
+    <string name="helper_rss_new_item">Se comprueba como mucho cada 15 minutos mientras hay conexión. Se ejecuta una vez por cada comprobación que encuentra elementos nuevos; los que ya estaban en el feed al guardar no cuentan. La dirección debe empezar por https:// y se usa exactamente como la escribiste. Solo en automatizaciones.</string>
+    <string name="field_calendar_name">El nombre del calendario contiene</string>
+    <string name="hint_calendar_any">Déjalo vacío para cualquier calendario</string>
+    <string name="field_event_title">El título del evento contiene</string>
+    <string name="hint_event_any">Déjalo vacío para cualquier evento</string>
+    <string name="constraint_summary_any_event">Cualquier evento</string>
+    <string name="helper_calendar_event_active">Se ejecuta cuando empieza un evento que coincide. Con el teléfono inactivo puede ejecutarse más tarde, así que un evento corto puede perderse. Los eventos de todo el día y los cancelados se ignoran, y los eventos seguidos cuentan como uno. Solo en automatizaciones.</string>
+    <string name="constraint_needs_calendar">Necesita permiso para leer tu calendario. Los eventos se comparan con esta condición en este teléfono y nunca se guardan, registran ni envían.</string>
     <string name="field_cooldown_minutes">Minutos entre ejecuciones</string>
     <string name="helper_cooldown">Se omite si este acceso directo se ejecutó hace menos de estos minutos. El contador vuelve a empezar si el teléfono o KeySnap se reinician.</string>
     <string name="constraint_summary_cooldown">Como máximo cada %1$d min</string>
@@ -755,7 +779,7 @@
     <string name="about_traffic_device">Tu propio teléfono</string>
     <string name="about_traffic_device_body">Vinculación por Depuración inalámbrica. Solo red local.</string>
     <string name="about_traffic_yours">Las direcciones que escribes tú</string>
-    <string name="about_traffic_yours_body">Una acción HTTP o Abrir URL va exactamente a donde la escribiste, sin cambios.</string>
+    <string name="about_traffic_yours_body">Una acción HTTP o Abrir URL, o un feed RSS que sigue una automatización, va exactamente a donde la escribiste, sin cambios.</string>
     <string name="about_traffic_google">Anuncios de Google y Google Play</string>
     <string name="about_traffic_google_body">Para mostrar el anuncio en la versión gratuita y comprobar si has comprado Pro. Ninguno recibe jamás una pulsación de tecla ni un acceso directo.</string>
     <string name="about_traffic_all">Esa es toda la lista.</string>
@@ -827,7 +851,7 @@
     <string name="run_failure_notifications_off">Las notificaciones están desactivadas</string>
     <string name="editor_needs_action">Añade al menos una acción antes de guardar.</string>
     <string name="editor_needs_trigger">Elige una tecla antes de guardar.</string>
-    <string name="editor_notification_needs_automation">Notificación recibida solo funciona en una automatización. Quita esa condición o cambia a Automatización.</string>
+    <string name="editor_condition_needs_automation">%1$s solo funciona en una automatización. Quita esa condición o cambia a Automatización.</string>
     <string name="saved_needs_trigger">Guardado. Asigna una tecla para que pueda ejecutarse.</string>
     <string name="saved_named">\"%1$s\" guardado</string>
     <string name="saved_needs_condition">Guardado. Añade una condición que cambie por sí sola, como Cargando o Dispositivo Bluetooth conectado, para que pueda ejecutarse.</string>
@@ -877,7 +901,6 @@
     <!-- OEM key tip -->
     <string name="oem_key_tip">Consejo: configura este botón como “Ninguno” en los ajustes del teléfono para que solo KeySnap responda a él.</string>
     <!-- Recipe gallery -->
-    <string name="recipe_category_ifttt">¿Vienes de IFTTT?</string>
     <string name="recipe_category_webhook">Webhooks</string>
     <string name="recipe_wifi_vibrate">En el trabajo</string>
     <string name="recipe_wifi_vibrate_subtitle">WiFi del trabajo: timbre en vibración</string>
@@ -885,15 +908,20 @@
     <string name="recipe_wifi_ring_subtitle">Fuera de esa WiFi: vuelve el timbre</string>
     <string name="recipe_morning_dnd_off">Desenchufar por la mañana</string>
     <string name="recipe_morning_dnd_off_subtitle">Sin cargador tras las 06:00: No molestar desactivado</string>
-    <string name="recipe_ifttt_webhook">Applet de IFTTT</string>
-    <string name="recipe_ifttt_webhook_subtitle">Una tecla llama a tu URL de Webhooks</string>
-    <string name="recipe_home_assistant_subtitle">Pega la URL de webhook de una automatización</string>
-    <string name="recipe_discord_subtitle">Pega la URL de webhook de un canal</string>
-    <string name="recipe_ntfy_subtitle">Pega la URL de tu tema</string>
-    <string name="recipe_apps_script_subtitle">Pega la URL de tu aplicación web</string>
-    <string name="recipe_whatsapp">Enviar un mensaje de WhatsApp</string>
-    <string name="recipe_whatsapp_subtitle">Abre un chat con tu texto y toca Enviar</string>
-    <string name="recipe_whatsapp_note">En el primer paso, escribe https://wa.me/&lt;número&gt;?text=&lt;mensaje&gt; con el número en formato internacional, solo dígitos. Luego coloca el toque sobre el botón Enviar de WhatsApp. La pantalla debe estar encendida y desbloqueada, WhatsApp aparece un momento y puede que tengas que ajustar el toque de Enviar en tu teléfono.</string>
+    <string name="recipe_smart_home_subtitle">Pega la URL de webhook de una automatización</string>
+    <string name="recipe_chat_channel_subtitle">Pega la URL de webhook de un canal</string>
+    <string name="recipe_phone_notification_subtitle">Pega la URL de tu tema</string>
+    <string name="recipe_spreadsheet_subtitle">Pega la URL de tu aplicación web</string>
+    <string name="recipe_category_routines">Rutinas diarias</string>
+    <string name="recipe_web_address">Llamar a una dirección web</string>
+    <string name="recipe_web_address_subtitle">Una tecla llama a una URL que pegas</string>
+    <string name="recipe_smart_home">Petición al hogar inteligente</string>
+    <string name="recipe_chat_channel">Publicar en un canal de chat</string>
+    <string name="recipe_phone_notification">Enviar una notificación a mi teléfono</string>
+    <string name="recipe_spreadsheet">Añadir una fila a una hoja de cálculo</string>
+    <string name="recipe_send_message">Enviar un mensaje</string>
+    <string name="recipe_send_message_subtitle">Abre un chat con tu texto ya escrito</string>
+    <string name="recipe_send_message_note">Elige un contacto, la app con la que enviar y tu mensaje. El chat se abre con el mensaje ya escrito; tú tocas Enviar.</string>
     <string name="home_recipes_all">Todos</string>
     <!-- Share and import -->
     <string name="import_error_invalid">Esto no es un acceso directo de KeySnap válido.</string>

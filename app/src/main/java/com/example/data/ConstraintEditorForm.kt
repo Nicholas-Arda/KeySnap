@@ -22,6 +22,8 @@ data class ConstraintEditorForm(
     @StringRes val helperRes: Int? = null,
     /** Keys that must be non-blank before Save enables; defaults to every key the fields write. */
     val required: Set<String> = fields.flatMap { it.keys }.toSet(),
+    /** A check on top of [required], e.g. an https-only address. False keeps Save disabled. */
+    val valid: (Map<String, String>) -> Boolean = { true },
     /** The card row's second line. Gets the installed-apps list so a package can show as its label. */
     val summary: (Resources, Map<String, String>, List<InstalledApp>) -> String,
 )
@@ -69,6 +71,29 @@ object ConstraintEditorForms {
                 listOf(appSummary(res, params, apps), if (contains.isEmpty()) "" else "“$contains”")
                     .filter { it.isNotEmpty() }
                     .joinToString(" · ")
+            },
+        ),
+        ConstraintEditorForm(
+            type = ScriptConstraintCatalog.RSS_NEW_ITEM,
+            fields = listOf(EditorField.Text("url", R.string.field_feed_url, hintRes = R.string.hint_url_example)),
+            helperRes = R.string.helper_rss_new_item,
+            // https only: Android blocks cleartext, and the address is never rewritten to make it work.
+            valid = { it.value("url").startsWith("https://", ignoreCase = true) },
+            // Shown verbatim so the card says exactly which address is fetched.
+            summary = { _, params, _ -> params["url"].orEmpty() },
+        ),
+        ConstraintEditorForm(
+            type = ScriptConstraintCatalog.CALENDAR_EVENT_ACTIVE,
+            fields = listOf(
+                EditorField.Text("calendar", R.string.field_calendar_name, hintRes = R.string.hint_calendar_any),
+                EditorField.Text("title", R.string.field_event_title, hintRes = R.string.hint_event_any),
+            ),
+            helperRes = R.string.helper_calendar_event_active,
+            // Blank filters mean any calendar and any event.
+            required = emptySet(),
+            summary = { res, params, _ ->
+                listOf(params.value("calendar"), params.value("title")).filter(String::isNotEmpty).joinToString(" · ")
+                    .ifEmpty { res.getString(R.string.constraint_summary_any_event) }
             },
         ),
         ConstraintEditorForm(
@@ -150,9 +175,11 @@ object ConstraintEditorForms {
         }
     }
 
-    /** True when the type has no form, or every required key holds a non-blank value. */
-    fun isComplete(type: String, params: Map<String, String>): Boolean =
-        byType[type]?.required.orEmpty().all { !params[it].isNullOrBlank() }
+    /** True when the type has no form, or every required key holds a non-blank value and the form's own check passes. */
+    fun isComplete(type: String, params: Map<String, String>): Boolean {
+        val form = byType[type] ?: return true
+        return form.required.all { !params[it].isNullOrBlank() } && form.valid(params)
+    }
 
     /** The card row's second line, or null when the constraint takes no configuration. */
     fun summarize(constraint: ScriptConstraint, resources: Resources, installedApps: List<InstalledApp> = emptyList()): String? =

@@ -248,11 +248,13 @@
     <string name="constraint_location_on">La localisation est activée</string>
     <string name="constraint_location_off">La localisation est désactivée</string>
     <string name="constraint_day_of_week">Jour de la semaine</string>
+    <string name="constraint_calendar_event_active">Événement d\'agenda en cours</string>
     <string name="constraint_cooldown">Au plus une fois toutes les N minutes</string>
     <string name="constraint_mobile_data_on">Les données mobiles sont activées</string>
     <string name="constraint_mobile_data_off">Les données mobiles sont désactivées</string>
     <string name="constraint_airplane_mode_on">Le mode avion est activé</string>
     <string name="constraint_airplane_mode_off">Le mode avion est désactivé</string>
+    <string name="constraint_rss_new_item">Nouvel élément dans un flux RSS</string>
     <string name="constraint_ringer_normal">La sonnerie est activée</string>
     <string name="constraint_ringer_vibrate">La sonnerie est en mode vibreur</string>
     <string name="constraint_ringer_silent">La sonnerie est en mode silencieux</string>
@@ -266,8 +268,21 @@
     <string name="badge_accessibility">Nécessite le service d\'accessibilité</string>
     <string name="badge_notification_policy">Nécessite l\'accès à Ne pas déranger</string>
     <string name="badge_notification_access">Nécessite l\'accès aux notifications</string>
-    <string name="hint_reply_chat">Une partie du nom de la discussion. Vide : la discussion la plus récente</string>
-    <string name="summary_reply_newest_chat">discussion la plus récente</string>
+    <string name="hint_reply_chat">Le nom de la discussion, tel que la notification l\'affiche</string>
+    <string name="summary_reply_trigger_chat">la discussion qui l\'a déclenché</string>
+    <string name="helper_reply_chat_trigger">Vide : répond à la discussion dont la notification a déclenché ce raccourci.</string>
+    <string name="helper_reply_chat_required">Obligatoire : seule une condition « Notification reçue » peut choisir la discussion pour vous.</string>
+    <string name="action_send_message">Envoyer un message</string>
+    <string name="param_to">À</string>
+    <string name="param_message">Message</string>
+    <string name="field_send_with">Envoyer avec</string>
+    <string name="helper_send_message">Ouvre la discussion avec votre message déjà saisi ; vous touchez Envoyer.</string>
+    <string name="action_config_pick_contact">Choisir dans les contacts</string>
+    <string name="action_config_type_number">Ou saisissez un numéro</string>
+    <string name="helper_message_number">Vide : vous choisissez la personne dans l\'application.</string>
+    <string name="message_number_needs_country_code">Ajoutez l\'indicatif du pays au numéro (il commence par +).</string>
+    <string name="message_number_not_used">Cette application vous fait choisir la personne ; le numéro n\'est pas utilisé.</string>
+    <string name="action_config_what_will_run">Ce qui sera exécuté : %1$s</string>
     <string name="helper_reply_to_notification">Envoie votre texte via le bouton Répondre de la notification elle-même, sans ouvrir l\'application. Fonctionne uniquement tant que cette discussion a une notification affichée, et ne peut pas démarrer une nouvelle discussion. KeySnap lit les notifications sur votre téléphone uniquement pour la trouver ; rien n\'est enregistré ni envoyé ailleurs. Ajoutez « Au plus une fois toutes les N minutes » pour qu\'une discussion active ne reçoive pas de réponse encore et encore.</string>
     <string name="badge_write_settings">Nécessite une autorisation pour modifier les paramètres système</string>
 
@@ -442,10 +457,19 @@
     <string name="field_time_end">Jusqu\'à</string>
     <string name="field_days">Jours</string>
     <string name="constraint_needs_usage_access">Nécessite l\'accès aux données d\'utilisation pour que l\'application voie quelle application est au premier plan.</string>
-    <string name="constraint_needs_notification_access">Nécessite l\'accès aux notifications. KeySnap compare chaque nouvelle notification de l\'application choisie à cette condition, sur votre téléphone, et ne garde que l\'heure de la correspondance. Rien n\'est enregistré, journalisé ni envoyé.</string>
+    <string name="constraint_needs_notification_access">Nécessite l\'accès aux notifications. KeySnap compare chaque nouvelle notification de l\'application choisie à cette condition, sur votre téléphone. Il ne garde que l\'heure de la correspondance et la notification concernée, pour qu\'une réponse retrouve cette discussion. Aucun contenu de notification n\'est enregistré, journalisé ni envoyé.</string>
     <string name="field_notification_contains">Le titre ou le texte contient</string>
     <string name="hint_notification_contains_any">Vide : toute notification de cette application</string>
     <string name="helper_notification_received">S\'exécute à l\'arrivée d\'une nouvelle notification de cette application. Plusieurs en 10 secondes comptent pour une. Automatisations uniquement.</string>
+    <string name="field_feed_url">Adresse du flux</string>
+    <string name="helper_rss_new_item">Vérifié au plus toutes les 15 minutes, lorsque l\'appareil est en ligne. S\'exécute une fois par vérification qui trouve de nouveaux éléments ; ceux déjà présents dans le flux à l\'enregistrement ne comptent pas. L\'adresse doit commencer par https:// et est utilisée exactement telle que vous l\'avez saisie. Automatisations uniquement.</string>
+    <string name="field_calendar_name">Le nom de l\'agenda contient</string>
+    <string name="hint_calendar_any">Laissez vide pour n\'importe quel agenda</string>
+    <string name="field_event_title">Le titre de l\'événement contient</string>
+    <string name="hint_event_any">Laissez vide pour n\'importe quel événement</string>
+    <string name="constraint_summary_any_event">N\'importe quel événement</string>
+    <string name="helper_calendar_event_active">S\'exécute quand un événement correspondant commence. Quand le téléphone est inactif, cela peut se faire plus tard ; un événement court peut donc être manqué. Les événements sur toute la journée et annulés sont ignorés, et des événements qui se suivent comptent pour un. Automatisations uniquement.</string>
+    <string name="constraint_needs_calendar">Nécessite l\'autorisation de lire votre agenda. Les événements sont comparés à cette condition sur ce téléphone et ne sont jamais enregistrés, journalisés ni envoyés.</string>
     <string name="field_cooldown_minutes">Minutes entre deux exécutions</string>
     <string name="helper_cooldown">Ignoré si ce raccourci s\'est exécuté il y a moins de minutes que cela. Le compteur repart de zéro si le téléphone ou KeySnap redémarre.</string>
     <string name="constraint_summary_cooldown">Au plus toutes les %1$d min</string>
@@ -754,7 +778,7 @@
     <string name="about_traffic_device">Votre propre téléphone</string>
     <string name="about_traffic_device_body">Association au débogage sans fil. Réseau local uniquement.</string>
     <string name="about_traffic_yours">Les adresses que vous avez saisies</string>
-    <string name="about_traffic_yours_body">Une action HTTP ou Ouvrir une URL va exactement où vous l\'avez écrite, sans modification.</string>
+    <string name="about_traffic_yours_body">Une action HTTP ou Ouvrir une URL, ou un flux RSS suivi par une automatisation, va exactement où vous l\'avez écrite, sans modification.</string>
     <string name="about_traffic_google">Annonces Google et Google Play</string>
     <string name="about_traffic_google_body">Pour afficher l\'annonce dans la version gratuite et vérifier si vous avez acheté Pro. Ni l\'un ni l\'autre ne reçoit un appui de touche ou un raccourci.</string>
     <string name="about_traffic_all">C\'est toute la liste.</string>
@@ -826,7 +850,7 @@
     <string name="run_failure_notifications_off">Les notifications sont désactivées</string>
     <string name="editor_needs_action">Ajoutez au moins une action avant d\'enregistrer.</string>
     <string name="editor_needs_trigger">Choisissez une touche avant d\'enregistrer.</string>
-    <string name="editor_notification_needs_automation">Notification reçue ne fonctionne que dans une automatisation. Retirez cette condition ou passez en Automatisation.</string>
+    <string name="editor_condition_needs_automation">%1$s ne fonctionne que dans une automatisation. Retirez cette condition ou passez en Automatisation.</string>
     <string name="saved_needs_trigger">Enregistré. Attribuez une touche pour qu\'il puisse s\'exécuter.</string>
     <string name="saved_named">« %1$s » enregistré</string>
     <string name="saved_needs_condition">Enregistré. Ajoutez une condition qui change d\'elle-même, comme En charge ou Appareil Bluetooth connecté, pour qu\'il puisse s\'exécuter.</string>
@@ -877,7 +901,6 @@
     <!-- OEM key tip -->
     <string name="oem_key_tip">Astuce : réglez ce bouton sur « Aucun » dans les paramètres du téléphone, pour que seul KeySnap y réagisse.</string>
     <!-- Recipe gallery -->
-    <string name="recipe_category_ifttt">Vous venez d\'IFTTT ?</string>
     <string name="recipe_category_webhook">Webhooks</string>
     <string name="recipe_wifi_vibrate">Au travail</string>
     <string name="recipe_wifi_vibrate_subtitle">Wi-Fi du travail : sonnerie en vibreur</string>
@@ -885,15 +908,20 @@
     <string name="recipe_wifi_ring_subtitle">Hors de ce Wi-Fi : sonnerie rétablie</string>
     <string name="recipe_morning_dnd_off">Débranché le matin</string>
     <string name="recipe_morning_dnd_off_subtitle">Débranché après 06h00 : NPD désactivé</string>
-    <string name="recipe_ifttt_webhook">Applet IFTTT</string>
-    <string name="recipe_ifttt_webhook_subtitle">Une touche appelle votre URL Webhooks</string>
-    <string name="recipe_home_assistant_subtitle">Collez l\'URL webhook d\'une automatisation</string>
-    <string name="recipe_discord_subtitle">Collez l\'URL webhook d\'un salon</string>
-    <string name="recipe_ntfy_subtitle">Collez l\'URL de votre sujet</string>
-    <string name="recipe_apps_script_subtitle">Collez l\'URL de votre application web</string>
-    <string name="recipe_whatsapp">Envoyer un message WhatsApp</string>
-    <string name="recipe_whatsapp_subtitle">Ouvre une discussion avec votre texte, touche Envoyer</string>
-    <string name="recipe_whatsapp_note">À la première étape, saisissez https://wa.me/&lt;numéro&gt;?text=&lt;message&gt; avec le numéro au format international, chiffres uniquement. Placez ensuite le toucher sur le bouton Envoyer de WhatsApp. L\'écran doit être allumé et déverrouillé, WhatsApp apparaît un instant et le toucher sur Envoyer peut devoir être ajusté sur votre téléphone.</string>
+    <string name="recipe_smart_home_subtitle">Collez l\'URL webhook d\'une automatisation</string>
+    <string name="recipe_chat_channel_subtitle">Collez l\'URL webhook d\'un salon</string>
+    <string name="recipe_phone_notification_subtitle">Collez l\'URL de votre sujet</string>
+    <string name="recipe_spreadsheet_subtitle">Collez l\'URL de votre application web</string>
+    <string name="recipe_category_routines">Routines du quotidien</string>
+    <string name="recipe_web_address">Appeler une adresse web</string>
+    <string name="recipe_web_address_subtitle">Une touche appelle une URL que vous collez</string>
+    <string name="recipe_smart_home">Requête maison connectée</string>
+    <string name="recipe_chat_channel">Publier dans un salon de discussion</string>
+    <string name="recipe_phone_notification">M\'envoyer une notification</string>
+    <string name="recipe_spreadsheet">Ajouter une ligne à un tableur</string>
+    <string name="recipe_send_message">Envoyer un message</string>
+    <string name="recipe_send_message_subtitle">Ouvre une discussion avec votre texte déjà saisi</string>
+    <string name="recipe_send_message_note">Choisissez un contact, l\'application d\'envoi et votre message. La discussion s\'ouvre avec le message déjà saisi ; vous touchez Envoyer.</string>
     <string name="home_recipes_all">Tous</string>
     <!-- Share and import -->
     <string name="import_error_invalid">Ce n\'est pas un raccourci KeySnap valide.</string>

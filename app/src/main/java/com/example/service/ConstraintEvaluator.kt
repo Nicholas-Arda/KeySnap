@@ -44,6 +44,10 @@ interface ConstraintEvaluator {
  * Unknown never blocks: whenever the state cannot be read (missing permission, no service
  * instance, malformed parameter, API failure) the constraint reads as satisfied, so a script
  * degrades to "always" rather than silently dying.
+ *
+ * The automation-only types (`ScriptConstraintCatalog.AUTOMATION_ONLY`) are the exception and read
+ * unknown as false: they only ever drive an automation's false -> true edge, where "always true"
+ * would mean "never fires", and firing on "unknown" would be a guess.
  */
 class AndroidConstraintEvaluator(private val appContext: Context) : ConstraintEvaluator {
 
@@ -106,6 +110,8 @@ class AndroidConstraintEvaluator(private val appContext: Context) : ConstraintEv
             ScriptConstraintCatalog.COOLDOWN -> true
             ScriptConstraintCatalog.NOTIFICATION_RECEIVED ->
                 NotificationMatches.isRecent(constraint, SystemClock.elapsedRealtime())
+            ScriptConstraintCatalog.RSS_NEW_ITEM -> RssPolling.isPulsing(p["url"])
+            ScriptConstraintCatalog.CALENDAR_EVENT_ACTIVE -> CalendarCondition.isActive(appContext, p["calendar"], p["title"])
             // A constraint type that isn't AVAILABLE never blocks a script.
             else -> true
         }

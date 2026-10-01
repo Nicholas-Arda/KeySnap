@@ -18,6 +18,9 @@ import android.os.Vibrator
 import android.os.VibratorManager
 import android.provider.MediaStore
 import android.provider.Settings
+import android.provider.Telephony
+import android.telephony.PhoneNumberUtils
+import android.telephony.TelephonyManager
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import androidx.core.app.NotificationCompat
@@ -30,6 +33,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import java.net.HttpURLConnection
 import java.net.URL
+import java.net.URLEncoder
 import java.util.concurrent.atomic.AtomicInteger
 
 fun interface ScriptActionHandler {
@@ -159,6 +163,86 @@ internal fun wallpaperFlagsFor(target: String?): Int? = when (target) {
     else -> null
 }
 
+/**
+ * The param a reply carries for one run only: the key of the notification that started the run.
+ * Never persisted, never shared, and any stored copy is replaced, so a saved or imported shortcut
+ * cannot aim a reply at a notification of its choosing.
+ */
+internal const val TRIGGER_NOTIFICATION_PARAM = "_triggerNotificationKey"
+
+internal fun ScriptAction.withTriggerNotification(key: String?): ScriptAction {
+    if (type != "reply_to_notification") return this
+    val clean = params - TRIGGER_NOTIFICATION_PARAM
+    return copy(params = if (key == null) clean else clean + (TRIGGER_NOTIFICATION_PARAM to key))
+}
+
+/** Apps that open a chat from a wa.me link with the text in it. Package names only; never shown. */
+private val LINK_MESSAGING_PACKAGES = setOf("com.whatsapp", "com.whatsapp.w4b")
+
+/**
+ * How `send_message` opens the chat: [action] on [uri] inside [packageName], with the text as the
+ * [textExtra] extra when there is one. The text is passed as written; only the link URL-encodes it.
+ * Pure, so the editor can print it before it runs and tests can pin every branch.
+ */
+internal data class MessageLaunch(
+    val action: String,
+    val uri: String?,
+    val textExtra: String?,
+    val text: String,
+    val packageName: String,
+) {
+    fun toIntent(): Intent = Intent(action).setPackage(packageName).apply {
+        if (uri != null) data = Uri.parse(uri) else type = "text/plain"
+        if (textExtra != null) putExtra(textExtra, text)
+    }
+
+    /** The editor's "What will run" line: the literal link or intent, before it ever runs. */
+    fun describe(): String = buildString {
+        append(action.removePrefix("android.intent.action."))
+        append(' ').append(uri ?: "text/plain")
+        if (textExtra != null) append(" · ").append(textExtra.removePrefix("android.intent.extra.")).append("=“").append(text).append('”')
+        append(" → ").append(packageName)
+    }
+}
+
+/** E.164 when Android can parse it for the SIM's country, else the digits, keeping a leading +. */
+internal fun normalizePhoneNumber(number: String, countryIso: String?): String {
+    val trimmed = number.trim()
+    if (trimmed.isEmpty()) return ""
+    val e164 = countryIso?.takeIf { it.isNotBlank() }?.let { PhoneNumberUtils.formatNumberToE164(trimmed, it.uppercase()) }
+    return e164 ?: ((if (trimmed.startsWith("+")) "+" else "") + trimmed.filter { it.isDigit() })
+}
+
+/**
+ * A wa.me link for the apps that take one, an `smsto:` chat for an app that opens those, and a plain
+ * text share otherwise (the recipient is then chosen inside the app). An empty [number] leaves the
+ * recipient to the app in every branch. Null for a link app given a number without its country code:
+ * the link reads the leading digits as one, which could open a stranger's chat.
+ */
+internal fun messageLaunch(packageName: String, number: String, text: String, countryIso: String?, opensSmsTo: Boolean): MessageLaunch? {
+    val to = normalizePhoneNumber(number, countryIso)
+    return when {
+        packageName in LINK_MESSAGING_PACKAGES -> {
+            if (to.isNotEmpty() && !to.startsWith("+")) return null
+            val encoded = URLEncoder.encode(text, "UTF-8").replace("+", "%20")
+            MessageLaunch(Intent.ACTION_VIEW, "https://wa.me/${to.filter { it.isDigit() }}?text=$encoded", null, text, packageName)
+        }
+        opensSmsTo -> MessageLaunch(Intent.ACTION_SENDTO, "smsto:$to", "sms_body", text, packageName)
+        else -> MessageLaunch(Intent.ACTION_SEND, null, Intent.EXTRA_TEXT, text, packageName)
+    }
+}
+
+/** The [MessageLaunch] for a `send_message` action on this phone, or null while its app or text is missing. */
+internal fun messageLaunchFor(context: Context, params: Map<String, String>): MessageLaunch? {
+    val packageName = params["packageName"]?.trim().orEmpty()
+    val text = params["text"].orEmpty()
+    if (packageName.isEmpty() || text.isBlank()) return null
+    val countryIso = runCatching { context.getSystemService(TelephonyManager::class.java)?.simCountryIso }.getOrNull()
+    val opensSmsTo = packageName == runCatching { Telephony.Sms.getDefaultSmsPackage(context) }.getOrNull() ||
+        context.packageManager.queryIntentActivities(Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:")).setPackage(packageName), 0).isNotEmpty()
+    return messageLaunch(packageName, params["number"].orEmpty(), text, countryIso, opensSmsTo)
+}
+
 internal fun wordBoundsAtCursor(text: String, cursor: Int): IntRange? {
     if (text.isEmpty()) return null
     val pos = cursor.coerceIn(0, text.length)
@@ -182,18 +266,31 @@ class ScriptActionExecutor(private val handler: ScriptActionHandler) {
      * full, unfiltered list — used when the privileged bridge already owns some of a script's
      * actions and the app must run only the rest, without shifting what "repeat_previous" repeats.
      */
-    suspend fun execute(actions: List<ScriptAction>, shouldRun: (ScriptAction) -> Boolean = { true }): List<Boolean> =
-        runEach(actions, shouldRun).flatMap { it ?: listOf(false) }
+    suspend fun execute(
+        actions: List<ScriptAction>,
+        notificationKey: String? = null,
+        shouldRun: (ScriptAction) -> Boolean = { true },
+    ): List<Boolean> = runEach(actions, notificationKey, shouldRun).flatMap { it ?: listOf(false) }
 
     /**
      * One entry per action in [actions], for the run log: true when it (every repetition, for a
      * "repeat_previous") succeeded, false when it failed, null when [shouldRun] left it to the bridge.
+     *
+     * [notificationKey] is the notification whose "Notification received" condition started this
+     * run, if one did; a reply with no chat named answers that one and nothing else.
      */
-    suspend fun executeEach(actions: List<ScriptAction>, shouldRun: (ScriptAction) -> Boolean = { true }): List<Boolean?> =
-        runEach(actions, shouldRun).map { runs -> runs?.all { it } }
+    suspend fun executeEach(
+        actions: List<ScriptAction>,
+        notificationKey: String? = null,
+        shouldRun: (ScriptAction) -> Boolean = { true },
+    ): List<Boolean?> = runEach(actions, notificationKey, shouldRun).map { runs -> runs?.all { it } }
 
     /** Each configured action's repetition results, or null when [shouldRun] skipped it. */
-    private suspend fun runEach(actions: List<ScriptAction>, shouldRun: (ScriptAction) -> Boolean): List<List<Boolean>?> {
+    private suspend fun runEach(
+        actions: List<ScriptAction>,
+        notificationKey: String?,
+        shouldRun: (ScriptAction) -> Boolean,
+    ): List<List<Boolean>?> {
         val out = mutableListOf<List<Boolean>?>()
         var previous: ScriptAction? = null
         for (action in actions) {
@@ -204,11 +301,11 @@ class ScriptActionExecutor(private val handler: ScriptActionHandler) {
                     when {
                         target == null || count <= 0 -> listOf(false)
                         !shouldRun(target) -> null
-                        else -> List(count) { handler.execute(target) }
+                        else -> List(count) { handler.execute(target.withTriggerNotification(notificationKey)) }
                     },
                 )
             } else {
-                out.add(if (shouldRun(action)) listOf(handler.execute(action)) else null)
+                out.add(if (shouldRun(action)) listOf(handler.execute(action.withTriggerNotification(notificationKey))) else null)
                 previous = action
             }
         }
@@ -302,6 +399,9 @@ class ScriptActionExecutor(private val handler: ScriptActionHandler) {
                 "open_settings" -> startActivitySafely(ctx, Intent(Settings.ACTION_SETTINGS))
                 "send_intent" -> sendIntent(ctx, action.params)
                 "reply_to_notification" -> NotificationEventListener.reply(ctx, action.params)
+                // The chat opens with the text typed in; the user taps Send. Number and text are
+                // user data: never log them.
+                "send_message" -> messageLaunchFor(ctx, action.params)?.let { startActivitySafely(ctx, it.toIntent()) } ?: false
                 "http_request" -> httpRequest(action.params["method"], action.params["url"], action.params["body"])
                 "shell_command" -> runShellCommand(action.params["command"])
                 // Neither killing another app's process nor writing system/secure/global settings

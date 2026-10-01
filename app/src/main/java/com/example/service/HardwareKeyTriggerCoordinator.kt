@@ -103,6 +103,9 @@ object HardwareKeyTriggerCoordinator {
     private val automationEdges = AutomationEdges()
     private var automationWatch: Job? = null
 
+    /** False until [initialize] has run in this process; nothing can fire before that. */
+    val isReady: Boolean get() = constraintEvaluator != null
+
     // ponytail: in memory, so a restart of this process forgets it and one early re-run is
     // possible; persist per script id if users report it.
     /** Script id -> elapsedRealtime of its last run, for the cooldown condition. */
@@ -136,10 +139,15 @@ object HardwareKeyTriggerCoordinator {
      * Editing a script must not fire it: whenever the script list changes, forget every edge and
      * re-seed silently, so a new automation whose state is already true waits for the next real
      * change. The torch has no broadcast, so its state flow is the wake-up for flashlight triggers.
+     * Each change also re-arms the automation-only conditions' wake-ups.
      */
     private fun watchAutomationSources(): Job = coordinatorScope.launch {
         launch {
-            scriptRepository?.scripts?.collect {
+            scriptRepository?.scripts?.collect { scripts ->
+                appContext?.let {
+                    RssPolling.sync(it, scripts)
+                    CalendarCondition.sync(it, scripts)
+                }
                 automationEdges.reset()
                 reevaluateAutomations()
             }
@@ -345,6 +353,29 @@ object HardwareKeyTriggerCoordinator {
         executeActions(context, defaults, fired, context.getString(R.string.trigger_kind_automation), keyCode = null, pressType = null)
     }
 
+    /**
+     * Main thread. For a wake-up that can start this process cold (a calendar alarm, the feed job):
+     * sets the pipeline up the way a widget tap does, if nothing has yet.
+     */
+    fun ensureInitialized(context: Context) {
+        if (!isReady) initialize(context.applicationContext, KeyMappingRepository.getInstance(context))
+    }
+
+    /**
+     * Records the current state of every automation whose edge is not known yet, and never fires.
+     * A wake-up calls it while its condition still reads as it was just before the change, so in a
+     * fresh process (where a first sighting only records) the change itself becomes a false -> true
+     * edge. A script whose edge is already tracked is left alone, so a change some other broadcast
+     * already reported is never fired twice.
+     */
+    fun seedUnknownAutomations() {
+        val scripts = scriptRepository?.scripts?.value ?: return
+        val evaluator = constraintEvaluator ?: return
+        scripts.filter { it.automation && !automationEdges.knows(it.id) }.forEach { script ->
+            automationEdges.update(script.id, script.constraints.isNotEmpty() && script.constraints.all(evaluator::isSatisfied))
+        }
+    }
+
     /** For a condition that expires with no broadcast (a notification's window): re-check once it has. */
     fun reevaluateAutomationsAfter(delayMs: Long) {
         coordinatorScope.launch {
@@ -389,7 +420,7 @@ object HardwareKeyTriggerCoordinator {
         // Nothing may have adopted a running bridge in a cold process yet; the probe does socket and
         // config-file I/O, as it does off the main thread at app start.
         withContext(Dispatchers.IO) { BridgeController.ensureAdopted(context) }
-        val run = runChain(script.actions, executor, BridgeController::runActions)
+        val run = runChain(script.actions, executor, runOnBridge = BridgeController::runActions)
         _triggerCount.value = _triggerCount.value + 1
         val record = recordRun(script, keyCode = null, pressType = null, run.appResults, run.bridgeReport, source)
         val ran = record?.actions?.count { it.ok } ?: 0
@@ -408,6 +439,13 @@ object HardwareKeyTriggerCoordinator {
         // Marked before the launch, so a second trigger queued behind this one already sees it.
         val now = SystemClock.elapsedRealtime()
         scripts.forEach { lastRunAt[it.id] = now }
+        // Read now, while the match is still inside its window: the notification a reply with no
+        // chat named should answer. A key run has none.
+        val triggerNotifications = if (keyCode == null) {
+            scripts.associate { it.id to NotificationMatches.triggeringKey(it.constraints, now) }
+        } else {
+            emptyMap()
+        }
         coordinatorScope.launch {
             scripts.forEach { script ->
                 if (resolveVibrateForScript(script, config.vibrateOnTrigger)) {
@@ -419,7 +457,7 @@ object HardwareKeyTriggerCoordinator {
                     // here. A key run reaches this only while the bridge is down (handleGesture),
                     // and must not ask it: a bridge coming up meanwhile has matched the press itself.
                     val run = if (keyCode == null) {
-                        runChain(script.actions, executor, BridgeController::runActions)
+                        runChain(script.actions, executor, triggerNotifications[script.id], BridgeController::runActions)
                     } else {
                         ChainResults(executor.executeEach(script.actions), bridgeReport = null)
                     }
@@ -489,21 +527,23 @@ object HardwareKeyTriggerCoordinator {
 internal data class ChainResults(val appResults: List<Boolean?>, val bridgeReport: List<Pair<String, Boolean>>?)
 
 /** The part of a bridge-run chain the app runs itself; see [ScriptActionCatalog.UNSUPPORTED_BY_BRIDGE]. */
-internal suspend fun ScriptActionExecutor.executeAppShare(actions: List<ScriptAction>): List<Boolean?> =
-    executeEach(actions) { it.type in ScriptActionCatalog.UNSUPPORTED_BY_BRIDGE }
+internal suspend fun ScriptActionExecutor.executeAppShare(actions: List<ScriptAction>, notificationKey: String? = null): List<Boolean?> =
+    executeEach(actions, notificationKey) { it.type in ScriptActionCatalog.UNSUPPORTED_BY_BRIDGE }
 
 /**
  * Runs a chain the way a key press would: [runOnBridge] runs what it supports, then the app runs
  * its share, as [HardwareKeyTriggerCoordinator.onBridgeTrigger] does. When [runOnBridge] returns
- * null (no bridge, or the request failed) the whole chain runs here, once.
+ * null (no bridge, or the request failed) the whole chain runs here, once. [notificationKey] is
+ * the notification that started the run, if any; see [ScriptActionExecutor.executeEach].
  */
 internal suspend fun runChain(
     actions: List<ScriptAction>,
     executor: ScriptActionExecutor,
+    notificationKey: String? = null,
     runOnBridge: suspend (List<ScriptAction>) -> BridgeRunResult?,
 ): ChainResults {
-    val bridge = runOnBridge(actions) ?: return ChainResults(executor.executeEach(actions), bridgeReport = null)
-    return ChainResults(executor.executeAppShare(actions), bridge.actionResults)
+    val bridge = runOnBridge(actions) ?: return ChainResults(executor.executeEach(actions, notificationKey), bridgeReport = null)
+    return ChainResults(executor.executeAppShare(actions, notificationKey), bridge.actionResults)
 }
 
 /** Rising-edge detector keyed by script id. [update] is true only for a false -> true change; a first sighting only records. */
@@ -514,6 +554,8 @@ internal class AutomationEdges {
         val was = last.put(id, satisfied)
         return satisfied && was == false
     }
+
+    fun knows(id: String): Boolean = id in last
 
     fun reset() = last.clear()
 }
