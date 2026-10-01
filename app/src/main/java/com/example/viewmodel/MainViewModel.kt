@@ -494,6 +494,13 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
             _editorMessage.value = res.getString(R.string.editor_needs_trigger)
             return
         }
+        // The bridge never sees notifications, so a key shortcut gated on one would behave
+        // differently in Advanced Mode. The picker hides it there; a draft switched from
+        // Automation to a key with it still attached is stopped here.
+        if (!draft.automation && draft.constraints.any { it.type in ScriptConstraintCatalog.AUTOMATION_ONLY }) {
+            _editorMessage.value = res.getString(R.string.editor_notification_needs_automation)
+            return
+        }
         val unconfigured = draft.actions.count { ActionEditorForms.missingRequired(it).isNotEmpty() }
         val overLimit = draft.enabled && !entitlementManager.isPro.value &&
             scriptRepository.scripts.value.count { it.enabled && it.id != draft.id } >= entitlementManager.activeScriptLimit

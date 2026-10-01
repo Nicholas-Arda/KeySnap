@@ -37,6 +37,7 @@
     <string name="param_point_b_y">बिंदु B Y</string>
     <string name="param_direction">दिशा</string>
     <string name="param_app">ऐप</string>
+    <string name="param_chat">चैट</string>
     <string name="param_shortcut">शॉर्टकट</string>
     <string name="param_method">मेथड</string>
     <string name="param_body">बॉडी</string>
@@ -74,6 +75,7 @@
     <string name="action_http_request">HTTP रिक्वेस्ट</string>
     <string name="action_shell_command">शेल कमांड</string>
     <string name="action_send_intent">इंटेंट भेजें</string>
+    <string name="action_reply_to_notification">सूचना का जवाब दें</string>
     <string name="action_interact_with_app_element">ऐप एलिमेंट के साथ इंटरैक्ट करें</string>
     <string name="action_launch_voice_assistant">वॉइस असिस्टेंट खोलें</string>
     <string name="action_launch_device_assistant">डिवाइस असिस्टेंट खोलें</string>
@@ -200,6 +202,7 @@
     <!-- शर्तें -->
     <string name="constraint_app_in_foreground">ऐप फोरग्राउंड में है</string>
     <string name="constraint_app_not_in_foreground">ऐप फोरग्राउंड में नहीं है</string>
+    <string name="constraint_notification_received">सूचना आई</string>
     <string name="constraint_app_playing_media">ऐप मीडिया चला रहा है</string>
     <string name="constraint_app_not_playing_media">ऐप मीडिया नहीं चला रहा है</string>
     <string name="constraint_no_media_playing">कोई मीडिया नहीं चल रहा</string>
@@ -245,6 +248,7 @@
     <string name="constraint_location_on">लोकेशन चालू है</string>
     <string name="constraint_location_off">लोकेशन बंद है</string>
     <string name="constraint_day_of_week">हफ़्ते का दिन</string>
+    <string name="constraint_cooldown">हर N मिनट में ज़्यादा से ज़्यादा एक बार</string>
     <string name="constraint_mobile_data_on">मोबाइल डेटा चालू है</string>
     <string name="constraint_mobile_data_off">मोबाइल डेटा बंद है</string>
     <string name="constraint_airplane_mode_on">एयरप्लेन मोड चालू है</string>
@@ -261,6 +265,10 @@
     <string name="badge_expert_mode">उन्नत मोड ज़रूरी है</string>
     <string name="badge_accessibility">सुलभता सेवा ज़रूरी है</string>
     <string name="badge_notification_policy">डू नॉट डिस्टर्ब एक्सेस ज़रूरी है</string>
+    <string name="badge_notification_access">सूचना एक्सेस ज़रूरी है</string>
+    <string name="hint_reply_chat">चैट के नाम का हिस्सा। खाली: सबसे नई चैट</string>
+    <string name="summary_reply_newest_chat">सबसे नई चैट</string>
+    <string name="helper_reply_to_notification">आपका टेक्स्ट ऐप खोले बिना सूचना के अपने जवाब बटन से भेजता है। यह सिर्फ़ तब काम करता है जब उस चैट की सूचना दिख रही हो, और नई चैट शुरू नहीं कर सकता। KeySnap सूचनाएं सिर्फ़ उसे ढूंढने के लिए आपके फ़ोन पर पढ़ता है; कुछ भी सेव नहीं होता और कहीं और नहीं भेजा जाता। “हर N मिनट में ज़्यादा से ज़्यादा एक बार” जोड़ें ताकि व्यस्त चैट को बार-बार जवाब न जाए।</string>
     <string name="badge_write_settings">सिस्टम सेटिंग बदलने की अनुमति आवश्यक है</string>
 
     <!-- क्रिया एडिटर: फ़ील्ड लेबल -->
@@ -434,6 +442,13 @@
     <string name="field_time_end">तक</string>
     <string name="field_days">दिन</string>
     <string name="constraint_needs_usage_access">यह देखने के लिए कि कौन सा ऐप सामने है, उपयोग एक्सेस चाहिए।</string>
+    <string name="constraint_needs_notification_access">सूचना एक्सेस चाहिए। KeySnap आपके चुने ऐप की हर नई सूचना को आपके फ़ोन पर ही इस शर्त से मिलाता है और सिर्फ़ मिलान का समय रखता है। कुछ भी सेव, लॉग या भेजा नहीं जाता।</string>
+    <string name="field_notification_contains">शीर्षक या टेक्स्ट में है</string>
+    <string name="hint_notification_contains_any">खाली: इस ऐप की कोई भी सूचना</string>
+    <string name="helper_notification_received">इस ऐप से नई सूचना आने पर चलता है। 10 सेकंड के अंदर आई कई सूचनाएं एक मानी जाती हैं। सिर्फ़ ऑटोमेशन में।</string>
+    <string name="field_cooldown_minutes">दो रन के बीच मिनट</string>
+    <string name="helper_cooldown">अगर यह शॉर्टकट इतने मिनट से कम पहले चला था, तो इसे छोड़ दिया जाता है। फ़ोन या KeySnap रीस्टार्ट होने पर गिनती फिर से शुरू होती है।</string>
+    <string name="constraint_summary_cooldown">ज़्यादा से ज़्यादा हर %1$d मिनट में</string>
     <string name="constraint_config_choose_app">जारी रखने के लिए कोई ऐप चुनें</string>
     <string name="constraint_needs_location">Android नेटवर्क का नाम केवल लोकेशन अनुमति वाले ऐप्स को दिखाता है।</string>
     <string name="constraint_grant_permission">अनुमति दें</string>
@@ -811,6 +826,7 @@
     <string name="run_failure_notifications_off">सूचनाएं बंद हैं</string>
     <string name="editor_needs_action">सेव करने से पहले कम से कम एक क्रिया जोड़ें।</string>
     <string name="editor_needs_trigger">सेव करने से पहले एक बटन चुनें।</string>
+    <string name="editor_notification_needs_automation">सूचना आई सिर्फ़ ऑटोमेशन में काम करता है। वह शर्त हटाएं या ऑटोमेशन पर जाएं।</string>
     <string name="saved_needs_trigger">सेव हो गया। इसे चलाने के लिए एक बटन असाइन करें।</string>
     <string name="saved_named">\"%1$s\" सेव हो गया</string>
     <string name="saved_needs_condition">सेव हो गया। इसे चलाने के लिए ऐसी शर्त जोड़ें जो अपने आप बदलती हो, जैसे चार्ज हो रहा है या ब्लूटूथ डिवाइस कनेक्टेड।</string>

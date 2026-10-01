@@ -2,12 +2,14 @@ package com.example.bridge;
 
 import android.content.Context;
 import android.os.Looper;
+import android.os.SystemClock;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -47,6 +49,8 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
     private final TorchController torch = new TorchController();
     private final RingerController ringer = new RingerController();
     private final ConstraintEvaluator constraints = new ConstraintEvaluator(torch);
+    /** Script id -> elapsedRealtime of its last run, for the cooldown constraint. */
+    private final Map<String, Long> lastRunByScript = new ConcurrentHashMap<>();
     private PressTimingMachine pressTiming;
     private EventServer server;
     private GeteventReader reader;
@@ -237,10 +241,13 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
     @Override
     public void onGesture(int keyCode, String pressType) {
         BridgeConfig current = config;
+        long now = SystemClock.elapsedRealtime();
         for (BridgeConfig.Script script : current.scriptsFor(keyCode, pressType)) {
-            if (!constraintsSatisfied(script)) {
+            if (!constraintsSatisfied(script) || !cooldownAllows(script, now)) {
                 continue;
             }
+            // Marked on this thread, before the executor runs it, so a quick second press sees it.
+            lastRunByScript.put(script.id, now);
             actionExecutor.execute(() -> runScript(script, keyCode, pressType));
         }
     }
@@ -248,6 +255,18 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
     private boolean constraintsSatisfied(BridgeConfig.Script script) {
         for (BridgeConfig.Constraint constraint : script.constraints) {
             if (!constraints.isSatisfied(constraint)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /** The per-script half of the cooldown constraint. Mirrors HardwareKeyTriggerCoordinator.passesCooldown. */
+    private boolean cooldownAllows(BridgeConfig.Script script, long now) {
+        for (BridgeConfig.Constraint constraint : script.constraints) {
+            if (BridgeConfig.CONSTRAINT_COOLDOWN.equals(constraint.type)
+                    && !ConstraintEvaluator.cooldownAllows(lastRunByScript.get(script.id),
+                            constraint.params.get("minutes"), now)) {
                 return false;
             }
         }
@@ -724,6 +743,11 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
         if (BridgeConfig.ACTION_TOGGLE_MAPPING.equals(action.type)
                 || BridgeConfig.ACTION_PAUSE_MAPPING.equals(action.type)
                 || BridgeConfig.ACTION_RESUME_MAPPING.equals(action.type)) {
+            return false;
+        }
+        // Replying needs a bound NotificationListenerService and the chat app's PendingIntent;
+        // this process has neither. Left to the app path. See ScriptActionCatalog.UNSUPPORTED_BY_BRIDGE.
+        if (BridgeConfig.ACTION_REPLY_TO_NOTIFICATION.equals(action.type)) {
             return false;
         }
         BridgeLog.w("Unknown action type: " + action.type);

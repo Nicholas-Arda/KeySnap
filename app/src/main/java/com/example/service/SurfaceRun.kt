@@ -27,15 +27,18 @@ sealed interface SurfaceRun {
  * The key path's rules, applied to a tap: a global pause stops every script, a paused script stops
  * only itself (which is also how the free limit shows up, see `EntitlementManager.enforceLimit`),
  * and an unmet "Only if" list stops it, except on an automation, whose conditions are its trigger
- * rather than a filter. Null means run it.
+ * rather than a filter. The "At most once every N minutes" condition ([cooldownAllows]) is a rate
+ * limit rather than a trigger, so it stops a tap on an automation too. Null means run it.
  */
 internal fun surfaceGate(
     script: ShortcutScript,
     globallyEnabled: Boolean,
+    cooldownAllows: Boolean = true,
     conditionsMet: (ShortcutScript) -> Boolean,
 ): SurfaceRun? = when {
     !globallyEnabled -> SurfaceRun.GloballyPaused
     !script.enabled -> SurfaceRun.ScriptPaused(script.name)
+    !cooldownAllows -> SurfaceRun.ConditionsUnmet(script.name)
     !script.automation && !conditionsMet(script) -> SurfaceRun.ConditionsUnmet(script.name)
     else -> null
 }

@@ -65,10 +65,12 @@ import androidx.compose.ui.unit.dp
 import com.example.data.ActionEditorForms
 import com.example.data.EditorField
 import com.example.data.InstalledApp
+import com.example.data.NOTIFICATION_ACCESS_BADGE
 import com.example.data.NOTIFICATION_POLICY_BADGE
 import com.example.data.WRITE_SETTINGS_BADGE
 import com.example.data.ScriptActionCatalog
 import com.example.data.getReadableKeyName
+import com.example.service.NotificationEventListener
 import com.example.service.PickedPoints
 import com.example.service.PointPickMode
 import com.example.service.ScreenPointPicker
@@ -105,6 +107,7 @@ fun ActionConfigSheet(
     onDismiss: () -> Unit,
 ) {
     val colors = MaterialTheme.colorScheme
+    val context = LocalContext.current
     // Same as the trigger sheet: key recording is global, so dismissing this sheet by any route
     // has to disarm it.
     DisposableEffect(Unit) { onDispose { onCancelRecording() } }
@@ -173,6 +176,7 @@ fun ActionConfigSheet(
                 val onClick = when (it) {
                     NOTIFICATION_POLICY_BADGE -> onRequestNotificationPolicyAccess
                     WRITE_SETTINGS_BADGE -> onRequestWriteSettings
+                    NOTIFICATION_ACCESS_BADGE -> ({ NotificationEventListener.openAccessSettings(context) })
                     else -> null
                 }
                 RequirementBadge(stringResource(it), onClick)

@@ -3,6 +3,7 @@ package com.example.service
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
+import android.os.SystemClock
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
@@ -18,6 +19,7 @@ import com.example.data.RunLogRepository
 import com.example.data.RunRecord
 import com.example.data.ScriptAction
 import com.example.data.ScriptActionCatalog
+import com.example.data.ScriptConstraintCatalog
 import com.example.data.ScriptRepository
 import com.example.data.ShortcutScript
 import com.example.data.TriggerPressType
@@ -29,10 +31,12 @@ import com.example.data.resolveVibrateForScript
 import com.example.service.bridge.BridgeController
 import com.example.service.bridge.BridgeRunResult
 import io.github.nicholasarda.keysnap.R
+import java.util.concurrent.ConcurrentHashMap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -99,6 +103,16 @@ object HardwareKeyTriggerCoordinator {
     private val automationEdges = AutomationEdges()
     private var automationWatch: Job? = null
 
+    // ponytail: in memory, so a restart of this process forgets it and one early re-run is
+    // possible; persist per script id if users report it.
+    /** Script id -> elapsedRealtime of its last run, for the cooldown condition. */
+    private val lastRunAt = ConcurrentHashMap<String, Long>()
+
+    /** Mirrors BridgeMain.cooldownAllows(Script, long) in :bridge. */
+    private fun passesCooldown(script: ShortcutScript, now: Long): Boolean =
+        script.constraints.filter { it.type == ScriptConstraintCatalog.COOLDOWN }
+            .all { cooldownAllows(lastRunAt[script.id], it.params["minutes"], now) }
+
     // Press Timing & Debounce Configuration
     private var keyPressScheduler: KeyPressScheduler? = null
 
@@ -160,6 +174,7 @@ object HardwareKeyTriggerCoordinator {
         success: Boolean,
         actionResults: List<Pair<String, Boolean>>? = null,
     ) {
+        lastRunAt[scriptId] = SystemClock.elapsedRealtime()
         if (success) {
             _triggerCount.value = _triggerCount.value + 1
         }
@@ -284,7 +299,7 @@ object HardwareKeyTriggerCoordinator {
         }.filter { script ->
             val evaluator = constraintEvaluator
             script.constraints.isEmpty() || evaluator == null || script.constraints.all(evaluator::isSatisfied)
-        }
+        }.filter { passesCooldown(it, SystemClock.elapsedRealtime()) }
         if (matched.isEmpty()) return
 
         val defaults = repository?.config?.value ?: return
@@ -317,24 +332,35 @@ object HardwareKeyTriggerCoordinator {
         val defaults = repository?.config?.value ?: return
         val evaluator = constraintEvaluator ?: return
 
+        val now = SystemClock.elapsedRealtime()
         val fired = scriptsRepo.scripts.value.filter { script ->
             if (!script.automation) return@filter false
             val satisfied = script.constraints.isNotEmpty() && script.constraints.all(evaluator::isSatisfied)
-            automationEdges.update(script.id, satisfied) && script.enabled && scriptsRepo.globallyEnabled.value
+            // update stays first, so the edge is recorded even when the cooldown skips this run.
+            automationEdges.update(script.id, satisfied) && script.enabled && scriptsRepo.globallyEnabled.value &&
+                passesCooldown(script, now)
         }
         if (fired.isEmpty()) return
         Log.d(TAG, "Automation fired: scripts=${fired.map { it.id }}")
         executeActions(context, defaults, fired, context.getString(R.string.trigger_kind_automation), keyCode = null, pressType = null)
     }
 
+    /** For a condition that expires with no broadcast (a notification's window): re-check once it has. */
+    fun reevaluateAutomationsAfter(delayMs: Long) {
+        coordinatorScope.launch {
+            delay(delayMs)
+            reevaluateAutomations()
+        }
+    }
+
     /**
      * Runs [scriptId] now for a home-screen widget or a Quick Settings tile ([source] is
      * [RunRecord.SOURCE_WIDGET] or [RunRecord.SOURCE_TILE]), and hands the outcome to [onDone] on
      * the main thread. A tap has no press timing to resolve and no second source to deduplicate
-     * against, but it keeps every other rule of a key press: [surfaceGate] for pauses and "Only
-     * if", the script's own haptic, the trigger counter, the run log, and the bridge's ownership of
-     * execution through [runChain], exactly as an automation does. A refused tap is not a run and
-     * is not logged.
+     * against, but it keeps every other rule of a key press: [surfaceGate] for pauses, "Only if"
+     * and the cooldown, the script's own haptic, the trigger counter, the run log, and the
+     * bridge's ownership of execution through [runChain], exactly as an automation does. A
+     * refused tap is not a run and is not logged.
      */
     fun runFromSurface(context: Context, scriptId: String, source: String, onDone: (SurfaceRun) -> Unit): Job =
         coordinatorScope.launch { onDone(runSurfaceScript(context.applicationContext, scriptId, source)) }
@@ -351,9 +377,11 @@ object HardwareKeyTriggerCoordinator {
         EntitlementManager.getInstance(context).enforceLimit()
         val script = scriptsRepo.scripts.value.firstOrNull { it.id == scriptId } ?: return SurfaceRun.Missing
         val evaluator = constraintEvaluator
-        surfaceGate(script, scriptsRepo.globallyEnabled.value) { candidate ->
+        val now = SystemClock.elapsedRealtime()
+        surfaceGate(script, scriptsRepo.globallyEnabled.value, passesCooldown(script, now)) { candidate ->
             evaluator == null || candidate.constraints.all(evaluator::isSatisfied)
         }?.let { return it }
+        lastRunAt[script.id] = now
 
         if (resolveVibrateForScript(script, defaults.vibrateOnTrigger)) {
             vibratePhone(context, resolveHapticDurationForScript(script, defaults.hapticDurationMs))
@@ -377,6 +405,9 @@ object HardwareKeyTriggerCoordinator {
         keyCode: Int?,
         pressType: TriggerPressType?,
     ) {
+        // Marked before the launch, so a second trigger queued behind this one already sees it.
+        val now = SystemClock.elapsedRealtime()
+        scripts.forEach { lastRunAt[it.id] = now }
         coordinatorScope.launch {
             scripts.forEach { script ->
                 if (resolveVibrateForScript(script, config.vibrateOnTrigger)) {
@@ -433,6 +464,7 @@ object HardwareKeyTriggerCoordinator {
         writeSettings = Settings.System.canWrite(context),
         advancedMode = _isAdvancedBridgeActive.value,
         notifications = context.getSystemService(NotificationManager::class.java)?.let(::shortcutNotificationsAllowed) == true,
+        notificationAccess = NotificationEventListener.isAccessGranted(context),
     )
 
     fun vibratePhone(context: Context, durationMs: Long = 50) {

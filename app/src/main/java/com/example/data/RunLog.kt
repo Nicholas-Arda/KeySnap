@@ -42,6 +42,7 @@ enum class RunFailure(@StringRes val labelRes: Int) {
     DND_ACCESS_MISSING(R.string.badge_notification_policy),
     WRITE_SETTINGS_MISSING(R.string.badge_write_settings),
     NOTIFICATIONS_OFF(R.string.run_failure_notifications_off),
+    NOTIFICATION_ACCESS_MISSING(R.string.badge_notification_access),
     FAILED(R.string.run_failure_generic),
     ;
 
@@ -62,6 +63,8 @@ data class RunEnvironment(
     val advancedMode: Boolean = false,
     /** Whether a shortcut's own notification could be seen; see `shortcutNotificationsAllowed`. */
     val notifications: Boolean = true,
+    /** Whether KeySnap holds notification access, which "Reply to notification" needs. */
+    val notificationAccess: Boolean = true,
 )
 
 // Which prerequisite explains an app-side failure. These mirror ScriptActionExecutor.android:
@@ -94,6 +97,9 @@ internal val WRITE_SETTINGS_TYPES = setOf(
 
 internal val NOTIFICATION_TYPES = setOf("show_notification")
 
+/** Actions that need notification access; one with access on and nothing to reply to reads FAILED. */
+internal val NOTIFICATION_ACCESS_TYPES = setOf("reply_to_notification")
+
 internal const val MAX_RUNS_PER_SCRIPT = 20
 internal const val MAX_RUNS = 200
 
@@ -103,6 +109,7 @@ internal fun failureReason(type: String, env: RunEnvironment): RunFailure = when
     type in DND_ACCESS_TYPES && !env.dndAccess -> RunFailure.DND_ACCESS_MISSING
     type in WRITE_SETTINGS_TYPES && !env.writeSettings -> RunFailure.WRITE_SETTINGS_MISSING
     type in NOTIFICATION_TYPES && !env.notifications -> RunFailure.NOTIFICATIONS_OFF
+    type in NOTIFICATION_ACCESS_TYPES && !env.notificationAccess -> RunFailure.NOTIFICATION_ACCESS_MISSING
     else -> RunFailure.FAILED
 }
 

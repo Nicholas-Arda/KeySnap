@@ -39,10 +39,17 @@ data class ConstraintDescriptor(
  */
 object ScriptConstraintCatalog {
 
+    /** Per-script "at most once every N minutes"; param `minutes`. Gated by the coordinator, not the evaluator. */
+    const val COOLDOWN = "cooldown"
+
+    /** "A notification from app `packageName` whose title or text contains `contains` arrived in the last 10 s." */
+    const val NOTIFICATION_RECEIVED = "notification_received"
+
     val all: List<ConstraintDescriptor> = listOf(
         // Apps
         ConstraintDescriptor("app_in_foreground", R.string.constraint_app_in_foreground, ConstraintCategory.APPS, ConstraintAvailability.AVAILABLE),
         ConstraintDescriptor("app_not_in_foreground", R.string.constraint_app_not_in_foreground, ConstraintCategory.APPS, ConstraintAvailability.AVAILABLE),
+        ConstraintDescriptor(NOTIFICATION_RECEIVED, R.string.constraint_notification_received, ConstraintCategory.APPS, ConstraintAvailability.AVAILABLE),
         ConstraintDescriptor("app_playing_media", R.string.constraint_app_playing_media, ConstraintCategory.APPS),
         ConstraintDescriptor("app_not_playing_media", R.string.constraint_app_not_playing_media, ConstraintCategory.APPS),
 
@@ -125,6 +132,7 @@ object ScriptConstraintCatalog {
         // Time
         ConstraintDescriptor("time", R.string.constraint_time, ConstraintCategory.TIME, ConstraintAvailability.AVAILABLE),
         ConstraintDescriptor("day_of_week", R.string.constraint_day_of_week, ConstraintCategory.TIME, ConstraintAvailability.AVAILABLE),
+        ConstraintDescriptor(COOLDOWN, R.string.constraint_cooldown, ConstraintCategory.TIME, ConstraintAvailability.AVAILABLE),
     )
 
     private val byType: Map<String, ConstraintDescriptor> = all.associateBy { it.type }
@@ -136,7 +144,8 @@ object ScriptConstraintCatalog {
 
     /**
      * Constraints that can wake a key-less (automation) script: states Android announces with a
-     * broadcast or callback, on which `DeviceEventReceiver` re-evaluates — nothing polls. An
+     * broadcast or callback, on which `DeviceEventReceiver` re-evaluates — nothing polls — or the
+     * NotificationEventListener callback for notifications. An
      * automation needs at least one of these; the others still gate it. Foreground app, media,
      * keyboard, mobile data and time are left out for that reason; add one only together with its
      * wake-up source.
@@ -154,9 +163,16 @@ object ScriptConstraintCatalog {
         "headphones_connected", "headphones_disconnected",
         "airplane_mode_on", "airplane_mode_off",
         "location_on", "location_off",
+        NOTIFICATION_RECEIVED,
     )
 
     fun isAutomation(type: String): Boolean = type in AUTOMATION_TYPES && isAvailable(type)
+
+    /**
+     * Offered and saved only on key-less automations: the detached bridge has no notification
+     * listener, so on a key shortcut it would decide differently from the app.
+     */
+    val AUTOMATION_ONLY: Set<String> = setOf(NOTIFICATION_RECEIVED)
 
     /** Titles are localized, so search matches against the strings the user is actually reading. */
     fun search(query: String, resources: Resources): List<ConstraintDescriptor> {

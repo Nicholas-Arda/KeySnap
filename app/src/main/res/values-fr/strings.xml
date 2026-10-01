@@ -37,6 +37,7 @@
     <string name="param_point_b_y">Point B Y</string>
     <string name="param_direction">Direction</string>
     <string name="param_app">Application</string>
+    <string name="param_chat">Discussion</string>
     <string name="param_shortcut">Raccourci</string>
     <string name="param_method">Méthode</string>
     <string name="param_body">Corps</string>
@@ -74,6 +75,7 @@
     <string name="action_http_request">Requête HTTP</string>
     <string name="action_shell_command">Commande shell</string>
     <string name="action_send_intent">Envoyer un intent</string>
+    <string name="action_reply_to_notification">Répondre à la notification</string>
     <string name="action_interact_with_app_element">Interagir avec un élément d\'application</string>
     <string name="action_launch_voice_assistant">Lancer l\'assistant vocal</string>
     <string name="action_launch_device_assistant">Lancer l\'assistant de l\'appareil</string>
@@ -200,6 +202,7 @@
     <!-- Contraintes -->
     <string name="constraint_app_in_foreground">Application au premier plan</string>
     <string name="constraint_app_not_in_foreground">Application pas au premier plan</string>
+    <string name="constraint_notification_received">Notification reçue</string>
     <string name="constraint_app_playing_media">Application en lecture de média</string>
     <string name="constraint_app_not_playing_media">Application pas en lecture de média</string>
     <string name="constraint_no_media_playing">Aucun média en cours de lecture</string>
@@ -245,6 +248,7 @@
     <string name="constraint_location_on">La localisation est activée</string>
     <string name="constraint_location_off">La localisation est désactivée</string>
     <string name="constraint_day_of_week">Jour de la semaine</string>
+    <string name="constraint_cooldown">Au plus une fois toutes les N minutes</string>
     <string name="constraint_mobile_data_on">Les données mobiles sont activées</string>
     <string name="constraint_mobile_data_off">Les données mobiles sont désactivées</string>
     <string name="constraint_airplane_mode_on">Le mode avion est activé</string>
@@ -261,6 +265,10 @@
     <string name="badge_expert_mode">Nécessite le mode avancé</string>
     <string name="badge_accessibility">Nécessite le service d\'accessibilité</string>
     <string name="badge_notification_policy">Nécessite l\'accès à Ne pas déranger</string>
+    <string name="badge_notification_access">Nécessite l\'accès aux notifications</string>
+    <string name="hint_reply_chat">Une partie du nom de la discussion. Vide : la discussion la plus récente</string>
+    <string name="summary_reply_newest_chat">discussion la plus récente</string>
+    <string name="helper_reply_to_notification">Envoie votre texte via le bouton Répondre de la notification elle-même, sans ouvrir l\'application. Fonctionne uniquement tant que cette discussion a une notification affichée, et ne peut pas démarrer une nouvelle discussion. KeySnap lit les notifications sur votre téléphone uniquement pour la trouver ; rien n\'est enregistré ni envoyé ailleurs. Ajoutez « Au plus une fois toutes les N minutes » pour qu\'une discussion active ne reçoive pas de réponse encore et encore.</string>
     <string name="badge_write_settings">Nécessite une autorisation pour modifier les paramètres système</string>
 
     <!-- Éditeur d\'action : libellés de champs -->
@@ -434,6 +442,13 @@
     <string name="field_time_end">Jusqu\'à</string>
     <string name="field_days">Jours</string>
     <string name="constraint_needs_usage_access">Nécessite l\'accès aux données d\'utilisation pour que l\'application voie quelle application est au premier plan.</string>
+    <string name="constraint_needs_notification_access">Nécessite l\'accès aux notifications. KeySnap compare chaque nouvelle notification de l\'application choisie à cette condition, sur votre téléphone, et ne garde que l\'heure de la correspondance. Rien n\'est enregistré, journalisé ni envoyé.</string>
+    <string name="field_notification_contains">Le titre ou le texte contient</string>
+    <string name="hint_notification_contains_any">Vide : toute notification de cette application</string>
+    <string name="helper_notification_received">S\'exécute à l\'arrivée d\'une nouvelle notification de cette application. Plusieurs en 10 secondes comptent pour une. Automatisations uniquement.</string>
+    <string name="field_cooldown_minutes">Minutes entre deux exécutions</string>
+    <string name="helper_cooldown">Ignoré si ce raccourci s\'est exécuté il y a moins de minutes que cela. Le compteur repart de zéro si le téléphone ou KeySnap redémarre.</string>
+    <string name="constraint_summary_cooldown">Au plus toutes les %1$d min</string>
     <string name="constraint_config_choose_app">Choisissez une application pour continuer</string>
     <string name="constraint_needs_location">Android ne révèle le nom du réseau qu\'aux applications disposant de l\'autorisation de localisation.</string>
     <string name="constraint_grant_permission">Accorder</string>
@@ -811,6 +826,7 @@
     <string name="run_failure_notifications_off">Les notifications sont désactivées</string>
     <string name="editor_needs_action">Ajoutez au moins une action avant d\'enregistrer.</string>
     <string name="editor_needs_trigger">Choisissez une touche avant d\'enregistrer.</string>
+    <string name="editor_notification_needs_automation">Notification reçue ne fonctionne que dans une automatisation. Retirez cette condition ou passez en Automatisation.</string>
     <string name="saved_needs_trigger">Enregistré. Attribuez une touche pour qu\'il puisse s\'exécuter.</string>
     <string name="saved_named">« %1$s » enregistré</string>
     <string name="saved_needs_condition">Enregistré. Ajoutez une condition qui change d\'elle-même, comme En charge ou Appareil Bluetooth connecté, pour qu\'il puisse s\'exécuter.</string>

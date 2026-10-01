@@ -56,6 +56,15 @@ class SurfaceRunTest {
         assertNull(surfaceGate(script(automation = true), globallyEnabled = true, conditionsMet = unmet))
     }
 
+    @Test fun aCooldownStopsATapEvenOnAnAutomation() {
+        // "At most once every N minutes" is a rate limit, not a trigger, so it holds for every source.
+        assertEquals(
+            SurfaceRun.ConditionsUnmet("Torch"),
+            surfaceGate(script(automation = true), globallyEnabled = true, cooldownAllows = false, conditionsMet = met),
+        )
+        assertNull(surfaceGate(script(), globallyEnabled = true, cooldownAllows = true, conditionsMet = met))
+    }
+
     @Test fun aFullRunIsSilentAndAShortOneIsNot() {
         assertNull(SurfaceRun.Ran("Torch", ran = 3, total = 3).message(res))
         assertEquals("Ran 1 of 3 actions", SurfaceRun.Ran("Torch", ran = 1, total = 3).message(res))

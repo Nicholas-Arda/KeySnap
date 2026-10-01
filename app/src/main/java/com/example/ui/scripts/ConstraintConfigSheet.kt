@@ -63,6 +63,7 @@ import com.example.data.ConstraintEditorForms
 import com.example.data.EditorField
 import com.example.data.InstalledApp
 import com.example.data.ScriptConstraintCatalog
+import com.example.service.NotificationEventListener
 import com.example.ui.components.InnerShape
 import com.example.ui.components.MinTouchTarget
 import com.example.ui.theme.SectionLabel
@@ -179,6 +180,19 @@ fun ConstraintConfigSheet(
 @Composable
 private fun PermissionHints(constraintType: String, ssid: String, context: Context) {
     when {
+        constraintType == ScriptConstraintCatalog.NOTIFICATION_RECEIVED -> {
+            var granted by remember { mutableStateOf(NotificationEventListener.isAccessGranted(context)) }
+            val launcher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+                granted = NotificationEventListener.isAccessGranted(context)
+            }
+            // The hint text is the prominent disclosure Play expects before the grant screen.
+            if (!granted) {
+                PermissionHint(stringResource(R.string.constraint_needs_notification_access)) {
+                    runCatching { launcher.launch(NotificationEventListener.accessSettingsIntent(context)) }
+                        .onFailure { launcher.launch(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)) }
+                }
+            }
+        }
         constraintType.startsWith("app_") -> {
             var granted by remember { mutableStateOf(hasUsageAccess(context)) }
             val launcher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {

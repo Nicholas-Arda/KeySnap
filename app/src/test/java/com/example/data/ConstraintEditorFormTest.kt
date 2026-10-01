@@ -20,7 +20,8 @@ class ConstraintEditorFormTest {
         "app_in_foreground", "app_not_in_foreground", "screen_orientation",
         "connected_to_wifi_network", "disconnected_from_wifi_network",
         "bluetooth_device_connected", "bluetooth_device_disconnected",
-        "battery_above", "battery_below", "time", "day_of_week",
+        "battery_above", "battery_below", "time", "day_of_week", "cooldown",
+        "notification_received",
     )
 
     @Test fun everyFormTypeExistsInTheCatalogAndIsAvailable() {
@@ -50,6 +51,8 @@ class ConstraintEditorFormTest {
         assertTrue(ConstraintEditorForms.isComplete("day_of_week", mapOf("days" to "mon")))
         assertFalse(ConstraintEditorForms.isComplete("time", mapOf("start" to "22:00")))
         assertTrue(ConstraintEditorForms.isComplete("time", ConstraintEditorForms.defaults(ConstraintEditorForms.form("time")!!)))
+        assertFalse(ConstraintEditorForms.isComplete("notification_received", mapOf("contains" to "annem")))
+        assertTrue(ConstraintEditorForms.isComplete("notification_received", mapOf("packageName" to "com.whatsapp")))
         // No form means nothing to fill in.
         assertTrue(ConstraintEditorForms.isComplete("flashlight_on", emptyMap()))
     }
@@ -66,6 +69,7 @@ class ConstraintEditorFormTest {
         assertEquals("22:00", time["start"])
         assertEquals("07:00", time["end"])
         assertTrue(ConstraintEditorForms.defaults(ConstraintEditorForms.form("day_of_week")!!).isEmpty())
+        assertEquals("10", ConstraintEditorForms.defaults(ConstraintEditorForms.form("cooldown")!!)["minutes"])
     }
 
     @Test fun daySetRoundTripsInCanonicalOrder() {
@@ -97,6 +101,8 @@ class ConstraintEditorFormTest {
         assertEquals("com.other", ConstraintEditorForms.summarize(ScriptConstraint("app_in_foreground", mapOf("packageName" to "com.other")), res, apps))
         assertEquals("Buds", ConstraintEditorForms.summarize(ScriptConstraint("bluetooth_device_connected", mapOf("address" to "AA:BB", "name" to "Buds")), res))
         assertEquals("AA:BB", ConstraintEditorForms.summarize(ScriptConstraint("bluetooth_device_connected", mapOf("address" to "AA:BB")), res))
+        assertEquals("Example · “annem”", ConstraintEditorForms.summarize(ScriptConstraint("notification_received", mapOf("packageName" to "com.example.app", "contains" to "annem")), res, apps))
+        assertEquals("Example", ConstraintEditorForms.summarize(ScriptConstraint("notification_received", mapOf("packageName" to "com.example.app")), res, apps))
         assertEquals("Home", ConstraintEditorForms.summarize(ScriptConstraint("connected_to_wifi_network", mapOf("ssid" to "Home")), res))
         assertNull(ConstraintEditorForms.summarize(ScriptConstraint("flashlight_on"), res))
         // Non-empty is all that is asserted for resource-driven summaries: their wording is translated.
@@ -104,5 +110,6 @@ class ConstraintEditorFormTest {
         assertTrue(ConstraintEditorForms.summarize(ScriptConstraint("battery_below", mapOf("percent" to "15")), res)!!.contains("15"))
         assertTrue(ConstraintEditorForms.summarize(ScriptConstraint("time", mapOf("start" to "22:00", "end" to "07:00")), res)!!.isNotBlank())
         assertTrue(ConstraintEditorForms.summarize(ScriptConstraint("day_of_week", mapOf("days" to "mon,tue")), res)!!.contains(", "))
+        assertTrue(ConstraintEditorForms.summarize(ScriptConstraint("cooldown", mapOf("minutes" to "15")), res)!!.contains("15"))
     }
 }

@@ -124,6 +124,18 @@
             android:name="com.example.service.ScreenPointPickerService"
             android:exported="false" />
 
+        <!-- Notification access, a special access the user grants in Settings. Used only by the
+             "Notification received" condition and the "Reply to notification" action: text is
+             matched in memory for apps a condition names and never stored, logged or sent. -->
+        <service
+            android:name="com.example.service.NotificationEventListener"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
+
         <receiver
             android:name="com.example.service.adb.PairingNotificationReceiver"
             android:exported="false">

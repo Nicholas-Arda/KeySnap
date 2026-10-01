@@ -102,6 +102,17 @@ object ScriptActionCatalog {
         ActionDescriptor("shell_command", R.string.action_shell_command, ActionCategory.APPS, ActionAvailability.AVAILABLE, listOf(param("command", R.string.param_command, ActionParameterKind.TEXT))),
         // "extras" is optional "key=value" pairs separated by ';', each added as a String extra.
         ActionDescriptor("send_intent", R.string.action_send_intent, ActionCategory.APPS, ActionAvailability.AVAILABLE, listOf(param("action", R.string.param_action, ActionParameterKind.TEXT), param("uri", R.string.param_uri, ActionParameterKind.TEXT, required = false), param("extras", R.string.param_extras, ActionParameterKind.TEXT, required = false))),
+        // Sends through a chat notification's own RemoteInput "Reply" action, from the notification
+        // listener: truly background, but only while that chat has a notification showing. The
+        // bridge has no listener, so this is app-only (see UNSUPPORTED_BY_BRIDGE).
+        ActionDescriptor(
+            "reply_to_notification", R.string.action_reply_to_notification, ActionCategory.APPS, ActionAvailability.AVAILABLE,
+            listOf(
+                param("packageName", R.string.param_app, ActionParameterKind.PACKAGE),
+                param("chat", R.string.param_chat, ActionParameterKind.TEXT, required = false),
+                param("text", R.string.param_text, ActionParameterKind.TEXT),
+            ),
+        ),
         ActionDescriptor("interact_with_app_element", R.string.action_interact_with_app_element, ActionCategory.APPS, parameters = listOf(param("packageName", R.string.param_app, ActionParameterKind.PACKAGE), param("element", R.string.param_element, ActionParameterKind.TEXT))),
         ActionDescriptor("launch_voice_assistant", R.string.action_launch_voice_assistant, ActionCategory.APPS, ActionAvailability.AVAILABLE),
         ActionDescriptor("launch_device_assistant", R.string.action_launch_device_assistant, ActionCategory.APPS, ActionAvailability.AVAILABLE),
@@ -257,6 +268,9 @@ object ScriptActionCatalog {
         "toggle_mapping",
         "pause_mapping",
         "resume_mapping",
+        // Needs the bound notification listener and the chat app's PendingIntent, neither of which
+        // the shell-UID process has.
+        "reply_to_notification",
         // The picked image's content:// read grant belongs to the app UID; the shell UID cannot open it.
         "set_wallpaper",
         // Bridge-capable, but its shell equivalent is weaker than the app's Accessibility path.
@@ -276,6 +290,8 @@ object ScriptActionCatalog {
      * (CLAUDE.md "Privileged actions must stay legible"). An import shows every parameter of these
      * literally before saving and never switches such a shortcut on; no recipe may pre-fill one.
      * show_notification is here for its tap target, a user-typed URL that opens like open_url.
+     * reply_to_notification is here because it sends user-typed text into the user's own chats, as
+     * them: an imported one must arrive off with its text shown, never answer anyone on arrival.
      * App-only: the bridge has no use for it, so nothing mirrors it.
      */
     val PRIVILEGED: Set<String> = setOf(
@@ -286,6 +302,7 @@ object ScriptActionCatalog {
         "http_request",
         "open_url",
         "show_notification",
+        "reply_to_notification",
     )
 
     /**

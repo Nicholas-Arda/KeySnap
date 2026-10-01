@@ -232,6 +232,7 @@ fun ScriptEditorScreen(
                 onClose = { pane = EditorPane.CHAIN },
             )
             EditorPane.ADD_CONSTRAINT -> ConstraintPickerScreen(
+                automation = draft.automation,
                 onClose = { pane = EditorPane.CHAIN },
                 onPickConstraint = { type ->
                     pane = EditorPane.CHAIN

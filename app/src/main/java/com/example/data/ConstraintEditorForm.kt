@@ -57,6 +57,21 @@ object ConstraintEditorForms {
         ConstraintEditorForm("app_in_foreground", listOf(appField), summary = appSummary),
         ConstraintEditorForm("app_not_in_foreground", listOf(appField), summary = appSummary),
         ConstraintEditorForm(
+            type = ScriptConstraintCatalog.NOTIFICATION_RECEIVED,
+            fields = listOf(
+                appField,
+                EditorField.Text("contains", R.string.field_notification_contains, hintRes = R.string.hint_notification_contains_any),
+            ),
+            helperRes = R.string.helper_notification_received,
+            required = setOf("packageName"),
+            summary = { res, params, apps ->
+                val contains = params.value("contains")
+                listOf(appSummary(res, params, apps), if (contains.isEmpty()) "" else "“$contains”")
+                    .filter { it.isNotEmpty() }
+                    .joinToString(" · ")
+            },
+        ),
+        ConstraintEditorForm(
             type = "screen_orientation",
             fields = listOf(
                 EditorField.Choice(
@@ -102,6 +117,14 @@ object ConstraintEditorForms {
                 val locale = res.locale()
                 val chosen = parseDays(params.value("days"))
                 weekOrder(locale).filter { it in chosen }.joinToString(", ") { it.getDisplayName(TextStyle.SHORT, locale) }
+            },
+        ),
+        ConstraintEditorForm(
+            type = ScriptConstraintCatalog.COOLDOWN,
+            fields = listOf(EditorField.Number("minutes", R.string.field_cooldown_minutes, min = 1, max = 1440, default = 10)),
+            helperRes = R.string.helper_cooldown,
+            summary = { res, params, _ ->
+                params["minutes"]?.trim()?.toIntOrNull()?.let { res.getString(R.string.constraint_summary_cooldown, it) }.orEmpty()
             },
         ),
     )

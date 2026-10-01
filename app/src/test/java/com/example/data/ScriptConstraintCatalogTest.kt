@@ -28,7 +28,7 @@ class ScriptConstraintCatalogTest {
         val available = ScriptConstraintCatalog.all.filter { it.availability == ConstraintAvailability.AVAILABLE }.map { it.type }
         assertEquals(
             setOf(
-                "app_in_foreground", "app_not_in_foreground",
+                "app_in_foreground", "app_not_in_foreground", "notification_received",
                 "media_is_playing", "no_media_playing",
                 "bluetooth_on", "bluetooth_off",
                 "bluetooth_device_connected", "bluetooth_device_disconnected",
@@ -53,7 +53,7 @@ class ScriptConstraintCatalogTest {
                 "charging_wired", "charging_wireless",
                 "battery_above", "battery_below",
                 "location_on", "location_off",
-                "time", "day_of_week",
+                "time", "day_of_week", "cooldown",
             ),
             available.toSet(),
         )
@@ -78,9 +78,14 @@ class ScriptConstraintCatalogTest {
             assertTrue(ScriptConstraintCatalog.isAutomation(type))
         }
         // No wake-up source: foreground app, media, keyboard, mobile data and time only gate.
-        listOf("app_in_foreground", "media_is_playing", "keyboard_showing", "mobile_data_on", "time", "day_of_week").forEach {
+        listOf("app_in_foreground", "media_is_playing", "keyboard_showing", "mobile_data_on", "time", "day_of_week", "cooldown").forEach {
             assertFalse("$it must not be an automation trigger", ScriptConstraintCatalog.isAutomation(it))
         }
+    }
+
+    @Test fun notificationReceivedIsAnAutomationOnlyTrigger() {
+        assertTrue(ScriptConstraintCatalog.isAutomation(ScriptConstraintCatalog.NOTIFICATION_RECEIVED))
+        assertEquals(setOf("notification_received"), ScriptConstraintCatalog.AUTOMATION_ONLY)
     }
 
     @Test fun everyCategoryHasAtLeastOneEntry() {

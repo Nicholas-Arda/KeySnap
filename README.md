@@ -50,7 +50,7 @@ Shortcuts run in the background, and the whole thing works without an account, a
 
 **Actions.** Nearly 90, in twelve groups: input and gestures, apps, flashlight, navigation, volume, display, media, connectivity, keyboard, device, sound and automation. Every action's settings are visible in the editor before it runs, and privileged ones such as shell commands, intents and HTTP requests show the exact command or URL they will execute.
 
-**Conditions.** Attach an *Only if* list to any shortcut: time of day, day of week, charging state, battery level, Wi‑Fi network, Bluetooth device, headphones, dark mode, Do Not Disturb, ringer mode, screen and lock state, orientation, which app is in the foreground, whether media is playing, and more. Around sixty in total.
+**Conditions.** Attach an *Only if* list to any shortcut: time of day, day of week, charging state, battery level, Wi‑Fi network, Bluetooth device, headphones, dark mode, Do Not Disturb, ringer mode, screen and lock state, orientation, which app is in the foreground, whether media is playing, a notification from an app you choose, a limit of once every so many minutes, and more. More than fifty in total.
 
 **Recipes.** Home has a gallery of ready-made shortcuts in categories: pick one, press the key you want, and it is ready. Webhook recipes for Home Assistant, Discord, ntfy and Google Apps Script come with the address left blank, so you paste your own. A WhatsApp recipe opens a chat through a `https://wa.me/` link you type and taps Send for you; it needs the screen on and unlocked.
 
@@ -75,6 +75,7 @@ KeySnap asks for a permission only when you use the feature that needs it, and e
 - **Accessibility service.** The only way an app can see hardware key presses. It is restricted to reading screen content from the system Settings app alone, and uses that solely to read the pairing code from the Wireless Debugging dialog during Advanced Mode setup.
 - **Run in the background and notifications.** So Android does not put the app to sleep, so setup can show the pairing prompt, so a shortcut that can't run can tell you why, and so a shortcut can show a notification you wrote.
 - **Location.** Android only reveals the Wi‑Fi network name to apps holding it, so the *connected to Wi‑Fi network* condition needs it. The app never reads your position.
+- **Notification access.** Only if you add a *Notification received* condition or a *Reply to notification* action. KeySnap looks only at notifications from the apps you name in those; each new one is checked on the phone and forgotten. KeySnap keeps only the time a condition matched and never saves, logs or sends notification text.
 - **Bluetooth, Do Not Disturb access, usage access, modify system settings, display over other apps.** Each unlocks one group of actions or conditions and is requested from inside that feature.
 - **Set wallpaper** is granted at install and used only by the *Set wallpaper* action. The picture comes from Android's photo picker, so KeySnap sees the one image you pick and never the rest of your photos.
 - **Camera** is deliberately not requested. The flashlight uses an API that needs no permission.
@@ -113,6 +114,8 @@ Android Studio with its bundled JDK is all you need. `:app` is the Kotlin and Je
 **Does it work with the screen off?** With Advanced Mode, yes: the helper reads the kernel directly. Without it, Android decides which keys reach an accessibility service while the screen is off, so it varies by device and key.
 
 **Does it work with Bluetooth headphones and game controllers?** Yes, any device Android reports as a keyboard, headset or gamepad. Unlabelled buttons can be recorded and given a name.
+
+**Can it send WhatsApp messages?** It can reply to a chat whose notification is showing, through that notification's own Reply button, without opening WhatsApp. It cannot start a new chat or write to someone who has not written to you, and once you open or swipe away that notification there is nothing left to reply to: Advanced Mode has the rights of a USB-debugging shell, not root, and WhatsApp offers no other way in. To write to anyone, the WhatsApp recipe opens a chat through a `https://wa.me/` link with your text typed and taps Send for you; it needs the screen on and unlocked.
 
 **Why did my shortcuts stop after a day?** Some manufacturers (Xiaomi, Oppo, Samsung and others) kill background apps aggressively. Home shows a setup card with the two switches that stop this. Advanced Mode is immune because its helper is not part of the app process.
 

@@ -37,6 +37,7 @@
     <string name="param_point_b_y">Точка B, Y</string>
     <string name="param_direction">Направление</string>
     <string name="param_app">Приложение</string>
+    <string name="param_chat">Чат</string>
     <string name="param_shortcut">Сценарий</string>
     <string name="param_method">Метод</string>
     <string name="param_body">Тело запроса</string>
@@ -74,6 +75,7 @@
     <string name="action_http_request">HTTP-запрос</string>
     <string name="action_shell_command">Команда shell</string>
     <string name="action_send_intent">Отправить intent</string>
+    <string name="action_reply_to_notification">Ответить на уведомление</string>
     <string name="action_interact_with_app_element">Взаимодействовать с элементом приложения</string>
     <string name="action_launch_voice_assistant">Запустить голосового ассистента</string>
     <string name="action_launch_device_assistant">Запустить ассистента устройства</string>
@@ -200,6 +202,7 @@
     <!-- Условия -->
     <string name="constraint_app_in_foreground">Приложение на переднем плане</string>
     <string name="constraint_app_not_in_foreground">Приложение не на переднем плане</string>
+    <string name="constraint_notification_received">Получено уведомление</string>
     <string name="constraint_app_playing_media">Приложение воспроизводит медиа</string>
     <string name="constraint_app_not_playing_media">Приложение не воспроизводит медиа</string>
     <string name="constraint_no_media_playing">Медиа не воспроизводится</string>
@@ -245,6 +248,7 @@
     <string name="constraint_location_on">Геолокация включена</string>
     <string name="constraint_location_off">Геолокация выключена</string>
     <string name="constraint_day_of_week">День недели</string>
+    <string name="constraint_cooldown">Не чаще раза в N минут</string>
     <string name="constraint_mobile_data_on">Мобильный интернет включён</string>
     <string name="constraint_mobile_data_off">Мобильный интернет выключен</string>
     <string name="constraint_airplane_mode_on">Режим полёта включён</string>
@@ -261,6 +265,10 @@
     <string name="badge_expert_mode">Требует Расширенный режим</string>
     <string name="badge_accessibility">Требует службу специальных возможностей</string>
     <string name="badge_notification_policy">Требует доступ к режиму «Не беспокоить»</string>
+    <string name="badge_notification_access">Требует доступ к уведомлениям</string>
+    <string name="hint_reply_chat">Часть названия чата. Пусто: самый новый чат</string>
+    <string name="summary_reply_newest_chat">самый новый чат</string>
+    <string name="helper_reply_to_notification">Отправляет ваш текст через кнопку «Ответить» в самом уведомлении, не открывая приложение. Работает, только пока у этого чата видно уведомление, и не может начать новый чат. KeySnap читает уведомления на телефоне только чтобы его найти; ничего не сохраняется и никуда не отправляется. Добавьте «Не чаще раза в N минут», чтобы на активный чат не отвечать снова и снова.</string>
     <string name="badge_write_settings">Требуется разрешение на изменение системных настроек</string>
 
     <!-- Редактор действий: метки полей -->
@@ -434,6 +442,13 @@
     <string name="field_time_end">До</string>
     <string name="field_days">Дни</string>
     <string name="constraint_needs_usage_access">Нужен доступ к данным об использовании, чтобы приложение видело, какое приложение на переднем плане.</string>
+    <string name="constraint_needs_notification_access">Нужен доступ к уведомлениям. KeySnap сверяет каждое новое уведомление выбранного приложения с этим условием прямо на телефоне и хранит только время совпадения. Ничего не сохраняется, не записывается в журнал и не отправляется.</string>
+    <string name="field_notification_contains">Заголовок или текст содержит</string>
+    <string name="hint_notification_contains_any">Пусто: любое уведомление этого приложения</string>
+    <string name="helper_notification_received">Срабатывает, когда приходит новое уведомление от этого приложения. Несколько за 10 секунд считаются одним. Только в автоматизациях.</string>
+    <string name="field_cooldown_minutes">Минут между запусками</string>
+    <string name="helper_cooldown">Пропускается, если этот сценарий запускался меньше указанного числа минут назад. Отсчёт начинается заново после перезапуска телефона или KeySnap.</string>
+    <string name="constraint_summary_cooldown">Не чаще раза в %1$d мин</string>
     <string name="constraint_config_choose_app">Выберите приложение, чтобы продолжить</string>
     <string name="constraint_needs_location">Android показывает имя сети только приложениям с разрешением на геолокацию.</string>
     <string name="constraint_grant_permission">Предоставить</string>
@@ -811,6 +826,7 @@
     <string name="run_failure_notifications_off">Уведомления отключены</string>
     <string name="editor_needs_action">Добавьте хотя бы одно действие перед сохранением.</string>
     <string name="editor_needs_trigger">Выберите клавишу перед сохранением.</string>
+    <string name="editor_notification_needs_automation">«Получено уведомление» работает только в автоматизации. Удалите это условие или переключитесь на «Автоматизация».</string>
     <string name="saved_needs_trigger">Сохранено. Назначьте клавишу, чтобы он мог сработать.</string>
     <string name="saved_named">Сохранено: «%1$s»</string>
     <string name="saved_needs_condition">Сохранено. Добавьте условие, которое меняется само, например «Заряжается» или «Bluetooth-устройство подключено», чтобы сценарий мог сработать.</string>

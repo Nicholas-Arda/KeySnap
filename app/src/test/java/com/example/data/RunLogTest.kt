@@ -75,6 +75,13 @@ class RunLogTest {
         assertEquals(RunFailure.FAILED, failureReason("launch_app", allGranted.copy(notifications = false)))
     }
 
+    @Test fun aReplyWithoutNotificationAccessBlamesTheMissingAccess() {
+        assertEquals(RunFailure.NOTIFICATION_ACCESS_MISSING, failureReason("reply_to_notification", allGranted.copy(notificationAccess = false)))
+        // With access on, a reply that found no chat to answer is the generic failure.
+        assertEquals(RunFailure.FAILED, failureReason("reply_to_notification", allGranted))
+        assertEquals(RunFailure.FAILED, failureReason("launch_app", allGranted.copy(notificationAccess = false)))
+    }
+
     @Test fun aFailureWhileAdvancedModeIsOnIsNeverBlamedOnAdvancedModeBeingOff() {
         // The app ran the whole chain although the bridge was up (its RUN request fell through).
         val env = allGranted.copy(advancedMode = true)
@@ -93,11 +100,12 @@ class RunLogTest {
             if (ActionEditorForms.needsAdvancedMode(type)) assertTrue(type, type in ADVANCED_MODE_TYPES)
             if (form.requirementRes == NOTIFICATION_POLICY_BADGE) assertTrue(type, type in DND_ACCESS_TYPES)
             if (form.requirementRes == WRITE_SETTINGS_BADGE) assertTrue(type, type in WRITE_SETTINGS_TYPES)
+            if (form.requirementRes == NOTIFICATION_ACCESS_BADGE) assertTrue(type, type in NOTIFICATION_ACCESS_TYPES)
         }
     }
 
     @Test fun reasonSetsNameOnlyAvailableActionsAndNoAppRunActionIsBlamedOnAdvancedMode() {
-        (ADVANCED_MODE_TYPES + ACCESSIBILITY_TYPES + DND_ACCESS_TYPES + WRITE_SETTINGS_TYPES + NOTIFICATION_TYPES).forEach {
+        (ADVANCED_MODE_TYPES + ACCESSIBILITY_TYPES + DND_ACCESS_TYPES + WRITE_SETTINGS_TYPES + NOTIFICATION_TYPES + NOTIFICATION_ACCESS_TYPES).forEach {
             assertTrue(it, ScriptActionCatalog.isAvailable(it))
         }
         assertTrue((ADVANCED_MODE_TYPES intersect ScriptActionCatalog.UNSUPPORTED_BY_BRIDGE).isEmpty())

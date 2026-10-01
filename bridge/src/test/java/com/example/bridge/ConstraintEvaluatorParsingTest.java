@@ -7,6 +7,8 @@ import org.junit.Test;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * Feeds canned shell command output to ConstraintEvaluator's parsing helpers, since the real
@@ -279,5 +281,34 @@ public class ConstraintEvaluatorParsingTest {
         String hdmi = AUDIO_NONE.replace("  Connected devices:\n",
                 "  Connected devices:\n    [DeviceInfo: type:0x400 (hdmi) name: addr: codec: 0]\n");
         assertFalse(ConstraintEvaluator.parseHeadphonesConnected(hdmi));
+    }
+
+    /** Identical table to the app's ConstraintEvaluatorTest.cooldownRuleMatchesTheBridgeTable. */
+    @Test public void cooldownAllowsMirrorsTheAppRule() {
+        assertTrue(ConstraintEvaluator.cooldownAllows(null, "10", 1_000L));
+        assertFalse(ConstraintEvaluator.cooldownAllows(0L, "10", 599_999L));
+        assertTrue(ConstraintEvaluator.cooldownAllows(0L, "10", 600_000L));
+        assertFalse(ConstraintEvaluator.cooldownAllows(0L, " 10 ", 599_999L));
+        assertTrue(ConstraintEvaluator.cooldownAllows(0L, "", 1L));
+        assertTrue(ConstraintEvaluator.cooldownAllows(0L, null, 1L));
+        assertTrue(ConstraintEvaluator.cooldownAllows(0L, "abc", 1L));
+        assertFalse(ConstraintEvaluator.cooldownAllows(0L, "0", 59_999L));
+        assertTrue(ConstraintEvaluator.cooldownAllows(0L, "0", 60_000L));
+        assertFalse(ConstraintEvaluator.cooldownAllows(0L, "-5", 59_999L));
+        assertFalse(ConstraintEvaluator.cooldownAllows(0L, "99999", 86_399_999L));
+        assertTrue(ConstraintEvaluator.cooldownAllows(0L, "99999", 86_400_000L));
+        assertTrue(ConstraintEvaluator.cooldownAllows(5_000L, "10", 4_000L));
+    }
+
+    @Test public void notificationReceivedNeverHoldsInTheBridge() {
+        Map<String, String> none = Collections.emptyMap();
+        assertFalse(new ConstraintEvaluator(null).isSatisfied(
+                new BridgeConfig.Constraint(BridgeConfig.CONSTRAINT_NOTIFICATION_RECEIVED, none)));
+    }
+
+    @Test public void cooldownIsLeftToThePerScriptGate() {
+        Map<String, String> tenMinutes = Collections.singletonMap("minutes", "10");
+        assertTrue(new ConstraintEvaluator(null).isSatisfied(
+                new BridgeConfig.Constraint(BridgeConfig.CONSTRAINT_COOLDOWN, tenMinutes)));
     }
 }

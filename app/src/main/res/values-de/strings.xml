@@ -37,6 +37,7 @@
     <string name="param_point_b_y">Punkt B Y</string>
     <string name="param_direction">Richtung</string>
     <string name="param_app">App</string>
+    <string name="param_chat">Chat</string>
     <string name="param_shortcut">Kurzbefehl</string>
     <string name="param_method">Methode</string>
     <string name="param_body">Inhalt</string>
@@ -74,6 +75,7 @@
     <string name="action_http_request">HTTP-Anfrage</string>
     <string name="action_shell_command">Shell-Befehl</string>
     <string name="action_send_intent">Intent senden</string>
+    <string name="action_reply_to_notification">Auf Benachrichtigung antworten</string>
     <string name="action_interact_with_app_element">Mit App-Element interagieren</string>
     <string name="action_launch_voice_assistant">Sprachassistent starten</string>
     <string name="action_launch_device_assistant">Geräteassistent starten</string>
@@ -200,6 +202,7 @@
     <!-- Bedingungen -->
     <string name="constraint_app_in_foreground">App im Vordergrund</string>
     <string name="constraint_app_not_in_foreground">App nicht im Vordergrund</string>
+    <string name="constraint_notification_received">Benachrichtigung erhalten</string>
     <string name="constraint_app_playing_media">App spielt Medien ab</string>
     <string name="constraint_app_not_playing_media">App spielt keine Medien ab</string>
     <string name="constraint_no_media_playing">Es werden keine Medien abgespielt</string>
@@ -245,6 +248,7 @@
     <string name="constraint_location_on">Standort ist an</string>
     <string name="constraint_location_off">Standort ist aus</string>
     <string name="constraint_day_of_week">Wochentag</string>
+    <string name="constraint_cooldown">Höchstens einmal alle N Minuten</string>
     <string name="constraint_mobile_data_on">Mobile Daten sind an</string>
     <string name="constraint_mobile_data_off">Mobile Daten sind aus</string>
     <string name="constraint_airplane_mode_on">Flugmodus ist an</string>
@@ -261,6 +265,10 @@
     <string name="badge_expert_mode">Erfordert den Erweiterten Modus</string>
     <string name="badge_accessibility">Erfordert den Bedienungshilfen-Dienst</string>
     <string name="badge_notification_policy">Erfordert Zugriff auf „Nicht stören“</string>
+    <string name="badge_notification_access">Erfordert Benachrichtigungszugriff</string>
+    <string name="hint_reply_chat">Teil des Chatnamens. Leer: der neueste Chat</string>
+    <string name="summary_reply_newest_chat">neuester Chat</string>
+    <string name="helper_reply_to_notification">Sendet deinen Text über die eigene Antworten-Schaltfläche der Benachrichtigung, ohne die App zu öffnen. Funktioniert nur, solange für diesen Chat eine Benachrichtigung angezeigt wird, und kann keinen neuen Chat beginnen. KeySnap liest Benachrichtigungen nur auf deinem Telefon, um sie zu finden; nichts wird gespeichert oder anderswohin gesendet. Füge „Höchstens einmal alle N Minuten“ hinzu, damit ein aktiver Chat nicht immer wieder beantwortet wird.</string>
     <string name="badge_write_settings">Erfordert die Berechtigung zum Ändern der Systemeinstellungen</string>
 
     <!-- Aktionseditor: Feldbezeichnungen -->
@@ -434,6 +442,13 @@
     <string name="field_time_end">Bis</string>
     <string name="field_days">Tage</string>
     <string name="constraint_needs_usage_access">Benötigt Nutzungszugriff, damit die App sehen kann, welche App im Vordergrund ist.</string>
+    <string name="constraint_needs_notification_access">Benötigt Benachrichtigungszugriff. KeySnap prüft jede neue Benachrichtigung der gewählten App auf deinem Telefon gegen diese Bedingung und behält nur den Zeitpunkt eines Treffers. Nichts wird gespeichert, protokolliert oder gesendet.</string>
+    <string name="field_notification_contains">Titel oder Text enthält</string>
+    <string name="hint_notification_contains_any">Leer: jede Benachrichtigung dieser App</string>
+    <string name="helper_notification_received">Läuft, wenn eine neue Benachrichtigung dieser App eintrifft. Mehrere innerhalb von 10 Sekunden zählen als eine. Nur in Automatisierungen.</string>
+    <string name="field_cooldown_minutes">Minuten zwischen Ausführungen</string>
+    <string name="helper_cooldown">Wird übersprungen, wenn dieser Kurzbefehl vor weniger als so vielen Minuten ausgeführt wurde. Der Zähler beginnt neu, wenn das Telefon oder KeySnap neu startet.</string>
+    <string name="constraint_summary_cooldown">Höchstens alle %1$d Min.</string>
     <string name="constraint_config_choose_app">Wähle eine App aus, um fortzufahren</string>
     <string name="constraint_needs_location">Android zeigt den Netzwerknamen nur Apps mit Standortberechtigung.</string>
     <string name="constraint_grant_permission">Erteilen</string>
@@ -811,6 +826,7 @@
     <string name="run_failure_notifications_off">Benachrichtigungen sind deaktiviert</string>
     <string name="editor_needs_action">Füge mindestens eine Aktion hinzu, bevor du speicherst.</string>
     <string name="editor_needs_trigger">Wähle eine Taste, bevor du speicherst.</string>
+    <string name="editor_notification_needs_automation">„Benachrichtigung erhalten“ funktioniert nur in einer Automatisierung. Entferne diese Bedingung oder wechsle zu Automatisierung.</string>
     <string name="saved_needs_trigger">Gespeichert. Weise eine Taste zu, damit er ausgeführt werden kann.</string>
     <string name="saved_named">„%1$s“ gespeichert</string>
     <string name="saved_needs_condition">Gespeichert. Füge eine Bedingung hinzu, die sich von selbst ändert, z. B. Wird geladen oder Bluetooth-Gerät verbunden, damit es ausgeführt werden kann.</string>

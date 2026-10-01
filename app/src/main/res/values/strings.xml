@@ -40,6 +40,7 @@
     <string name="param_point_b_y">Point B Y</string>
     <string name="param_direction">Direction</string>
     <string name="param_app">App</string>
+    <string name="param_chat">Chat</string>
     <string name="param_shortcut">Shortcut</string>
     <string name="param_url" translatable="false">URL</string>
     <string name="param_method">Method</string>
@@ -79,6 +80,7 @@
     <string name="action_http_request">HTTP request</string>
     <string name="action_shell_command">Shell command</string>
     <string name="action_send_intent">Send intent</string>
+    <string name="action_reply_to_notification">Reply to notification</string>
     <string name="action_interact_with_app_element">Interact with app element</string>
     <string name="action_launch_voice_assistant">Launch voice assistant</string>
     <string name="action_launch_device_assistant">Launch device assistant</string>
@@ -207,6 +209,7 @@
     <!-- Constraints -->
     <string name="constraint_app_in_foreground">App in foreground</string>
     <string name="constraint_app_not_in_foreground">App not in foreground</string>
+    <string name="constraint_notification_received">Notification received</string>
     <string name="constraint_app_playing_media">App playing media</string>
     <string name="constraint_app_not_playing_media">App not playing media</string>
     <string name="constraint_no_media_playing">No media is playing</string>
@@ -252,6 +255,7 @@
     <string name="constraint_location_on">Location is on</string>
     <string name="constraint_location_off">Location is off</string>
     <string name="constraint_day_of_week">Day of the week</string>
+    <string name="constraint_cooldown">At most once every N minutes</string>
     <string name="constraint_mobile_data_on">Mobile data is on</string>
     <string name="constraint_mobile_data_off">Mobile data is off</string>
     <string name="constraint_airplane_mode_on">Airplane mode is on</string>
@@ -268,6 +272,10 @@
     <string name="badge_expert_mode">Requires Advanced Mode</string>
     <string name="badge_accessibility">Requires the Accessibility service</string>
     <string name="badge_notification_policy">Requires Do Not Disturb access</string>
+    <string name="badge_notification_access">Requires notification access</string>
+    <string name="hint_reply_chat">Part of the chat name. Empty: the newest chat</string>
+    <string name="summary_reply_newest_chat">newest chat</string>
+    <string name="helper_reply_to_notification">Sends your text through the notification\'s own Reply button, without opening the app. Works only while that chat has a notification showing, and cannot start a new chat. KeySnap reads notifications on your phone only to find it; nothing is saved or sent anywhere else. Add “At most once every N minutes” so a busy chat is not answered again and again.</string>
     <string name="badge_write_settings">Requires permission to modify system settings</string>
 
     <!-- Action editor: field labels -->
@@ -459,6 +467,13 @@
     <string name="field_time_end">Until</string>
     <string name="field_days">Days</string>
     <string name="constraint_needs_usage_access">Needs Usage access so the app can see which app is in front.</string>
+    <string name="constraint_needs_notification_access">Needs notification access. KeySnap checks each new notification from the app you chose against this condition, on your phone, and keeps only the time it matched. Nothing is saved, logged or sent.</string>
+    <string name="field_notification_contains">Title or text contains</string>
+    <string name="hint_notification_contains_any">Empty: any notification from this app</string>
+    <string name="helper_notification_received">Runs when a new notification from this app arrives. Several within 10 seconds count as one. Automations only.</string>
+    <string name="field_cooldown_minutes">Minutes between runs</string>
+    <string name="helper_cooldown">Skipped if this shortcut ran less than this many minutes ago. The timer starts over if the phone or KeySnap restarts.</string>
+    <string name="constraint_summary_cooldown">At most every %1$d min</string>
     <string name="constraint_config_choose_app">Choose an app to continue</string>
     <string name="constraint_needs_location">Android only reveals the network name to apps with the Location permission.</string>
     <string name="constraint_grant_permission">Grant</string>
@@ -855,6 +870,7 @@
     <string name="run_failure_notifications_off">Notifications are turned off</string>
     <string name="editor_needs_action">Add at least one action before saving.</string>
     <string name="editor_needs_trigger">Choose a key before saving.</string>
+    <string name="editor_notification_needs_automation">Notification received works only in an automation. Remove that condition or switch to Automation.</string>
     <string name="saved_needs_trigger">Saved. Assign a key so it can run.</string>
     <string name="saved_named">Saved \"%1$s\"</string>
     <string name="saved_needs_condition">Saved. Add a condition that changes on its own, like Charging or Bluetooth device connected, so it can run.</string>

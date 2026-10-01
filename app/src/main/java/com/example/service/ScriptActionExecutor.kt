@@ -301,6 +301,7 @@ class ScriptActionExecutor(private val handler: ScriptActionHandler) {
                 "open_camera" -> startActivitySafely(ctx, Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA))
                 "open_settings" -> startActivitySafely(ctx, Intent(Settings.ACTION_SETTINGS))
                 "send_intent" -> sendIntent(ctx, action.params)
+                "reply_to_notification" -> NotificationEventListener.reply(ctx, action.params)
                 "http_request" -> httpRequest(action.params["method"], action.params["url"], action.params["body"])
                 "shell_command" -> runShellCommand(action.params["command"])
                 // Neither killing another app's process nor writing system/secure/global settings

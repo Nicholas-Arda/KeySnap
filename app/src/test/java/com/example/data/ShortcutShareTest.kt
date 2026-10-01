@@ -165,6 +165,23 @@ class ShortcutShareTest {
         assertEquals(80, ok(encode(name = "x".repeat(500))).name.length)
     }
 
+    /**
+     * The notification condition, the cooldown and the reply travel intact. A reply sends someone
+     * else's text to the recipient's own chats, so it always arrives off and is shown as written.
+     */
+    @Test fun notificationConditionsCooldownAndReplyRoundTrip() {
+        val reply = ScriptAction("reply_to_notification", mapOf("packageName" to "com.whatsapp", "chat" to "Annem", "text" to "On my way"))
+        val constraints = listOf(
+            ScriptConstraint("notification_received", mapOf("packageName" to "com.whatsapp", "contains" to "annem")),
+            ScriptConstraint("cooldown", mapOf("minutes" to "10")),
+        )
+        val back = ok(encode(actions = listOf(reply), constraints = constraints, automation = true))
+        assertEquals(listOf(reply), back.actions)
+        assertEquals(constraints, back.constraints)
+        assertFalse(back.startsEnabled)
+        assertTrue("reply_to_notification" in ScriptActionCatalog.REVIEWED_LITERALLY)
+    }
+
     @Test fun privilegedImportsNeverStartEnabled() {
         assertTrue(ok(encode()).startsEnabled)
         assertFalse(ok(encode(actions = listOf(torch, hook))).startsEnabled)

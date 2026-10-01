@@ -22,9 +22,11 @@ import android.net.wifi.WifiManager
 import android.os.BatteryManager
 import android.os.Build
 import android.os.PowerManager
+import android.os.SystemClock
 import android.provider.Settings
 import android.util.Log
 import com.example.data.ScriptConstraint
+import com.example.data.ScriptConstraintCatalog
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalTime
@@ -99,6 +101,11 @@ class AndroidConstraintEvaluator(private val appContext: Context) : ConstraintEv
             "dnd_off" -> isDndOn()?.not() ?: true
             "headphones_connected" -> areHeadphonesConnected()
             "headphones_disconnected" -> !areHeadphonesConnected()
+            // Needs the script's own run history, so HardwareKeyTriggerCoordinator gates it per
+            // script; here it must never block, or it would join the automation edge.
+            ScriptConstraintCatalog.COOLDOWN -> true
+            ScriptConstraintCatalog.NOTIFICATION_RECEIVED ->
+                NotificationMatches.isRecent(constraint, SystemClock.elapsedRealtime())
             // A constraint type that isn't AVAILABLE never blocks a script.
             else -> true
         }
@@ -283,6 +290,17 @@ internal fun comparePercent(threshold: String?, level: Int?, above: Boolean): Bo
     val limit = threshold?.trim()?.toIntOrNull() ?: return true
     if (level == null) return true
     return if (above) level > limit else level < limit
+}
+
+/**
+ * "At most once every [minutes] minutes". Mirrors `ConstraintEvaluator.cooldownAllows` in
+ * `:bridge` exactly: minutes clamp to 1..1440, blank or malformed never blocks, a script that has
+ * not run yet passes, and a clock earlier than the last run never blocks.
+ */
+internal fun cooldownAllows(lastRunMs: Long?, minutes: String?, nowMs: Long): Boolean {
+    val limit = minutes?.trim()?.toLongOrNull()?.coerceIn(1L, 1440L) ?: return true
+    if (lastRunMs == null || nowMs < lastRunMs) return true
+    return nowMs - lastRunMs >= limit * 60_000L
 }
 
 /** Strips the quotes Android wraps around a UTF-8 SSID; null for a blank or redacted (`<unknown ssid>`) value. */

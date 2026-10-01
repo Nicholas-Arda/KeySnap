@@ -37,6 +37,7 @@
     <string name="param_point_b_y">B Noktası Y</string>
     <string name="param_direction">Yön</string>
     <string name="param_app">Uygulama</string>
+    <string name="param_chat">Sohbet</string>
     <string name="param_shortcut">Kısayol</string>
     <string name="param_method">Yöntem</string>
     <string name="param_body">Gövde</string>
@@ -74,6 +75,7 @@
     <string name="action_http_request">HTTP isteği</string>
     <string name="action_shell_command">Kabuk komutu</string>
     <string name="action_send_intent">Intent gönder</string>
+    <string name="action_reply_to_notification">Bildirime yanıt ver</string>
     <string name="action_interact_with_app_element">Uygulama öğesiyle etkileşim</string>
     <string name="action_launch_voice_assistant">Sesli asistanı başlat</string>
     <string name="action_launch_device_assistant">Cihaz asistanını başlat</string>
@@ -200,6 +202,7 @@
     <!-- Koşullar -->
     <string name="constraint_app_in_foreground">Uygulama ön planda</string>
     <string name="constraint_app_not_in_foreground">Uygulama ön planda değil</string>
+    <string name="constraint_notification_received">Bildirim geldi</string>
     <string name="constraint_app_playing_media">Uygulama medya oynatıyor</string>
     <string name="constraint_app_not_playing_media">Uygulama medya oynatmıyor</string>
     <string name="constraint_no_media_playing">Hiçbir medya oynatılmıyor</string>
@@ -245,6 +248,7 @@
     <string name="constraint_location_on">Konum açık</string>
     <string name="constraint_location_off">Konum kapalı</string>
     <string name="constraint_day_of_week">Haftanın günü</string>
+    <string name="constraint_cooldown">En fazla N dakikada bir</string>
     <string name="constraint_mobile_data_on">Mobil veri açık</string>
     <string name="constraint_mobile_data_off">Mobil veri kapalı</string>
     <string name="constraint_airplane_mode_on">Uçak modu açık</string>
@@ -261,6 +265,10 @@
     <string name="badge_expert_mode">Uzman Modu gerektirir</string>
     <string name="badge_accessibility">Erişilebilirlik hizmeti gerektirir</string>
     <string name="badge_notification_policy">Rahatsız Etmeyin erişimi gerektirir</string>
+    <string name="badge_notification_access">Bildirim erişimi gerektirir</string>
+    <string name="hint_reply_chat">Sohbet adının bir kısmı. Boş: en yeni sohbet</string>
+    <string name="summary_reply_newest_chat">en yeni sohbet</string>
+    <string name="helper_reply_to_notification">Metninizi uygulamayı açmadan, bildirimin kendi Yanıtla düğmesiyle gönderir. Yalnızca o sohbetin bildirimi görünürken çalışır, yeni sohbet başlatamaz. KeySnap bildirimleri yalnızca onu bulmak için telefonunuzda okur; hiçbir şey kaydedilmez ya da başka yere gönderilmez. Kalabalık bir sohbete art arda yanıt gitmesin diye “En fazla N dakikada bir” koşulunu ekleyin.</string>
     <string name="badge_write_settings">Sistem ayarlarını değiştirme izni gerektirir</string>
 
     <!-- Eylem düzenleyici: alan etiketleri -->
@@ -440,6 +448,13 @@
     <string name="field_time_end">Bitiş</string>
     <string name="field_days">Günler</string>
     <string name="constraint_needs_usage_access">Hangi uygulamanın önde olduğunu görebilmesi için Kullanım erişimi gerekir.</string>
+    <string name="constraint_needs_notification_access">Bildirim erişimi gerekir. KeySnap seçtiğiniz uygulamanın her yeni bildirimini telefonunuzda bu koşulla karşılaştırır ve yalnızca eşleştiği zamanı tutar. Hiçbir şey kaydedilmez, günlüğe yazılmaz ya da gönderilmez.</string>
+    <string name="field_notification_contains">Başlık ya da metin içeriyor</string>
+    <string name="hint_notification_contains_any">Boş: bu uygulamanın her bildirimi</string>
+    <string name="helper_notification_received">Bu uygulamadan yeni bir bildirim gelince çalışır. 10 saniye içinde gelenler tek sayılır. Yalnızca otomasyonlarda.</string>
+    <string name="field_cooldown_minutes">İki çalışma arası dakika</string>
+    <string name="helper_cooldown">Bu kısayol bu kadar dakikadan daha kısa süre önce çalıştıysa atlanır. Telefon ya da KeySnap yeniden başlarsa süre sıfırlanır.</string>
+    <string name="constraint_summary_cooldown">En fazla %1$d dakikada bir</string>
     <string name="constraint_config_choose_app">Devam etmek için bir uygulama seçin</string>
     <string name="constraint_needs_location">Android, ağ adını yalnızca Konum iznine sahip uygulamalara gösterir.</string>
     <string name="constraint_grant_permission">İzin ver</string>
@@ -809,6 +824,7 @@
     <string name="run_failure_notifications_off">Bildirimler kapalı</string>
     <string name="editor_needs_action">Kaydetmeden önce en az bir eylem ekleyin.</string>
     <string name="editor_needs_trigger">Kaydetmeden önce bir tuş seçin.</string>
+    <string name="editor_notification_needs_automation">Bildirim geldi koşulu yalnızca otomasyonda çalışır. O koşulu kaldırın ya da Otomasyon\'a geçin.</string>
     <string name="saved_needs_trigger">Kaydedildi. Çalışabilmesi için bir tuş atayın.</string>
     <string name="saved_named">\"%1$s\" kaydedildi</string>
     <string name="saved_needs_condition">Kaydedildi. Çalışabilmesi için kendiliğinden değişen bir koşul ekleyin, örneğin Şarjda veya Bluetooth cihazı bağlı.</string>

@@ -118,6 +118,7 @@ private val ADVANCED_MODE_BADGE = R.string.badge_expert_mode
 @Suppress("unused") private val ACCESSIBILITY_BADGE = R.string.badge_accessibility
 val NOTIFICATION_POLICY_BADGE = R.string.badge_notification_policy
 val WRITE_SETTINGS_BADGE = R.string.badge_write_settings
+val NOTIFICATION_ACCESS_BADGE = R.string.badge_notification_access
 
 private fun Map<String, String>.value(key: String): String = this[key].orEmpty().trim()
 
@@ -247,6 +248,25 @@ object ActionEditorForms {
             ),
             helperRes = R.string.helper_send_intent,
             summary = { _, params -> params.value("action") },
+        ),
+        ActionEditorForm(
+            type = "reply_to_notification",
+            fields = listOf(
+                EditorField.AppPick("packageName", R.string.param_app),
+                EditorField.Text("chat", R.string.param_chat, hintRes = R.string.hint_reply_chat),
+                EditorField.Text("text", R.string.param_text, multiline = true),
+            ),
+            helperRes = R.string.helper_reply_to_notification,
+            requirementRes = NOTIFICATION_ACCESS_BADGE,
+            // Legible before it runs: which app, which chat, and the literal text.
+            summary = { res, params ->
+                val text = params.value("text")
+                joinSummary(
+                    params.value("packageName"),
+                    params.value("chat").ifEmpty { res.getString(R.string.summary_reply_newest_chat) },
+                    if (text.isEmpty()) "" else "“$text”",
+                )
+            },
         ),
         ActionEditorForm(
             type = "force_stop_app",

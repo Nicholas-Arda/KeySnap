@@ -109,6 +109,8 @@ class ActionEditorFormTest {
     @Test fun summariesReadAsTheChainRowsSecondLine() {
         assertEquals("540, 1180", ActionEditorForms.summarize(ScriptAction("tap_screen", mapOf("x" to "540", "y" to "1180")), res))
         assertEquals("540, 1180 · ×3", ActionEditorForms.summarize(ScriptAction("tap_screen", mapOf("x" to "540", "y" to "1180", "count" to "3")), res))
+        assertEquals("com.whatsapp · Annem · “On my way”", ActionEditorForms.summarize(ScriptAction("reply_to_notification", mapOf("packageName" to "com.whatsapp", "chat" to "Annem", "text" to "On my way")), res))
+        assertTrue(ActionEditorForms.summarize(ScriptAction("reply_to_notification", mapOf("packageName" to "com.whatsapp", "text" to "Hi")), res)!!.let { it.startsWith("com.whatsapp · ") && it.endsWith(" · “Hi”") })
         assertEquals("GET · https://example.com", ActionEditorForms.summarize(ScriptAction("http_request", mapOf("method" to "GET", "url" to "https://example.com")), res))
         assertEquals("100, 200 → 300, 400", ActionEditorForms.summarize(ScriptAction("swipe_screen", mapOf("x1" to "100", "y1" to "200", "x2" to "300", "y2" to "400")), res))
         assertEquals("com.example.app", ActionEditorForms.summarize(ScriptAction("launch_app", mapOf("packageName" to "com.example.app")), res))

@@ -59,7 +59,7 @@ import io.github.nicholasarda.keysnap.R
  * or closing the picker outright. Layout mirrors AddActionScreen.
  */
 @Composable
-fun ConstraintPickerScreen(onClose: () -> Unit, onPickConstraint: (String) -> Unit) {
+fun ConstraintPickerScreen(automation: Boolean, onClose: () -> Unit, onPickConstraint: (String) -> Unit) {
     val colors = MaterialTheme.colorScheme
     var query by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf<ConstraintCategory?>(null) }
@@ -121,7 +121,9 @@ fun ConstraintPickerScreen(onClose: () -> Unit, onPickConstraint: (String) -> Un
         val resources = LocalContext.current.resources
         val base = if (searching) ScriptConstraintCatalog.search(query, resources) else ScriptConstraintCatalog.all
         // Browsing offers only what can be added; a search still finds the unreleased ones.
-        val offered = if (searching) base else base.filter { it.availability == ConstraintAvailability.AVAILABLE }
+        // Automation-only conditions are hidden from key shortcuts altogether.
+        val offered = (if (searching) base else base.filter { it.availability == ConstraintAvailability.AVAILABLE })
+            .filter { automation || it.type !in ScriptConstraintCatalog.AUTOMATION_ONLY }
         val filtered = selectedCategory?.let { cat -> offered.filter { it.category == cat } } ?: offered
         val grouped = ConstraintCategory.entries.mapNotNull { category ->
             val entries = filtered.filter { it.category == category }

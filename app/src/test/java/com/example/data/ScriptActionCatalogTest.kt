@@ -77,6 +77,7 @@ class ScriptActionCatalogTest {
                 "force_stop_app",
                 "modify_setting",
                 "send_intent",
+                "reply_to_notification",
                 "http_request",
                 "shell_command",
                 "screen_on",
@@ -204,6 +205,7 @@ class ScriptActionCatalogTest {
                 "text_paste",
                 "open_recents",
                 "show_notification",
+                "reply_to_notification",
             ),
             ScriptActionCatalog.UNSUPPORTED_BY_BRIDGE,
         )
@@ -226,11 +228,15 @@ class ScriptActionCatalogTest {
 
     /**
      * CLAUDE.md "Privileged actions must stay legible": the import review and recipe tests key off
-     * this set. show_notification is in it because its tap target is a user-typed URL, like open_url.
+     * this set. show_notification is in it because its tap target is a user-typed URL, like open_url;
+     * reply_to_notification because it sends user-typed text to a real person's chat.
      */
     @Test fun privilegedActionsAreAvailableCatalogEntries() {
         assertEquals(
-            setOf("shell_command", "modify_setting", "force_stop_app", "send_intent", "http_request", "open_url", "show_notification"),
+            setOf(
+                "shell_command", "modify_setting", "force_stop_app", "send_intent", "http_request", "open_url", "show_notification",
+                "reply_to_notification",
+            ),
             ScriptActionCatalog.PRIVILEGED,
         )
         ScriptActionCatalog.PRIVILEGED.forEach { assertTrue(it, ScriptActionCatalog.isAvailable(it)) }

@@ -1,6 +1,7 @@
 package com.example.ui.scripts
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.Reply
 import androidx.compose.material.icons.filled.Apps
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Bolt
@@ -107,6 +108,7 @@ private val perActionIcons: Map<String, ImageVector> = mapOf(
     "launch_app" to Icons.Filled.Apps,
     "launch_app_shortcut" to Icons.Outlined.OpenInNew,
     "open_url" to Icons.Outlined.Link,
+    "reply_to_notification" to Icons.AutoMirrored.Outlined.Reply,
     "http_request" to Icons.Outlined.Http,
     "shell_command" to Icons.Outlined.Terminal,
     "send_intent" to Icons.Outlined.Code,

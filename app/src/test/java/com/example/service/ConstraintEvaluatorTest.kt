@@ -10,6 +10,7 @@ import android.media.AudioManager
 import android.net.wifi.WifiManager
 import android.os.BatteryManager
 import android.os.PowerManager
+import android.os.SystemClock
 import android.provider.Settings
 import androidx.test.core.app.ApplicationProvider
 import com.example.data.ScriptConstraint
@@ -283,5 +284,35 @@ class ConstraintEvaluatorTest {
         assertTrue(evaluator.isSatisfied(ScriptConstraint("app_not_in_foreground", mapOf("packageName" to "com.example.other"))))
         assertTrue(evaluator.isSatisfied(ScriptConstraint("time", mapOf("start" to "bad", "end" to "09:00"))))
         assertTrue(evaluator.isSatisfied(ScriptConstraint("day_of_week", mapOf("days" to ""))))
+    }
+
+    /** Identical table to bridge ConstraintEvaluatorParsingTest.cooldownAllowsMirrorsTheAppRule. */
+    @Test fun cooldownRuleMatchesTheBridgeTable() {
+        assertTrue(cooldownAllows(null, "10", 1_000L))
+        assertFalse(cooldownAllows(0L, "10", 599_999L))
+        assertTrue(cooldownAllows(0L, "10", 600_000L))
+        assertFalse(cooldownAllows(0L, " 10 ", 599_999L))
+        assertTrue(cooldownAllows(0L, "", 1L))
+        assertTrue(cooldownAllows(0L, null, 1L))
+        assertTrue(cooldownAllows(0L, "abc", 1L))
+        assertFalse(cooldownAllows(0L, "0", 59_999L))
+        assertTrue(cooldownAllows(0L, "0", 60_000L))
+        assertFalse(cooldownAllows(0L, "-5", 59_999L))
+        assertFalse(cooldownAllows(0L, "99999", 86_399_999L))
+        assertTrue(cooldownAllows(0L, "99999", 86_400_000L))
+        // A clock earlier than the last run never blocks.
+        assertTrue(cooldownAllows(5_000L, "10", 4_000L))
+    }
+
+    @Test fun notificationReceivedReadsTheRecordedMatch() {
+        NotificationMatches.clearForTest()
+        val c = ScriptConstraint("notification_received", mapOf("packageName" to "com.whatsapp"))
+        assertFalse(evaluator.isSatisfied(c))
+        NotificationMatches.record(listOf(c), "com.whatsapp", SystemClock.elapsedRealtime()) { "x" }
+        assertTrue(evaluator.isSatisfied(c))
+    }
+
+    @Test fun cooldownItselfNeverBlocksTheEvaluator() {
+        assertTrue(evaluator.isSatisfied(ScriptConstraint("cooldown", mapOf("minutes" to "10"))))
     }
 }

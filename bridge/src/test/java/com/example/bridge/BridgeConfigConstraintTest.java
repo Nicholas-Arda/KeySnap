@@ -98,4 +98,12 @@ public class BridgeConfigConstraintTest {
         assertEquals(BridgeConfig.CONSTRAINT_BATTERY_ABOVE, parsed.type);
         assertEquals("20", parsed.params.get("percent"));
     }
+
+    @Test public void cooldownMinutesSurviveTheRoundTrip() throws Exception {
+        JSONObject cooldown = new JSONObject().put("type", "cooldown").put("params", new JSONObject().put("minutes", "10"));
+        BridgeConfig config = read(script("s", new JSONArray().put(cooldown)));
+        BridgeConfig.Constraint parsed = config.scripts.get(0).constraints.get(0);
+        assertEquals(BridgeConfig.CONSTRAINT_COOLDOWN, parsed.type);
+        assertEquals("10", parsed.params.get("minutes"));
+    }
 }

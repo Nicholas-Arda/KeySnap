@@ -30,7 +30,7 @@ import com.example.ui.theme.MonoLabel
  */
 object PrivacyPolicy {
 
-    const val LAST_UPDATED = "30 September 2026"
+    const val LAST_UPDATED = "1 October 2026"
 
     /**
      * Left blank deliberately. A published policy needs a contact address, but which address to
@@ -103,7 +103,16 @@ object PrivacyPolicy {
             "permission is requested only when you add that condition. Usage access: to know " +
             "which app is in the foreground, for the \"app in foreground\" condition. Do Not " +
             "Disturb access: to switch the ringer to Silent. Modify system settings: to change " +
-            "brightness and screen rotation without Advanced Mode. Each of these is a switch " +
+            "brightness and screen rotation without Advanced Mode. " +
+            "Notification access: only if you add a \"Notification received\" condition or a " +
+            "\"Reply to notification\" action. The app compares each new notification from the " +
+            "app you chose with your condition on this device and keeps only the time it " +
+            "matched; notifications from apps no condition names are not read, and notification " +
+            "text is never stored, logged or sent. To reply, the app looks at the titles of that " +
+            "app's notifications that are showing to find the chat, then hands your text to that " +
+            "notification's own Reply button, and the messaging app sends it as if you had " +
+            "replied from the notification. " +
+            "Each of these is a switch " +
             "you turn on yourself in Android's settings, and the app never asks for one until " +
             "you use the feature that needs it. The camera permission is deliberately not " +
             "requested — the torch is controlled through an API that needs no permission.",

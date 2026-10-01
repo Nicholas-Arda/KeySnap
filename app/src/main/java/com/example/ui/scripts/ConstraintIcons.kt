@@ -45,6 +45,7 @@ import androidx.compose.material.icons.outlined.HeadsetOff
 import androidx.compose.material.icons.outlined.LightMode
 import androidx.compose.material.icons.outlined.LocationOff
 import androidx.compose.material.icons.outlined.LocationOn
+import androidx.compose.material.icons.outlined.HourglassEmpty
 import androidx.compose.material.icons.outlined.NotificationsActive
 import androidx.compose.material.icons.outlined.NotificationsOff
 import androidx.compose.material.icons.outlined.SignalCellularAlt
@@ -59,6 +60,7 @@ private val perConstraintIcons: Map<String, ImageVector> = mapOf(
     // Apps
     "app_in_foreground" to Icons.Filled.Apps,
     "app_not_in_foreground" to Icons.Outlined.AppBlocking,
+    "notification_received" to Icons.Outlined.NotificationsActive,
     "app_playing_media" to Icons.Outlined.MusicNote,
     "app_not_playing_media" to Icons.Outlined.MusicOff,
     // Media
@@ -128,6 +130,7 @@ private val perConstraintIcons: Map<String, ImageVector> = mapOf(
     // Time
     "time" to Icons.Outlined.Timer,
     "day_of_week" to Icons.Outlined.DateRange,
+    "cooldown" to Icons.Outlined.HourglassEmpty,
 )
 
 private val categoryFallbackIcons: Map<ConstraintCategory, ImageVector> = mapOf(

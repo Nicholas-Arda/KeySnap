@@ -116,6 +116,7 @@ public final class BridgeConfig {
     public static final String ACTION_TAP_SCREEN = "tap_screen";
     public static final String ACTION_SWIPE_SCREEN = "swipe_screen";
     public static final String ACTION_PINCH_SCREEN = "pinch_screen";
+    public static final String ACTION_REPLY_TO_NOTIFICATION = "reply_to_notification";
 
     /** Mirrors ScriptActionExecutor's MAX_TAP_COUNT and DEFAULT_TAP_INTERVAL_MS exactly. */
     public static final int MAX_TAP_COUNT = 20;
@@ -213,6 +214,9 @@ public final class BridgeConfig {
     public static final String CONSTRAINT_DND_OFF = "dnd_off";
     public static final String CONSTRAINT_HEADPHONES_CONNECTED = "headphones_connected";
     public static final String CONSTRAINT_HEADPHONES_DISCONNECTED = "headphones_disconnected";
+    public static final String CONSTRAINT_NOTIFICATION_RECEIVED = "notification_received";
+    /** Per-script "at most once every N minutes"; BridgeMain gates it, the evaluator never blocks on it. */
+    public static final String CONSTRAINT_COOLDOWN = "cooldown";
 
     public final int port;
     public final String token;

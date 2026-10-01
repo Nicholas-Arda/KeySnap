@@ -137,10 +137,39 @@ final class ConstraintEvaluator {
                 return parseHeadphonesConnected(shell("dumpsys", "audio"));
             case BridgeConfig.CONSTRAINT_HEADPHONES_DISCONNECTED:
                 return !parseHeadphonesConnected(shell("dumpsys", "audio"));
+            case BridgeConfig.CONSTRAINT_NOTIFICATION_RECEIVED:
+                // App-only: this process has no notification listener, so from here no
+                // notification has arrived. The editor offers the condition only on key-less
+                // automations, which the bridge never runs (parseScript drops trigger-less
+                // scripts). Answering false instead of the usual "unknown never blocks" keeps an
+                // imported key shortcut from firing on every press here while the app holds it.
+                return false;
+            case BridgeConfig.CONSTRAINT_COOLDOWN:
+                // Needs the script's run history; BridgeMain.cooldownAllows gates it per script.
+                return true;
             default:
                 // A constraint type that isn't AVAILABLE never blocks a script.
                 return true;
         }
+    }
+
+    /**
+     * Mirrors cooldownAllows in app/src/main/java/com/example/service/ConstraintEvaluator.kt
+     * exactly: minutes clamp to 1..1440, blank or malformed never blocks, a script that has not
+     * run yet passes, and a clock earlier than the last run never blocks.
+     */
+    static boolean cooldownAllows(Long lastRunMs, String minutes, long nowMs) {
+        long limit;
+        try {
+            limit = Long.parseLong(minutes == null ? "" : minutes.trim());
+        } catch (NumberFormatException e) {
+            return true;
+        }
+        limit = Math.max(1L, Math.min(1440L, limit));
+        if (lastRunMs == null || nowMs < lastRunMs) {
+            return true;
+        }
+        return nowMs - lastRunMs >= limit * 60_000L;
     }
 
     static boolean isScreenOn() {
