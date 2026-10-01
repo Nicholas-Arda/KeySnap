@@ -148,8 +148,8 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
     val runLog: StateFlow<List<RunRecord>> = runLogRepository.runs
 
     private val entitlementManager = EntitlementManager.getInstance(appContext)
-    private val rewardedAdController = RewardedAdController(appContext)
-    private val purchaseManager = PurchaseManager(appContext, entitlementManager)
+    private val rewardedAdController = RewardedAdController.getInstance(appContext)
+    private val purchaseManager = PurchaseManager.getInstance(appContext)
     val isPro: StateFlow<Boolean> = entitlementManager.isPro
     val rewardExpiryAt: StateFlow<Long> = entitlementManager.rewardExpiryAt
 

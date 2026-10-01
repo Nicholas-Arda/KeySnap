@@ -67,12 +67,18 @@ fun NativeAdCard(modifier: Modifier = Modifier) {
     val onSurfaceVariantArgb = colors.onSurfaceVariant.toArgb()
 
     DisposableEffect(Unit) {
+        var disposed = false
         val loader = AdLoader.Builder(context, AdConfig.NATIVE_UNIT_ID)
-            .forNativeAd { ad -> nativeAd = ad }
+            // An ad that lands after the card left (Activity closed mid-load) has no owner left to
+            // destroy it, and its WebView/video threads would outlive the Activity.
+            .forNativeAd { ad -> if (disposed) ad.destroy() else nativeAd = ad }
             .withAdListener(object : AdListener() {})
             .build()
         loader.loadAd(AdRequest.Builder().build())
-        onDispose { nativeAd?.destroy() }
+        onDispose {
+            disposed = true
+            nativeAd?.destroy()
+        }
     }
 
     Box(

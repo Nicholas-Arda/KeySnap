@@ -48,7 +48,8 @@ object PrivacyPolicy {
             "purchases\" below, and it is limited to what those services need to show an ad or " +
             "confirm a purchase." +
             " If you share a shortcut, the app hands its text to the app you pick in Android's share " +
-            "sheet and sends it nowhere itself.",
+            "sheet and sends it nowhere itself. Names of contacts and chats, phone numbers, RSS feed addresses " +
+            "and calendar names are left out of that text.",
 
         "What is stored on your device" to
             "Your shortcuts, their triggers, which shortcut each home-screen widget and Quick " +

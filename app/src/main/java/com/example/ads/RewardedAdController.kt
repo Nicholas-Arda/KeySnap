@@ -12,8 +12,17 @@ import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 
 /** Owns the one rewarded-ad slot behind the home screen's reward button: loads it ahead of time so
- *  the tap that shows it doesn't wait on a network round trip. */
-class RewardedAdController(context: Context) {
+ *  the tap that shows it doesn't wait on a network round trip. App-scoped so a relaunched Activity
+ *  reuses the ad already loaded instead of stacking another one (and its retry loop) per view model. */
+class RewardedAdController private constructor(context: Context) {
+    companion object {
+        @Volatile private var instance: RewardedAdController? = null
+
+        fun getInstance(context: Context): RewardedAdController = instance ?: synchronized(this) {
+            instance ?: RewardedAdController(context).also { instance = it }
+        }
+    }
+
     private val appContext = context.applicationContext
     private var rewardedAd: RewardedAd? = null
     private var isLoading = false

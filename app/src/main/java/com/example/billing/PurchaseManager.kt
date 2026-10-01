@@ -21,8 +21,19 @@ import kotlinx.coroutines.flow.asStateFlow
 
 /** Owns the Pro one-time purchase: [AdConfig.PRO_PRODUCT_ID] must exist as an in-app product in
  *  Play Console before this can complete a real purchase (it will fail to find product details
- *  until then, which is expected during development). */
-class PurchaseManager(context: Context, private val entitlements: EntitlementManager) {
+ *  until then, which is expected during development). App-scoped: one BillingClient for the
+ *  process, because MainViewModel dies with every Activity and a client per view model was never
+ *  ended — its auto-reconnecting service connection and threads piled up on every relaunch. */
+class PurchaseManager private constructor(context: Context, private val entitlements: EntitlementManager) {
+    companion object {
+        @Volatile private var instance: PurchaseManager? = null
+
+        fun getInstance(context: Context): PurchaseManager = instance ?: synchronized(this) {
+            instance ?: PurchaseManager(context, EntitlementManager.getInstance(context)).also { instance = it }
+        }
+    }
+
+    private var started = false
     private var proProductDetails: ProductDetails? = null
 
     private val _proPrice = MutableStateFlow<String?>(null)
@@ -43,7 +54,10 @@ class PurchaseManager(context: Context, private val entitlements: EntitlementMan
         .enableAutoServiceReconnection()
         .build()
 
+    /** Connects once per process; later Activities reuse the connection and rely on [refresh]. */
     fun start() {
+        if (started) return
+        started = true
         billingClient.startConnection(object : BillingClientStateListener {
             override fun onBillingSetupFinished(result: BillingResult) {
                 if (result.responseCode != BillingClient.BillingResponseCode.OK) return

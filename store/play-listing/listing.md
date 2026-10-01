@@ -6,7 +6,7 @@ KeySnap: Button Remapper
 
 ## Short description (80 chars max)
 
-Remap volume, power or any button to 90+ actions. No root, no account, no cloud.
+Remap volume, power or any button to 90 actions. No root, no account, no cloud.
 
 ## Full description (4000 chars max, plain text)
 
@@ -21,7 +21,7 @@ WHAT YOU CAN MAP
 • Extra buttons your manufacturer added, even unlabelled ones
 Each key can be a single press, a double press or a long press, and one shortcut can chain several.
 
-90+ ACTIONS
+90 ACTIONS
 Flashlight, screenshot, open any app, play/pause, next track, volume, brightness, rotation, Do Not Disturb, Wi‑Fi, Bluetooth, mobile data, back/home/recents, tap and swipe on screen, type text, shell command, HTTP request, open a URL, and more. Actions run one after another, so a single press can do several things.
 
 ONLY WHEN YOU WANT
@@ -40,7 +40,7 @@ FREE AND PRO
 The free version includes two shortcuts and shows ads. Pro is a one-time purchase that removes both limits. No subscription.
 
 PERMISSIONS
-KeySnap asks for a permission only when you use the feature that needs it. Accessibility: to see button presses. Location: only for the "connected to Wi‑Fi network" condition, because Android hides the network name otherwise; your position is never read. Bluetooth, Do Not Disturb, usage access and modify settings each unlock one group of actions. Camera is never requested; the flashlight works without it.
+KeySnap asks for a permission only when you use the feature that needs it. Accessibility: to see button presses. Location: only for the "connected to Wi‑Fi network" condition, because Android hides the network name otherwise; your position is never read. Calendar (read-only) and alarms: only for the "calendar event in progress" condition, so an automation can run on time. Notification access: only for the "notification received" condition and "Reply to notification"; notification content is checked on the phone and never saved or sent. Bluetooth, Do Not Disturb, usage access and modify settings each unlock one group of actions. Camera is never requested; the flashlight works without it.
 
 Requires Android 11 or newer.
 
