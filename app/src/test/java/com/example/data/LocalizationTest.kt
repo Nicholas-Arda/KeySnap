@@ -90,6 +90,7 @@ class LocalizationTest {
                         is EditorField.DaySet -> listOf(field.labelRes)
                         is EditorField.ImagePick -> listOf(field.labelRes)
                         is EditorField.ContactPick -> listOf(field.labelRes)
+                        is EditorField.Switch -> listOf(field.labelRes)
                     }
                     labels.forEach { assertTrue("[$tag] $type field label", res.getString(it).isNotBlank()) }
                 }

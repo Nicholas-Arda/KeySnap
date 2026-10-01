@@ -277,6 +277,10 @@
     <string name="param_message">Message</string>
     <string name="field_send_with">Envoyer avec</string>
     <string name="helper_send_message">Ouvre la discussion avec votre message déjà saisi ; vous touchez Envoyer.</string>
+    <string name="helper_send_message_auto">Le message est envoyé pour vous (nécessite le mode avancé ; écran allumé et déverrouillé).</string>
+    <string name="field_send_automatically">Envoyer automatiquement</string>
+    <string name="message_then_taps_send">%1$s, puis le mode avancé touche Envoyer</string>
+    <string name="message_no_chat_to_send">Ceci ouvre un sélecteur, pas une discussion : l\'envoi automatique est impossible ; vous touchez Envoyer.</string>
     <string name="action_config_pick_contact">Choisir dans les contacts</string>
     <string name="action_config_type_number">Ou saisissez un numéro</string>
     <string name="helper_message_number">Vide : vous choisissez la personne dans l\'application.</string>
@@ -470,6 +474,7 @@
     <string name="constraint_summary_any_event">N\'importe quel événement</string>
     <string name="helper_calendar_event_active">S\'exécute quand un événement correspondant commence. Quand le téléphone est inactif, cela peut se faire plus tard ; un événement court peut donc être manqué. Les événements sur toute la journée et annulés sont ignorés, et des événements qui se suivent comptent pour un. Automatisations uniquement.</string>
     <string name="constraint_needs_calendar">Nécessite l\'autorisation de lire votre agenda. Les événements sont comparés à cette condition sur ce téléphone et ne sont jamais enregistrés, journalisés ni envoyés.</string>
+    <string name="constraint_needs_exact_alarm">Pour s\'exécuter à l\'heure, il faut « Alarmes et rappels ». Sans cela, un téléphone qui économise la batterie peut l\'exécuter en retard ou manquer un événement court.</string>
     <string name="field_cooldown_minutes">Minutes entre deux exécutions</string>
     <string name="helper_cooldown">Ignoré si ce raccourci s\'est exécuté il y a moins de minutes que cela. Le compteur repart de zéro si le téléphone ou KeySnap redémarre.</string>
     <string name="constraint_summary_cooldown">Au plus toutes les %1$d min</string>
@@ -730,6 +735,7 @@
     <string name="settings_erase_confirm_title">Effacer toutes les données ?</string>
     <string name="settings_erase_action">Tout effacer</string>
     <string name="settings_erase_warning">Cela arrête le mode avancé, supprime le pont de l\'appareil, et retire tous les raccourcis et préférences. Cette action est irréversible. Le service d\'accessibilité est également désactivé ; réactivez-le ensuite.</string>
+    <string name="erase_bridge_still_running">Le mode avancé est toujours actif, donc rien n\'a été effacé. Désactivez-le et réessayez.</string>
     <string name="settings_version">Version %1$s (%2$d)</string>
     <string name="settings_input_monitor">Moniteur de saisie</string>
     <string name="settings_show_log_action">Afficher le journal des événements</string>
@@ -847,6 +853,10 @@
     <string name="run_nothing_ran">Rien ne s\'est exécuté. Vérifiez les paramètres de l\'action.</string>
     <string name="run_partial">%1$d action(s) sur %2$d exécutée(s)</string>
     <string name="run_failure_generic">Non terminée</string>
+    <string name="run_failure_message_not_sent">Non envoyé automatiquement : le mode avancé est désactivé</string>
+    <string name="run_failure_message_unconfirmed">Peut-être envoyé — vérifiez la discussion</string>
+    <string name="run_failure_message_chat_not_open">Non envoyé automatiquement : la discussion ne s\'est pas ouverte à temps</string>
+    <string name="run_failure_message_chat_unconfirmed">Non envoyé automatiquement : impossible de confirmer la discussion</string>
     <string name="run_failure_notifications_off">Les notifications sont désactivées</string>
     <string name="editor_needs_action">Ajoutez au moins une action avant d\'enregistrer.</string>
     <string name="editor_needs_trigger">Choisissez une touche avant d\'enregistrer.</string>
@@ -921,7 +931,7 @@
     <string name="recipe_spreadsheet">Ajouter une ligne à un tableur</string>
     <string name="recipe_send_message">Envoyer un message</string>
     <string name="recipe_send_message_subtitle">Ouvre une discussion avec votre texte déjà saisi</string>
-    <string name="recipe_send_message_note">Choisissez un contact, l\'application d\'envoi et votre message. La discussion s\'ouvre avec le message déjà saisi ; vous touchez Envoyer.</string>
+    <string name="recipe_send_message_note">Choisissez un contact, l\'application d\'envoi et votre message. Si Envoyer automatiquement est activé, le mode avancé l\'envoie ; sinon la discussion s\'ouvre avec le message déjà saisi et vous touchez Envoyer.</string>
     <string name="home_recipes_all">Tous</string>
     <!-- Share and import -->
     <string name="import_error_invalid">Ce n\'est pas un raccourci KeySnap valide.</string>

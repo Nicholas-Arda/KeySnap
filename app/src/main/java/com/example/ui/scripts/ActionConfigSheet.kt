@@ -77,7 +77,9 @@ import com.example.service.PickedPoints
 import com.example.service.PointPickMode
 import com.example.service.ScreenPointPicker
 import com.example.service.TwoPointGesture
+import com.example.service.autoSends
 import com.example.service.messageLaunchFor
+import com.example.ui.components.ConsoleSwitch
 import com.example.ui.components.InnerShape
 import com.example.ui.theme.SectionLabel
 import io.github.nicholasarda.keysnap.R
@@ -122,10 +124,7 @@ fun ActionConfigSheet(
     // Keyed on the params too: editing two different tap_screen rows in a row must not reuse
     // the first row's values map.
     val values = remember(actionType, initialParams) {
-        mutableStateMapOf<String, String>().apply {
-            putAll(ActionEditorForms.defaults(form))
-            putAll(initialParams.filterValues { it.isNotBlank() })
-        }
+        mutableStateMapOf<String, String>().apply { putAll(ActionEditorForms.initialValues(form, initialParams)) }
     }
     // Which field asked for a point, so the returning overlay result lands in the right params.
     var awaitingPointKeys by remember { mutableStateOf<List<String>>(emptyList()) }
@@ -176,7 +175,9 @@ fun ActionConfigSheet(
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Text(title, style = MaterialTheme.typography.titleMedium, color = colors.onSurface)
-            form.helperRes?.let { Text(stringResource(it), style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant) }
+            ActionEditorForms.helperRes(form, snapshot)?.let {
+                Text(stringResource(it), style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
+            }
             form.requirementRes?.let {
                 val onClick = when (it) {
                     NOTIFICATION_POLICY_BADGE -> onRequestNotificationPolicyAccess
@@ -221,6 +222,12 @@ fun ActionConfigSheet(
                     }
                     is EditorField.ImagePick -> ImageFieldRow(field, values)
                     is EditorField.ContactPick -> ContactFieldRow(field, values)
+                    is EditorField.Switch -> {
+                        val on = values[field.key] == "true"
+                        ConsoleSwitch(stringResource(field.labelRes), on) { values[field.key] = it.toString() }
+                        // Today only "Send automatically", which the bridge carries out.
+                        if (on) RequirementBadge(stringResource(R.string.badge_expert_mode), tag = "switch_badge_${field.key}")
+                    }
                     // Constraint-only fields; listed so the sealed `when` stays exhaustive.
                     is EditorField.BluetoothDevicePick -> BluetoothDeviceFieldRow(field, values)
                     is EditorField.TimeRange -> TimeRangeFieldRow(field, values)
@@ -231,9 +238,11 @@ fun ActionConfigSheet(
             if (actionType == "send_message") {
                 val launch = remember(snapshot) { messageLaunchFor(context, snapshot) }
                 val hasNumber = !snapshot["number"].isNullOrBlank()
+                val autoSendOn = snapshot[ActionEditorForms.AUTO_SEND] == "true"
                 launch?.let {
+                    val command = if (autoSends(snapshot, it)) stringResource(R.string.message_then_taps_send, it.describe()) else it.describe()
                     Text(
-                        stringResource(R.string.action_config_what_will_run, it.describe()),
+                        stringResource(R.string.action_config_what_will_run, command),
                         Modifier.testTag("config_what_will_run"),
                         style = MaterialTheme.typography.bodySmall,
                         color = colors.onSurfaceVariant,
@@ -245,7 +254,9 @@ fun ActionConfigSheet(
                     launch != null && launch.uri == null && hasNumber -> R.string.message_number_not_used
                     else -> null
                 }
-                warning?.let {
+                // A picker or share screen has no chat to send into, so the switch does nothing here.
+                val noChat = if (launch != null && autoSendOn && !launch.opensChat) R.string.message_no_chat_to_send else null
+                listOfNotNull(warning, noChat).forEach {
                     Text(stringResource(it), style = MaterialTheme.typography.bodySmall, color = colors.error)
                 }
             }

@@ -91,6 +91,12 @@ sealed interface EditorField {
      * one-time read grant, so no contacts permission; the name is kept only for the summary.
      */
     data class ContactPick(val numberKey: String, val nameKey: String, @StringRes val labelRes: Int) : EditorField
+
+    /**
+     * An on/off switch persisted as "true"/"false". [default] seeds only a fresh action: on one saved
+     * before the switch existed, a missing value reads as off, so its behaviour does not change.
+     */
+    data class Switch(val key: String, @StringRes val labelRes: Int, val default: Boolean) : EditorField
 }
 
 /** Every param key this field writes. A point writes two, a two-point field writes four. */
@@ -108,6 +114,7 @@ val EditorField.keys: List<String>
         is EditorField.DaySet -> listOf(key)
         is EditorField.ImagePick -> listOf(key)
         is EditorField.ContactPick -> listOf(numberKey, nameKey)
+        is EditorField.Switch -> listOf(key)
     }
 
 data class ActionEditorForm(
@@ -281,6 +288,7 @@ object ActionEditorForms {
                 EditorField.ContactPick("number", "contactName", R.string.param_to),
                 EditorField.AppPick("packageName", R.string.field_send_with),
                 EditorField.Text("text", R.string.param_message, multiline = true),
+                EditorField.Switch(AUTO_SEND, R.string.field_send_automatically, default = true),
             ),
             helperRes = R.string.helper_send_message,
             summary = { _, params ->
@@ -478,10 +486,29 @@ object ActionEditorForms {
             when (field) {
                 is EditorField.Number -> put(field.key, field.default.toString())
                 is EditorField.Choice -> field.options.firstOrNull()?.let { put(field.key, it.first) }
+                is EditorField.Switch -> put(field.key, field.default.toString())
                 else -> Unit
             }
         }
     }
+
+    /**
+     * What the sheet opens with: [defaults] under [saved]'s non-blank values. A switch takes its
+     * default only on a fresh action (nothing saved yet, which includes a recipe's blank one); on a
+     * saved action a missing switch is off, so reopening one saved before the switch existed and
+     * pressing Save cannot turn it on.
+     */
+    fun initialValues(form: ActionEditorForm, saved: Map<String, String>): Map<String, String> {
+        val kept = saved.filterValues { it.isNotBlank() }
+        if (kept.isEmpty()) return defaults(form)
+        val switchesOff = form.fields.filterIsInstance<EditorField.Switch>().associate { it.key to "false" }
+        return defaults(form) + switchesOff + kept
+    }
+
+    /** The helper line, which for a message says which of the two outcomes this one has. */
+    @StringRes
+    fun helperRes(form: ActionEditorForm, values: Map<String, String>): Int? =
+        if (form.type == SEND_MESSAGE && values[AUTO_SEND] == "true") R.string.helper_send_message_auto else form.helperRes
 
     /**
      * Hides fields gated on another field's current value, e.g. an HTTP body for GET or a
@@ -549,4 +576,6 @@ object ActionEditorForms {
 
     private const val REPLY = "reply_to_notification"
     private const val REPLY_CHAT = "chat"
+    private const val SEND_MESSAGE = "send_message"
+    const val AUTO_SEND = "autoSend"
 }

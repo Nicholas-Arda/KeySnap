@@ -74,8 +74,14 @@ fun ShortcutReviewDialog(
                         descriptor.parameters.forEach { spec ->
                             val value = action.params[spec.key].orEmpty()
                             if (value.isNotBlank()) {
+                                // A switch reads On/Off; anything else exactly as written.
+                                val shown = if (spec.choices == listOf("true", "false")) {
+                                    stringResource(if (value == "true") R.string.scripts_toggle_state_on else R.string.scripts_toggle_state_off)
+                                } else {
+                                    value
+                                }
                                 Text(
-                                    "${stringResource(spec.labelRes)}: $value",
+                                    "${stringResource(spec.labelRes)}: $shown",
                                     Modifier.padding(start = 8.dp, top = 2.dp),
                                     style = MonoBody,
                                     color = colors.onSurface,

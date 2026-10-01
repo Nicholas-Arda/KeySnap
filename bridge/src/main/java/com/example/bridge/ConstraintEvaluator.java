@@ -307,9 +307,15 @@ final class ConstraintEvaluator {
         if (packageName == null || packageName.trim().isEmpty()) {
             return true;
         }
+        String resumed = parseResumedPackage(dumpsysActivitiesOutput);
+        return resumed == null || resumed.equals(packageName.trim());
+    }
+
+    /** The resumed activity's package, or null when the output has none in a known format. */
+    static String parseResumedPackage(String dumpsysActivitiesOutput) {
         Matcher m = Pattern.compile("ResumedActivity[=:]\\s*ActivityRecord\\{\\S+ u\\d+ ([^/\\s]+)/")
                 .matcher(dumpsysActivitiesOutput);
-        return m.find() ? m.group(1).equals(packageName.trim()) : true;
+        return m.find() ? m.group(1) : null;
     }
 
     /** Playback state 3 is PLAYING; printed as "state=PlaybackState {state=PLAYING(3)," or "{state=3,". */

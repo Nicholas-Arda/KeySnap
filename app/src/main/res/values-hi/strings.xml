@@ -277,6 +277,10 @@
     <string name="param_message">मैसेज</string>
     <string name="field_send_with">किस ऐप से भेजें</string>
     <string name="helper_send_message">आपके मैसेज के साथ चैट खोलता है; भेजें पर आप टैप करते हैं।</string>
+    <string name="helper_send_message_auto">मैसेज आपके लिए भेज दिया जाता है (उन्नत मोड ज़रूरी है; स्क्रीन चालू और अनलॉक हो)।</string>
+    <string name="field_send_automatically">अपने आप भेजें</string>
+    <string name="message_then_taps_send">%1$s, फिर उन्नत मोड भेजें पर टैप करता है</string>
+    <string name="message_no_chat_to_send">यह चैट नहीं, चुनने की स्क्रीन खोलता है, इसलिए अपने आप नहीं भेजा जा सकता; भेजें पर आप टैप करते हैं।</string>
     <string name="action_config_pick_contact">संपर्कों से चुनें</string>
     <string name="action_config_type_number">या नंबर लिखें</string>
     <string name="helper_message_number">खाली: व्यक्ति को आप ऐप में चुनेंगे।</string>
@@ -470,6 +474,7 @@
     <string name="constraint_summary_any_event">कोई भी इवेंट</string>
     <string name="helper_calendar_event_active">मेल खाने वाला इवेंट शुरू होने पर चलता है। फ़ोन निष्क्रिय हो तो यह बाद में चल सकता है, इसलिए छोटा इवेंट छूट सकता है। पूरे दिन के और रद्द इवेंट अनदेखे किए जाते हैं, और लगातार इवेंट एक गिने जाते हैं। सिर्फ़ ऑटोमेशन में।</string>
     <string name="constraint_needs_calendar">आपका कैलेंडर पढ़ने की अनुमति चाहिए। इवेंट इसी फ़ोन पर इस शर्त से मिलाए जाते हैं और कभी सेव, लॉग या भेजे नहीं जाते।</string>
+    <string name="constraint_needs_exact_alarm">समय पर चलने के लिए “अलार्म और रिमाइंडर” चाहिए। इसके बिना, बैटरी बचाने वाला फ़ोन इसे देर से चला सकता है या छोटा इवेंट छोड़ सकता है।</string>
     <string name="field_cooldown_minutes">दो रन के बीच मिनट</string>
     <string name="helper_cooldown">अगर यह शॉर्टकट इतने मिनट से कम पहले चला था, तो इसे छोड़ दिया जाता है। फ़ोन या KeySnap रीस्टार्ट होने पर गिनती फिर से शुरू होती है।</string>
     <string name="constraint_summary_cooldown">ज़्यादा से ज़्यादा हर %1$d मिनट में</string>
@@ -730,6 +735,7 @@
     <string name="settings_erase_confirm_title">सारा डेटा मिटाएं?</string>
     <string name="settings_erase_action">सब कुछ मिटाएं</string>
     <string name="settings_erase_warning">इससे उन्नत मोड बंद हो जाएगा, डिवाइस से ब्रिज डिलीट हो जाएगा, और हर शॉर्टकट व प्राथमिकता हट जाएगी। इसे वापस नहीं लाया जा सकता। सुलभता सेवा भी बंद हो जाती है; बाद में उसे फिर से चालू करें।</string>
+    <string name="erase_bridge_still_running">उन्नत मोड अभी भी चल रहा है, इसलिए कुछ भी नहीं मिटाया गया। इसे बंद करके फिर से कोशिश करें।</string>
     <string name="settings_version">वर्शन %1$s (%2$d)</string>
     <string name="settings_input_monitor">इनपुट मॉनिटर</string>
     <string name="settings_show_log_action">इवेंट लॉग दिखाएं</string>
@@ -847,6 +853,10 @@
     <string name="run_nothing_ran">कुछ नहीं चला। क्रिया की सेटिंग जांचें।</string>
     <string name="run_partial">%2$d में से %1$d क्रियाएं चलीं</string>
     <string name="run_failure_generic">पूरा नहीं हुआ</string>
+    <string name="run_failure_message_not_sent">अपने आप नहीं भेजा गया: उन्नत मोड बंद है</string>
+    <string name="run_failure_message_unconfirmed">शायद भेज दिया गया — चैट देख लें</string>
+    <string name="run_failure_message_chat_not_open">अपने आप नहीं भेजा गया: चैट समय पर नहीं खुली</string>
+    <string name="run_failure_message_chat_unconfirmed">अपने आप नहीं भेजा गया: चैट की पुष्टि नहीं हो सकी</string>
     <string name="run_failure_notifications_off">सूचनाएं बंद हैं</string>
     <string name="editor_needs_action">सेव करने से पहले कम से कम एक क्रिया जोड़ें।</string>
     <string name="editor_needs_trigger">सेव करने से पहले एक बटन चुनें।</string>
@@ -920,7 +930,7 @@
     <string name="recipe_spreadsheet">स्प्रेडशीट में पंक्ति जोड़ें</string>
     <string name="recipe_send_message">मैसेज भेजें</string>
     <string name="recipe_send_message_subtitle">आपके लिखे टेक्स्ट के साथ चैट खोलता है</string>
-    <string name="recipe_send_message_note">एक संपर्क, भेजने वाला ऐप और अपना मैसेज चुनें। चैट मैसेज लिखे हुए खुलती है; भेजें पर आप टैप करते हैं।</string>
+    <string name="recipe_send_message_note">एक संपर्क, भेजने वाला ऐप और अपना मैसेज चुनें। “अपने आप भेजें” चालू हो तो उन्नत मोड उसे भेजता है; नहीं तो चैट मैसेज लिखे हुए खुलती है और भेजें पर आप टैप करते हैं।</string>
     <string name="home_recipes_all">सभी</string>
     <!-- Share and import -->
     <string name="import_error_invalid">यह एक मान्य KeySnap शॉर्टकट नहीं है।</string>

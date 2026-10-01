@@ -276,6 +276,10 @@
     <string name="param_message">Messaggio</string>
     <string name="field_send_with">Invia con</string>
     <string name="helper_send_message">Apre la chat con il messaggio già scritto; tocchi tu Invia.</string>
+    <string name="helper_send_message_auto">Il messaggio viene inviato per te (richiede la Modalità avanzata; schermo acceso e sbloccato).</string>
+    <string name="field_send_automatically">Invia automaticamente</string>
+    <string name="message_then_taps_send">%1$s, poi la Modalità avanzata tocca Invia</string>
+    <string name="message_no_chat_to_send">Questo apre un selettore, non una chat, quindi non si può inviare automaticamente; tocchi tu Invia.</string>
     <string name="action_config_pick_contact">Scegli dai contatti</string>
     <string name="action_config_type_number">Oppure digita un numero</string>
     <string name="helper_message_number">Vuoto: scegli la persona nell\'app.</string>
@@ -469,6 +473,7 @@
     <string name="constraint_summary_any_event">Qualsiasi evento</string>
     <string name="helper_calendar_event_active">Si esegue quando inizia un evento corrispondente. Con il telefono inattivo può eseguirsi più tardi, quindi un evento breve può sfuggire. Gli eventi di tutto il giorno e quelli annullati vengono ignorati, e gli eventi consecutivi contano come uno. Solo nelle automazioni.</string>
     <string name="constraint_needs_calendar">Richiede l\'autorizzazione a leggere il calendario. Gli eventi vengono confrontati con questa condizione su questo telefono e non vengono mai salvati, registrati o inviati.</string>
+    <string name="constraint_needs_exact_alarm">Per eseguirsi in orario serve “Sveglie e promemoria”. Senza, un telefono che risparmia batteria può eseguirlo più tardi o perdere un evento breve.</string>
     <string name="field_cooldown_minutes">Minuti tra un\'esecuzione e l\'altra</string>
     <string name="helper_cooldown">Saltata se questa scorciatoia è stata eseguita meno di questi minuti fa. Il conteggio riparte se il telefono o KeySnap si riavviano.</string>
     <string name="constraint_summary_cooldown">Al massimo ogni %1$d min</string>
@@ -731,6 +736,7 @@
     <string name="settings_erase_confirm_title">Eliminare tutti i dati?</string>
     <string name="settings_erase_action">Elimina tutto</string>
     <string name="settings_erase_warning">Questa operazione arresta la Modalità avanzata, elimina il bridge dal dispositivo e rimuove tutte le scorciatoie e le preferenze. Non può essere annullata. Anche il servizio di Accessibilità viene disattivato; riattivalo in seguito.</string>
+    <string name="erase_bridge_still_running">La Modalità avanzata è ancora attiva, quindi non è stato eliminato nulla. Disattivala e riprova.</string>
     <string name="settings_version">Versione %1$s (%2$d)</string>
     <string name="settings_input_monitor">Monitor input</string>
     <string name="settings_show_log_action">Mostra il registro eventi</string>
@@ -848,6 +854,10 @@
     <string name="run_nothing_ran">Nessuna azione eseguita. Controlla le impostazioni dell\'azione.</string>
     <string name="run_partial">Eseguite %1$d azioni su %2$d</string>
     <string name="run_failure_generic">Non completata</string>
+    <string name="run_failure_message_not_sent">Non inviato automaticamente: la Modalità avanzata è disattivata</string>
+    <string name="run_failure_message_unconfirmed">Forse è stato inviato — controlla la chat</string>
+    <string name="run_failure_message_chat_not_open">Non inviato automaticamente: la chat non si è aperta in tempo</string>
+    <string name="run_failure_message_chat_unconfirmed">Non inviato automaticamente: impossibile confermare la chat</string>
     <string name="run_failure_notifications_off">Le notifiche sono disattivate</string>
     <string name="editor_needs_action">Aggiungi almeno un\'azione prima di salvare.</string>
     <string name="editor_needs_trigger">Scegli un tasto prima di salvare.</string>
@@ -922,7 +932,7 @@
     <string name="recipe_spreadsheet">Aggiungi una riga a un foglio di calcolo</string>
     <string name="recipe_send_message">Invia un messaggio</string>
     <string name="recipe_send_message_subtitle">Apre una chat con il tuo testo già scritto</string>
-    <string name="recipe_send_message_note">Scegli un contatto, l\'app con cui inviare e il messaggio. La chat si apre con il messaggio già scritto; tocchi tu Invia.</string>
+    <string name="recipe_send_message_note">Scegli un contatto, l\'app con cui inviare e il messaggio. Con Invia automaticamente attivo, la Modalità avanzata lo invia; altrimenti la chat si apre con il messaggio già scritto e tocchi tu Invia.</string>
     <string name="home_recipes_all">Tutti</string>
     <!-- Share and import -->
     <string name="import_error_invalid">Questa non è una scorciatoia KeySnap valida.</string>

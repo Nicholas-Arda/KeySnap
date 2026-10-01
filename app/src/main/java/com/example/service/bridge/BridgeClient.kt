@@ -7,7 +7,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withContext
-import kotlinx.coroutines.withTimeoutOrNull
 import java.io.BufferedReader
 import java.io.BufferedWriter
 import java.io.InputStreamReader
@@ -60,6 +59,45 @@ internal fun parseRunReply(line: String?): BridgeRunResult? {
     )
 }
 
+/**
+ * The reply to the command just sent. Every authenticated connection also receives the EVENT, TRIGGER
+ * and DEVICE lines the bridge pushes, and a key press during a long command lands one first; those are
+ * skipped. Even the handshake can be preceded by one, since the bridge marks a connection logged in
+ * just before it answers HELLO. Null when the stream ends.
+ */
+internal fun readReply(nextLine: () -> String?): String? {
+    while (true) {
+        val line = nextLine() ?: return null
+        if (line.substringBefore('\t') !in PUSHED) return line
+    }
+}
+
+private val PUSHED = setOf(BridgeProtocol.MSG_EVENT, BridgeProtocol.MSG_TRIGGER, BridgeProtocol.MSG_DEVICE)
+
+/** The bridge's identity from its HELLO answer, or null unless it is an OK carrying one. */
+internal fun parseHandshake(line: String?): BridgeStatus? {
+    val fields = line?.split('\t').orEmpty()
+    if (fields.firstOrNull() != BridgeProtocol.MSG_OK || fields.size < 4) return null
+    return BridgeStatus(
+        protocolVersion = fields[1].toIntOrNull() ?: 0,
+        pid = fields[2].toIntOrNull() ?: 0,
+        startedAtMillis = fields[3].toLongOrNull() ?: 0L,
+        status = fields.getOrNull(4).orEmpty(),
+    )
+}
+
+/**
+ * Whether a SHUTDOWN was acknowledged: BYE, or the bridge closing the connection as it exits. Only a
+ * request; [BridgeController.stop] still checks that the port stopped answering.
+ */
+internal fun isShutdownAck(line: String?): Boolean = line == null || line.startsWith(BridgeProtocol.MSG_BYE)
+
+/** The outcome word of a PRESS_SEND reply, or null for anything but an OK. */
+internal fun parsePressSendReply(line: String?): String? {
+    val fields = line?.split('\t').orEmpty()
+    return if (fields.firstOrNull() == BridgeProtocol.MSG_OK) fields.getOrNull(1) else null
+}
+
 private fun decodeActionResults(field: String?): List<Pair<String, Boolean>>? =
     field?.let { BridgeProtocol.decodeActionResults(it) }?.map { it.key to it.value }
 
@@ -87,7 +125,13 @@ class BridgeClient(
     companion object {
         private const val TAG = "BridgeClient"
         private const val CONNECT_TIMEOUT_MS = 1_500
-        private const val HANDSHAKE_TIMEOUT_MS = 2_000L
+        private const val HANDSHAKE_TIMEOUT_MS = 2_000
+        /** The bridge answers BYE at once; the caller then confirms the port really stopped answering. */
+        private const val SHUTDOWN_REPLY_TIMEOUT_MS = 3_000
+        // The bridge waits up to 30 s for the chat to come to the front (an OEM may hold it behind an
+        // "allow opening" dialog), then up to 8 s to press; one uiautomator dump can itself take
+        // seconds, and it dumps once more after tapping.
+        private const val PRESS_SEND_TIMEOUT_MS = 60_000
         private const val SEP = '\t'
     }
 
@@ -135,18 +179,37 @@ class BridgeClient(
         openSession()?.use { session ->
             runCatching {
                 session.writer.writeLine("${BridgeProtocol.CMD_RUN}$SEP$payloadJson")
-                parseRunReply(session.reader.readLine())
+                parseRunReply(readReply(session.reader::readLine))
             }.getOrNull()
         }
     }
 
-    /** Asks the bridge to terminate. Returns false when no bridge was reachable. */
+    /**
+     * Asks the bridge to tap Send in the chat just opened. Its outcome word (see
+     * [BridgeProtocol.PRESS_SEND_OK]), or null when no answer came. The payload carries the message
+     * and the recipient: never log it.
+     */
+    suspend fun requestPressSend(payloadJson: String): String? = withContext(Dispatchers.IO) {
+        openSession()?.use { session ->
+            runCatching {
+                // The bridge gives up after its own deadline; this only guards a bridge that hangs.
+                session.socket.soTimeout = PRESS_SEND_TIMEOUT_MS
+                session.writer.writeLine("${BridgeProtocol.CMD_PRESS_SEND}$SEP$payloadJson")
+                parsePressSendReply(readReply(session.reader::readLine))
+            }.getOrNull()
+        }
+    }
+
+    /**
+     * Asks the bridge to terminate. Returns false when no bridge was reachable or it did not
+     * acknowledge; either way, only the port no longer answering means it stopped.
+     */
     suspend fun requestShutdown(): Boolean = withContext(Dispatchers.IO) {
         openSession()?.use { session ->
             runCatching {
+                session.socket.soTimeout = SHUTDOWN_REPLY_TIMEOUT_MS
                 session.writer.writeLine(BridgeProtocol.CMD_SHUTDOWN)
-                val reply = session.reader.readLine()
-                reply == null || reply.startsWith(BridgeProtocol.MSG_BYE)
+                isShutdownAck(readReply(session.reader::readLine))
             }.getOrDefault(false)
         } ?: false
     }
@@ -214,24 +277,18 @@ class BridgeClient(
             val writer = BufferedWriter(OutputStreamWriter(socket.getOutputStream(), Charsets.UTF_8))
             writer.writeLine("${BridgeProtocol.CMD_HELLO}$SEP$token")
 
-            val reply = withTimeoutOrNull(HANDSHAKE_TIMEOUT_MS) { reader.readLine() }
-            val fields = reply?.split(SEP).orEmpty()
-            if (fields.firstOrNull() != BridgeProtocol.MSG_OK || fields.size < 4) {
+            // A blocking read ignores coroutine timeouts, so the socket enforces it; a stream session
+            // then goes back to waiting indefinitely.
+            socket.soTimeout = HANDSHAKE_TIMEOUT_MS
+            val reply = readReply(reader::readLine)
+            val status = parseHandshake(reply)
+            if (status == null) {
                 Log.d(TAG, "Bridge handshake rejected: $reply")
                 runCatching { socket.close() }
                 return null
             }
-            Session(
-                socket = socket,
-                reader = reader,
-                writer = writer,
-                status = BridgeStatus(
-                    protocolVersion = fields[1].toIntOrNull() ?: 0,
-                    pid = fields[2].toIntOrNull() ?: 0,
-                    startedAtMillis = fields[3].toLongOrNull() ?: 0L,
-                    status = fields.getOrNull(4).orEmpty(),
-                ),
-            )
+            socket.soTimeout = 0
+            Session(socket = socket, reader = reader, writer = writer, status = status)
         } catch (cancelled: CancellationException) {
             runCatching { socket.close() }
             throw cancelled

@@ -278,6 +278,10 @@
     <string name="param_message">Mensagem</string>
     <string name="field_send_with">Enviar com</string>
     <string name="helper_send_message">Abre a conversa com sua mensagem já digitada; você toca em Enviar.</string>
+    <string name="helper_send_message_auto">A mensagem é enviada automaticamente (requer o Modo Avançado; tela ligada e desbloqueada).</string>
+    <string name="field_send_automatically">Enviar automaticamente</string>
+    <string name="message_then_taps_send">%1$s e, em seguida, o Modo Avançado toca em Enviar</string>
+    <string name="message_no_chat_to_send">Isto abre um seletor, não uma conversa, então não dá para enviar automaticamente; você toca em Enviar.</string>
     <string name="action_config_pick_contact">Escolher nos contatos</string>
     <string name="action_config_type_number">Ou digite um número</string>
     <string name="helper_message_number">Vazio: você escolhe a pessoa no app.</string>
@@ -471,6 +475,7 @@
     <string name="constraint_summary_any_event">Qualquer evento</string>
     <string name="helper_calendar_event_active">Executa quando começa um evento correspondente. Com o celular ocioso, pode executar mais tarde, então um evento curto pode passar. Eventos de dia inteiro e cancelados são ignorados, e eventos seguidos contam como um. Só em automações.</string>
     <string name="constraint_needs_calendar">Precisa de permissão para ler sua agenda. Os eventos são comparados com esta condição neste celular e nunca são salvos, registrados ou enviados.</string>
+    <string name="constraint_needs_exact_alarm">Para executar na hora, é preciso “Alarmes e lembretes”. Sem isso, um celular que economiza bateria pode executar mais tarde ou perder um evento curto.</string>
     <string name="field_cooldown_minutes">Minutos entre execuções</string>
     <string name="helper_cooldown">Ignorado se este atalho foi executado há menos minutos do que isso. A contagem recomeça se o telefone ou o KeySnap reiniciar.</string>
     <string name="constraint_summary_cooldown">No máximo a cada %1$d min</string>
@@ -731,6 +736,7 @@
     <string name="settings_erase_confirm_title">Apagar todos os dados?</string>
     <string name="settings_erase_action">Apagar tudo</string>
     <string name="settings_erase_warning">Isso interrompe o Modo Avançado, exclui a ponte do dispositivo e remove todos os atalhos e preferências. Não pode ser desfeito. O serviço de Acessibilidade também é desativado; ative-o novamente depois.</string>
+    <string name="erase_bridge_still_running">O Modo Avançado ainda está em execução, então nada foi apagado. Desligue-o e tente de novo.</string>
     <string name="settings_version">Versão %1$s (%2$d)</string>
     <string name="settings_input_monitor">Monitor de entrada</string>
     <string name="settings_show_log_action">Mostrar o registro de eventos</string>
@@ -848,6 +854,10 @@
     <string name="run_nothing_ran">Nada foi executado. Verifique as configurações da ação.</string>
     <string name="run_partial">Executadas %1$d de %2$d ações</string>
     <string name="run_failure_generic">Não foi concluída</string>
+    <string name="run_failure_message_not_sent">Não enviada automaticamente: o Modo Avançado está desligado</string>
+    <string name="run_failure_message_unconfirmed">Pode ter sido enviada — confira a conversa</string>
+    <string name="run_failure_message_chat_not_open">Não enviada automaticamente: a conversa não abriu a tempo</string>
+    <string name="run_failure_message_chat_unconfirmed">Não enviada automaticamente: não foi possível confirmar a conversa</string>
     <string name="run_failure_notifications_off">As notificações estão desativadas</string>
     <string name="editor_needs_action">Adicione pelo menos uma ação antes de salvar.</string>
     <string name="editor_needs_trigger">Escolha uma tecla antes de salvar.</string>
@@ -921,7 +931,7 @@
     <string name="recipe_spreadsheet">Adicionar uma linha a uma planilha</string>
     <string name="recipe_send_message">Enviar uma mensagem</string>
     <string name="recipe_send_message_subtitle">Abre uma conversa com seu texto já digitado</string>
-    <string name="recipe_send_message_note">Escolha um contato, o app de envio e sua mensagem. A conversa abre com a mensagem já digitada; você toca em Enviar.</string>
+    <string name="recipe_send_message_note">Escolha um contato, o app de envio e sua mensagem. Com Enviar automaticamente ligado, o Modo Avançado a envia; senão, a conversa abre com a mensagem já digitada e você toca em Enviar.</string>
     <string name="home_recipes_all">Todos</string>
     <!-- Share and import -->
     <string name="import_error_invalid">Este não é um atalho válido do KeySnap.</string>

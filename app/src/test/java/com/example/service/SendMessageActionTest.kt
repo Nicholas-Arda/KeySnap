@@ -5,10 +5,13 @@ import androidx.test.core.app.ApplicationProvider
 import com.example.data.ScriptAction
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.Shadows.shadowOf
 
 @RunWith(RobolectricTestRunner::class)
 class SendMessageActionTest {
@@ -60,6 +63,44 @@ class SendMessageActionTest {
         assertNull(intent.data)
         assertEquals("On my way", intent.getStringExtra(Intent.EXTRA_TEXT))
         assertEquals("com.example.chat", intent.`package`)
+    }
+
+    /** Only a launch into one person's chat has a Send button to press; a picker or share screen has none. */
+    @Test fun onlyAChatWithARecipientCanBeSentAutomatically() {
+        val on = mapOf("autoSend" to "true")
+        assertTrue(autoSends(on, messageLaunch("com.whatsapp", "+90 532 123 45 67", "Hi", null, opensSmsTo = false)!!))
+        assertTrue(autoSends(on, messageLaunch("com.example.sms", "0532 123 45 67", "Hi", "tr", opensSmsTo = true)!!))
+        assertFalse(autoSends(on, messageLaunch("com.whatsapp", "", "Hi", "tr", opensSmsTo = false)!!))
+        assertFalse(autoSends(on, messageLaunch("com.example.sms", "", "Hi", "tr", opensSmsTo = true)!!))
+        assertFalse(autoSends(on, messageLaunch("com.example.chat", "0532 123 45 67", "Hi", "tr", opensSmsTo = false)!!))
+        // Off, or saved before the switch existed.
+        val chat = messageLaunch("com.whatsapp", "+90 532 123 45 67", "Hi", null, opensSmsTo = false)!!
+        assertFalse(autoSends(mapOf("autoSend" to "false"), chat))
+        assertFalse(autoSends(emptyMap(), chat))
+        // The bridge checks the chat shows this number before it taps.
+        assertEquals("+905321234567", chat.recipient)
+        assertEquals("", messageLaunch("com.example.chat", "0532 123 45 67", "Hi", "tr", opensSmsTo = false)!!.recipient)
+    }
+
+    /** Advanced Mode off: the chat still opens, typed, and the action fails so the run log says why. */
+    @Test fun sendingAutomaticallyWithoutTheBridgeOpensTheChatAndFails() {
+        val context = ApplicationProvider.getApplicationContext<android.app.Application>()
+        val executor = ScriptActionExecutor.android(context)
+        val params = mapOf("packageName" to "com.whatsapp", "number" to "+90 532 123 45 67", "text" to "Hi", "autoSend" to "true")
+
+        assertEquals(listOf(false), runBlocking { executor.execute(listOf(ScriptAction("send_message", params))) })
+        assertEquals("https://wa.me/905321234567?text=Hi", shadowOf(context).nextStartedActivity.dataString)
+
+        assertEquals(listOf(true), runBlocking { executor.execute(listOf(ScriptAction("send_message", params - "autoSend"))) })
+        assertEquals("https://wa.me/905321234567?text=Hi", shadowOf(context).nextStartedActivity.dataString)
+    }
+
+    /** A plain text share has no chat to send into, so the switch is ignored rather than failing. */
+    @Test fun aShareIgnoresSendAutomatically() {
+        val context = ApplicationProvider.getApplicationContext<android.app.Application>()
+        val params = mapOf("packageName" to "com.example.chat", "text" to "Hi", "autoSend" to "true")
+        assertEquals(listOf(true), runBlocking { ScriptActionExecutor.android(context).execute(listOf(ScriptAction("send_message", params))) })
+        assertEquals(Intent.ACTION_SEND, shadowOf(context).nextStartedActivity.action)
     }
 
     @Test fun withoutAnAppOrTextNothingRuns() {

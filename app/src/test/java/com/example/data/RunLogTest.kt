@@ -68,6 +68,41 @@ class RunLogTest {
         assertEquals(RunFailure.ADVANCED_MODE_OFF, failureReason("shell_command", allGranted))
     }
 
+    @Test fun aMessageThatCouldNotBeSentAutomaticallyBlamesAdvancedModeBeingOff() {
+        val auto = ScriptAction("send_message", mapOf("packageName" to "com.example.chat", "text" to "Hi", "autoSend" to "true"))
+        val run = buildRunRecord("s", 1L, RunRecord.SOURCE_KEY, 24, "SINGLE_PRESS", listOf(auto), listOf(false), null, allGranted)
+        assertEquals("MESSAGE_NOT_SENT", run.actions.single().reason)
+        // Advanced Mode was on, so the bridge just could not press Send.
+        assertEquals(RunFailure.FAILED, failureReason("send_message", allGranted.copy(advancedMode = true), auto.params))
+        // Without the switch nothing needed Advanced Mode.
+        assertEquals(RunFailure.FAILED, failureReason("send_message", allGranted, auto.params - "autoSend"))
+    }
+
+    /** Send was tapped but the field never visibly emptied: say it may have gone out, so nobody resends blindly. */
+    @Test fun aTappedButUnconfirmedMessageSaysItMayHaveBeenSent() {
+        val params = mapOf("packageName" to "com.example.chat", "text" to "Hi", "autoSend" to "true")
+        val env = allGranted.copy(advancedMode = true, autoSendOutcome = "unconfirmed")
+        assertEquals(RunFailure.MESSAGE_UNCONFIRMED, failureReason("send_message", env, params))
+        // A reply lost after the tap reads the same way.
+        assertEquals(RunFailure.MESSAGE_UNCONFIRMED, failureReason("send_message", env.copy(autoSendOutcome = AUTO_SEND_NO_REPLY), params))
+        assertEquals(RunFailure.MESSAGE_NOT_CONFIRMED_CHAT, failureReason("send_message", env.copy(autoSendOutcome = "not-found"), params))
+    }
+
+    /** The chat never came to the front (e.g. held behind an OEM "allow opening" dialog). */
+    @Test fun aChatThatNeverOpenedSaysSo() {
+        val params = mapOf("packageName" to "com.example.chat", "text" to "Hi", "autoSend" to "true")
+        val env = allGranted.copy(advancedMode = true, autoSendOutcome = "timeout")
+        assertEquals(RunFailure.MESSAGE_CHAT_NOT_OPEN, failureReason("send_message", env, params))
+        assertEquals(RunFailure.MESSAGE_NOT_SENT, autoSendFailure(AUTO_SEND_ADVANCED_OFF))
+        assertEquals(null, autoSendFailure("ok"))
+        assertEquals(null, autoSendFailure(null))
+        // Every other way it did not send has a reason, so the editor's Run always says something.
+        listOf("not-found", "locked", "tap-failed").forEach {
+            assertEquals(it, RunFailure.MESSAGE_NOT_CONFIRMED_CHAT, autoSendFailure(it))
+        }
+        assertEquals(RunFailure.FAILED, autoSendFailure("bad-request"))
+    }
+
     @Test fun aShortcutNotificationThatCouldNotPostBlamesBlockedNotifications() {
         assertEquals(RunFailure.NOTIFICATIONS_OFF, failureReason("show_notification", allGranted.copy(notifications = false)))
         assertEquals(RunFailure.FAILED, failureReason("show_notification", allGranted))

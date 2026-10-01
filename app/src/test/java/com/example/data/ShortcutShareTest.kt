@@ -213,6 +213,17 @@ class ShortcutShareTest {
         assertFalse(ok(json).startsEnabled)
     }
 
+    /** "Send automatically" is the shortcut's own setting, not personal data, so it travels; the import still arrives off. */
+    @Test fun aMessagesSendAutomaticallySwitchTravels() {
+        val message = ScriptAction("send_message", mapOf("packageName" to "com.example.chat", "text" to "On my way", "autoSend" to "true"))
+        val imported = ok(encode(actions = listOf(message)))
+        assertEquals("true", imported.actions.single().params["autoSend"])
+        assertFalse(imported.startsEnabled)
+        // Only "true" or "false" is accepted.
+        val crafted = encode(actions = listOf(message)).replace("\"autoSend\":\"true\"", "\"autoSend\":\"yes\"")
+        assertTrue(ShortcutShare.decode(crafted) is ImportResult.Error)
+    }
+
     /**
      * A feed address can carry a private token, and a crafted share must not make this phone poll a
      * host the user never typed, so it travels neither way; the recipient's editor asks for their own.

@@ -18,7 +18,7 @@ public final class BridgeProtocol {
     /** Bumped whenever the on-disk payload or the socket protocol changes incompatibly, or when
      *  :bridge behavior changes at all — an already-running detached bridge has no way to pick up
      *  a source-only fix otherwise. */
-    public static final int VERSION = 16;
+    public static final int VERSION = 19;
 
     /** Process name given to app_process, used by `pidof` for liveness checks. */
     public static final String NICE_NAME = "arda_bridge";
@@ -54,6 +54,23 @@ public final class BridgeProtocol {
      * omits the last field.
      */
     public static final String CMD_RUN = "RUN";
+    /**
+     * PRESS_SEND {"packageName":…,"text":…,"contactName":…,"number":…}: send_message's "Send
+     * automatically" (number as digits; the chat's header must show the name or number), sent by the app
+     * right after it opened that chat. A command of its own rather than an action type, so no script
+     * in the config can reach it. Answered with OK and one outcome word, {@link #PRESS_SEND_OK} on success.
+     */
+    public static final String CMD_PRESS_SEND = "PRESS_SEND";
+    public static final String PRESS_SEND_OK = "ok";
+    /** Send was tapped but the field did not visibly empty: the message may have gone out. */
+    public static final String PRESS_SEND_UNCONFIRMED = "unconfirmed";
+    /** The chat app never came to the front, so nothing was read or tapped. */
+    public static final String PRESS_SEND_TIMEOUT = "timeout";
+    /** The chat came to the front but the safety lock never held (message, recipient or Send not seen). */
+    public static final String PRESS_SEND_NOT_FOUND = "not-found";
+    /** The screen was off or locked, at the start or just before the tap. */
+    public static final String PRESS_SEND_LOCKED = "locked";
+    public static final String PRESS_SEND_TAP_FAILED = "tap-failed";
 
     /** Bridge -> client. */
     public static final String MSG_OK = "OK";

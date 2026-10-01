@@ -277,6 +277,10 @@
     <string name="param_message">Сообщение</string>
     <string name="field_send_with">Через приложение</string>
     <string name="helper_send_message">Открывает чат с уже набранным сообщением; «Отправить» нажимаете вы.</string>
+    <string name="helper_send_message_auto">Сообщение отправится само (нужен Расширенный режим; экран включён и разблокирован).</string>
+    <string name="field_send_automatically">Отправлять автоматически</string>
+    <string name="message_then_taps_send">%1$s, затем Расширенный режим нажимает «Отправить»</string>
+    <string name="message_no_chat_to_send">Откроется окно выбора, а не чат, поэтому автоматически отправить нельзя; «Отправить» нажимаете вы.</string>
     <string name="action_config_pick_contact">Выбрать из контактов</string>
     <string name="action_config_type_number">Или введите номер</string>
     <string name="helper_message_number">Пусто: получателя вы выберете в приложении.</string>
@@ -470,6 +474,7 @@
     <string name="constraint_summary_any_event">Любое событие</string>
     <string name="helper_calendar_event_active">Срабатывает, когда начинается подходящее событие. Пока телефон бездействует, это может произойти позже, поэтому короткое событие можно пропустить. События на весь день и отменённые не учитываются, а идущие подряд считаются одним. Только в автоматизациях.</string>
     <string name="constraint_needs_calendar">Нужно разрешение на чтение календаря. События сравниваются с этим условием на этом телефоне и никогда не сохраняются, не записываются в журнал и не отправляются.</string>
+    <string name="constraint_needs_exact_alarm">Чтобы срабатывать вовремя, нужно разрешение «Будильники и напоминания». Без него телефон, экономящий заряд, может выполнить это позже или пропустить короткое событие.</string>
     <string name="field_cooldown_minutes">Минут между запусками</string>
     <string name="helper_cooldown">Пропускается, если этот сценарий запускался меньше указанного числа минут назад. Отсчёт начинается заново после перезапуска телефона или KeySnap.</string>
     <string name="constraint_summary_cooldown">Не чаще раза в %1$d мин</string>
@@ -730,6 +735,7 @@
     <string name="settings_erase_confirm_title">Удалить все данные?</string>
     <string name="settings_erase_action">Удалить всё</string>
     <string name="settings_erase_warning">Это остановит Расширенный режим, удалит мост с устройства и уберёт все сценарии и настройки. Отменить это нельзя. Служба специальных возможностей тоже отключится; включите её снова после этого.</string>
+    <string name="erase_bridge_still_running">Расширенный режим всё ещё работает, поэтому ничего не удалено. Выключите его и попробуйте снова.</string>
     <string name="settings_version">Версия %1$s (%2$d)</string>
     <string name="settings_input_monitor">Монитор ввода</string>
     <string name="settings_show_log_action">Показать журнал событий</string>
@@ -847,6 +853,10 @@
     <string name="run_nothing_ran">Ничего не выполнилось. Проверьте настройки действия.</string>
     <string name="run_partial">Выполнено %1$d из %2$d действий</string>
     <string name="run_failure_generic">Не выполнено</string>
+    <string name="run_failure_message_not_sent">Не отправлено автоматически: Расширенный режим выключен</string>
+    <string name="run_failure_message_unconfirmed">Возможно, отправлено — проверьте чат</string>
+    <string name="run_failure_message_chat_not_open">Не отправлено автоматически: чат не открылся вовремя</string>
+    <string name="run_failure_message_chat_unconfirmed">Не отправлено автоматически: не удалось подтвердить чат</string>
     <string name="run_failure_notifications_off">Уведомления отключены</string>
     <string name="editor_needs_action">Добавьте хотя бы одно действие перед сохранением.</string>
     <string name="editor_needs_trigger">Выберите клавишу перед сохранением.</string>
@@ -920,7 +930,7 @@
     <string name="recipe_spreadsheet">Добавить строку в таблицу</string>
     <string name="recipe_send_message">Отправить сообщение</string>
     <string name="recipe_send_message_subtitle">Открывает чат с уже набранным текстом</string>
-    <string name="recipe_send_message_note">Выберите контакт, приложение для отправки и сообщение. Чат откроется с уже набранным сообщением; «Отправить» нажимаете вы.</string>
+    <string name="recipe_send_message_note">Выберите контакт, приложение для отправки и сообщение. Если включено «Отправлять автоматически», сообщение отправит Расширенный режим; иначе чат откроется с уже набранным сообщением, и «Отправить» нажимаете вы.</string>
     <string name="home_recipes_all">Все</string>
     <!-- Share and import -->
     <string name="import_error_invalid">Это не сценарий KeySnap.</string>

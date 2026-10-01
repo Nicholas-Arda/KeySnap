@@ -2,11 +2,13 @@ package com.example.ui.scripts
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.AlarmManager
 import android.app.AppOpsManager
 import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import android.text.format.DateFormat
@@ -63,6 +65,7 @@ import com.example.data.ConstraintEditorForms
 import com.example.data.EditorField
 import com.example.data.InstalledApp
 import com.example.data.ScriptConstraintCatalog
+import com.example.service.CalendarCondition
 import com.example.service.NotificationEventListener
 import com.example.ui.components.InnerShape
 import com.example.ui.components.MinTouchTarget
@@ -139,7 +142,7 @@ fun ConstraintConfigSheet(
                     is EditorField.DaySet -> DaySetFieldRow(field, values)
                     // Never declared by a constraint form; [ConstraintEditorFormTest] guards this.
                     is EditorField.KeyCodePick, is EditorField.Point, is EditorField.TwoPoints, is EditorField.ImagePick,
-                    is EditorField.ContactPick -> Unit
+                    is EditorField.ContactPick, is EditorField.Switch -> Unit
                 }
             }
 
@@ -202,6 +205,19 @@ private fun PermissionHints(constraintType: String, ssid: String, context: Conte
             if (!granted) {
                 PermissionHint(stringResource(R.string.constraint_needs_calendar)) {
                     launcher.launch(Manifest.permission.READ_CALENDAR)
+                }
+            }
+            val alarms = remember { context.getSystemService(AlarmManager::class.java) }
+            var exact by remember { mutableStateOf(alarms == null || CalendarCondition.canScheduleExact(alarms)) }
+            val exactLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+                exact = alarms == null || CalendarCondition.canScheduleExact(alarms)
+            }
+            // Only reachable on Android 12+: canScheduleExact is always true below it.
+            if (!exact && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                PermissionHint(stringResource(R.string.constraint_needs_exact_alarm)) {
+                    exactLauncher.launch(
+                        Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM, Uri.parse("package:${context.packageName}")),
+                    )
                 }
             }
         }

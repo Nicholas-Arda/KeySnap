@@ -202,4 +202,27 @@ class ActionEditorFormTest {
         )
         assertEquals("+905551234567 · com.example.chat · “Hi”", ActionEditorForms.summarize(ScriptAction("send_message", mapOf("number" to "+905551234567", "packageName" to "com.example.chat", "text" to "Hi")), res))
     }
+
+    /** A fresh message sends automatically; one saved before the switch existed keeps the user tapping Send. */
+    @Test fun sendAutomaticallyIsOnForANewMessageAndOffForAnOldOne() {
+        val form = ActionEditorForms.forType("send_message")!!
+        assertEquals("true", ActionEditorForms.initialValues(form, emptyMap())["autoSend"])
+        val saved = mapOf("packageName" to "com.example.chat", "text" to "Hi")
+        assertEquals("false", ActionEditorForms.initialValues(form, saved)["autoSend"])
+        assertEquals("true", ActionEditorForms.initialValues(form, saved + ("autoSend" to "true"))["autoSend"])
+        // Other forms keep their seeds under what was saved.
+        assertEquals("3", ActionEditorForms.initialValues(ActionEditorForms.forType("tap_screen")!!, mapOf("count" to "3"))["count"])
+        assertEquals("100", ActionEditorForms.initialValues(ActionEditorForms.forType("tap_screen")!!, mapOf("count" to "3"))["interval"])
+    }
+
+    @Test fun theMessageHelperSaysWhichOutcomeTheSwitchGives() {
+        val form = ActionEditorForms.forType("send_message")!!
+        assertEquals(R.string.helper_send_message_auto, ActionEditorForms.helperRes(form, mapOf("autoSend" to "true")))
+        assertEquals(R.string.helper_send_message, ActionEditorForms.helperRes(form, mapOf("autoSend" to "false")))
+        assertEquals(R.string.helper_send_message, ActionEditorForms.helperRes(form, emptyMap()))
+        val http = ActionEditorForms.forType("http_request")!!
+        assertEquals(http.helperRes, ActionEditorForms.helperRes(http, mapOf("autoSend" to "true")))
+        // Not a form-level requirement: the action itself runs without Advanced Mode.
+        assertFalse(ActionEditorForms.needsAdvancedMode("send_message"))
+    }
 }

@@ -503,6 +503,7 @@ object HardwareKeyTriggerCoordinator {
         advancedMode = _isAdvancedBridgeActive.value,
         notifications = context.getSystemService(NotificationManager::class.java)?.let(::shortcutNotificationsAllowed) == true,
         notificationAccess = NotificationEventListener.isAccessGranted(context),
+        autoSendOutcome = ScriptActionExecutor.lastAutoSendOutcome,
     )
 
     fun vibratePhone(context: Context, durationMs: Long = 50) {

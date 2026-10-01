@@ -105,6 +105,14 @@ android {
   }
 
   buildTypes {
+    // Phone tests next to the Play install, without wiping its data: -PsideBySide
+    // Advanced Mode on in only one of the two installs at a time; the bridges share a name and folder.
+    debug {
+      if (project.hasProperty("sideBySide")) {
+        applicationIdSuffix = ".dev"
+        versionNameSuffix = "-dev"
+      }
+    }
     release {
       isCrunchPngs = false
       isMinifyEnabled = true

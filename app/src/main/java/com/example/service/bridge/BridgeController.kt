@@ -3,6 +3,8 @@ package com.example.service.bridge
 import android.content.Context
 import android.util.Log
 import com.example.bridge.BridgeProtocol
+import com.example.data.AUTO_SEND_ADVANCED_OFF
+import com.example.data.AUTO_SEND_NO_REPLY
 import com.example.data.KeyMappingRepository
 import com.example.data.ScriptAction
 import com.example.data.ScriptRepository
@@ -17,8 +19,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.json.JSONArray
 import org.json.JSONObject
+import java.util.concurrent.atomic.AtomicBoolean
 
 /** Lifecycle of the detached privileged bridge, as the app understands it. */
 enum class BridgeState {
@@ -75,6 +80,15 @@ object BridgeController {
     private var streamJob: Job? = null
     private var watchdogJob: Job? = null
 
+    /**
+     * Launch-time probes run concurrently (this object's [initialize] and WirelessAdbManager's), so
+     * one must not report "nothing running" while the other is still shutting a stale bridge down.
+     */
+    private val probeLock = Mutex()
+
+    /** Set once a stale bridge from before an app update was shut down; see [takeStaleReplacement]. */
+    internal val staleReplaced = AtomicBoolean(false)
+
     private val telemetryListener = object : BridgeClient.Listener {
         override fun onKeyEvent(event: BridgeKeyEvent) {
             _lastKernelActivity.value =
@@ -124,7 +138,7 @@ object BridgeController {
      * app version — keeps running and answering the port until something kills it. Adopting it
      * silently would resurrect old, already-fixed bugs.
      */
-    private suspend fun freshBridgeStatus(): BridgeStatus? {
+    private suspend fun freshBridgeStatus(): BridgeStatus? = probeLock.withLock {
         val status = client()?.probe() ?: return null
         if (status.protocolVersion == BridgeProtocol.VERSION) return status
         Log.i(
@@ -135,10 +149,38 @@ object BridgeController {
         client()?.requestShutdown()
         repeat(6) {
             delay(500)
-            if (client()?.probe() == null) return null
+            if (client()?.probe() == null) {
+                staleReplaced.set(true)
+                return null
+            }
         }
         Log.w(TAG, "Stale bridge did not shut down; leaving it running")
         return status
+    }
+
+    /**
+     * True once per process after this process shut down a stale bridge, so exactly one caller gets
+     * to bring the new one up: an update, unlike a reboot, leaves Advanced Mode off without the
+     * user having done anything.
+     */
+    fun takeStaleReplacement(): Boolean = staleReplaced.getAndSet(false)
+
+    /** Shows a restart in progress; only [start]'s probe or [onBridgeUp] may report RUNNING. */
+    fun markStarting(message: String) {
+        _state.value = BridgeState.STARTING
+        _statusMessage.value = message
+    }
+
+    /** Ends a restart that never reached a running bridge. */
+    fun markStopped(message: String) = setStopped(message)
+
+    /** True once no bridge answers the control port, waiting up to 3 s for one that is exiting. */
+    private suspend fun portStoppedAnswering(): Boolean {
+        repeat(6) {
+            if (client()?.probe() == null) return true
+            delay(500)
+        }
+        return false
     }
 
     /** Adopts an already-running bridge without restarting it, unless its payload is stale. */
@@ -227,10 +269,18 @@ object BridgeController {
     /**
      * Terminates the bridge and removes its payload. Advanced Mode is off only once the port stops
      * answering; the bridge clears its own shell-owned directory as it exits, and the app clears
-     * the files it owns, so "off" means nothing runnable is left on the device.
+     * the files it owns, so "off" means nothing runnable is left on the device. True once no bridge
+     * answers (including when none was running); false when one still does.
      */
     suspend fun stop(): Boolean {
         val requested = client()?.requestShutdown() ?: false
+        // A lost or misread BYE must not read as "off" while the bridge still answers: keep it RUNNING,
+        // with its payload, and say so, so the user can try again.
+        if (!portStoppedAnswering()) {
+            Log.w(TAG, "Bridge still answering after a shutdown request; leaving Advanced Mode on")
+            _statusMessage.value = "Advanced Mode is still running. Try turning it off again."
+            return false
+        }
         streamJob?.cancel()
         streamJob = null
         watchdogJob?.cancel()
@@ -238,7 +288,7 @@ object BridgeController {
         HardwareKeyTriggerCoordinator.setAdvancedBridgeActive(false)
         payload?.uninstall()
         setStopped(if (requested) "Advanced Mode stopped." else "No running bridge found.")
-        return requested
+        return true
     }
 
     /** Rewrites the bridge's config from the current repositories and asks it to reload. */
@@ -276,7 +326,27 @@ object BridgeController {
         return client()?.requestRun(payload.toString())
     }
 
+    /**
+     * send_message's "Send automatically": the bridge taps Send in the chat the app just opened, once
+     * that chat shows [contactName] or [numberDigits]. The bridge's outcome word (see
+     * [BridgeProtocol.PRESS_SEND_OK]); [AUTO_SEND_ADVANCED_OFF] while Advanced Mode is off — only a
+     * bridge answering its port may tap — and [AUTO_SEND_NO_REPLY] when no answer came, which may
+     * mean the reply was lost after the tap. All four values are user data: never log them.
+     */
+    suspend fun pressSend(packageName: String, text: String, contactName: String, numberDigits: String): String {
+        if (_state.value != BridgeState.RUNNING) return AUTO_SEND_ADVANCED_OFF
+        val payload = JSONObject()
+            .put("packageName", packageName)
+            .put("text", text)
+            .put("contactName", contactName)
+            .put("number", numberDigits)
+        return client()?.requestPressSend(payload.toString()) ?: AUTO_SEND_NO_REPLY
+    }
+
     private fun onBridgeUp(status: BridgeStatus, message: String) {
+        // A bridge is up, so any stale-replacement is settled: a later death in this process must not
+        // read as "just updated" and restart on its own.
+        staleReplaced.set(false)
         _bridgeInfo.value = status
         _state.value = BridgeState.RUNNING
         _statusMessage.value = message

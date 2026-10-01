@@ -14,11 +14,13 @@ import android.provider.Settings
 import android.text.TextUtils
 import androidx.annotation.StringRes
 import android.view.KeyEvent
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.ads.RewardedAdController
 import com.example.billing.PurchaseManager
 import com.example.data.ActionEditorForms
+import com.example.data.autoSendFailure
 import com.example.data.EntitlementManager
 import com.example.data.InstalledApp
 import com.example.data.InstalledAppsRepository
@@ -376,6 +378,8 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
             // wrong thing - the app's own ringer path lights up Do Not Disturb where a real press
             // no longer does. The app keeps the same share it runs on a real trigger, see
             // HardwareKeyTriggerCoordinator.onBridgeTrigger.
+            // Cleared first, so a value read below can only come from an auto-send in this run.
+            ScriptActionExecutor.lastAutoSendOutcome = null
             val onBridge = BridgeController.runActions(actions)
             val results = if (onBridge == null) {
                 actionExecutor.execute(actions)
@@ -383,6 +387,19 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
                 actionExecutor.execute(actions) { it.type in ScriptActionCatalog.UNSUPPORTED_BY_BRIDGE }
             }
             val ran = results.count { it } + (onBridge?.ran ?: 0)
+            // A Run is not logged (it may be an unsaved draft), so a message that was not sent for
+            // them says why right away, for any outcome but sent. A toast, because the user is looking
+            // at the chat app by now and an editor snackbar would time out unseen behind it.
+            val autoSendReason = if (actions.any { it.type == "send_message" && it.params["autoSend"] == "true" }) {
+                autoSendFailure(ScriptActionExecutor.lastAutoSendOutcome)
+            } else {
+                null
+            }
+            if (autoSendReason != null) {
+                val title = res.getString(R.string.action_send_message)
+                Toast.makeText(appContext, "$title · ${res.getString(autoSendReason.labelRes)}", Toast.LENGTH_LONG).show()
+                return@launch
+            }
             _editorMessage.value = when {
                 results.isEmpty() -> null
                 ran == 0 -> res.getString(R.string.run_nothing_ran)
@@ -950,7 +967,12 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
      */
     fun eraseAllData() {
         viewModelScope.launch {
-            BridgeController.stop()
+            // Wiping while the bridge still answers would leave it running with nothing left that
+            // could stop it, so nothing is erased until it is gone.
+            if (!BridgeController.stop()) {
+                _scriptsMessage.value = ScriptsMessage(res.getString(R.string.erase_bridge_still_running))
+                return@launch
+            }
             WirelessAdbManager.stopAdvancedMode()
             appContext.getSystemService(android.app.ActivityManager::class.java)
                 ?.clearApplicationUserData()

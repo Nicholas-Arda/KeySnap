@@ -1,5 +1,6 @@
 package com.example.service
 
+import android.app.AlarmManager
 import android.content.ContentProvider
 import android.content.ContentValues
 import android.content.Context
@@ -18,12 +19,15 @@ import com.example.data.ScriptRepository
 import com.example.data.ShortcutScript
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
+import org.robolectric.annotation.Config
+import org.robolectric.shadows.ShadowAlarmManager
 
 /**
  * The calendar alarm can start the process cold, where the coordinator knows no edge yet and a
@@ -92,6 +96,73 @@ class CalendarAutomationTest {
         CalendarCondition.onWakeUp(context, boundary = start)
         idle()
         assertEquals(before + 1, count())
+    }
+
+    /** ColorOS deferred the old inexact window by days with the screen off; with the grant, the boundary is exact. */
+    @Test fun withExactAlarmsAllowedTheBoundaryIsArmedExactAndAllowedWhileIdle() {
+        ShadowAlarmManager.setCanScheduleExactAlarms(true)
+        val start = armUpcomingEvent("qa-cal-exact")
+        assertArmed(start, ShadowAlarmManager.WINDOW_EXACT)
+    }
+
+    @Test fun withoutTheGrantItFallsBackToAnInexactAlarmAllowedWhileIdle() {
+        ShadowAlarmManager.setCanScheduleExactAlarms(false)
+        val start = armUpcomingEvent("qa-cal-inexact")
+        assertArmed(start, ShadowAlarmManager.WINDOW_HEURISTIC)
+    }
+
+    /** Android 11 has no "Alarms & reminders" switch: exact alarms need no grant there. */
+    @Config(sdk = [30])
+    @Test fun onAndroid11TheBoundaryIsAlwaysExact() {
+        ShadowAlarmManager.setCanScheduleExactAlarms(false)
+        val start = armUpcomingEvent("qa-cal-api30")
+        assertArmed(start, ShadowAlarmManager.WINDOW_EXACT)
+    }
+
+    /** No event within the week: the look-ahead re-check stays inexact even with the grant. */
+    @Test fun theLookAheadWakeUpIsNeverExact() {
+        ShadowAlarmManager.setCanScheduleExactAlarms(true)
+        FakeCalendar.events = emptyList()
+        add("qa-cal-lookahead")
+        idle()
+        val before = System.currentTimeMillis()
+        CalendarCondition.sync(context, ScriptRepository.getInstance(context).scripts.value)
+        val alarms = shadowOf(context.getSystemService(AlarmManager::class.java)).scheduledAlarms
+        assertEquals(1, alarms.size)
+        assertEquals(ShadowAlarmManager.WINDOW_HEURISTIC, alarms[0].windowLengthMs)
+        assertTrue(alarms[0].isAllowWhileIdle)
+        assertTrue(alarms[0].triggerAtMs >= before + 7L * 24 * HOUR - 60_000)
+    }
+
+    @Test fun grantingExactAlarmsReArmsThePendingAlarmAsExact() {
+        ShadowAlarmManager.setCanScheduleExactAlarms(false)
+        val start = armUpcomingEvent("qa-cal-grant")
+        assertArmed(start, ShadowAlarmManager.WINDOW_HEURISTIC)
+        ShadowAlarmManager.setCanScheduleExactAlarms(true)
+        context.sendBroadcast(
+            Intent(AlarmManager.ACTION_SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED).setPackage(context.packageName),
+        )
+        idle()
+        assertArmed(start, ShadowAlarmManager.WINDOW_EXACT)
+    }
+
+    /** Adds an automation and an event an hour ahead, lets the scripts collector arm it; returns the event's start. */
+    private fun armUpcomingEvent(id: String): Long {
+        val start = System.currentTimeMillis() + HOUR
+        FakeCalendar.events = listOf(start to start + HOUR)
+        add(id)
+        idle()
+        CalendarCondition.sync(context, ScriptRepository.getInstance(context).scripts.value)
+        return start
+    }
+
+    /** One alarm slot, at [triggerAt], allowed in Doze; never a setWindow window. */
+    private fun assertArmed(triggerAt: Long, window: Long) {
+        val alarms = shadowOf(context.getSystemService(AlarmManager::class.java)).scheduledAlarms
+        assertEquals(1, alarms.size)
+        assertEquals(triggerAt, alarms[0].triggerAtMs)
+        assertEquals(window, alarms[0].windowLengthMs)
+        assertTrue(alarms[0].isAllowWhileIdle)
     }
 
     private fun add(id: String) {

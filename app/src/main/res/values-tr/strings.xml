@@ -277,6 +277,10 @@
     <string name="param_message">Mesaj</string>
     <string name="field_send_with">Gönderilecek uygulama</string>
     <string name="helper_send_message">Sohbeti mesajınız yazılmış olarak açar; Gönder\'e siz dokunursunuz.</string>
+    <string name="helper_send_message_auto">Mesaj sizin yerinize gönderilir (Uzman Modu gerekir; ekran açık ve kilitsiz olmalı).</string>
+    <string name="field_send_automatically">Otomatik gönder</string>
+    <string name="message_then_taps_send">%1$s, ardından Uzman Modu Gönder\'e dokunur</string>
+    <string name="message_no_chat_to_send">Bu, sohbet yerine bir seçim ekranı açar; bu yüzden otomatik gönderilemez, Gönder\'e siz dokunursunuz.</string>
     <string name="action_config_pick_contact">Kişilerden seç</string>
     <string name="action_config_type_number">Ya da bir numara yazın</string>
     <string name="helper_message_number">Boş: kişiyi uygulamada siz seçersiniz.</string>
@@ -476,6 +480,7 @@
     <string name="constraint_summary_any_event">Herhangi bir etkinlik</string>
     <string name="helper_calendar_event_active">Eşleşen bir etkinlik başlayınca çalışır. Telefon boştayken daha geç çalışabilir, bu yüzden kısa bir etkinlik kaçabilir. Tüm gün süren ve iptal edilen etkinlikler sayılmaz, arka arkaya gelen etkinlikler tek sayılır. Yalnızca otomasyonlarda.</string>
     <string name="constraint_needs_calendar">Takviminizi okuma izni gerekir. Etkinlikler bu telefonda bu koşulla karşılaştırılır; asla kaydedilmez, günlüğe yazılmaz veya gönderilmez.</string>
+    <string name="constraint_needs_exact_alarm">Zamanında çalışması için “Alarmlar ve hatırlatıcılar” izni gerekir. Bu izin olmadan, pil tasarrufu yapan bir telefon bunu geç çalıştırabilir veya kısa bir etkinliği kaçırabilir.</string>
     <string name="field_cooldown_minutes">İki çalışma arası dakika</string>
     <string name="helper_cooldown">Bu kısayol bu kadar dakikadan daha kısa süre önce çalıştıysa atlanır. Telefon ya da KeySnap yeniden başlarsa süre sıfırlanır.</string>
     <string name="constraint_summary_cooldown">En fazla %1$d dakikada bir</string>
@@ -728,6 +733,7 @@
     <string name="settings_erase_confirm_title">Tüm veriler silinsin mi?</string>
     <string name="settings_erase_action">Her şeyi sil</string>
     <string name="settings_erase_warning">Bu işlem Uzman Modu\'nu durdurur, köprüyü cihazdan siler ve tüm kısayolları ve tercihleri kaldırır. Geri alınamaz. Erişilebilirlik hizmeti de kapanır; sonrasında tekrar açın.</string>
+    <string name="erase_bridge_still_running">Uzman Modu hâlâ çalışıyor, bu yüzden hiçbir şey silinmedi. Kapatıp yeniden deneyin.</string>
     <string name="settings_version">Sürüm %1$s (%2$d)</string>
     <string name="settings_input_monitor">Giriş izleyici</string>
     <string name="settings_show_log_action">Olay günlüğünü göster</string>
@@ -845,6 +851,10 @@
     <string name="run_nothing_ran">Hiçbir şey çalışmadı. Eylem ayarlarını kontrol edin.</string>
     <string name="run_partial">%2$d eylemin %1$d tanesi çalıştı</string>
     <string name="run_failure_generic">Tamamlanamadı</string>
+    <string name="run_failure_message_not_sent">Otomatik gönderilmedi: Uzman Modu kapalı</string>
+    <string name="run_failure_message_unconfirmed">Gönderilmiş olabilir — sohbeti kontrol edin</string>
+    <string name="run_failure_message_chat_not_open">Otomatik gönderilmedi: sohbet zamanında açılmadı</string>
+    <string name="run_failure_message_chat_unconfirmed">Otomatik gönderilmedi: sohbet doğrulanamadı</string>
     <string name="run_failure_notifications_off">Bildirimler kapalı</string>
     <string name="editor_needs_action">Kaydetmeden önce en az bir eylem ekleyin.</string>
     <string name="editor_needs_trigger">Kaydetmeden önce bir tuş seçin.</string>
@@ -918,7 +928,7 @@
     <string name="recipe_spreadsheet">Tabloya Satır Ekle</string>
     <string name="recipe_send_message">Mesaj Gönder</string>
     <string name="recipe_send_message_subtitle">Sohbeti metniniz yazılmış olarak açar</string>
-    <string name="recipe_send_message_note">Bir kişi, gönderilecek uygulamayı ve mesajınızı seçin. Sohbet mesaj yazılmış olarak açılır; Gönder\'e siz dokunursunuz.</string>
+    <string name="recipe_send_message_note">Bir kişi, gönderilecek uygulamayı ve mesajınızı seçin. Otomatik gönder açıksa mesajı Uzman Modu gönderir; değilse sohbet mesaj yazılmış olarak açılır ve Gönder\'e siz dokunursunuz.</string>
     <string name="home_recipes_all">Tümü</string>
     <!-- Share and import -->
     <string name="import_error_invalid">Bu geçerli bir KeySnap kısayolu değil.</string>

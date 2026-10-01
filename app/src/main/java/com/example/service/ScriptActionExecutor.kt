@@ -26,7 +26,9 @@ import android.view.accessibility.AccessibilityNodeInfo
 import androidx.core.app.NotificationCompat
 import com.example.data.AppLocale
 import com.example.data.ScriptAction
+import com.example.bridge.BridgeProtocol
 import com.example.data.ScriptRepository
+import com.example.service.bridge.BridgeController
 import io.github.nicholasarda.keysnap.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -190,7 +192,16 @@ internal data class MessageLaunch(
     val textExtra: String?,
     val text: String,
     val packageName: String,
+    /** The normalized number this opens a chat with; empty when the app picks the person itself. */
+    val recipient: String = "",
 ) {
+    /**
+     * True when this opens one person's chat. A launch without a number, or a plain text share,
+     * opens the app's own picker instead: there is no chat to send into, so "Send automatically"
+     * never applies to it.
+     */
+    val opensChat: Boolean get() = recipient.isNotEmpty()
+
     fun toIntent(): Intent = Intent(action).setPackage(packageName).apply {
         if (uri != null) data = Uri.parse(uri) else type = "text/plain"
         if (textExtra != null) putExtra(textExtra, text)
@@ -225,12 +236,16 @@ internal fun messageLaunch(packageName: String, number: String, text: String, co
         packageName in LINK_MESSAGING_PACKAGES -> {
             if (to.isNotEmpty() && !to.startsWith("+")) return null
             val encoded = URLEncoder.encode(text, "UTF-8").replace("+", "%20")
-            MessageLaunch(Intent.ACTION_VIEW, "https://wa.me/${to.filter { it.isDigit() }}?text=$encoded", null, text, packageName)
+            MessageLaunch(Intent.ACTION_VIEW, "https://wa.me/${to.filter { it.isDigit() }}?text=$encoded", null, text, packageName, to)
         }
-        opensSmsTo -> MessageLaunch(Intent.ACTION_SENDTO, "smsto:$to", "sms_body", text, packageName)
+        opensSmsTo -> MessageLaunch(Intent.ACTION_SENDTO, "smsto:$to", "sms_body", text, packageName, to)
         else -> MessageLaunch(Intent.ACTION_SEND, null, Intent.EXTRA_TEXT, text, packageName)
     }
 }
+
+/** Whether this send_message asks the bridge to tap Send: switched on, and [launch] opens a chat. */
+internal fun autoSends(params: Map<String, String>, launch: MessageLaunch): Boolean =
+    params["autoSend"] == "true" && launch.opensChat
 
 /** The [MessageLaunch] for a `send_message` action on this phone, or null while its app or text is missing. */
 internal fun messageLaunchFor(context: Context, params: Map<String, String>): MessageLaunch? {
@@ -399,9 +414,9 @@ class ScriptActionExecutor(private val handler: ScriptActionHandler) {
                 "open_settings" -> startActivitySafely(ctx, Intent(Settings.ACTION_SETTINGS))
                 "send_intent" -> sendIntent(ctx, action.params)
                 "reply_to_notification" -> NotificationEventListener.reply(ctx, action.params)
-                // The chat opens with the text typed in; the user taps Send. Number and text are
-                // user data: never log them.
-                "send_message" -> messageLaunchFor(ctx, action.params)?.let { startActivitySafely(ctx, it.toIntent()) } ?: false
+                // The chat opens with the text typed in; the user taps Send, or the bridge does.
+                // Number and text are user data: never log them.
+                "send_message" -> sendMessage(ctx, action.params)
                 "http_request" -> httpRequest(action.params["method"], action.params["url"], action.params["body"])
                 "shell_command" -> runShellCommand(action.params["command"])
                 // Neither killing another app's process nor writing system/secure/global settings
@@ -693,6 +708,37 @@ class ScriptActionExecutor(private val handler: ScriptActionHandler) {
         } catch (e: Exception) {
             false
         }
+
+        /**
+         * Opens the chat as always. With "Send automatically" the bridge then taps Send; with
+         * Advanced Mode off that fails (the run log says why) and the chat stays open, typed. The
+         * bridge also checks the chat shows this contact's name or number before it taps.
+         */
+        private suspend fun sendMessage(context: Context, params: Map<String, String>): Boolean {
+            lastAutoSendOutcome = null
+            val launch = messageLaunchFor(context, params) ?: return false
+            if (!startActivitySafely(context, launch.toIntent())) return false
+            if (!autoSends(params, launch)) return true
+            val outcome = BridgeController.pressSend(
+                launch.packageName,
+                launch.text,
+                params["contactName"].orEmpty(),
+                launch.recipient.filter { it.isDigit() },
+            )
+            lastAutoSendOutcome = outcome
+            return outcome == BridgeProtocol.PRESS_SEND_OK
+        }
+
+        /**
+         * How the last "Send automatically" ended (see [BridgeController.pressSend]), or null when the
+         * last message run did not try; [autoSendFailure] turns it into the reason the run log, the
+         * failure notification and the editor's Run show.
+         */
+        // ponytail: one process-wide value, read when the run is recorded; two auto-sends in one run,
+        // or two runs at once, can mix up which one it describes. Return a reason from the handler if
+        // that ever matters.
+        @Volatile
+        internal var lastAutoSendOutcome: String? = null
 
         private fun launchApp(context: Context, packageName: String?): Boolean {
             if (packageName.isNullOrBlank()) return false

@@ -284,6 +284,10 @@
     <string name="param_message">Message</string>
     <string name="field_send_with">Send with</string>
     <string name="helper_send_message">Opens the chat with your message typed; you tap Send.</string>
+    <string name="helper_send_message_auto">The message is sent for you (needs Advanced Mode; screen on and unlocked).</string>
+    <string name="field_send_automatically">Send automatically</string>
+    <string name="message_then_taps_send">%1$s, then Advanced Mode taps Send</string>
+    <string name="message_no_chat_to_send">This opens a picker, not a chat, so it can’t be sent automatically; you tap Send.</string>
     <string name="action_config_pick_contact">Pick from contacts</string>
     <string name="action_config_type_number">Or type a number</string>
     <string name="helper_message_number">Empty: you choose the person in the app.</string>
@@ -495,6 +499,7 @@
     <string name="constraint_summary_any_event">Any event</string>
     <string name="helper_calendar_event_active">Runs when a matching event starts. While the phone is idle it can run later than that, so a short event can be missed. All-day and cancelled events are ignored, and back-to-back events count as one. Automations only.</string>
     <string name="constraint_needs_calendar">Needs permission to read your calendar. Events are checked against this condition on this phone and are never saved, logged or sent.</string>
+    <string name="constraint_needs_exact_alarm">On-time runs need “Alarms &amp; reminders”. Without it, a phone that saves battery may run this late or miss a short event.</string>
     <string name="field_cooldown_minutes">Minutes between runs</string>
     <string name="helper_cooldown">Skipped if this shortcut ran less than this many minutes ago. The timer starts over if the phone or KeySnap restarts.</string>
     <string name="constraint_summary_cooldown">At most every %1$d min</string>
@@ -757,6 +762,7 @@
     <string name="settings_erase_confirm_title">Erase all data?</string>
     <string name="settings_erase_action">Erase everything</string>
     <string name="settings_erase_warning">This stops Advanced Mode, deletes the bridge from the device, and removes every shortcut and preference. It cannot be undone. The Accessibility service switches off too; turn it on again afterwards.</string>
+    <string name="erase_bridge_still_running">Advanced Mode is still running, so nothing was erased. Turn it off and try again.</string>
     <string name="settings_version">Version %1$s (%2$d)</string>
     <string name="settings_input_monitor">Input monitor</string>
     <string name="settings_show_log_action">Show the event log</string>
@@ -891,6 +897,10 @@
     <string name="run_nothing_ran">Nothing ran. Check the action settings.</string>
     <string name="run_partial">Ran %1$d of %2$d actions</string>
     <string name="run_failure_generic">Didn’t complete</string>
+    <string name="run_failure_message_not_sent">Not sent automatically: Advanced Mode is off</string>
+    <string name="run_failure_message_unconfirmed">May have been sent — check the chat</string>
+    <string name="run_failure_message_chat_not_open">Not sent automatically: the chat didn’t open in time</string>
+    <string name="run_failure_message_chat_unconfirmed">Not sent automatically: couldn’t confirm the chat</string>
     <string name="run_failure_notifications_off">Notifications are turned off</string>
     <string name="editor_needs_action">Add at least one action before saving.</string>
     <string name="editor_needs_trigger">Choose a key before saving.</string>
@@ -968,7 +978,7 @@
     <string name="recipe_spreadsheet">Add a Row to a Spreadsheet</string>
     <string name="recipe_send_message">Send a Message</string>
     <string name="recipe_send_message_subtitle">Opens a chat with your text typed in</string>
-    <string name="recipe_send_message_note">Pick a contact, the app to send with, and your message. The chat opens with the message typed in; you tap Send.</string>
+    <string name="recipe_send_message_note">Pick a contact, the app to send with, and your message. With Send automatically on, Advanced Mode sends it; otherwise the chat opens with the message typed in and you tap Send.</string>
     <string name="home_recipes_all">All</string>
     <!-- Share and import -->
     <string name="import_error_invalid">This isn\'t a valid KeySnap shortcut.</string>

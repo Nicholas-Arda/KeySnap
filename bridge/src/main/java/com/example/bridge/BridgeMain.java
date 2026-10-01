@@ -362,6 +362,30 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
         return ran + "\t" + actions.size() + "\t" + BridgeProtocol.encodeActionResults(typesOf(actions), ok);
     }
 
+    /**
+     * send_message's "Send automatically". The payload is the chat app and the message the app just
+     * typed into it: user data, so only the outcome word is logged. Runs on this control connection's
+     * own thread, so a press never waits behind a script's actions or holds them up.
+     */
+    @Override
+    public String onPressSendRequested(String payloadJson) {
+        String result;
+        try {
+            org.json.JSONObject payload = new org.json.JSONObject(payloadJson);
+            String packageName = payload.optString("packageName", "");
+            String text = payload.optString("text", "");
+            // The recipient as the app knows it, matched against the chat's header; never logged.
+            String contactName = payload.optString("contactName", "");
+            String number = payload.optString("number", "");
+            result = packageName.isEmpty() || text.trim().isEmpty() ? "bad-request"
+                    : SendButton.press(packageName, text, contactName, number);
+        } catch (Throwable t) {
+            result = "error";
+        }
+        BridgeLog.i("press_send: " + result);
+        return result;
+    }
+
     private void logActionResult(BridgeConfig.Script script, int keyCode, String pressType,
             BridgeConfig.Action action, boolean success) {
         BridgeLog.i("Triggered script=" + script.id + " key=" + keyCode
@@ -753,6 +777,7 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
         // Choosing how to open the chat needs the app's PackageManager (the default SMS app, which
         // apps take an smsto: link) and the SIM country for the number; the activity is started
         // from the app process. Left to the app path. See ScriptActionCatalog.UNSUPPORTED_BY_BRIDGE.
+        // Its "Send automatically" reaches this process only as CMD_PRESS_SEND from the app.
         if (BridgeConfig.ACTION_SEND_MESSAGE.equals(action.type)) {
             return false;
         }

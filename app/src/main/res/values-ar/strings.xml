@@ -278,6 +278,10 @@
     <string name="param_message">الرسالة</string>
     <string name="field_send_with">الإرسال عبر</string>
     <string name="helper_send_message">يفتح الدردشة ورسالتك مكتوبة فيها؛ وأنت تنقر على إرسال.</string>
+    <string name="helper_send_message_auto">تُرسَل الرسالة نيابةً عنك (يتطلب الوضع المتقدم؛ والشاشة قيد التشغيل وغير مقفلة).</string>
+    <string name="field_send_automatically">إرسال تلقائي</string>
+    <string name="message_then_taps_send">%1$s، ثم ينقر الوضع المتقدم على إرسال</string>
+    <string name="message_no_chat_to_send">يفتح هذا شاشة اختيار وليس دردشة، لذا لا يمكن الإرسال تلقائيًا؛ وأنت تنقر على إرسال.</string>
     <string name="action_config_pick_contact">الاختيار من جهات الاتصال</string>
     <string name="action_config_type_number">أو اكتب رقمًا</string>
     <string name="helper_message_number">فارغ: تختار الشخص داخل التطبيق.</string>
@@ -471,6 +475,7 @@
     <string name="constraint_summary_any_event">أي حدث</string>
     <string name="helper_calendar_event_active">يعمل عند بدء حدث مطابق. أثناء خمول الهاتف قد يعمل في وقت لاحق، لذا قد يفوته حدث قصير. تُتجاهل أحداث اليوم الكامل والأحداث الملغاة، وتُحتسب الأحداث المتتالية حدثًا واحدًا. للأتمتة فقط.</string>
     <string name="constraint_needs_calendar">يحتاج إلى إذن قراءة تقويمك. تُطابَق الأحداث مع هذا الشرط على هذا الهاتف، ولا تُحفظ أو تُسجَّل أو تُرسَل أبدًا.</string>
+    <string name="constraint_needs_exact_alarm">للتشغيل في الموعد يلزم إذن «المنبّهات والتذكيرات». بدونه قد يشغّله الهاتف الموفّر للبطارية متأخرًا أو يفوّت حدثًا قصيرًا.</string>
     <string name="field_cooldown_minutes">الدقائق بين مرات التشغيل</string>
     <string name="helper_cooldown">يتم تخطيه إذا عمل هذا الاختصار قبل أقل من هذا العدد من الدقائق. يبدأ العد من جديد إذا أُعيد تشغيل الهاتف أو KeySnap.</string>
     <string name="constraint_summary_cooldown">مرة كل %1$d دقيقة على الأكثر</string>
@@ -727,6 +732,7 @@
     <string name="settings_erase_confirm_title">مسح جميع البيانات؟</string>
     <string name="settings_erase_action">مسح كل شيء</string>
     <string name="settings_erase_warning">يؤدي هذا إلى إيقاف الوضع المتقدم، وحذف الجسر من الجهاز، وإزالة كل اختصار وإعداد. لا يمكن التراجع عن هذا الإجراء. كما يتم إيقاف خدمة إمكانية الوصول؛ فعّلها مرة أخرى بعد ذلك.</string>
+    <string name="erase_bridge_still_running">لا يزال الوضع المتقدم يعمل، لذا لم يُمسح أي شيء. أوقفه ثم حاول مرة أخرى.</string>
     <string name="settings_version">الإصدار %1$s (%2$d)</string>
     <string name="settings_input_monitor">مراقب الإدخال</string>
     <string name="settings_show_log_action">إظهار سجل الأحداث</string>
@@ -844,6 +850,10 @@
     <string name="run_nothing_ran">لم يعمل أي شيء. تحقق من إعدادات الإجراء.</string>
     <string name="run_partial">تم تشغيل %1$d من %2$d إجراءات</string>
     <string name="run_failure_generic">لم يكتمل</string>
+    <string name="run_failure_message_not_sent">لم تُرسَل تلقائيًا: الوضع المتقدم متوقف</string>
+    <string name="run_failure_message_unconfirmed">ربما أُرسلت — تحقّق من الدردشة</string>
+    <string name="run_failure_message_chat_not_open">لم تُرسَل تلقائيًا: لم تُفتح الدردشة في الوقت المناسب</string>
+    <string name="run_failure_message_chat_unconfirmed">لم تُرسَل تلقائيًا: تعذّر التحقق من الدردشة</string>
     <string name="run_failure_notifications_off">الإشعارات متوقفة</string>
     <string name="editor_needs_action">أضف إجراءً واحدًا على الأقل قبل الحفظ.</string>
     <string name="editor_needs_trigger">اختر مفتاحًا قبل الحفظ.</string>
@@ -917,7 +927,7 @@
     <string name="recipe_spreadsheet">إضافة صف إلى جدول بيانات</string>
     <string name="recipe_send_message">إرسال رسالة</string>
     <string name="recipe_send_message_subtitle">يفتح محادثة ونصك مكتوب فيها</string>
-    <string name="recipe_send_message_note">اختر جهة اتصال والتطبيق الذي ترسل به ورسالتك. تُفتح الدردشة والرسالة مكتوبة فيها؛ وأنت تنقر على إرسال.</string>
+    <string name="recipe_send_message_note">اختر جهة اتصال والتطبيق الذي ترسل به ورسالتك. عند تفعيل الإرسال التلقائي يرسلها الوضع المتقدم؛ وإلا تُفتح الدردشة والرسالة مكتوبة فيها وأنت تنقر على إرسال.</string>
     <string name="home_recipes_all">الكل</string>
     <!-- Share and import -->
     <string name="import_error_invalid">هذا ليس اختصار KeySnap صالحًا.</string>

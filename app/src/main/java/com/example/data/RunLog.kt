@@ -1,6 +1,7 @@
 package com.example.data
 
 import androidx.annotation.StringRes
+import com.example.bridge.BridgeProtocol
 import com.squareup.moshi.JsonClass
 import io.github.nicholasarda.keysnap.R
 
@@ -43,6 +44,10 @@ enum class RunFailure(@StringRes val labelRes: Int) {
     WRITE_SETTINGS_MISSING(R.string.badge_write_settings),
     NOTIFICATIONS_OFF(R.string.run_failure_notifications_off),
     NOTIFICATION_ACCESS_MISSING(R.string.badge_notification_access),
+    MESSAGE_NOT_SENT(R.string.run_failure_message_not_sent),
+    MESSAGE_UNCONFIRMED(R.string.run_failure_message_unconfirmed),
+    MESSAGE_CHAT_NOT_OPEN(R.string.run_failure_message_chat_not_open),
+    MESSAGE_NOT_CONFIRMED_CHAT(R.string.run_failure_message_chat_unconfirmed),
     FAILED(R.string.run_failure_generic),
     ;
 
@@ -65,6 +70,8 @@ data class RunEnvironment(
     val notifications: Boolean = true,
     /** Whether KeySnap holds notification access, which "Reply to notification" needs. */
     val notificationAccess: Boolean = true,
+    /** How the last "Send automatically" ended; see [autoSendFailure]. */
+    val autoSendOutcome: String? = null,
 )
 
 // Which prerequisite explains an app-side failure. These mirror ScriptActionExecutor.android:
@@ -103,7 +110,34 @@ internal val NOTIFICATION_ACCESS_TYPES = setOf("reply_to_notification")
 internal const val MAX_RUNS_PER_SCRIPT = 20
 internal const val MAX_RUNS = 200
 
-internal fun failureReason(type: String, env: RunEnvironment): RunFailure = when {
+/** "Send automatically" outcomes the app adds to the bridge's words (see BridgeProtocol.PRESS_SEND_OK). */
+internal const val AUTO_SEND_ADVANCED_OFF = "advanced-off"
+internal const val AUTO_SEND_NO_REPLY = "no-reply"
+
+/**
+ * Why a "Send automatically" did not send, from how it ended; null only when it sent or did not
+ * try. A lost reply may follow a tap, so it reads as "may have been sent" rather than inviting a
+ * resend.
+ */
+internal fun autoSendFailure(outcome: String?): RunFailure? = when (outcome) {
+    null, BridgeProtocol.PRESS_SEND_OK -> null
+    AUTO_SEND_ADVANCED_OFF -> RunFailure.MESSAGE_NOT_SENT
+    BridgeProtocol.PRESS_SEND_TIMEOUT -> RunFailure.MESSAGE_CHAT_NOT_OPEN
+    BridgeProtocol.PRESS_SEND_UNCONFIRMED, AUTO_SEND_NO_REPLY -> RunFailure.MESSAGE_UNCONFIRMED
+    BridgeProtocol.PRESS_SEND_NOT_FOUND, BridgeProtocol.PRESS_SEND_LOCKED, BridgeProtocol.PRESS_SEND_TAP_FAILED ->
+        RunFailure.MESSAGE_NOT_CONFIRMED_CHAT
+    else -> RunFailure.FAILED
+}
+
+internal fun failureReason(type: String, env: RunEnvironment, params: Map<String, String> = emptyMap()): RunFailure {
+    if (type == "send_message" && params["autoSend"] == "true") {
+        autoSendFailure(env.autoSendOutcome)?.let { return it }
+        if (!env.advancedMode) return RunFailure.MESSAGE_NOT_SENT
+    }
+    return failureReasonByPrerequisite(type, env)
+}
+
+private fun failureReasonByPrerequisite(type: String, env: RunEnvironment): RunFailure = when {
     type in ADVANCED_MODE_TYPES -> if (env.advancedMode) RunFailure.FAILED else RunFailure.ADVANCED_MODE_OFF
     type in ACCESSIBILITY_TYPES && !env.accessibility -> RunFailure.ACCESSIBILITY_OFF
     type in DND_ACCESS_TYPES && !env.dndAccess -> RunFailure.DND_ACCESS_MISSING
@@ -137,7 +171,7 @@ fun buildRunRecord(
         val ok = app ?: report?.get(index)?.second ?: true
         val reason = when {
             ok -> null
-            app != null -> failureReason(action.type, env).name
+            app != null -> failureReason(action.type, env, action.params).name
             else -> RunFailure.FAILED.name
         }
         ActionResult(action.type, ok, reason)

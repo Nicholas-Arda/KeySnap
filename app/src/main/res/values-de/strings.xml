@@ -277,6 +277,10 @@
     <string name="param_message">Nachricht</string>
     <string name="field_send_with">Senden mit</string>
     <string name="helper_send_message">Öffnet den Chat mit deiner Nachricht bereits eingetippt; du tippst auf Senden.</string>
+    <string name="helper_send_message_auto">Die Nachricht wird für dich gesendet (braucht den Erweiterten Modus; Bildschirm an und entsperrt).</string>
+    <string name="field_send_automatically">Automatisch senden</string>
+    <string name="message_then_taps_send">%1$s, dann tippt der Erweiterte Modus auf Senden</string>
+    <string name="message_no_chat_to_send">Das öffnet eine Auswahl statt eines Chats, daher wird nicht automatisch gesendet; du tippst auf Senden.</string>
     <string name="action_config_pick_contact">Aus Kontakten wählen</string>
     <string name="action_config_type_number">Oder eine Nummer eingeben</string>
     <string name="helper_message_number">Leer: Du wählst die Person in der App.</string>
@@ -470,6 +474,7 @@
     <string name="constraint_summary_any_event">Beliebiger Termin</string>
     <string name="helper_calendar_event_active">Läuft, wenn ein passender Termin beginnt. Während das Telefon ruht, kann es später laufen; ein kurzer Termin kann also verpasst werden. Ganztägige und abgesagte Termine werden ignoriert, direkt aufeinanderfolgende zählen als einer. Nur in Automatisierungen.</string>
     <string name="constraint_needs_calendar">Benötigt die Berechtigung, deinen Kalender zu lesen. Termine werden auf diesem Telefon mit dieser Bedingung verglichen und nie gespeichert, protokolliert oder gesendet.</string>
+    <string name="constraint_needs_exact_alarm">Pünktlich läuft es nur mit „Wecker und Erinnerungen“. Ohne das kann ein Telefon, das Akku spart, es später ausführen oder einen kurzen Termin verpassen.</string>
     <string name="field_cooldown_minutes">Minuten zwischen Ausführungen</string>
     <string name="helper_cooldown">Wird übersprungen, wenn dieser Kurzbefehl vor weniger als so vielen Minuten ausgeführt wurde. Der Zähler beginnt neu, wenn das Telefon oder KeySnap neu startet.</string>
     <string name="constraint_summary_cooldown">Höchstens alle %1$d Min.</string>
@@ -730,6 +735,7 @@
     <string name="settings_erase_confirm_title">Alle Daten löschen?</string>
     <string name="settings_erase_action">Alles löschen</string>
     <string name="settings_erase_warning">Dies stoppt den Erweiterten Modus, löscht die Bridge vom Gerät und entfernt jeden Kurzbefehl und jede Einstellung. Dies kann nicht rückgängig gemacht werden. Der Bedienungshilfen-Dienst wird ebenfalls deaktiviert; aktiviere ihn danach wieder.</string>
+    <string name="erase_bridge_still_running">Der Erweiterte Modus läuft noch, deshalb wurde nichts gelöscht. Schalte ihn aus und versuche es erneut.</string>
     <string name="settings_version">Version %1$s (%2$d)</string>
     <string name="settings_input_monitor">Eingabemonitor</string>
     <string name="settings_show_log_action">Ereignisprotokoll anzeigen</string>
@@ -847,6 +853,10 @@
     <string name="run_nothing_ran">Nichts wurde ausgeführt. Überprüfe die Aktionseinstellungen.</string>
     <string name="run_partial">%1$d von %2$d Aktionen ausgeführt</string>
     <string name="run_failure_generic">Nicht abgeschlossen</string>
+    <string name="run_failure_message_not_sent">Nicht automatisch gesendet: Der Erweiterte Modus ist aus</string>
+    <string name="run_failure_message_unconfirmed">Vielleicht gesendet – sieh im Chat nach</string>
+    <string name="run_failure_message_chat_not_open">Nicht automatisch gesendet: Der Chat hat sich nicht rechtzeitig geöffnet</string>
+    <string name="run_failure_message_chat_unconfirmed">Nicht automatisch gesendet: Der Chat ließ sich nicht bestätigen</string>
     <string name="run_failure_notifications_off">Benachrichtigungen sind deaktiviert</string>
     <string name="editor_needs_action">Füge mindestens eine Aktion hinzu, bevor du speicherst.</string>
     <string name="editor_needs_trigger">Wähle eine Taste, bevor du speicherst.</string>
@@ -920,7 +930,7 @@
     <string name="recipe_spreadsheet">Zeile in Tabelle einfügen</string>
     <string name="recipe_send_message">Nachricht senden</string>
     <string name="recipe_send_message_subtitle">Öffnet einen Chat mit deinem Text</string>
-    <string name="recipe_send_message_note">Wähle einen Kontakt, die App zum Senden und deine Nachricht. Der Chat öffnet sich mit der Nachricht bereits eingetippt; du tippst auf Senden.</string>
+    <string name="recipe_send_message_note">Wähle einen Kontakt, die App zum Senden und deine Nachricht. Ist „Automatisch senden“ an, sendet der Erweiterte Modus sie; sonst öffnet sich der Chat mit der Nachricht bereits eingetippt und du tippst auf Senden.</string>
     <string name="home_recipes_all">Alle</string>
     <!-- Share and import -->
     <string name="import_error_invalid">Das ist kein gültiger KeySnap-Kurzbefehl.</string>

@@ -278,6 +278,10 @@
     <string name="param_message">Mensaje</string>
     <string name="field_send_with">Enviar con</string>
     <string name="helper_send_message">Abre el chat con tu mensaje ya escrito; tú tocas Enviar.</string>
+    <string name="helper_send_message_auto">El mensaje se envía por ti (requiere el Modo avanzado; pantalla encendida y desbloqueada).</string>
+    <string name="field_send_automatically">Enviar automáticamente</string>
+    <string name="message_then_taps_send">%1$s, y luego el Modo avanzado toca Enviar</string>
+    <string name="message_no_chat_to_send">Esto abre un selector, no un chat, así que no se puede enviar automáticamente; tú tocas Enviar.</string>
     <string name="action_config_pick_contact">Elegir de los contactos</string>
     <string name="action_config_type_number">O escribe un número</string>
     <string name="helper_message_number">Vacío: eliges a la persona en la app.</string>
@@ -471,6 +475,7 @@
     <string name="constraint_summary_any_event">Cualquier evento</string>
     <string name="helper_calendar_event_active">Se ejecuta cuando empieza un evento que coincide. Con el teléfono inactivo puede ejecutarse más tarde, así que un evento corto puede perderse. Los eventos de todo el día y los cancelados se ignoran, y los eventos seguidos cuentan como uno. Solo en automatizaciones.</string>
     <string name="constraint_needs_calendar">Necesita permiso para leer tu calendario. Los eventos se comparan con esta condición en este teléfono y nunca se guardan, registran ni envían.</string>
+    <string name="constraint_needs_exact_alarm">Para ejecutarse a tiempo necesita “Alarmas y recordatorios”. Sin ello, un teléfono que ahorra batería puede ejecutarlo más tarde o perder un evento corto.</string>
     <string name="field_cooldown_minutes">Minutos entre ejecuciones</string>
     <string name="helper_cooldown">Se omite si este acceso directo se ejecutó hace menos de estos minutos. El contador vuelve a empezar si el teléfono o KeySnap se reinician.</string>
     <string name="constraint_summary_cooldown">Como máximo cada %1$d min</string>
@@ -731,6 +736,7 @@
     <string name="settings_erase_confirm_title">¿Borrar todos los datos?</string>
     <string name="settings_erase_action">Borrarlo todo</string>
     <string name="settings_erase_warning">Esto detiene el Modo avanzado, elimina el puente del dispositivo y borra todos los accesos directos y preferencias. Esta acción no se puede deshacer. El servicio de accesibilidad también se desactiva; vuelve a activarlo después.</string>
+    <string name="erase_bridge_still_running">El Modo avanzado sigue activo, así que no se borró nada. Desactívalo y vuelve a intentarlo.</string>
     <string name="settings_version">Versión %1$s (%2$d)</string>
     <string name="settings_input_monitor">Monitor de entrada</string>
     <string name="settings_show_log_action">Mostrar el registro de eventos</string>
@@ -848,6 +854,10 @@
     <string name="run_nothing_ran">No se ejecutó nada. Revisa los ajustes de la acción.</string>
     <string name="run_partial">Se ejecutaron %1$d de %2$d acciones</string>
     <string name="run_failure_generic">No se completó</string>
+    <string name="run_failure_message_not_sent">No se envió automáticamente: el Modo avanzado está desactivado</string>
+    <string name="run_failure_message_unconfirmed">Puede que se haya enviado — revisa el chat</string>
+    <string name="run_failure_message_chat_not_open">No se envió automáticamente: el chat no se abrió a tiempo</string>
+    <string name="run_failure_message_chat_unconfirmed">No se envió automáticamente: no se pudo confirmar el chat</string>
     <string name="run_failure_notifications_off">Las notificaciones están desactivadas</string>
     <string name="editor_needs_action">Añade al menos una acción antes de guardar.</string>
     <string name="editor_needs_trigger">Elige una tecla antes de guardar.</string>
@@ -921,7 +931,7 @@
     <string name="recipe_spreadsheet">Añadir una fila a una hoja de cálculo</string>
     <string name="recipe_send_message">Enviar un mensaje</string>
     <string name="recipe_send_message_subtitle">Abre un chat con tu texto ya escrito</string>
-    <string name="recipe_send_message_note">Elige un contacto, la app con la que enviar y tu mensaje. El chat se abre con el mensaje ya escrito; tú tocas Enviar.</string>
+    <string name="recipe_send_message_note">Elige un contacto, la app con la que enviar y tu mensaje. Con Enviar automáticamente activado, el Modo avanzado lo envía; si no, el chat se abre con el mensaje ya escrito y tú tocas Enviar.</string>
     <string name="home_recipes_all">Todos</string>
     <!-- Share and import -->
     <string name="import_error_invalid">Esto no es un acceso directo de KeySnap válido.</string>

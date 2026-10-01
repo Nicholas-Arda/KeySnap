@@ -18,6 +18,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,6 +30,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 
 enum class PairingStatus {
     IDLE,
@@ -39,6 +41,57 @@ enum class PairingStatus {
     CONNECTING_STREAM,
     ADVANCED_MODE_RUNNING,
     ERROR
+}
+
+internal const val BRIDGE_RESTARTING_MESSAGE = "Restarting Advanced Mode after an update…"
+internal const val BRIDGE_UPDATED_RESTART_MESSAGE =
+    "KeySnap was updated, so Advanced Mode needs a restart. Open setup to restart it."
+internal const val BRIDGE_NOT_RUNNING_MESSAGE =
+    "Advanced Mode is on but the bridge isn't running (normal after a reboot). " +
+        "Restart it from the setup wizard."
+private const val RESTART_AFTER_UPDATE_TIMEOUT_MS = 20_000L
+
+/** What the launch-time bridge check found, and did about it. */
+internal enum class StartupBridge { ADOPTED, RESTARTED, RESTART_FAILED, NOT_RUNNING, OFF }
+
+/**
+ * Adopts a live bridge; otherwise restarts one only when this process just replaced a stale bridge
+ * (an app update) and the user still wants Advanced Mode. A reboot leaves nothing to replace, so it
+ * keeps asking the user as before. The stale flag is consumed either way, so it restarts at most once.
+ */
+internal suspend fun resolveStartupBridge(
+    adoptExisting: suspend () -> Boolean,
+    takeStaleReplacement: () -> Boolean,
+    advancedWanted: Boolean,
+    restart: suspend () -> Boolean,
+): StartupBridge = when {
+    adoptExisting() -> StartupBridge.ADOPTED
+    takeStaleReplacement() && advancedWanted ->
+        if (restart()) StartupBridge.RESTARTED else StartupBridge.RESTART_FAILED
+    advancedWanted -> StartupBridge.NOT_RUNNING
+    else -> StartupBridge.OFF
+}
+
+/**
+ * After the restart cap cut a spawn off: the command may already have reached the phone, and the
+ * bridge binds its port a moment later. Probes like [BridgeController.start] does after spawning
+ * (every [intervalMs], [attempts] times), so a bridge that comes up late is adopted instead of the
+ * app calling Advanced Mode off while it runs — and running every shortcut a second time.
+ */
+internal suspend fun adoptLateSpawn(adopt: suspend () -> Boolean, attempts: Int = 10, intervalMs: Long = 500L): Boolean {
+    repeat(attempts) { attempt ->
+        if (adopt()) return true
+        if (attempt < attempts - 1) delay(intervalMs)
+    }
+    return false
+}
+
+/** The status line for [outcome]; null leaves the current one. */
+internal fun startupStatusMessage(outcome: StartupBridge, bridgeMessage: String): String? = when (outcome) {
+    StartupBridge.ADOPTED, StartupBridge.RESTARTED -> bridgeMessage
+    StartupBridge.RESTART_FAILED -> BRIDGE_UPDATED_RESTART_MESSAGE
+    StartupBridge.NOT_RUNNING -> BRIDGE_NOT_RUNNING_MESSAGE
+    StartupBridge.OFF -> null
 }
 
 object WirelessAdbManager {
@@ -160,19 +213,60 @@ object WirelessAdbManager {
         // Deliberately does not re-spawn. A bridge started in an earlier app lifetime is still
         // running, and launching a second one would leave two readers competing for the same
         // gestures. BridgeController probes the control port and adopts whatever it finds; the
-        // user re-runs the ADB flow only when nothing answers.
+        // user re-runs the ADB flow only when nothing answers. The one exception is a stale bridge
+        // this process just shut down after an app update: that is respawned once, below.
         BridgeController.initialize(context)
         managerScope.launch {
-            if (BridgeController.detectExistingBridge()) {
-                _pairingStatus.value = PairingStatus.ADVANCED_MODE_RUNNING
-                _statusMessage.value = BridgeController.statusMessage.value
-            } else if (prefs.getBoolean(PREF_ADVANCED_ENABLED, prefs.getBoolean(PREF_ADVANCED_ENABLED_LEGACY, false))) {
-                _statusMessage.value =
-                    "Advanced Mode is on but the bridge isn't running (normal after a reboot). " +
-                        "Restart it from the setup wizard."
+            val outcome = resolveStartupBridge(
+                adoptExisting = BridgeController::detectExistingBridge,
+                takeStaleReplacement = BridgeController::takeStaleReplacement,
+                advancedWanted = prefs.getBoolean(PREF_ADVANCED_ENABLED, prefs.getBoolean(PREF_ADVANCED_ENABLED_LEGACY, false)),
+                restart = ::restartAfterUpdate,
+            )
+            when (outcome) {
+                StartupBridge.ADOPTED, StartupBridge.RESTARTED -> _pairingStatus.value = PairingStatus.ADVANCED_MODE_RUNNING
+                StartupBridge.RESTART_FAILED -> _pairingStatus.value = PairingStatus.IDLE
+                else -> Unit
+            }
+            // A second initialize() (Accessibility service and Activity both call it) must not
+            // overwrite a restart that the first one has in flight.
+            val restartInFlight = outcome == StartupBridge.NOT_RUNNING && BridgeController.state.value == BridgeState.STARTING
+            if (!restartInFlight) {
+                startupStatusMessage(outcome, BridgeController.statusMessage.value)?.let { _statusMessage.value = it }
             }
             _startupBridgeCheckComplete.value = true
         }
+    }
+
+    /**
+     * Brings the bridge back after an app update replaced a stale one, through the same spawn path
+     * the Advanced Mode toggle uses: the saved connect port first, mDNS when there is none, and
+     * [connectShellStream]'s own re-browse when that port refuses. [BridgeController.start] re-probes
+     * before spawning, so this can never add a second bridge.
+     */
+    private suspend fun restartAfterUpdate(): Boolean {
+        BridgeController.markStarting(BRIDGE_RESTARTING_MESSAGE)
+        _pairingStatus.value = PairingStatus.CONNECTING_STREAM
+        _statusMessage.value = BRIDGE_RESTARTING_MESSAGE
+        var job: Job? = null
+        // ponytail: one overall cap rather than per-stage ones; wireless debugging off or no network
+        // fails well inside it, a healthy spawn takes a few seconds.
+        withTimeoutOrNull(RESTART_AFTER_UPDATE_TIMEOUT_MS) {
+            val port = _discoveredConnectPort.value?.takeIf { it > 0 } ?: run {
+                refreshConnectServiceDiscovery()
+                awaitVerifiedConnectPort()
+            }
+            if (port != null) {
+                job = connectShellStream(_discoveredIp.value, port)
+                job?.join()
+            }
+        }
+        job?.cancelAndJoin()
+        if (BridgeController.state.value == BridgeState.RUNNING) return true
+        // A spawn cut off by the cap may still bind its port; adopt it rather than call it failed.
+        if (adoptLateSpawn(BridgeController::detectExistingBridge)) return true
+        BridgeController.markStopped(BRIDGE_UPDATED_RESTART_MESSAGE)
+        return false
     }
 
     fun setAutoAssistantEnabled(enabled: Boolean) {
@@ -406,16 +500,17 @@ object WirelessAdbManager {
         port: Int,
         pairingGeneration: Long? = null,
         pairingCode: String? = null,
-    ) {
+    ): Job {
         val endpoint = ip to port
-        if (streamJob?.isActive == true && activeStreamEndpoint == endpoint) {
+        val running = streamJob
+        if (running != null && running.isActive && activeStreamEndpoint == endpoint) {
             Log.d(TAG, "Ignoring a duplicate bridge spawn request")
-            return
+            return running
         }
 
         streamJob?.cancel()
         activeStreamEndpoint = endpoint
-        streamJob = managerScope.launch {
+        return managerScope.launch {
             val context = appContext ?: return@launch
 
             // Short-lived: it protects the setup coroutine while the app may be backgrounded.
@@ -479,7 +574,7 @@ object WirelessAdbManager {
                 streamClient?.stop()
                 WirelessAdbHelperService.stop(context)
             }
-        }
+        }.also { streamJob = it }
     }
 
     /**
@@ -531,9 +626,12 @@ object WirelessAdbManager {
             activePairingCode = null
         }
         managerScope.launch {
-            BridgeController.stop()
-            persistAdvancedModeWanted(false)
-            _pairingStatus.value = PairingStatus.IDLE
+            // A bridge that still answers is still on: saving "not wanted" or showing IDLE would
+            // disagree with what is running. stop() has already said "still running, try again".
+            if (BridgeController.stop()) {
+                persistAdvancedModeWanted(false)
+                _pairingStatus.value = PairingStatus.IDLE
+            }
             _statusMessage.value = BridgeController.statusMessage.value
         }
     }

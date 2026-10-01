@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.database.ContentObserver
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.provider.CalendarContract
@@ -46,7 +47,7 @@ internal fun nextEventBoundary(events: List<EventInstance>, now: Long, calendarF
         .minOrNull()
 
 /**
- * Wake-up source for `calendar_event_active`: one inexact alarm at the earliest start or end among
+ * Wake-up source for `calendar_event_active`: one alarm at the earliest start or end among
  * every calendar condition in use, re-armed when it rings and whenever the calendar changes.
  * Events are read on demand and kept nowhere. Nothing is logged but an exception class: titles and
  * calendar names are the user's.
@@ -56,10 +57,6 @@ object CalendarCondition {
 
     // ponytail: a week ahead; every alarm and every calendar change re-arm it, so a quiet week is fine.
     private const val LOOKAHEAD_MS = 7L * 24 * 60 * 60_000
-
-    // Android 12+ stretches shorter windows to 10 minutes anyway; exact alarms would need
-    // SCHEDULE_EXACT_ALARM. A matching event shorter than the window can be missed.
-    private const val WINDOW_MS = 10 * 60_000L
 
     private val PROJECTION = arrayOf(
         Instances.BEGIN, Instances.END, Instances.TITLE, Instances.CALENDAR_DISPLAY_NAME, Instances.ALL_DAY, Instances.STATUS,
@@ -102,17 +99,28 @@ object CalendarCondition {
             .filter { it.type == ScriptConstraintCatalog.CALENDAR_EVENT_ACTIVE }
         val now = System.currentTimeMillis()
         val events = if (conditions.isEmpty()) null else instances(context, now, now + LOOKAHEAD_MS)
-        val next = events?.let { list ->
+        val boundary = events?.let { list ->
             conditions.mapNotNull { nextEventBoundary(list, now, it.params["calendar"], it.params["title"]) }.minOrNull()
-                ?: (now + LOOKAHEAD_MS)
         }
+        val next = if (events == null) null else boundary ?: (now + LOOKAHEAD_MS)
         if (next == null) {
             alarms.cancel(alarmIntent(context, 0L))
         } else {
-            alarms.setWindow(AlarmManager.RTC_WAKEUP, next, WINDOW_MS, alarmIntent(context, next))
+            // Both fire in Doze. The inexact one is what a battery-saving OEM may defer for days
+            // (seen on ColorOS), so exact is used whenever "Alarms & reminders" allows it, but only
+            // for a real event start or end: the look-ahead wake-up is a quiet re-check that can wait.
+            if (boundary != null && canScheduleExact(alarms)) {
+                alarms.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, next, alarmIntent(context, next))
+            } else {
+                alarms.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, next, alarmIntent(context, next))
+            }
             ensureObserver(context.applicationContext)
         }
     }
+
+    /** Android 11 grants exact alarms without asking; 12+ gates them behind SCHEDULE_EXACT_ALARM. */
+    fun canScheduleExact(alarms: AlarmManager): Boolean =
+        Build.VERSION.SDK_INT < Build.VERSION_CODES.S || alarms.canScheduleExactAlarms()
 
     /**
      * The alarm, or the calendar changing, in a process that may have just started: when this
@@ -170,8 +178,14 @@ object CalendarCondition {
     }
 }
 
-/** Rings at a calendar condition's next start or end: re-evaluates automations, then arms the next one. */
+/**
+ * Rings at a calendar condition's next start or end: re-evaluates automations, then arms the next
+ * one. Also receives the exact-alarm grant (Android 12+), which re-arms the pending inexact alarm
+ * as an exact one.
+ */
 class CalendarAlarmReceiver : BroadcastReceiver() {
+    // Unexported, and every intent only re-evaluates and re-arms; there is no action to tell apart.
+    @SuppressLint("UnsafeProtectedBroadcastReceiver")
     override fun onReceive(context: Context, intent: Intent) {
         // The alarm can start this process cold; keep it protected while a fired shortcut runs.
         val pending: PendingResult? = goAsync()

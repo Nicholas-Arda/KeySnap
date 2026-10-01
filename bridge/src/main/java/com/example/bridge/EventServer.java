@@ -29,6 +29,9 @@ public final class EventServer implements Runnable {
 
         /** Runs one chain now and answers "<ran>	<total>	<actionResults>". */
         String onRunRequested(String payloadJson);
+
+        /** Presses the Send button of the chat the app just opened; answers one outcome word. */
+        String onPressSendRequested(String payloadJson);
     }
 
     private static final char SEP = '\t';
@@ -197,6 +200,9 @@ public final class EventServer implements Runnable {
                     } else if (BridgeProtocol.CMD_RUN.equals(command)) {
                         writeDirect(BridgeProtocol.MSG_OK + SEP
                                 + listener.onRunRequested(parts.length >= 2 ? parts[1] : ""));
+                    } else if (BridgeProtocol.CMD_PRESS_SEND.equals(command)) {
+                        writeDirect(BridgeProtocol.MSG_OK + SEP
+                                + listener.onPressSendRequested(parts.length >= 2 ? parts[1] : ""));
                     } else if (BridgeProtocol.CMD_SHUTDOWN.equals(command)) {
                         writeDirect(BridgeProtocol.MSG_BYE);
                         listener.onShutdownRequested();

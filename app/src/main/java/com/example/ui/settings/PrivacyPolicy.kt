@@ -78,8 +78,14 @@ object PrivacyPolicy {
             "and starts a small helper program that runs with shell privileges. That program " +
             "reads hardware keys from the kernel and runs the actions in your shortcuts. It " +
             "reads its configuration from a file the app writes and keeps no record of what you " +
-            "press. Turning Advanced Mode off, or rebooting, stops it; turning it off also deletes " +
-            "it from the device.",
+            "press. When a \"Send a message\" action has \"Send automatically\" on, the program " +
+            "also reads the screen layout of the messaging app KeySnap just opened, only while that " +
+            "app is in front and for a few seconds, to find its Send button and to check that the " +
+            "chat is with the person you chose and that the message field holds exactly your " +
+            "text, before it taps Send and once after. That layout is not stored, except for a " +
+            "moment in a private temporary file on some Android versions, deleted right away, and " +
+            "it is never logged or sent. Turning Advanced Mode off, or rebooting, stops " +
+            "it; turning it off also deletes it from the device.",
 
         "Network use" to
             "The app makes three kinds of network connection. The first is to your own device " +
@@ -116,7 +122,9 @@ object PrivacyPolicy {
             "the app reads each event's title, calendar name, start and end time, and whether it " +
             "is all-day or cancelled, on this device to compare them with that condition and to " +
             "know when to check again, and never " +
-            "stores, logs or sends them. Do Not " +
+            "stores, logs or sends them. Alarms & reminders: optional, asked only when you add a " +
+            "\"Calendar event in progress\" condition, and used only to wake the app at the start " +
+            "or end of a matching event; nothing is read or sent through it. Do Not " +
             "Disturb access: to switch the ringer to Silent. Modify system settings: to change " +
             "brightness and screen rotation without Advanced Mode. " +
             "Notification access: only if you add a \"Notification received\" condition or a " +
