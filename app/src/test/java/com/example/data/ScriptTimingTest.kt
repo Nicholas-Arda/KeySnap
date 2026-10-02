@@ -75,4 +75,15 @@ class ScriptTimingTest {
         val resolved = resolveTimingForKey(scripts, 25, defaults)
         assertEquals(300L, resolved.doublePressWindowMs)
     }
+
+    @Test
+    fun chordTimingOverrideAppliesToTheChordIdOnly() {
+        // Same case as BridgeConfigTimingTest.chordTimingOverrideResolvesLikeTheApp in :bridge.
+        val chord = ScriptTrigger(listOf(25, 24), TriggerPressType.DOUBLE_PRESS, doublePressWindowMs = 450)
+        val scripts = listOf(ShortcutScript("chord", "chord", true, listOf(chord), listOf(ScriptAction.ToggleFlashlight)))
+        val id = com.example.bridge.ChordTracker.chordId(listOf(24, 25))
+
+        assertEquals(450L, resolveTimingForKey(scripts, id, KeyMappingConfig()).doublePressWindowMs)
+        assertEquals(300L, resolveTimingForKey(scripts, 24, KeyMappingConfig()).doublePressWindowMs)
+    }
 }

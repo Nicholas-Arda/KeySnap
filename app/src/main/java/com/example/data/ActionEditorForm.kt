@@ -18,6 +18,9 @@ sealed interface EditorField {
         @StringRes val labelRes: Int,
         @StringRes val hintRes: Int? = null,
         val multiline: Boolean = false,
+        /** Line bounds while [multiline]; ignored on a single-line field. */
+        val minLines: Int = 3,
+        val maxLines: Int = Int.MAX_VALUE,
         @StringRes val helperRes: Int? = null,
         /** Shown only while [visibleWhen]'s param holds one of its values, e.g. a body for POST. */
         val visibleWhen: Pair<String, Set<String>>? = null,
@@ -82,6 +85,12 @@ sealed interface EditorField {
     /** Days of the week persisted as comma-separated `mon,tue,…,sun`. */
     data class DaySet(val key: String, @StringRes val labelRes: Int) : EditorField
 
+    /** One clock time persisted as `HH:MM`. */
+    data class Time(val key: String, @StringRes val labelRes: Int, val default: String) : EditorField
+
+    /** A whole number plus its unit (`s` / `m` / `h`); ranges come from [ConstraintEditorForms.intervalRange]. */
+    data class Interval(val valueKey: String, val unitKey: String, @StringRes val labelRes: Int) : EditorField
+
     /**
      * One image from the system photo picker, persisted as its `content://` URI string. The sheet
      * persists the read grant, because the shortcut runs long after the picking process is gone.
@@ -114,6 +123,8 @@ val EditorField.keys: List<String>
         is EditorField.BluetoothDevicePick -> listOf(addressKey, nameKey)
         is EditorField.TimeRange -> listOf(startKey, endKey)
         is EditorField.DaySet -> listOf(key)
+        is EditorField.Time -> listOf(key)
+        is EditorField.Interval -> listOf(valueKey, unitKey)
         is EditorField.ImagePick -> listOf(key)
         is EditorField.ContactPick -> listOf(numberKey, nameKey)
         is EditorField.Switch -> listOf(key)
@@ -163,7 +174,7 @@ object ActionEditorForms {
             helperRes = R.string.helper_input_key_code,
             requirementRes = ADVANCED_MODE_BADGE,
             summary = { res, params ->
-                params["keyCode"]?.toIntOrNull()?.let { getReadableKeyName(res, it) }.orEmpty()
+                params["keyCode"]?.toIntOrNull()?.let { keyDisplayName(res, it) }.orEmpty()
             },
         ),
         ActionEditorForm(
@@ -250,7 +261,10 @@ object ActionEditorForms {
         ),
         ActionEditorForm(
             type = "shell_command",
-            fields = listOf(EditorField.Text("command", R.string.param_command, hintRes = R.string.hint_shell_command)),
+            // Wraps, so a long ready-made command reads in full; the text is still saved exactly as written.
+            fields = listOf(
+                EditorField.Text("command", R.string.param_command, hintRes = R.string.hint_shell_command, multiline = true, minLines = 1, maxLines = 6),
+            ),
             helperRes = R.string.helper_shell_command,
             requirementRes = ADVANCED_MODE_BADGE,
             summary = { _, params -> params.value("command") },

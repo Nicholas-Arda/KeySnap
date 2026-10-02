@@ -4,8 +4,8 @@ import androidx.annotation.StringRes
 import io.github.nicholasarda.keysnap.R
 
 /**
- * A ready-made shortcut offered on Home. Tapping a key-bound one skips the editor: the draft is
- * pre-filled with these actions and the user only assigns a key. An [automation] opens the editor
+ * A ready-made shortcut offered on Home. Tapping a key-bound one skips the editor unless
+ * [needsEditor]: the draft is pre-filled with these actions and the user only assigns a key. An [automation] opens the editor
  * pre-filled instead, so the user sees the condition and can finish any choice it needs (a
  * Bluetooth device, say) before saving.
  *
@@ -24,7 +24,7 @@ enum class RecipeCategory(@StringRes val titleRes: Int) {
     MULTI(R.string.home_suggestions_group_multi),
     AUTOMATION(R.string.home_suggestions_group_automation),
     ROUTINES(R.string.recipe_category_routines),
-    WEBHOOK(R.string.recipe_category_webhook),
+    COMMANDS(R.string.recipe_category_commands),
 }
 
 data class SuggestedShortcut(
@@ -51,10 +51,13 @@ data class SuggestedShortcut(
 
     /**
      * True when picking this cannot go straight to "press a key, done": an automation shows its
-     * condition first, and a recipe shipped with a blank required field (a webhook's URL, which
-     * CLAUDE.md forbids shipping) must be filled in before it can run.
+     * condition first, a recipe shipped with a blank required field (a webhook's URL, which
+     * CLAUDE.md forbids shipping) must be filled in before it can run, and a privileged action is
+     * shown literally before it can run (CLAUDE.md "Privileged actions must stay legible").
      */
-    val needsEditor: Boolean get() = automation || actions.any { ActionEditorForms.missingRequired(it).isNotEmpty() }
+    val needsEditor: Boolean get() = automation || actions.any {
+        it.type in ScriptActionCatalog.PRIVILEGED || ActionEditorForms.missingRequired(it).isNotEmpty()
+    }
 }
 
 object SuggestedShortcuts {
@@ -66,6 +69,71 @@ object SuggestedShortcuts {
     private fun webhook(method: String, body: String = "") = ScriptAction(
         "http_request",
         if (body.isEmpty()) mapOf("method" to method) else mapOf("method" to method, "body" to body),
+    )
+
+    private fun shell(command: String) = ScriptAction("shell_command", mapOf("command" to command))
+    private fun link(uri: String) = ScriptAction("open_url", mapOf("url" to uri))
+    private fun atTime(time: String) = ScriptConstraint(ScriptConstraintCatalog.AT_TIME, mapOf("time" to time))
+
+    /** One single-action recipe on the Ready-made commands shelf. */
+    private fun command(
+        id: String,
+        @StringRes titleRes: Int,
+        @StringRes subtitleRes: Int,
+        action: ScriptAction,
+        automation: Boolean = false,
+        constraints: List<ScriptConstraint> = emptyList(),
+    ) = SuggestedShortcut(
+        id = id,
+        titleRes = titleRes,
+        subtitleRes = subtitleRes,
+        iconType = action.type,
+        actions = listOf(action),
+        automation = automation,
+        constraints = constraints,
+        category = RecipeCategory.COMMANDS,
+    )
+
+    // Ready-made commands. Long-running ones end in `&`: the bridge runs actions on one thread.
+    private const val SCREEN_RECORD =
+        "screenrecord --time-limit 30 /sdcard/Movies/KeySnap_$(date +%Y%m%d_%H%M%S).mp4 >/dev/null 2>&1 &"
+    private const val VIDEO_CAMERA = "am start -a android.media.action.VIDEO_CAMERA"
+    private const val INTERNET_PANEL = "am start -a android.settings.panel.action.INTERNET_CONNECTIVITY"
+    private const val ANIMATIONS_FAST = "settings put global window_animation_scale 0.5; " +
+        "settings put global transition_animation_scale 0.5; settings put global animator_duration_scale 0.5"
+    private const val ANIMATIONS_NORMAL = "settings put global window_animation_scale 1; " +
+        "settings put global transition_animation_scale 1; settings put global animator_duration_scale 1"
+    private const val TIMER_5_MIN = "am start -a android.intent.action.SET_TIMER " +
+        "--ei android.intent.extra.alarm.LENGTH 300 --ez android.intent.extra.alarm.SKIP_UI true"
+    private const val DARK_TOGGLE = "if cmd uimode night | grep -q yes; then cmd uimode night no; else cmd uimode night yes; fi"
+    private const val DARK_ON = "cmd uimode night yes"
+    private const val DARK_OFF = "cmd uimode night no"
+    private const val POWER_SAVING_TOGGLE =
+        """if [ "$(settings get global low_power)" = 1 ]; then cmd power set-mode 0; else cmd power set-mode 1; fi"""
+    private const val POWER_SAVING_ON = "cmd power set-mode 1"
+    private const val GRAYSCALE_TOGGLE =
+        """if [ "$(settings get secure accessibility_display_daltonizer_enabled)" = 1 ]; then """ +
+            "settings put secure accessibility_display_daltonizer_enabled 0; else " +
+            "settings put secure accessibility_display_daltonizer 0; settings put secure accessibility_display_daltonizer_enabled 1; fi"
+    private const val GRAYSCALE_ON =
+        "settings put secure accessibility_display_daltonizer 0; settings put secure accessibility_display_daltonizer_enabled 1"
+    // Map searches stay English: no per-locale query mechanism, and map apps match English terms anywhere.
+    private const val PHARMACY = "geo:0,0?q=pharmacy"
+    private const val EMAIL = "mailto:"
+    private const val GAS = "geo:0,0?q=gas+station"
+    private const val EV_CHARGERS = "geo:0,0?q=ev+charging+station"
+
+    /**
+     * The only commands, URIs and request bodies a recipe may pre-fill into a [ScriptActionCatalog.PRIVILEGED]
+     * action (CLAUDE.md "Privileged actions must stay legible"). Each was reviewed on its own: none
+     * changes a security-relevant setting, disables a protection or calls a network endpoint. HTTP
+     * URLs are never here: the user pastes them. Every recipe carrying one opens the editor first.
+     */
+    val PREFILLED_PAYLOADS: Set<String> = setOf(
+        SCREEN_RECORD, VIDEO_CAMERA, INTERNET_PANEL, ANIMATIONS_FAST, ANIMATIONS_NORMAL, TIMER_5_MIN,
+        DARK_TOGGLE, DARK_ON, DARK_OFF, POWER_SAVING_TOGGLE, POWER_SAVING_ON, GRAYSCALE_TOGGLE, GRAYSCALE_ON,
+        PHARMACY, EMAIL, GAS, EV_CHARGERS,
+        "content=Sent from KeySnap", "Sent from KeySnap", "source=KeySnap", "text=Sent from KeySnap",
     )
 
     private const val MORSE_UNIT_MS = 200L
@@ -291,52 +359,63 @@ object SuggestedShortcuts {
             ),
             category = RecipeCategory.ROUTINES,
         ),
-        // Webhooks: every URL is blank (CLAUDE.md forbids shipping an endpoint the user did not
-        // enter), so each of these opens the editor on it. Bodies are form-encoded because the HTTP
-        // action sets no Content-Type and HttpURLConnection then sends form-urlencoded. Titles say
-        // what the request does, never which service takes it. Code-only notes on what each was
-        // shaped for: an IFTTT Webhooks applet (GET), a Home Assistant automation webhook, a
-        // Discord channel webhook (its "content" field), an ntfy topic, a Google Apps Script web app.
-        SuggestedShortcut(
-            id = "recipe_web_address",
-            titleRes = R.string.recipe_web_address,
-            subtitleRes = R.string.recipe_web_address_subtitle,
-            iconType = "http_request",
-            actions = listOf(webhook("GET")),
-            category = RecipeCategory.WEBHOOK,
+        // Ready-made commands: every privileged payload comes from PREFILLED_PAYLOADS and every one
+        // of these opens the editor (needsEditor), so the literal command is read before it can run.
+        // Key-triggered ones ship with no key; the editor asks for it.
+        command("recipe_screen_record", R.string.recipe_screen_record, R.string.recipe_screen_record_subtitle, shell(SCREEN_RECORD)),
+        command("recipe_video_camera", R.string.recipe_video_camera, R.string.recipe_video_camera_subtitle, shell(VIDEO_CAMERA)),
+        command("recipe_internet_panel", R.string.recipe_internet_panel, R.string.recipe_internet_panel_subtitle, shell(INTERNET_PANEL)),
+        command("recipe_animations_fast", R.string.recipe_animations_fast, R.string.recipe_animations_fast_subtitle, shell(ANIMATIONS_FAST)),
+        command("recipe_animations_normal", R.string.recipe_animations_normal, R.string.recipe_animations_normal_subtitle, shell(ANIMATIONS_NORMAL)),
+        command("recipe_timer_5_min", R.string.recipe_timer_5_min, R.string.recipe_timer_5_min_subtitle, shell(TIMER_5_MIN)),
+        command("recipe_dark_mode_toggle", R.string.recipe_dark_mode_toggle, R.string.recipe_dark_mode_toggle_subtitle, shell(DARK_TOGGLE)),
+        command("recipe_power_saving_toggle", R.string.recipe_power_saving_toggle, R.string.recipe_power_saving_toggle_subtitle, shell(POWER_SAVING_TOGGLE)),
+        command("recipe_grayscale_toggle", R.string.recipe_grayscale_toggle, R.string.recipe_grayscale_toggle_subtitle, shell(GRAYSCALE_TOGGLE)),
+        command("recipe_nearby_pharmacy", R.string.recipe_nearby_pharmacy, R.string.recipe_nearby_pharmacy_subtitle, link(PHARMACY)),
+        command("recipe_write_email", R.string.recipe_write_email, R.string.recipe_write_email_subtitle, link(EMAIL)),
+        command(
+            "recipe_evening_dark", R.string.recipe_evening_dark, R.string.recipe_evening_dark_subtitle, shell(DARK_ON),
+            automation = true, constraints = listOf(atTime("21:00")),
         ),
-        SuggestedShortcut(
-            id = "recipe_smart_home",
-            titleRes = R.string.recipe_smart_home,
-            subtitleRes = R.string.recipe_smart_home_subtitle,
-            iconType = "http_request",
-            actions = listOf(webhook("POST")),
-            category = RecipeCategory.WEBHOOK,
+        command(
+            "recipe_morning_light", R.string.recipe_morning_light, R.string.recipe_morning_light_subtitle, shell(DARK_OFF),
+            automation = true, constraints = listOf(atTime("07:00")),
         ),
-        SuggestedShortcut(
-            id = "recipe_chat_channel",
-            titleRes = R.string.recipe_chat_channel,
-            subtitleRes = R.string.recipe_chat_channel_subtitle,
-            iconType = "http_request",
-            actions = listOf(webhook("POST", "content=Sent from KeySnap")),
-            category = RecipeCategory.WEBHOOK,
+        command(
+            "recipe_low_battery_power_saving", R.string.recipe_low_battery_power_saving,
+            R.string.recipe_low_battery_power_saving_subtitle, shell(POWER_SAVING_ON),
+            automation = true,
+            constraints = listOf(ScriptConstraint("battery_below", mapOf("percent" to "20")), ScriptConstraint("discharging")),
         ),
-        SuggestedShortcut(
-            id = "recipe_phone_notification",
-            titleRes = R.string.recipe_phone_notification,
-            subtitleRes = R.string.recipe_phone_notification_subtitle,
-            iconType = "http_request",
-            actions = listOf(webhook("POST", "Sent from KeySnap")),
-            category = RecipeCategory.WEBHOOK,
+        command(
+            "recipe_bedtime_grayscale", R.string.recipe_bedtime_grayscale, R.string.recipe_bedtime_grayscale_subtitle, shell(GRAYSCALE_ON),
+            automation = true, constraints = listOf(atTime("23:00")),
         ),
-        SuggestedShortcut(
-            id = "recipe_spreadsheet",
-            titleRes = R.string.recipe_spreadsheet,
-            subtitleRes = R.string.recipe_spreadsheet_subtitle,
-            iconType = "http_request",
-            actions = listOf(webhook("POST", "source=KeySnap")),
-            category = RecipeCategory.WEBHOOK,
+        // Key-triggered with an Only-if: no device address, so the editor asks for the car.
+        command(
+            "recipe_car_gas", R.string.recipe_car_gas, R.string.recipe_car_gas_subtitle, link(GAS),
+            constraints = listOf(ScriptConstraint("bluetooth_device_connected")),
         ),
+        command(
+            "recipe_car_chargers", R.string.recipe_car_chargers, R.string.recipe_car_chargers_subtitle, link(EV_CHARGERS),
+            constraints = listOf(ScriptConstraint("bluetooth_device_connected")),
+        ),
+        // Service recipes: every URL is blank (CLAUDE.md forbids shipping an endpoint the user did
+        // not enter), so each opens the editor on it, and the subtitle says what to paste. Bodies are
+        // form-encoded because the HTTP action sets no Content-Type and HttpURLConnection then sends
+        // form-urlencoded. Renamed ones keep their old ids, which users may have built.
+        command("recipe_smart_home", R.string.recipe_smart_home, R.string.recipe_smart_home_subtitle, webhook("POST")),
+        command(
+            "recipe_ha_arrived_home", R.string.recipe_ha_arrived_home, R.string.recipe_ha_arrived_home_subtitle, webhook("POST"),
+            // No SSID: the editor opens on the condition and the subtitle asks for the home network.
+            automation = true, constraints = listOf(ScriptConstraint("connected_to_wifi_network")),
+        ),
+        command("recipe_chat_channel", R.string.recipe_chat_channel, R.string.recipe_chat_channel_subtitle, webhook("POST", "content=Sent from KeySnap")),
+        command("recipe_phone_notification", R.string.recipe_phone_notification, R.string.recipe_phone_notification_subtitle, webhook("POST", "Sent from KeySnap")),
+        command("recipe_spreadsheet", R.string.recipe_spreadsheet, R.string.recipe_spreadsheet_subtitle, webhook("POST", "source=KeySnap")),
+        command("recipe_web_address", R.string.recipe_web_address, R.string.recipe_web_address_subtitle, webhook("GET")),
+        // A sample body keeps it apart from the blank Home Assistant POST (one shape per recipe).
+        command("recipe_web_post", R.string.recipe_web_post, R.string.recipe_web_post_subtitle, webhook("POST", "text=Sent from KeySnap")),
     )
 
     /** Working suggestions first, so the grid never opens on a wall of greyed-out tiles. */

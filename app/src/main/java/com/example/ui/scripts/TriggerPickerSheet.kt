@@ -6,8 +6,10 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -38,7 +40,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.data.PhysicalKeyOption
 import com.example.data.TriggerPressType
-import com.example.data.getReadableKeyName
+import com.example.data.keyDisplayName
 import com.example.ui.components.InnerShape
 import com.example.ui.components.MinTouchTarget
 import androidx.compose.ui.platform.LocalContext
@@ -111,7 +113,7 @@ fun TriggerPickerSheet(
                 if (keyCodes.isEmpty()) {
                     KeyChip(stringResource(R.string.trigger_picker_no_key), filled = false)
                 } else {
-                    keyCodes.forEach { code -> KeyChip(getReadableKeyName(res, code), filled = true) }
+                    keyCodes.forEach { code -> KeyChip(keyDisplayName(res, code), filled = true) }
                 }
             }
 
@@ -195,9 +197,12 @@ fun TriggerPickerSheet(
 @Composable
 private fun PressTypeSegmented(selected: TriggerPressType, onSelect: (TriggerPressType) -> Unit) {
     val colors = MaterialTheme.colorScheme
+    // A label that wraps ("Двойное / нажатие") stays centred, and every segment takes the
+    // tallest one's height so the selected fill never comes out shorter than its neighbours.
     Row(
         Modifier
             .fillMaxWidth()
+            .height(IntrinsicSize.Min)
             .clip(InnerShape)
             .background(colors.surfaceVariant)
             .padding(4.dp),
@@ -208,10 +213,11 @@ private fun PressTypeSegmented(selected: TriggerPressType, onSelect: (TriggerPre
             Box(
                 Modifier
                     .weight(1f)
+                    .fillMaxHeight()
                     .clip(InnerShape)
                     .background(if (isSelected) colors.primary else Color.Transparent)
                     .clickable(onClickLabel = stringResource(type.titleRes), onClick = { onSelect(type) })
-                    .padding(vertical = 9.dp)
+                    .padding(horizontal = 4.dp, vertical = 9.dp)
                     .testTag("press_type_${type.name}"),
                 contentAlignment = Alignment.Center,
             ) {
@@ -219,6 +225,7 @@ private fun PressTypeSegmented(selected: TriggerPressType, onSelect: (TriggerPre
                     stringResource(type.titleRes),
                     style = MaterialTheme.typography.labelMedium,
                     color = if (isSelected) colors.onPrimary else colors.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
                 )
             }
         }
@@ -242,12 +249,14 @@ private fun KeyChip(label: String, filled: Boolean) {
 @Composable
 private fun SavedKeyChip(key: PhysicalKeyOption, enabled: Boolean, onClick: () -> Unit) {
     val colors = MaterialTheme.colorScheme
+    // A key an older build saved under a generated "Key code #…" name must not show that number.
+    val label = keyDisplayName(LocalContext.current.resources, key.keyCode, listOf(key))
     Box(Modifier.heightIn(min = MinTouchTarget), contentAlignment = Alignment.Center) {
         Text(
-            key.shortLabel,
+            label,
             Modifier
                 .clip(InnerShape)
-                .clickable(enabled = enabled, onClickLabel = stringResource(R.string.trigger_picker_use_key, key.shortLabel), onClick = onClick)
+                .clickable(enabled = enabled, onClickLabel = stringResource(R.string.trigger_picker_use_key, label), onClick = onClick)
                 .testTag("trigger_option_${key.keyCode}")
                 .background(colors.surfaceVariant.copy(alpha = .5f))
                 .padding(horizontal = 14.dp, vertical = 8.dp),

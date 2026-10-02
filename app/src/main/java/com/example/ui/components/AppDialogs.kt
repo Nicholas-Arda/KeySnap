@@ -82,7 +82,7 @@ fun NameKeyDialog(code: Int, onDismiss: () -> Unit, onSave: (String) -> Unit) {
     val colors = MaterialTheme.colorScheme
     AlertDialog(onDismissRequest = onDismiss, title = { Text(stringResource(R.string.dialog_new_input_title)) }, text = {
         Column {
-            Text(stringResource(R.string.dialog_new_input_body, code))
+            Text(stringResource(R.string.dialog_new_input_body))
             // Capture is read-only, so the maker's own action on this button still fires alongside ours.
             if (KeyEventMapping.isSynthetic(code)) {
                 Spacer(Modifier.height(8.dp))
@@ -93,7 +93,7 @@ fun NameKeyDialog(code: Int, onDismiss: () -> Unit, onSave: (String) -> Unit) {
                 )
             }
             Spacer(Modifier.height(8.dp))
-            OutlinedTextField(customName, { customName = it }, singleLine = true, placeholder = { Text(stringResource(R.string.dialog_new_input_hint)) })
+            OutlinedTextField(customName, { customName = it }, Modifier.fillMaxWidth(), singleLine = true, placeholder = { Text(stringResource(R.string.dialog_new_input_hint)) })
         }
     }, confirmButton = { Button(onClick = { if (customName.isNotBlank()) onSave(customName.trim()) }) { Text(stringResource(R.string.common_save_caps)) } }, dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.common_cancel_caps)) } }, containerColor = colors.surface, titleContentColor = colors.onSurface, textContentColor = colors.onSurfaceVariant)
 }

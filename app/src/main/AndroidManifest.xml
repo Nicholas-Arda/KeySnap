@@ -154,6 +154,17 @@
             </intent-filter>
         </receiver>
 
+        <!-- Re-evaluates automations at the next "At a time", "Repeat every" or time-window boundary, and
+             re-arms that alarm as an exact one when "Alarms & reminders" is granted. The system sends
+             the grant broadcast, so the receiver stays unexported. -->
+        <receiver
+            android:name="com.example.service.TimeAlarmReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.app.action.SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED" />
+            </intent-filter>
+        </receiver>
+
         <!-- Notification access, a special access the user grants in Settings. Used only by the
              "Notification received" condition and the "Reply to notification" action: text is
              matched in memory for apps a condition names and never stored, logged or sent. -->

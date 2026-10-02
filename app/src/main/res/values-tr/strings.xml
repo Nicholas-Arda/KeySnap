@@ -248,6 +248,8 @@
     <string name="constraint_location_on">Konum açık</string>
     <string name="constraint_location_off">Konum kapalı</string>
     <string name="constraint_day_of_week">Haftanın günü</string>
+    <string name="constraint_at_time">Belli saatte</string>
+    <string name="constraint_interval">Belli aralıkla</string>
     <string name="constraint_calendar_event_active">Takvim etkinliği sürüyor</string>
     <string name="constraint_cooldown">En fazla N dakikada bir</string>
     <string name="constraint_mobile_data_on">Mobil veri açık</string>
@@ -368,6 +370,7 @@
     <string name="key_media_play_pause">Oynat / Duraklat</string>
     <string name="key_wakeup">Uyandır</string>
     <string name="key_alert_slider">Uyarı Anahtarı / Özel Düğme</string>
+    <string name="key_unnamed">Adsız tuş</string>
 
     <!-- Geliştirici Seçenekleri rehberi -->
     <string name="guide_generic">Diğer</string>
@@ -487,6 +490,20 @@
     <string name="field_cooldown_minutes">İki çalışma arası dakika</string>
     <string name="helper_cooldown">Bu kısayol bu kadar dakikadan daha kısa süre önce çalıştıysa atlanır. Telefon ya da KeySnap yeniden başlarsa süre sıfırlanır.</string>
     <string name="constraint_summary_cooldown">En fazla %1$d dakikada bir</string>
+    <string name="field_at_time">Saat</string>
+    <string name="field_interval">Her</string>
+    <string name="interval_unit_seconds">Saniye</string>
+    <string name="interval_unit_minutes">Dakika</string>
+    <string name="interval_unit_hours">Saat</string>
+    <string name="constraint_summary_at_time_every_day">%1$s · her gün</string>
+    <string name="constraint_summary_interval_s">Her %1$d sn</string>
+    <string name="constraint_summary_interval_m">Her %1$d dk</string>
+    <string name="constraint_summary_interval_h">Her %1$d sa</string>
+    <string name="helper_interval_clock">Saate göre çalışır: %1$s</string>
+    <string name="helper_interval_midnight">Gece yarısından sayılır: %1$s</string>
+    <string name="helper_interval_sleep">Telefon uykudayken 10 dakikaya kadar geç çalışabilir.</string>
+    <string name="helper_time_window_start">Otomasyonda, aralık başlayınca bir kez çalışır.</string>
+    <string name="time_needs_exact_alarm">Zamanında çalışması için “Alarmlar ve hatırlatıcılar” gerekir.</string>
     <string name="constraint_config_choose_app">Devam etmek için bir uygulama seçin</string>
     <string name="constraint_needs_location">Android, ağ adını yalnızca Konum iznine sahip uygulamalara gösterir.</string>
     <string name="constraint_grant_permission">İzin ver</string>
@@ -534,7 +551,7 @@
     <!-- İletişim kutuları -->
     <string name="dialog_expert_connected">UZMAN MODU BAĞLANDI</string>
     <string name="dialog_new_input_title">Yeni giriş algılandı</string>
-    <string name="dialog_new_input_body">Kod: %1$d. Bu girişe kısa bir ad verin.</string>
+    <string name="dialog_new_input_body">Bu girişe kısa bir ad verin.</string>
     <string name="dialog_new_input_hint">örn. Kısayol tuşu</string>
 
     <!-- Uygulama seçici -->
@@ -554,7 +571,7 @@
     <string name="trigger_picker_no_key">Henüz tuş yok</string>
     <string name="trigger_picker_saved_key">Ya da kayıtlı bir tuş seçin</string>
     <string name="trigger_picker_listening">Dinleniyor… durdurmak için dokunun</string>
-    <string name="trigger_picker_tap_to_record">Dokunun, sonra fiziksel bir tuşa basın</string>
+    <string name="trigger_picker_tap_to_record">Dokunun, sonra bir tuşa basın veya birkaçını birlikte basılı tutun</string>
     <string name="trigger_picker_save_combo">Tuşu kaydet</string>
     <string name="trigger_picker_use_automation">Bunun yerine otomasyon kullan</string>
     <string name="trigger_picker_use_key">%1$s tuşunu kullan</string>
@@ -570,9 +587,13 @@
     <string name="script_settings_custom_value">Bu kısayol için özel</string>
     <string name="script_settings_consume_input">Özgün girişi tüket</string>
     <string name="script_settings_consume_input_description">Android izin verdiği yerlerde tuşun diğer uygulamalara ulaşmasını engeller.</string>
+    <string name="chord_consume_hint">“Özgün girişi tüket” açıkken bu tuşlardan birine tek başına basınca normal işini yapmaz.</string>
+    <string name="chord_power_hint">Güç tuşu kombinasyonda yalnızca Uzman Modu’nda çalışır ve telefonun kendi Güç işlemi yine olur.</string>
     <string name="script_settings_not_global">Genel değil, yalnızca bu kısayol için</string>
     <string name="script_settings_vibrate">Çalışınca titret</string>
     <string name="script_settings_vibrate_description">Bu kısayol çalıştığında kısa bir titreşim hisset.</string>
+    <string name="script_settings_exact_timing">Tam zamanında çalıştır</string>
+    <string name="script_settings_exact_timing_description">Beklerken durum çubuğunda bir alarm simgesi gösterir.</string>
     <string name="script_settings_reset_to_default">Varsayılana dön (%1$s)</string>
 
     <!-- Kısayol listesi -->
@@ -923,24 +944,62 @@
     <!-- OEM key tip -->
     <string name="oem_key_tip">İpucu: Telefon ayarlarında bu tuşu “Yok” olarak ayarlayın; böylece yalnızca KeySnap tepki verir.</string>
     <!-- Recipe gallery -->
-    <string name="recipe_category_webhook">Webhook\'lar</string>
+    <string name="recipe_category_commands">Hazır komutlar</string>
     <string name="recipe_wifi_vibrate">İşteyken</string>
     <string name="recipe_wifi_vibrate_subtitle">İş WiFi\'ında zil titreşime</string>
     <string name="recipe_wifi_ring">İş Çıkışı</string>
     <string name="recipe_wifi_ring_subtitle">O WiFi\'dan çıkınca zil açılır</string>
     <string name="recipe_morning_dnd_off">Sabah Şarjdan Çıkış</string>
     <string name="recipe_morning_dnd_off_subtitle">06:00 sonrası şarjdan çıkınca DND kapat</string>
-    <string name="recipe_smart_home_subtitle">Otomasyonun webhook adresini yapıştırın</string>
-    <string name="recipe_chat_channel_subtitle">Kanal webhook adresini yapıştırın</string>
-    <string name="recipe_phone_notification_subtitle">Konu (topic) adresinizi yapıştırın</string>
-    <string name="recipe_spreadsheet_subtitle">Web uygulaması adresini yapıştırın</string>
+    <string name="recipe_smart_home_subtitle">Home Assistant webhook adresini yapıştırın</string>
+    <string name="recipe_chat_channel_subtitle">Discord kanal webhook adresini yapıştırın</string>
+    <string name="recipe_phone_notification_subtitle">ntfy konu adresinizi yapıştırın</string>
+    <string name="recipe_spreadsheet_subtitle">Apps Script web uygulaması adresini yapıştırın</string>
     <string name="recipe_category_routines">Gündelik rutinler</string>
     <string name="recipe_web_address">Web Adresi Çağır</string>
-    <string name="recipe_web_address_subtitle">Tuş, yapıştırdığınız adresi çağırır</string>
-    <string name="recipe_smart_home">Akıllı Ev İsteği</string>
-    <string name="recipe_chat_channel">Sohbet Kanalına Gönder</string>
-    <string name="recipe_phone_notification">Telefonuma Bildirim Gönder</string>
-    <string name="recipe_spreadsheet">Tabloya Satır Ekle</string>
+    <string name="recipe_web_address_subtitle">Bu kısayolun çağıracağı adresi yapıştırın</string>
+    <string name="recipe_smart_home">Home Assistant Sahnesi</string>
+    <string name="recipe_chat_channel">Discord: Kanala Gönder</string>
+    <string name="recipe_phone_notification">ntfy: Telefonuma Bildir</string>
+    <string name="recipe_spreadsheet">Google Sheets: Satır Ekle</string>
+    <string name="recipe_web_post">Web Adresine Gönder</string>
+    <string name="recipe_web_post_subtitle">Bu kısayolun göndereceği adresi yapıştırın</string>
+    <string name="recipe_ha_arrived_home">Home Assistant: Eve Geldim</string>
+    <string name="recipe_ha_arrived_home_subtitle">Ev WiFi\'ı + Home Assistant webhook adresi</string>
+    <string name="recipe_screen_record">Ekranı 30 sn Kaydet</string>
+    <string name="recipe_screen_record_subtitle">Klibi Movies klasörüne kaydeder</string>
+    <string name="recipe_video_camera">Video Kamera</string>
+    <string name="recipe_video_camera_subtitle">Kamerayı çekime hazır açar</string>
+    <string name="recipe_internet_panel">Wi-Fi ve Veri Paneli</string>
+    <string name="recipe_internet_panel_subtitle">İnternet panelini açar</string>
+    <string name="recipe_animations_fast">Hızlı Animasyonlar</string>
+    <string name="recipe_animations_fast_subtitle">Animasyonlar yarı sürede</string>
+    <string name="recipe_animations_normal">Normal Animasyonlar</string>
+    <string name="recipe_animations_normal_subtitle">Animasyonlar normal hıza döner</string>
+    <string name="recipe_timer_5_min">5 Dakikalık Zamanlayıcı</string>
+    <string name="recipe_timer_5_min_subtitle">Saat uygulamanızda zamanlayıcı kurar</string>
+    <string name="recipe_dark_mode_toggle">Koyu Tema Aç/Kapat</string>
+    <string name="recipe_dark_mode_toggle_subtitle">Sistem temasını değiştirir</string>
+    <string name="recipe_power_saving_toggle">Güç Tasarrufu Aç/Kapat</string>
+    <string name="recipe_power_saving_toggle_subtitle">Güç tasarrufu modunu değiştirir</string>
+    <string name="recipe_grayscale_toggle">Gri Tonlama Aç/Kapat</string>
+    <string name="recipe_grayscale_toggle_subtitle">Ekran siyah beyaz olur, sonra geri döner</string>
+    <string name="recipe_nearby_pharmacy">Yakındaki Eczane</string>
+    <string name="recipe_nearby_pharmacy_subtitle">Harita uygulamanızda arar</string>
+    <string name="recipe_write_email">E-posta Yaz</string>
+    <string name="recipe_write_email_subtitle">Yeni bir e-posta açar</string>
+    <string name="recipe_evening_dark">Akşam Koyu Tema</string>
+    <string name="recipe_evening_dark_subtitle">21:00\'de koyu tema açılır</string>
+    <string name="recipe_morning_light">Sabah Açık Tema</string>
+    <string name="recipe_morning_light_subtitle">07:00\'de koyu tema kapanır</string>
+    <string name="recipe_low_battery_power_saving" formatted="false">%20\'de Güç Tasarrufu</string>
+    <string name="recipe_low_battery_power_saving_subtitle" formatted="false">Şarjda değilken %20 altı: tasarruf açık</string>
+    <string name="recipe_bedtime_grayscale">Yatmadan Gri Ekran</string>
+    <string name="recipe_bedtime_grayscale_subtitle">23:00\'te ekran siyah beyaz olur</string>
+    <string name="recipe_car_gas">Arabada Yakındaki Benzinlik</string>
+    <string name="recipe_car_gas_subtitle">Arabanızı seçin; harita benzinlik bulur</string>
+    <string name="recipe_car_chargers">Arabada Yakındaki Şarj</string>
+    <string name="recipe_car_chargers_subtitle">Arabanızı seçin; harita şarj istasyonu bulur</string>
     <string name="recipe_send_message">Mesaj Gönder</string>
     <string name="recipe_send_message_subtitle">Sohbeti metniniz yazılmış olarak açar</string>
     <string name="recipe_send_message_note">Bir kişi, gönderilecek uygulamayı ve mesajınızı seçin. Otomatik gönder açıksa mesajı Uzman Modu gönderir; değilse sohbet mesaj yazılmış olarak açılır ve Gönder\'e siz dokunursunuz.</string>

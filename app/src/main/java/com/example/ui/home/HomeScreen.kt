@@ -1,13 +1,14 @@
 package com.example.ui.home
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -46,6 +47,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
@@ -53,9 +55,8 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.toggleableState
 import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.res.stringResource
-import io.github.nicholasarda.keysnap.R
 import androidx.compose.ui.unit.dp
 import com.example.data.EntitlementManager
 import com.example.data.ScriptActionCatalog
@@ -69,6 +70,7 @@ import com.example.ui.components.InnerShape
 import com.example.ui.components.MinTouchTarget
 import com.example.ui.scripts.triggerSummary
 import com.example.ui.theme.ThemeMode
+import io.github.nicholasarda.keysnap.R
 
 @Composable
 fun HomeScreen(
@@ -216,7 +218,8 @@ private fun ProUpsellCard(
                 Text(stringResource(R.string.pro_active_shortcuts), style = MaterialTheme.typography.labelSmall, color = colors.onSurfaceVariant)
                 Text(
                     "$activeCount / $limit",
-                    style = MaterialTheme.typography.labelMedium,
+                    // A count pair reads left to right in every language; RTL would flip it to "2 / 1".
+                    style = MaterialTheme.typography.labelMedium.copy(textDirection = TextDirection.Ltr),
                     color = colors.onSurface,
                 )
             }
@@ -258,9 +261,11 @@ private fun ProUpsellCard(
                 onClick = onOpenProScreen,
                 colors = ButtonDefaults.buttonColors(containerColor = colors.primary, contentColor = colors.onPrimary),
                 modifier = Modifier.weight(1f).heightIn(min = MinTouchTarget).testTag("pro_upsell_purchase_button"),
+                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
             ) {
                 // Play's formatted price only exists once the product query answers; without it the
-                // button keeps its price-less label rather than showing a guessed amount.
+                // button keeps its price-less label rather than showing a guessed amount. No line
+                // cap: in a long language the price must wrap, not be cut to "…".
                 Text(
                     if (proPrice != null) {
                         stringResource(R.string.pro_unlock_with_price, proPrice)
@@ -269,8 +274,6 @@ private fun ProUpsellCard(
                     },
                     style = MaterialTheme.typography.labelMedium,
                     textAlign = TextAlign.Center,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
                 )
             }
         }
@@ -341,15 +344,14 @@ private fun ComparisonRow(label: String, free: String, pro: String) {
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.labelSmall,
             color = colors.onSurfaceVariant,
-            maxLines = 1,
         )
+        // No line cap: "Без ограничений" has to wrap onto a second line, not lose its second word.
         Text(
             pro,
             Modifier.weight(1f),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.labelSmall,
             color = colors.onSurface,
-            maxLines = 1,
         )
     }
 }

@@ -63,6 +63,19 @@ class KeyModelsTest {
     }
 
     @Test
+    fun displayNamePrefersTheUsersNameAndNeverShowsTheCode() {
+        val saved = listOf(
+            PhysicalKeyOption(1765801232, "Side key", "Side key"),
+            PhysicalKeyOption(742, "Key code #742", "Key code #742"),
+            PhysicalKeyOption(KeyEvent.KEYCODE_VOLUME_DOWN, "Ses Kısma", "Ses Kısma"),
+        )
+        assertEquals("Side key", keyDisplayName(res, 1765801232, saved))
+        assertEquals("Unnamed key", keyDisplayName(res, 742, saved))
+        assertEquals("Unnamed key", keyDisplayName(res, 999, saved))
+        assertEquals("Volume Down", keyDisplayName(res, KeyEvent.KEYCODE_VOLUME_DOWN, saved))
+    }
+
+    @Test
     fun unlabelledKeysAreDetectedByCodeNotByName() {
         assertTrue(isUnlabelledKey(999))
         assertFalse(isUnlabelledKey(KeyEvent.KEYCODE_VOLUME_DOWN))

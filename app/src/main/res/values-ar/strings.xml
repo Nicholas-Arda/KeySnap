@@ -249,6 +249,8 @@
     <string name="constraint_location_on">الموقع مفعّل</string>
     <string name="constraint_location_off">الموقع معطّل</string>
     <string name="constraint_day_of_week">يوم الأسبوع</string>
+    <string name="constraint_at_time">في وقت محدد</string>
+    <string name="constraint_interval">التكرار كل</string>
     <string name="constraint_calendar_event_active">حدث في التقويم جارٍ الآن</string>
     <string name="constraint_cooldown">مرة واحدة كل N دقيقة على الأكثر</string>
     <string name="constraint_mobile_data_on">بيانات الجوال مفعّلة</string>
@@ -369,6 +371,7 @@
     <string name="key_media_play_pause">تشغيل / إيقاف مؤقت</string>
     <string name="key_wakeup">تنشيط</string>
     <string name="key_alert_slider">مفتاح التنبيه / المفتاح المخصص</string>
+    <string name="key_unnamed">مفتاح بلا اسم</string>
 
     <!-- Developer Options guides -->
     <string name="guide_generic">أخرى</string>
@@ -482,6 +485,20 @@
     <string name="field_cooldown_minutes">الدقائق بين مرات التشغيل</string>
     <string name="helper_cooldown">يتم تخطيه إذا عمل هذا الاختصار قبل أقل من هذا العدد من الدقائق. يبدأ العد من جديد إذا أُعيد تشغيل الهاتف أو KeySnap.</string>
     <string name="constraint_summary_cooldown">مرة كل %1$d دقيقة على الأكثر</string>
+    <string name="field_at_time">الوقت</string>
+    <string name="field_interval">كل</string>
+    <string name="interval_unit_seconds">ثوانٍ</string>
+    <string name="interval_unit_minutes">دقائق</string>
+    <string name="interval_unit_hours">ساعات</string>
+    <string name="constraint_summary_at_time_every_day">%1$s · كل يوم</string>
+    <string name="constraint_summary_interval_s">كل %1$d ثانية</string>
+    <string name="constraint_summary_interval_m">كل %1$d دقيقة</string>
+    <string name="constraint_summary_interval_h">كل %1$d ساعة</string>
+    <string name="helper_interval_clock">يعمل حسب الساعة: %1$s</string>
+    <string name="helper_interval_midnight">يُحسب من منتصف الليل: %1$s</string>
+    <string name="helper_interval_sleep">قد يعمل متأخرًا حتى 10 دقائق أثناء سكون الهاتف.</string>
+    <string name="helper_time_window_start">في الأتمتة، يعمل مرة واحدة عند بدء الفترة.</string>
+    <string name="time_needs_exact_alarm">يلزم إذن «المنبّهات والتذكيرات» للتشغيل في الموعد.</string>
     <string name="constraint_config_choose_app">اختر تطبيقًا للمتابعة</string>
     <string name="constraint_needs_location">لا يكشف Android اسم الشبكة إلا للتطبيقات التي لديها إذن الموقع.</string>
     <string name="constraint_grant_permission">منح</string>
@@ -537,7 +554,7 @@
     <!-- Dialogs -->
     <string name="dialog_expert_connected">الوضع المتقدم متصل</string>
     <string name="dialog_new_input_title">تم اكتشاف إدخال جديد</string>
-    <string name="dialog_new_input_body">الرمز: %1$d. أعطِ هذا الإدخال اسمًا مختصرًا.</string>
+    <string name="dialog_new_input_body">أعطِ هذا الإدخال اسمًا مختصرًا.</string>
     <string name="dialog_new_input_hint">مثال: مفتاح الاختصار</string>
 
     <!-- App picker -->
@@ -553,7 +570,7 @@
     <string name="trigger_picker_no_key">لا يوجد مفتاح بعد</string>
     <string name="trigger_picker_saved_key">أو اختر مفتاحًا محفوظًا</string>
     <string name="trigger_picker_listening">جارٍ الاستماع… اضغط للإيقاف</string>
-    <string name="trigger_picker_tap_to_record">اضغط، ثم اضغط على مفتاح فعلي</string>
+    <string name="trigger_picker_tap_to_record">اضغط، ثم اضغط على مفتاح، أو امسك عدة مفاتيح معًا</string>
     <string name="trigger_picker_save_combo">حفظ المفتاح</string>
     <string name="trigger_picker_use_automation">استخدم أتمتة بدلًا من ذلك</string>
     <string name="trigger_picker_use_key">استخدام %1$s</string>
@@ -569,9 +586,13 @@
     <string name="script_settings_custom_value">مخصص لهذا الاختصار</string>
     <string name="script_settings_consume_input">استهلاك الإدخال الأصلي</string>
     <string name="script_settings_consume_input_description">منع وصول المفتاح إلى التطبيقات الأخرى حيثما يسمح أندرويد بذلك.</string>
+    <string name="chord_consume_hint">عند تفعيل «استهلاك الإدخال الأصلي»، لن يؤدي الضغط على أحد هذه المفاتيح وحده وظيفته المعتادة.</string>
+    <string name="chord_power_hint">يعمل زر التشغيل ضمن مجموعة مفاتيح في الوضع المتقدم فقط، وسيحدث إجراء الهاتف الخاص بالزر أيضًا.</string>
     <string name="script_settings_not_global">غير عام، خاص بهذا الاختصار فقط</string>
     <string name="script_settings_vibrate">اهتزاز عند التشغيل</string>
     <string name="script_settings_vibrate_description">اهتزاز قصير عند تشغيل هذا الاختصار.</string>
+    <string name="script_settings_exact_timing">التشغيل في الوقت المحدد تمامًا</string>
+    <string name="script_settings_exact_timing_description">يعرض رمز منبّه في شريط الحالة أثناء الانتظار.</string>
     <string name="script_settings_reset_to_default">إعادة التعيين إلى الافتراضي (%1$s)</string>
 
     <!-- Shortcuts list -->
@@ -922,24 +943,62 @@
     <!-- OEM key tip -->
     <string name="oem_key_tip">نصيحة: اضبط هذا الزر على “بلا” في إعدادات هاتفك، ليستجيب له KeySnap وحده.</string>
     <!-- Recipe gallery -->
-    <string name="recipe_category_webhook">Webhooks</string>
+    <string name="recipe_category_commands">أوامر جاهزة</string>
     <string name="recipe_wifi_vibrate">في العمل</string>
     <string name="recipe_wifi_vibrate_subtitle">شبكة Wi-Fi العمل: الرنين إلى اهتزاز</string>
     <string name="recipe_wifi_ring">مغادرة العمل</string>
     <string name="recipe_wifi_ring_subtitle">خارج تلك الشبكة: يعود الرنين</string>
     <string name="recipe_morning_dnd_off">فصل الشاحن صباحًا</string>
     <string name="recipe_morning_dnd_off_subtitle">بعد 06:00 دون شاحن: إيقاف عدم الإزعاج</string>
-    <string name="recipe_smart_home_subtitle">الصق عنوان webhook لأتمتة</string>
-    <string name="recipe_chat_channel_subtitle">الصق عنوان webhook لقناة</string>
-    <string name="recipe_phone_notification_subtitle">الصق عنوان الموضوع الخاص بك</string>
-    <string name="recipe_spreadsheet_subtitle">الصق عنوان تطبيق الويب الخاص بك</string>
+    <string name="recipe_smart_home_subtitle">الصق عنوان webhook من Home Assistant</string>
+    <string name="recipe_chat_channel_subtitle">الصق عنوان webhook لقناة Discord</string>
+    <string name="recipe_phone_notification_subtitle">الصق عنوان موضوع ntfy الخاص بك</string>
+    <string name="recipe_spreadsheet_subtitle">الصق عنوان تطبيق ويب Apps Script</string>
     <string name="recipe_category_routines">روتين يومي</string>
     <string name="recipe_web_address">استدعاء عنوان ويب</string>
-    <string name="recipe_web_address_subtitle">مفتاح يستدعي عنوان URL تلصقه</string>
-    <string name="recipe_smart_home">طلب للمنزل الذكي</string>
-    <string name="recipe_chat_channel">النشر في قناة دردشة</string>
-    <string name="recipe_phone_notification">إرسال إشعار إلى هاتفي</string>
-    <string name="recipe_spreadsheet">إضافة صف إلى جدول بيانات</string>
+    <string name="recipe_web_address_subtitle">الصق العنوان الذي يستدعيه هذا الاختصار</string>
+    <string name="recipe_smart_home">مشهد Home Assistant</string>
+    <string name="recipe_chat_channel">Discord: النشر في قناة</string>
+    <string name="recipe_phone_notification">ntfy: تنبيه هاتفي</string>
+    <string name="recipe_spreadsheet">Google Sheets: إضافة صف</string>
+    <string name="recipe_web_post">إرسال إلى عنوان ويب</string>
+    <string name="recipe_web_post_subtitle">الصق العنوان الذي يرسل إليه هذا الاختصار</string>
+    <string name="recipe_ha_arrived_home">Home Assistant: وصلت إلى المنزل</string>
+    <string name="recipe_ha_arrived_home_subtitle">Wi-Fi المنزل + عنوان webhook من Home Assistant</string>
+    <string name="recipe_screen_record">تسجيل الشاشة 30 ث</string>
+    <string name="recipe_screen_record_subtitle">يحفظ مقطعًا في مجلد Movies</string>
+    <string name="recipe_video_camera">كاميرا الفيديو</string>
+    <string name="recipe_video_camera_subtitle">يفتح الكاميرا جاهزة للتصوير</string>
+    <string name="recipe_internet_panel">لوحة Wi-Fi والبيانات</string>
+    <string name="recipe_internet_panel_subtitle">يعرض لوحة الإنترنت</string>
+    <string name="recipe_animations_fast">رسوم متحركة أسرع</string>
+    <string name="recipe_animations_fast_subtitle">الرسوم المتحركة بنصف المدة</string>
+    <string name="recipe_animations_normal">رسوم متحركة عادية</string>
+    <string name="recipe_animations_normal_subtitle">تعود الرسوم المتحركة لسرعتها العادية</string>
+    <string name="recipe_timer_5_min">مؤقت 5 دقائق</string>
+    <string name="recipe_timer_5_min_subtitle">يبدأ مؤقتًا في تطبيق الساعة</string>
+    <string name="recipe_dark_mode_toggle">تشغيل/إيقاف الوضع الداكن</string>
+    <string name="recipe_dark_mode_toggle_subtitle">يبدّل مظهر النظام</string>
+    <string name="recipe_power_saving_toggle">تشغيل/إيقاف توفير الطاقة</string>
+    <string name="recipe_power_saving_toggle_subtitle">يبدّل وضع توفير الطاقة</string>
+    <string name="recipe_grayscale_toggle">تشغيل/إيقاف التدرج الرمادي</string>
+    <string name="recipe_grayscale_toggle_subtitle">شاشة بالأبيض والأسود ثم تعود</string>
+    <string name="recipe_nearby_pharmacy">صيدلية قريبة</string>
+    <string name="recipe_nearby_pharmacy_subtitle">يبحث في تطبيق الخرائط</string>
+    <string name="recipe_write_email">كتابة بريد إلكتروني</string>
+    <string name="recipe_write_email_subtitle">يفتح رسالة بريد جديدة</string>
+    <string name="recipe_evening_dark">المظهر الداكن مساءً</string>
+    <string name="recipe_evening_dark_subtitle">تشغيل الوضع الداكن في 21:00</string>
+    <string name="recipe_morning_light">المظهر الفاتح صباحًا</string>
+    <string name="recipe_morning_light_subtitle">إيقاف الوضع الداكن في 07:00</string>
+    <string name="recipe_low_battery_power_saving" formatted="false">توفير الطاقة عند 20%</string>
+    <string name="recipe_low_battery_power_saving_subtitle" formatted="false">أقل من 20% دون شاحن: تشغيل التوفير</string>
+    <string name="recipe_bedtime_grayscale">شاشة رمادية قبل النوم</string>
+    <string name="recipe_bedtime_grayscale_subtitle">شاشة بالأبيض والأسود في 23:00</string>
+    <string name="recipe_car_gas">محطات وقود قريبة في السيارة</string>
+    <string name="recipe_car_gas_subtitle">اختر سيارتك؛ تبحث الخريطة عن محطات</string>
+    <string name="recipe_car_chargers">شواحن قريبة في السيارة</string>
+    <string name="recipe_car_chargers_subtitle">اختر سيارتك؛ تبحث الخريطة عن شواحن</string>
     <string name="recipe_send_message">إرسال رسالة</string>
     <string name="recipe_send_message_subtitle">يفتح محادثة ونصك مكتوب فيها</string>
     <string name="recipe_send_message_note">اختر جهة اتصال والتطبيق الذي ترسل به ورسالتك. عند تفعيل الإرسال التلقائي يرسلها الوضع المتقدم؛ وإلا تُفتح الدردشة والرسالة مكتوبة فيها وأنت تنقر على إرسال.</string>

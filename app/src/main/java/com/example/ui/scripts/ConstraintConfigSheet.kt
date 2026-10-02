@@ -14,6 +14,7 @@ import android.provider.Settings
 import android.text.format.DateFormat
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.StringRes
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -29,6 +30,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -42,12 +44,15 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
@@ -55,11 +60,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.data.ConstraintEditorForms
@@ -68,11 +75,13 @@ import com.example.data.InstalledApp
 import com.example.data.ScriptConstraintCatalog
 import com.example.service.CalendarCondition
 import com.example.service.NotificationEventListener
+import com.example.service.TimeRules
 import com.example.ui.components.InnerShape
 import com.example.ui.components.MinTouchTarget
 import com.example.ui.theme.SectionLabel
 import io.github.nicholasarda.keysnap.R
 import java.time.format.TextStyle
+import kotlin.math.roundToInt
 
 /**
  * Collects one constraint's parameters, and reopens for editing from its row in the editor. Every
@@ -142,6 +151,8 @@ fun ConstraintConfigSheet(
                     is EditorField.BluetoothDevicePick -> BluetoothDeviceFieldRow(field, values)
                     is EditorField.TimeRange -> TimeRangeFieldRow(field, values)
                     is EditorField.DaySet -> DaySetFieldRow(field, values)
+                    is EditorField.Time -> TimeFieldRows(listOf(field.key to field.labelRes), values)
+                    is EditorField.Interval -> IntervalFieldRow(field, values)
                     // Never declared by a constraint form; [ConstraintEditorFormTest] guards this.
                     is EditorField.KeyCodePick, is EditorField.Point, is EditorField.TwoPoints, is EditorField.ImagePick,
                     is EditorField.ContactPick, is EditorField.Switch -> Unit
@@ -154,7 +165,13 @@ fun ConstraintConfigSheet(
                 }
                 Spacer(Modifier.width(8.dp))
                 Button(
-                    onClick = { onConfirm(values.toMap().filterValues { it.isNotBlank() }) },
+                    onClick = {
+                        // Typed values clamp on Save; focus loss rarely fires in touch mode.
+                        form.fields.filterIsInstance<EditorField.Interval>().forEach { f ->
+                            values[f.valueKey] = ConstraintEditorForms.clampInterval(values[f.valueKey].orEmpty(), values[f.unitKey].orEmpty())
+                        }
+                        onConfirm(values.toMap().filterValues { it.isNotBlank() })
+                    },
                     enabled = complete,
                     shape = InnerShape,
                     modifier = Modifier.testTag("constraint_config_confirm"),
@@ -209,20 +226,10 @@ private fun PermissionHints(constraintType: String, ssid: String, context: Conte
                     launcher.launch(Manifest.permission.READ_CALENDAR)
                 }
             }
-            val alarms = remember { context.getSystemService(AlarmManager::class.java) }
-            var exact by remember { mutableStateOf(alarms == null || CalendarCondition.canScheduleExact(alarms)) }
-            val exactLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-                exact = alarms == null || CalendarCondition.canScheduleExact(alarms)
-            }
-            // Only reachable on Android 12+: canScheduleExact is always true below it.
-            if (!exact && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                PermissionHint(stringResource(R.string.constraint_needs_exact_alarm)) {
-                    exactLauncher.launch(
-                        Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM, Uri.parse("package:${context.packageName}")),
-                    )
-                }
-            }
+            ExactAlarmHint(R.string.constraint_needs_exact_alarm, context)
         }
+        constraintType == ScriptConstraintCatalog.AT_TIME || constraintType == ScriptConstraintCatalog.INTERVAL ->
+            ExactAlarmHint(R.string.time_needs_exact_alarm, context)
         constraintType.startsWith("app_") -> {
             var granted by remember { mutableStateOf(hasUsageAccess(context)) }
             val launcher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -245,6 +252,23 @@ private fun PermissionHints(constraintType: String, ssid: String, context: Conte
                     launcher.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION))
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun ExactAlarmHint(@StringRes message: Int, context: Context) {
+    val alarms = remember { context.getSystemService(AlarmManager::class.java) }
+    var exact by remember { mutableStateOf(alarms == null || CalendarCondition.canScheduleExact(alarms)) }
+    val exactLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        exact = alarms == null || CalendarCondition.canScheduleExact(alarms)
+    }
+    // Only reachable on Android 12+: canScheduleExact is always true below it.
+    if (!exact && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        PermissionHint(stringResource(message)) {
+            exactLauncher.launch(
+                Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM, Uri.parse("package:${context.packageName}")),
+            )
         }
     }
 }
@@ -346,16 +370,21 @@ internal fun BluetoothDeviceFieldRow(field: EditorField.BluetoothDevicePick, val
     }
 }
 
+@Composable
+internal fun TimeRangeFieldRow(field: EditorField.TimeRange, values: MutableMap<String, String>) =
+    TimeFieldRows(listOf(field.startKey to field.startLabelRes, field.endKey to field.endLabelRes), values)
+
+/** One tappable row per key-to-label entry, each opening the same clock picker. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun TimeRangeFieldRow(field: EditorField.TimeRange, values: MutableMap<String, String>) {
+private fun TimeFieldRows(entries: List<Pair<String, Int>>, values: MutableMap<String, String>) {
     val colors = MaterialTheme.colorScheme
     val context = LocalContext.current
     val locale = LocalConfiguration.current.locales[0]
     // Which key the open picker writes to; null while closed.
     var editingKey by remember { mutableStateOf<String?>(null) }
     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-        listOf(field.startKey to field.startLabelRes, field.endKey to field.endLabelRes).forEach { (key, labelRes) ->
+        entries.forEach { (key, labelRes) ->
             val value = values[key].orEmpty()
             Row(
                 Modifier
@@ -388,6 +417,53 @@ internal fun TimeRangeFieldRow(field: EditorField.TimeRange, values: MutableMap<
             dismissButton = { TextButton(onClick = { editingKey = null }) { Text(stringResource(R.string.common_cancel)) } },
             text = { TimePicker(state) },
         )
+    }
+}
+
+private val INTERVAL_UNITS = listOf(
+    "s" to R.string.interval_unit_seconds,
+    "m" to R.string.interval_unit_minutes,
+    "h" to R.string.interval_unit_hours,
+)
+
+/** Unit chips, then a slider and a number field over that unit's range, kept in sync through [values]. */
+@Composable
+private fun IntervalFieldRow(field: EditorField.Interval, values: MutableMap<String, String>) {
+    val colors = MaterialTheme.colorScheme
+    val unit = values[field.unitKey].orEmpty()
+    val every = values[field.valueKey].orEmpty()
+    val range = ConstraintEditorForms.intervalRange(unit) ?: ConstraintEditorForms.intervalRange("m")!!
+    val clamp = { values[field.valueKey] = ConstraintEditorForms.clampInterval(values[field.valueKey].orEmpty(), values[field.unitKey].orEmpty()) }
+    // 59 minutes switched to hours becomes 24, never 59 hours.
+    LaunchedEffect(unit) { clamp() }
+    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        ChoiceFieldRow(remember(field) { EditorField.Choice(field.unitKey, field.labelRes, INTERVAL_UNITS) }, values)
+        Slider(
+            value = (every.toIntOrNull() ?: range.first).coerceIn(range).toFloat(),
+            onValueChange = { values[field.valueKey] = it.roundToInt().toString() },
+            valueRange = range.first.toFloat()..range.last.toFloat(),
+            steps = 0,
+            modifier = Modifier.fillMaxWidth().testTag("config_interval_slider"),
+        )
+        OutlinedTextField(
+            value = every,
+            onValueChange = { input -> values[field.valueKey] = input.filter { it.isDigit() }.take(2) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .onFocusChanged { if (!it.isFocused) clamp() }
+                .testTag("config_field_every"),
+            label = { Text(stringResource(INTERVAL_UNITS.firstOrNull { it.first == unit }?.second ?: field.labelRes)) },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            supportingText = { Text("${range.first}–${range.last}") },
+        )
+        ConstraintEditorForms.clockExample(every, unit)?.let { ticks ->
+            val helper = if (ConstraintEditorForms.intervalDividesClock(every, unit)) R.string.helper_interval_clock else R.string.helper_interval_midnight
+            Text(stringResource(helper, ticks), style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant)
+        }
+        if ((TimeRules.intervalSeconds(every, unit) ?: Long.MAX_VALUE) < 600) {
+            Text(stringResource(R.string.helper_interval_sleep), style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant)
+        }
     }
 }
 

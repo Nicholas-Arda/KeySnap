@@ -2,6 +2,7 @@ package com.example.ui.theme
 
 import android.app.Activity
 import android.content.Context
+import android.icu.util.ULocale
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.material3.MaterialTheme
@@ -12,11 +13,15 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
+import java.util.Locale
 
 /** Cycle order mirrors the on-screen sequence: Light, Dark, Sepia. */
 enum class ThemeMode {
@@ -386,7 +391,28 @@ fun MyApplicationTheme(themeMode: ThemeMode, content: @Composable () -> Unit) {
             WindowCompat.getInsetsController(window, view).isAppearanceLightNavigationBars = isLightTheme
         }
     }
+    val locale = LocalConfiguration.current.locales[0]
+    val typography = remember(locale) { typographyFor(locale) }
     CompositionLocalProvider(LocalGlass provides animatedGlass(themeMode)) {
-        MaterialTheme(colorScheme = animatedScheme, typography = Typography, content = content)
+        MaterialTheme(colorScheme = animatedScheme, typography = typography, content = content)
     }
+}
+
+/** Scripts the type scale's tracking was tuned for; Android letter-spaces these as asked. */
+private val TrackedScripts = setOf("Latn", "Cyrl", "Grek")
+
+/**
+ * Android does not letter-space joined or complex scripts (Arabic, Devanagari, …), so for them the
+ * titles' negative tracking changes nothing on screen — but it does feed the width a title measures
+ * itself at, and a title sized to its own width came out a sliver short and dropped its last glyph
+ * or word onto a second line ("الإعدادا / ت", "मेरे / शॉर्टकट"). Those languages get the same scale
+ * with the negative tracking cleared, which fixes every title at once.
+ */
+private fun typographyFor(locale: Locale): androidx.compose.material3.Typography {
+    if (ULocale.addLikelySubtags(ULocale.forLocale(locale)).script in TrackedScripts) return Typography
+    return Typography.copy(
+        titleLarge = Typography.titleLarge.copy(letterSpacing = 0.sp),
+        titleMedium = Typography.titleMedium.copy(letterSpacing = 0.sp),
+        titleSmall = Typography.titleSmall.copy(letterSpacing = 0.sp),
+    )
 }

@@ -63,6 +63,23 @@ fun getReadableKeyName(resources: Resources, keyCode: Int): String =
     LABELLED_KEY_NAMES[keyCode]?.let(resources::getString) ?: "$UNLABELLED_KEY_PREFIX$keyCode"
 
 /**
+ * What the UI calls [keyCode]: Android's label, or for a key Android has no label for, the name the
+ * user gave it. Never the raw code — a ten-digit number means nothing to anyone — so a key with no
+ * name, or with only a generated placeholder saved, reads "Unnamed key". [getReadableKeyName] stays
+ * for what is persisted and logged. A labelled key ignores its saved name, which was stored in
+ * whatever language the app ran in when the key was recorded.
+ */
+fun keyDisplayName(
+    resources: Resources,
+    keyCode: Int,
+    savedKeys: List<PhysicalKeyOption> = KeyMappingRepository.currentSavedKeys(),
+): String {
+    LABELLED_KEY_NAMES[keyCode]?.let { return resources.getString(it) }
+    return savedKeys.firstOrNull { it.keyCode == keyCode && !isGeneratedKeyName(it.displayName) }?.displayName
+        ?: resources.getString(R.string.key_unnamed)
+}
+
+/**
  * True when Android gives this code no meaningful label, so the app should ask the user to name it
  * rather than saving a placeholder. Checking the code beats sniffing the returned string.
  */
@@ -124,6 +141,9 @@ class KeyMappingRepository internal constructor(private val prefs: SharedPrefere
                     context.applicationContext.getSharedPreferences("arda_mapper_prefs", Context.MODE_PRIVATE),
                 ).also { instance = it }
             }
+
+        /** The saved keys if the repository exists yet; [keyDisplayName] reads names from here. */
+        internal fun currentSavedKeys(): List<PhysicalKeyOption> = instance?.savedKeys?.value.orEmpty()
     }
 
     private val _config = MutableStateFlow(loadConfig())

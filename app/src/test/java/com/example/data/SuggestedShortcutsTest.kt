@@ -53,7 +53,11 @@ class SuggestedShortcutsTest {
                 assertNotNull("${suggestion.id}: unknown constraint ${constraint.type}", ScriptConstraintCatalog.descriptor(constraint.type))
             }
         }
-        SuggestedShortcuts.all.filterNot { it.automation }.forEach { assertTrue(it.id, it.constraints.isEmpty()) }
+        // A key recipe may carry an Only-if (the car ones), but never one only an automation can use.
+        SuggestedShortcuts.all.filterNot { it.automation }.flatMap { r -> r.constraints.map { r.id to it.type } }.forEach { (id, type) ->
+            assertNotNull("$id: unknown constraint $type", ScriptConstraintCatalog.descriptor(type))
+            assertFalse("$id: $type needs an automation", type in ScriptConstraintCatalog.AUTOMATION_ONLY)
+        }
     }
 
     @Test fun everySuggestionHasAtLeastOneAction() {
@@ -114,18 +118,24 @@ class SuggestedShortcutsTest {
     }
 
     /**
-     * CLAUDE.md: no suggested script may call an endpoint the user did not type or pre-fill anything
-     * privileged. A blank HTTP request (webhooks), a blank link or a blank message is the only
-     * privileged step a recipe may carry.
+     * CLAUDE.md "Privileged actions must stay legible": a recipe pre-fills a privileged action only
+     * from the reviewed allow-list, never with an HTTP endpoint, links only to non-web URIs, and
+     * always shows the command in the editor before it can run.
      */
-    @Test fun noRecipeShipsAnEndpointOrAPrivilegedPayload() {
-        SuggestedShortcuts.all.forEach { recipe ->
-            recipe.actions.filter { it.type in ScriptActionCatalog.PRIVILEGED }.forEach { action ->
-                assertTrue("${recipe.id}: only a blank HTTP request, link or message may ship", action.type in setOf("http_request", "open_url", "send_message"))
-                assertTrue("${recipe.id} ships a URL", action.params["url"].isNullOrBlank())
-                assertTrue("${recipe.id} ships a recipient", action.params["number"].isNullOrBlank())
-                assertTrue("${recipe.id} ships a message", action.params["text"].isNullOrBlank())
+    @Test fun privilegedPayloadsComeFromTheAllowListAndOpenTheEditor() {
+        val privileged = SuggestedShortcuts.all.flatMap { r -> r.actions.filter { it.type in ScriptActionCatalog.PRIVILEGED }.map { r to it } }
+        assertTrue("the package ships privileged recipes", privileged.isNotEmpty())
+        privileged.forEach { (recipe, action) ->
+            // method is a choice, not a payload.
+            action.params.filterKeys { it != "method" }.values.filter { it.isNotBlank() }.forEach { payload ->
+                assertTrue("${recipe.id} pre-fills an unlisted payload: $payload", payload in SuggestedShortcuts.PREFILLED_PAYLOADS)
             }
+            if (action.type == "http_request") assertTrue("${recipe.id} ships a URL", action.params["url"].isNullOrBlank())
+            if (action.type == "open_url") {
+                val url = action.params["url"].orEmpty()
+                assertTrue("${recipe.id} links to $url", url.isBlank() || listOf("geo:", "mailto:", "tel:", "content:").any(url::startsWith))
+            }
+            assertTrue("${recipe.id} carries ${action.type} but skips the editor", recipe.needsEditor)
         }
     }
 
@@ -137,18 +147,27 @@ class SuggestedShortcutsTest {
 
     @Test fun keyRecipesWithEverythingFilledStayOneTap() {
         SuggestedShortcuts.all
-            .filter { !it.automation && it.actions.none { a -> ActionEditorForms.missingRequired(a).isNotEmpty() } }
+            .filter { !it.automation && it.actions.none { a -> a.type in ScriptActionCatalog.PRIVILEGED || ActionEditorForms.missingRequired(a).isNotEmpty() } }
             .forEach { assertFalse(it.id, it.needsEditor) }
         assertFalse(SuggestedShortcuts.all.first { it.id == "suggestion_flashlight" }.needsEditor)
     }
 
-    @Test fun webhookShelfHoldsFiveBlankHttpRequests() {
-        val webhooks = SuggestedShortcuts.all.filter { it.category == RecipeCategory.WEBHOOK }
-        assertEquals(5, webhooks.size)
-        webhooks.forEach {
-            assertEquals(it.id, "http_request", it.actions.single().type)
+    /** Renamed service recipes keep their ids: a user may already have built one. */
+    @Test fun commandsShelfHoldsThePackage() {
+        val shelf = SuggestedShortcuts.all.filter { it.category == RecipeCategory.COMMANDS }
+        assertEquals(24, shelf.size)
+        shelf.forEach {
+            assertEquals(it.id, 1, it.actions.size)
+            assertTrue(it.id, it.actions.single().type in setOf("shell_command", "open_url", "http_request"))
             assertTrue(it.id, it.needsEditor)
         }
+        assertEquals(
+            setOf(
+                "recipe_web_address", "recipe_smart_home", "recipe_ha_arrived_home", "recipe_chat_channel",
+                "recipe_phone_notification", "recipe_spreadsheet", "recipe_web_post",
+            ),
+            shelf.filter { it.actions.single().type == "http_request" }.map { it.id }.toSet(),
+        )
     }
 
     @Test fun routinesShelfHoldsTheEverydayAutomations() {

@@ -26,6 +26,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.Hyphens
 import androidx.compose.ui.res.stringResource
 import io.github.nicholasarda.keysnap.R
 import androidx.compose.ui.unit.dp
@@ -68,7 +69,9 @@ fun MillisecondSliderSetting(
                 Text(
                     title,
                     color = if (enabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
-                    style = MaterialTheme.typography.bodyLarge,
+                    // Android only breaks a hyphenated compound ("Doppeldruck-Zeitfenster") at its
+                    // hyphen when hyphenation is on; without it the word split at its last letters.
+                    style = MaterialTheme.typography.bodyLarge.copy(hyphens = Hyphens.Auto),
                     fontWeight = FontWeight.Medium,
                 )
                 Text(

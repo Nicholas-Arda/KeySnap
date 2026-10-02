@@ -18,10 +18,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.selection.toggleable
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandLess
@@ -48,17 +48,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.pluralStringResource
-import androidx.compose.ui.res.stringResource
-import io.github.nicholasarda.keysnap.R
 import androidx.compose.ui.unit.dp
-import io.github.nicholasarda.keysnap.BuildConfig
+import androidx.core.text.BidiFormatter
+import androidx.core.text.TextDirectionHeuristicsCompat
 import com.example.data.AppLocale
 import com.example.data.KeyMappingConfig
 import com.example.data.LiveKeyEvent
@@ -73,6 +73,8 @@ import com.example.ui.theme.MonoLabel
 import com.example.ui.theme.SectionLabel
 import com.example.ui.theme.ThemeMode
 import com.example.ui.theme.ThemeToggleIcon
+import io.github.nicholasarda.keysnap.BuildConfig
+import io.github.nicholasarda.keysnap.R
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -327,7 +329,7 @@ private fun AboutPanel(onEraseAllData: () -> Unit) {
         )
 
         Text(
-            stringResource(R.string.settings_version, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE),
+            stringResource(R.string.settings_version, BidiFormatter.getInstance().unicodeWrap(BuildConfig.VERSION_NAME, TextDirectionHeuristicsCompat.LTR), BuildConfig.VERSION_CODE),
             style = MonoLabel,
             color = colors.onSurfaceVariant,
             modifier = Modifier.padding(top = 4.dp),

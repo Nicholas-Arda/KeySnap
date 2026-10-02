@@ -28,7 +28,6 @@ import android.util.Log
 import com.example.data.ScriptConstraint
 import com.example.data.ScriptConstraintCatalog
 import java.time.DayOfWeek
-import java.time.LocalDate
 import java.time.LocalTime
 
 /** Answers whether a single [ScriptConstraint] currently holds, so a script only fires while every constraint is satisfied. */
@@ -92,8 +91,8 @@ class AndroidConstraintEvaluator(private val appContext: Context) : ConstraintEv
             "battery_below" -> comparePercent(p["percent"], batteryPercent(), above = false)
             "location_on" -> isLocationEnabled() ?: true
             "location_off" -> isLocationEnabled()?.not() ?: true
-            "time" -> isWithinTimeWindow(p["start"], p["end"], LocalTime.now())
-            "day_of_week" -> isDayInSet(p["days"], LocalDate.now().dayOfWeek)
+            "time" -> isWithinTimeWindow(p["start"], p["end"], TimeSchedule.now().toLocalTime())
+            "day_of_week" -> isDayInSet(p["days"], TimeSchedule.now().dayOfWeek)
             "mobile_data_on" -> isMobileDataOn()
             "mobile_data_off" -> !isMobileDataOn()
             "airplane_mode_on" -> isAirplaneModeOn()
@@ -111,6 +110,7 @@ class AndroidConstraintEvaluator(private val appContext: Context) : ConstraintEv
             ScriptConstraintCatalog.NOTIFICATION_RECEIVED ->
                 NotificationMatches.isRecent(constraint, SystemClock.elapsedRealtime())
             ScriptConstraintCatalog.RSS_NEW_ITEM -> RssPolling.isPulsing(p["url"])
+            ScriptConstraintCatalog.AT_TIME, ScriptConstraintCatalog.INTERVAL -> TimeSchedule.isPulsing(constraint)
             ScriptConstraintCatalog.CALENDAR_EVENT_ACTIVE -> CalendarCondition.isActive(appContext, p["calendar"], p["title"])
             // A constraint type that isn't AVAILABLE never blocks a script.
             else -> true

@@ -29,11 +29,15 @@ import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.collapse
 import androidx.compose.ui.semantics.expand
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.ui.theme.LocalGlass
 import com.example.ui.theme.SectionLabel
@@ -50,6 +54,17 @@ val InnerShape = RoundedCornerShape(12.dp)
 
 /** Android's minimum comfortable touch target. Any row or pill that takes a tap should reach it. */
 val MinTouchTarget = 48.dp
+
+/**
+ * The width [text] takes on one line in [style], at the current font scale. For a layout that must
+ * choose between a row and a stack before it measures: the label decides, not the screen size, so
+ * a long translation or a large font gets the stack and a short label keeps the row.
+ */
+@Composable
+fun singleLineWidth(text: String, style: TextStyle): Dp {
+    val measurer = rememberTextMeasurer()
+    return with(LocalDensity.current) { measurer.measure(text, style).size.width.toDp() }
+}
 
 /**
  * Fades out the trailing edge of a horizontally scrolling row while [more] of it is off-screen. A

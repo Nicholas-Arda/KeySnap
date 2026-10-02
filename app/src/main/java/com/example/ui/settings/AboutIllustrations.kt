@@ -7,13 +7,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -23,6 +24,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,11 +40,13 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.example.ui.components.InnerShape
 import com.example.ui.home.loopPosition
@@ -62,7 +66,10 @@ import kotlin.math.roundToInt
  */
 private val TileShape = RoundedCornerShape(8.dp)
 
-/** The frame every About illustration sits in — the same well the setup tutorial's use. */
+/**
+ * The frame every About illustration sits in — the same well the setup tutorial's use. [height] is
+ * a minimum: drawn content fills it with `matchParentSize`, text content may grow it.
+ */
 @Composable
 private fun IllustrationBox(
     height: Dp,
@@ -73,7 +80,7 @@ private fun IllustrationBox(
     Box(
         Modifier
             .fillMaxWidth()
-            .height(height)
+            .heightIn(min = height)
             .clip(InnerShape)
             .background(colors.surfaceVariant)
             .border(1.dp, colors.outline.copy(alpha = .55f), InnerShape)
@@ -183,22 +190,25 @@ internal fun OpenSourceIllustration(reduced: Boolean) {
     val t = loopPosition(reduced)
     val lines = stringArrayResource(R.array.about_source_listing)
     IllustrationBox(112.dp) {
-        Column(
-            Modifier.fillMaxSize().padding(horizontal = 14.dp, vertical = 12.dp),
-            verticalArrangement = Arrangement.spacedBy(5.dp),
-        ) {
-            lines.forEachIndexed { index, line ->
-                val from = .04f + index * .15f
-                Text(
-                    line,
-                    Modifier.drawWithContent {
-                        val typed = ramp(t.value, from, from + .11f) * (1f - ramp(t.value, .93f, .97f))
-                        clipRect(right = size.width * typed) { this@drawWithContent.drawContent() }
-                    },
-                    style = MonoLabel,
-                    color = if (index == 0) colors.primary else colors.onSurfaceVariant,
-                    maxLines = 1,
-                )
+        // A terminal reads left to right in every language, and wraps a line it cannot fit; the
+        // box grows with it, so no line is cut and the last one is never pushed out.
+        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+            Column(
+                Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 12.dp),
+                verticalArrangement = Arrangement.spacedBy(5.dp),
+            ) {
+                lines.forEachIndexed { index, line ->
+                    val from = .04f + index * .15f
+                    Text(
+                        line,
+                        Modifier.drawWithContent {
+                            val typed = ramp(t.value, from, from + .11f) * (1f - ramp(t.value, .93f, .97f))
+                            clipRect(right = size.width * typed) { this@drawWithContent.drawContent() }
+                        },
+                        style = MonoLabel,
+                        color = if (index == 0) colors.primary else colors.onSurfaceVariant,
+                    )
+                }
             }
         }
     }
@@ -218,7 +228,7 @@ internal fun AccessibilityScopeIllustration(reduced: Boolean) {
     val t = loopPosition(reduced)
     IllustrationBox(112.dp) {
         Row(
-            Modifier.fillMaxSize().padding(horizontal = 10.dp),
+            Modifier.matchParentSize().padding(horizontal = 10.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -226,7 +236,8 @@ internal fun AccessibilityScopeIllustration(reduced: Boolean) {
                 val isSettings = index == 2
                 Column(
                     Modifier
-                        .width(if (isSettings) 92.dp else 38.dp)
+                        // The Settings tile grows with its label rather than cutting "Einstellungen".
+                        .then(if (isSettings) Modifier.widthIn(min = 92.dp) else Modifier.width(38.dp))
                         .height(54.dp)
                         .clip(TileShape)
                         .background(if (isSettings) colors.primary.copy(alpha = .14f) else colors.surface)
@@ -255,9 +266,11 @@ internal fun AccessibilityScopeIllustration(reduced: Boolean) {
                         tint = if (isSettings) colors.primary else colors.onSurfaceVariant.copy(alpha = .5f),
                     )
                     if (isSettings) {
+                        // Not monospace: a translated word, and the mono face has no Arabic or
+                        // Devanagari glyphs.
                         Text(
                             stringResource(R.string.settings_title),
-                            style = MonoLabel,
+                            style = MaterialTheme.typography.labelSmall,
                             color = colors.primary,
                             maxLines = 1,
                         )
@@ -266,7 +279,7 @@ internal fun AccessibilityScopeIllustration(reduced: Boolean) {
             }
         }
         Box(
-            Modifier.fillMaxSize().drawBehind {
+            Modifier.matchParentSize().drawBehind {
                 val x = -60.dp.toPx() + (size.width + 120.dp.toPx()) * ramp(t.value, 0f, .55f)
                 drawRect(
                     brush = Brush.horizontalGradient(
@@ -296,7 +309,7 @@ internal fun BridgeOffIllustration(reduced: Boolean) {
     val t = loopPosition(reduced)
     IllustrationBox(112.dp, stringResource(R.string.about_illo_bridge_caption)) {
         Column(
-            Modifier.fillMaxSize().padding(bottom = 10.dp),
+            Modifier.matchParentSize().padding(bottom = 10.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp, Alignment.CenterVertically),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {

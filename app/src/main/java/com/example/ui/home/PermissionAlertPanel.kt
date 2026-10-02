@@ -42,6 +42,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -285,6 +287,7 @@ private class SetupStep(
     val onClick: () -> Unit,
 )
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun SetupStepRow(number: Int, step: SetupStep, state: SetupStepState, isLast: Boolean, reduced: Boolean) {
     val colors = MaterialTheme.colorScheme
@@ -366,9 +369,10 @@ private fun SetupStepRow(number: Int, step: SetupStep, state: SetupStepState, is
                 val whyState = stringResource(
                     if (whyOpen) R.string.home_setup_why_expanded else R.string.home_setup_why_collapsed,
                 )
-                Row(
+                // Flows rather than squeezes: where the button's label leaves no room, "Why?" drops
+                // under it instead of being crushed to a letter per line.
+                FlowRow(
                     Modifier.padding(top = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
                 ) {
                     Button(

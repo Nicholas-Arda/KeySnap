@@ -1,7 +1,8 @@
 package com.example.ui.home
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -41,7 +42,9 @@ fun KeySnapLockup(themeMode: ThemeMode, modifier: Modifier = Modifier) {
     Image(
         painter = rememberVectorPainter(lockup),
         contentDescription = stringResource(R.string.app_name_display),
-        modifier = modifier.height(33.5.dp),
+        // Full size where there is room, scaled down whole where the header is tight, so the badges
+        // beside it never draw over the word.
+        modifier = modifier.widthIn(max = 141.8.dp).aspectRatio(141.8f / 33.5f),
     )
 }
 

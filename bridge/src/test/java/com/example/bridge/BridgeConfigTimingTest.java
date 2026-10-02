@@ -1,6 +1,8 @@
 package com.example.bridge;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -110,5 +112,37 @@ public class BridgeConfigTimingTest {
     public void differentKeyIsUnaffected() throws Exception {
         BridgeConfig config = read(script("a", true, trigger(24, BridgeConfig.PRESS_DOUBLE, 450L, null)));
         assertEquals(DEFAULT_DOUBLE, config.doublePressWindowFor(25));
+    }
+
+    private JSONObject chordTrigger(String pressType, Long doubleOverride, Long longOverride, int... keyCodes) throws Exception {
+        JSONArray keys = new JSONArray();
+        for (int k : keyCodes) {
+            keys.put(k);
+        }
+        JSONObject t = new JSONObject().put("keyCodes", keys).put("pressType", pressType);
+        if (doubleOverride != null) t.put("doublePressWindowMs", doubleOverride.longValue());
+        if (longOverride != null) t.put("longPressThresholdMs", longOverride.longValue());
+        return t;
+    }
+
+    @Test
+    public void chordTimingOverrideResolvesLikeTheApp() throws Exception {
+        // Same case as ScriptTimingTest.chordTimingOverrideAppliesToTheChordIdOnly in :app.
+        BridgeConfig config = read(script("chord", true, chordTrigger(BridgeConfig.PRESS_DOUBLE, 450L, null, 25, 24)));
+        int id = ChordTracker.chordId(java.util.Arrays.asList(24, 25));
+        assertEquals(450L, config.doublePressWindowFor(id));
+        assertEquals(DEFAULT_DOUBLE, config.doublePressWindowFor(24));
+    }
+
+    @Test
+    public void chordScriptsMatchByChordIdAndMembersAreMapped() throws Exception {
+        BridgeConfig config = read(script("chord", true, chordTrigger(BridgeConfig.PRESS_SINGLE, null, null, 25, 24)));
+        int id = ChordTracker.chordId(java.util.Arrays.asList(24, 25));
+        assertEquals(1, config.scriptsFor(id, BridgeConfig.PRESS_SINGLE).size());
+        assertEquals(0, config.scriptsFor(24, BridgeConfig.PRESS_SINGLE).size());
+        assertTrue(config.isMappedKey(24));
+        assertTrue(config.isMappedKey(25));
+        assertFalse(config.isMappedKey(26));
+        assertEquals(java.util.Collections.singletonList(java.util.Arrays.asList(24, 25)), config.chords());
     }
 }

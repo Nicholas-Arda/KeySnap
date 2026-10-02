@@ -52,6 +52,7 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
     /** Script id -> elapsedRealtime of its last run, for the cooldown constraint. */
     private final Map<String, Long> lastRunByScript = new ConcurrentHashMap<>();
     private PressTimingMachine pressTiming;
+    private final ChordTracker chords = new ChordTracker();
     private EventServer server;
     private GeteventReader reader;
 
@@ -190,7 +191,11 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
                 BridgeLog.w("Control port/token changed in config; a bridge restart is required to apply it");
             }
             config = updated;
-            pressTiming.reset();
+            // Same lock as onKeyEvent, so a reset never lands between a chord decision and its commands.
+            synchronized (chords) {
+                chords.reset();
+                pressTiming.reset();
+            }
             BridgeLog.i("Config reloaded: scripts=" + updated.scripts.size()
                     + " globallyEnabled=" + updated.globallyEnabled);
         } catch (Exception e) {
@@ -215,8 +220,17 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
         if (!mapped) {
             return;
         }
-        pressTiming.onEvent(key.androidKeyCode, down, now,
-                current.doublePressWindowFor(key.androidKeyCode), current.longPressThresholdFor(key.androidKeyCode));
+        // Lock order: chords, then pressTiming's own lock. onGesture never takes chords.
+        synchronized (chords) {
+            for (ChordTracker.Command command : chords.onEvent(key.androidKeyCode, down, now, current.chords())) {
+                if (command.kind == ChordTracker.CANCEL) {
+                    pressTiming.cancel(command.keyCode);
+                } else {
+                    pressTiming.onEvent(command.keyCode, command.down, now,
+                            current.doublePressWindowFor(command.keyCode), current.longPressThresholdFor(command.keyCode));
+                }
+            }
+        }
     }
 
     @Override

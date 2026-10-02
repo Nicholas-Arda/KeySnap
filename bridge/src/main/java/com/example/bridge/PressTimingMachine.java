@@ -61,6 +61,16 @@ public final class PressTimingMachine {
         }
     }
 
+    /** Drops one key's pending press, e.g. when it turns out to be part of a chord. Mirrors KeyPressScheduler.cancel. */
+    public void cancel(int keyCode) {
+        synchronized (lock) {
+            KeyState state = states.get(keyCode);
+            if (state != null) {
+                clearStateLocked(keyCode, state);
+            }
+        }
+    }
+
     private void onDown(int keyCode, long eventTime, long doubleWindowMs, long longThresholdMs) {
         boolean triggerSingle = false;
         boolean triggerDouble = false;

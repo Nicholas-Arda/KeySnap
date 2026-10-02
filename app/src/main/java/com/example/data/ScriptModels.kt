@@ -19,13 +19,15 @@ data class ShortcutScript(
     /** Null defers to the global [KeyMappingConfig] default; see [resolveVibrateForScript]. */
     val vibrateOnTrigger: Boolean? = null,
     val hapticDurationMs: Long? = null,
+    /** A time automation's wake-up is an alarm clock (status-bar icon) that OEMs don't defer; see TimeSchedule.plan. */
+    val exactTiming: Boolean = true,
 )
 
 /** No key and not an automation: it runs only from a home-screen widget or a Quick Settings tile. */
 val ShortcutScript.isSurfaceOnly: Boolean get() = triggers.isEmpty() && !automation
 
 data class ScriptTrigger(
-    /** A list intentionally models future simultaneous/sequential key combinations. */
+    /** One key, or several held together (a chord, see ChordTracker). */
     val keyCodes: List<Int>,
     val pressType: TriggerPressType,
     /** Null defers to the global [KeyMappingConfig] default; see [resolveTimingForKey]. */
@@ -64,6 +66,8 @@ internal data class PersistedShortcutScript(
     val consumeOriginalEvent: Boolean? = null,
     val vibrateOnTrigger: Boolean? = null,
     val hapticDurationMs: Long? = null,
+    /** Absent in stores written before it existed: on, like a new shortcut. */
+    val exactTiming: Boolean = true,
 )
 
 @JsonClass(generateAdapter = true)
@@ -92,6 +96,7 @@ internal fun ShortcutScript.toPersisted() = PersistedShortcutScript(
     consumeOriginalEvent = consumeOriginalEvent,
     vibrateOnTrigger = vibrateOnTrigger,
     hapticDurationMs = hapticDurationMs,
+    exactTiming = exactTiming,
 )
 
 /** Dropped from the catalog because it ran the identical `input keyevent` the bridge runs for
@@ -140,7 +145,7 @@ internal fun PersistedShortcutScript.toDomain(): ShortcutScript? {
         id, name.ifBlank { "Unnamed script" }, enabled, validTriggers, validActions,
         validConstraints + migratedEventTriggers,
         automation || eventTriggers.isNotEmpty(),
-        consumeOriginalEvent, vibrateOnTrigger, hapticDurationMs,
+        consumeOriginalEvent, vibrateOnTrigger, hapticDurationMs, exactTiming,
     )
 }
 

@@ -248,6 +248,8 @@
     <string name="constraint_location_on">लोकेशन चालू है</string>
     <string name="constraint_location_off">लोकेशन बंद है</string>
     <string name="constraint_day_of_week">हफ़्ते का दिन</string>
+    <string name="constraint_at_time">तय समय पर</string>
+    <string name="constraint_interval">हर इतने समय में दोहराएं</string>
     <string name="constraint_calendar_event_active">कैलेंडर इवेंट चल रहा है</string>
     <string name="constraint_cooldown">हर N मिनट में ज़्यादा से ज़्यादा एक बार</string>
     <string name="constraint_mobile_data_on">मोबाइल डेटा चालू है</string>
@@ -368,6 +370,7 @@
     <string name="key_media_play_pause">प्ले / पॉज़</string>
     <string name="key_wakeup">वेक</string>
     <string name="key_alert_slider">अलर्ट स्लाइडर / कस्टम स्विच</string>
+    <string name="key_unnamed">बिना नाम का बटन</string>
 
     <!-- डेवलपर विकल्प गाइड -->
     <string name="guide_generic">अन्य</string>
@@ -481,6 +484,20 @@
     <string name="field_cooldown_minutes">दो रन के बीच मिनट</string>
     <string name="helper_cooldown">अगर यह शॉर्टकट इतने मिनट से कम पहले चला था, तो इसे छोड़ दिया जाता है। फ़ोन या KeySnap रीस्टार्ट होने पर गिनती फिर से शुरू होती है।</string>
     <string name="constraint_summary_cooldown">ज़्यादा से ज़्यादा हर %1$d मिनट में</string>
+    <string name="field_at_time">समय</string>
+    <string name="field_interval">हर</string>
+    <string name="interval_unit_seconds">सेकंड</string>
+    <string name="interval_unit_minutes">मिनट</string>
+    <string name="interval_unit_hours">घंटे</string>
+    <string name="constraint_summary_at_time_every_day">%1$s · हर दिन</string>
+    <string name="constraint_summary_interval_s">हर %1$d सेकंड</string>
+    <string name="constraint_summary_interval_m">हर %1$d मिनट</string>
+    <string name="constraint_summary_interval_h">हर %1$d घंटे</string>
+    <string name="helper_interval_clock">घड़ी के हिसाब से चलता है: %1$s</string>
+    <string name="helper_interval_midnight">आधी रात से गिना जाता है: %1$s</string>
+    <string name="helper_interval_sleep">फ़ोन स्लीप में हो तो 10 मिनट तक देर से चल सकता है।</string>
+    <string name="helper_time_window_start">ऑटोमेशन में, समय-सीमा शुरू होने पर एक बार चलता है।</string>
+    <string name="time_needs_exact_alarm">समय पर चलने के लिए “अलार्म और रिमाइंडर” चाहिए।</string>
     <string name="constraint_config_choose_app">जारी रखने के लिए कोई ऐप चुनें</string>
     <string name="constraint_needs_location">Android नेटवर्क का नाम केवल लोकेशन अनुमति वाले ऐप्स को दिखाता है।</string>
     <string name="constraint_grant_permission">अनुमति दें</string>
@@ -536,7 +553,7 @@
     <!-- डायलॉग -->
     <string name="dialog_expert_connected">उन्नत मोड कनेक्ट हो गया</string>
     <string name="dialog_new_input_title">नया इनपुट मिला</string>
-    <string name="dialog_new_input_body">कोड: %1$d। इस इनपुट को एक छोटा नाम दें।</string>
+    <string name="dialog_new_input_body">इस इनपुट को एक छोटा नाम दें।</string>
     <string name="dialog_new_input_hint">जैसे: शॉर्टकट बटन</string>
 
     <!-- ऐप चयनकर्ता -->
@@ -556,7 +573,7 @@
     <string name="trigger_picker_no_key">अभी कोई बटन नहीं</string>
     <string name="trigger_picker_saved_key">या एक सेव किया हुआ बटन चुनें</string>
     <string name="trigger_picker_listening">सुन रहा है… रोकने के लिए टैप करें</string>
-    <string name="trigger_picker_tap_to_record">टैप करें, फिर एक भौतिक बटन दबाएं</string>
+    <string name="trigger_picker_tap_to_record">टैप करें, फिर एक बटन दबाएं, या कई बटन एक साथ दबाकर रखें</string>
     <string name="trigger_picker_save_combo">बटन सेव करें</string>
     <string name="trigger_picker_use_automation">इसके बजाय एक ऑटोमेशन इस्तेमाल करें</string>
     <string name="trigger_picker_use_key">%1$s इस्तेमाल करें</string>
@@ -572,9 +589,13 @@
     <string name="script_settings_custom_value">इस शॉर्टकट के लिए कस्टम</string>
     <string name="script_settings_consume_input">ओरिजिनल इनपुट रोकें</string>
     <string name="script_settings_consume_input_description">जहां Android अनुमति देता है, वहां बटन को अन्य ऐप तक पहुंचने से रोकें।</string>
+    <string name="chord_consume_hint">“ओरिजिनल इनपुट रोकें” चालू होने पर इनमें से कोई एक बटन अकेले दबाने पर अपना सामान्य काम नहीं करेगा।</string>
+    <string name="chord_power_hint">पावर बटन किसी कॉम्बिनेशन में सिर्फ़ उन्नत मोड में काम करता है, और फ़ोन का अपना पावर काम भी होगा।</string>
     <string name="script_settings_not_global">ग्लोबल नहीं, सिर्फ़ इस शॉर्टकट के लिए</string>
     <string name="script_settings_vibrate">चलने पर वाइब्रेट करें</string>
     <string name="script_settings_vibrate_description">जब यह शॉर्टकट चलेगा तो एक छोटा कंपन महसूस होगा।</string>
+    <string name="script_settings_exact_timing">ठीक समय पर चलाएं</string>
+    <string name="script_settings_exact_timing_description">इंतज़ार के दौरान स्टेटस बार में अलार्म आइकन दिखता है।</string>
     <string name="script_settings_reset_to_default">डिफ़ॉल्ट पर रीसेट करें (%1$s)</string>
 
     <!-- शॉर्टकट सूची -->
@@ -925,24 +946,62 @@
     <!-- OEM key tip -->
     <string name="oem_key_tip">टिप: फ़ोन की सेटिंग में इस बटन को “कोई नहीं” पर सेट करें, ताकि सिर्फ़ KeySnap इस पर प्रतिक्रिया दे।</string>
     <!-- Recipe gallery -->
-    <string name="recipe_category_webhook">Webhooks</string>
+    <string name="recipe_category_commands">तैयार कमांड</string>
     <string name="recipe_wifi_vibrate">काम पर</string>
     <string name="recipe_wifi_vibrate_subtitle">ऑफ़िस WiFi पर रिंगर वाइब्रेट</string>
     <string name="recipe_wifi_ring">काम से निकलते समय</string>
     <string name="recipe_wifi_ring_subtitle">उस WiFi से हटते ही रिंगर चालू</string>
     <string name="recipe_morning_dnd_off">सुबह चार्जर से हटाना</string>
     <string name="recipe_morning_dnd_off_subtitle">06:00 के बाद चार्जर हटाने पर DND बंद</string>
-    <string name="recipe_smart_home_subtitle">किसी ऑटोमेशन का webhook URL पेस्ट करें</string>
-    <string name="recipe_chat_channel_subtitle">किसी चैनल का webhook URL पेस्ट करें</string>
-    <string name="recipe_phone_notification_subtitle">अपने टॉपिक का URL पेस्ट करें</string>
-    <string name="recipe_spreadsheet_subtitle">अपने वेब ऐप का URL पेस्ट करें</string>
+    <string name="recipe_smart_home_subtitle">Home Assistant का webhook URL पेस्ट करें</string>
+    <string name="recipe_chat_channel_subtitle">Discord चैनल का webhook URL पेस्ट करें</string>
+    <string name="recipe_phone_notification_subtitle">अपने ntfy टॉपिक का URL पेस्ट करें</string>
+    <string name="recipe_spreadsheet_subtitle">Apps Script वेब ऐप का URL पेस्ट करें</string>
     <string name="recipe_category_routines">रोज़मर्रा के रूटीन</string>
     <string name="recipe_web_address">वेब पता कॉल करें</string>
-    <string name="recipe_web_address_subtitle">एक बटन आपका पेस्ट किया URL कॉल करता है</string>
-    <string name="recipe_smart_home">स्मार्ट होम अनुरोध</string>
-    <string name="recipe_chat_channel">चैट चैनल में पोस्ट करें</string>
-    <string name="recipe_phone_notification">मेरे फ़ोन पर सूचना भेजें</string>
-    <string name="recipe_spreadsheet">स्प्रेडशीट में पंक्ति जोड़ें</string>
+    <string name="recipe_web_address_subtitle">वह पता पेस्ट करें जिसे यह शॉर्टकट कॉल करे</string>
+    <string name="recipe_smart_home">Home Assistant सीन</string>
+    <string name="recipe_chat_channel">Discord: चैनल में पोस्ट करें</string>
+    <string name="recipe_phone_notification">ntfy: मेरे फ़ोन को सूचित करें</string>
+    <string name="recipe_spreadsheet">Google Sheets: पंक्ति जोड़ें</string>
+    <string name="recipe_web_post">वेब पते पर भेजें</string>
+    <string name="recipe_web_post_subtitle">वह पता पेस्ट करें जहाँ यह शॉर्टकट भेजे</string>
+    <string name="recipe_ha_arrived_home">Home Assistant: घर पहुँचा</string>
+    <string name="recipe_ha_arrived_home_subtitle">घर का WiFi + Home Assistant webhook URL</string>
+    <string name="recipe_screen_record">30 सेकंड स्क्रीन रिकॉर्ड</string>
+    <string name="recipe_screen_record_subtitle">क्लिप को Movies फ़ोल्डर में सेव करता है</string>
+    <string name="recipe_video_camera">वीडियो कैमरा</string>
+    <string name="recipe_video_camera_subtitle">कैमरा वीडियो के लिए तैयार खोलता है</string>
+    <string name="recipe_internet_panel">WiFi और डेटा पैनल</string>
+    <string name="recipe_internet_panel_subtitle">इंटरनेट पैनल दिखाता है</string>
+    <string name="recipe_animations_fast">तेज़ एनिमेशन</string>
+    <string name="recipe_animations_fast_subtitle">एनिमेशन आधे समय में</string>
+    <string name="recipe_animations_normal">सामान्य एनिमेशन</string>
+    <string name="recipe_animations_normal_subtitle">एनिमेशन फिर सामान्य गति पर</string>
+    <string name="recipe_timer_5_min">5 मिनट का टाइमर</string>
+    <string name="recipe_timer_5_min_subtitle">घड़ी ऐप में टाइमर शुरू करता है</string>
+    <string name="recipe_dark_mode_toggle">डार्क मोड चालू/बंद</string>
+    <string name="recipe_dark_mode_toggle_subtitle">सिस्टम थीम बदलता है</string>
+    <string name="recipe_power_saving_toggle">पावर सेविंग चालू/बंद</string>
+    <string name="recipe_power_saving_toggle_subtitle">पावर सेविंग मोड बदलता है</string>
+    <string name="recipe_grayscale_toggle">ग्रेस्केल चालू/बंद</string>
+    <string name="recipe_grayscale_toggle_subtitle">स्क्रीन ब्लैक एंड व्हाइट, फिर वापस</string>
+    <string name="recipe_nearby_pharmacy">पास की फ़ार्मेसी</string>
+    <string name="recipe_nearby_pharmacy_subtitle">आपके मैप ऐप में खोजता है</string>
+    <string name="recipe_write_email">ईमेल लिखें</string>
+    <string name="recipe_write_email_subtitle">नया ईमेल खोलता है</string>
+    <string name="recipe_evening_dark">शाम को डार्क थीम</string>
+    <string name="recipe_evening_dark_subtitle">21:00 बजे डार्क मोड चालू</string>
+    <string name="recipe_morning_light">सुबह लाइट थीम</string>
+    <string name="recipe_morning_light_subtitle">07:00 बजे डार्क मोड बंद</string>
+    <string name="recipe_low_battery_power_saving" formatted="false">20% पर पावर सेविंग</string>
+    <string name="recipe_low_battery_power_saving_subtitle" formatted="false">चार्जर के बिना 20% से नीचे: सेविंग चालू</string>
+    <string name="recipe_bedtime_grayscale">सोते समय ग्रेस्केल</string>
+    <string name="recipe_bedtime_grayscale_subtitle">23:00 बजे स्क्रीन ब्लैक एंड व्हाइट</string>
+    <string name="recipe_car_gas">कार में पास का पेट्रोल पंप</string>
+    <string name="recipe_car_gas_subtitle">अपनी कार चुनें; मैप पंप ढूँढता है</string>
+    <string name="recipe_car_chargers">कार में पास के चार्जर</string>
+    <string name="recipe_car_chargers_subtitle">अपनी कार चुनें; मैप EV चार्जर ढूँढता है</string>
     <string name="recipe_send_message">मैसेज भेजें</string>
     <string name="recipe_send_message_subtitle">आपके लिखे टेक्स्ट के साथ चैट खोलता है</string>
     <string name="recipe_send_message_note">एक संपर्क, भेजने वाला ऐप और अपना मैसेज चुनें। “अपने आप भेजें” चालू हो तो उन्नत मोड उसे भेजता है; नहीं तो चैट मैसेज लिखे हुए खुलती है और भेजें पर आप टैप करते हैं।</string>

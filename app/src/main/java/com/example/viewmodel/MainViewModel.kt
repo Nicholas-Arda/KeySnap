@@ -41,7 +41,7 @@ import com.example.data.ImportedShortcut
 import com.example.data.ShortcutShare
 import com.example.data.SuggestedShortcut
 import com.example.data.TriggerPressType
-import com.example.data.getReadableKeyName
+import com.example.data.keyDisplayName
 import com.example.data.isSurfaceOnly
 import com.example.service.CalendarCondition
 import com.example.service.FlashlightController
@@ -97,6 +97,7 @@ data class ScriptDraft(
     val consumeOriginalEvent: Boolean? = null,
     val vibrateOnTrigger: Boolean? = null,
     val hapticDurationMs: Long? = null,
+    val exactTiming: Boolean = true,
     /** The recipe's own instructions and limits, kept on screen while the user fills it in. */
     @StringRes val noteRes: Int? = null,
     /** The user deleted the cooldown in this editing session, so [withReplyCooldown] leaves it out. Never persisted. */
@@ -236,8 +237,9 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
             actions = suggestion.actions,
             constraints = suggestion.constraints,
             isNew = true,
-            // An automation shows its condition, and a webhook recipe needs its URL, so both open
-            // the editor instead of saving the moment a key is chosen.
+            // An automation shows its condition, a webhook recipe needs its URL, and a ready-made
+            // command must be read before it runs, so all open the editor instead of saving the
+            // moment a key is chosen.
             fromSuggestion = !suggestion.needsEditor,
             noteRes = suggestion.noteRes,
         )
@@ -258,6 +260,7 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
             consumeOriginalEvent = script.consumeOriginalEvent,
             vibrateOnTrigger = script.vibrateOnTrigger,
             hapticDurationMs = script.hapticDurationMs,
+            exactTiming = script.exactTiming,
         )
     }
 
@@ -318,11 +321,13 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
         ScreenPointPicker.consumeResult()
     }
 
-    fun draftSetTriggerKey(keyCode: Int) {
+    fun draftSetTriggerKey(keyCode: Int) = draftSetTriggerKeys(listOf(keyCode))
+
+    fun draftSetTriggerKeys(keyCodes: List<Int>) {
         updateDraft { draft ->
             val pressType = draft.trigger?.pressType ?: draft.pressType
             draft.copy(
-                trigger = ScriptTrigger(listOf(keyCode), pressType, draft.trigger?.doublePressWindowMs, draft.trigger?.longPressThresholdMs),
+                trigger = ScriptTrigger(keyCodes, pressType, draft.trigger?.doublePressWindowMs, draft.trigger?.longPressThresholdMs),
                 automation = false,
                 surfaceOnly = false,
             )
@@ -365,6 +370,8 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
     fun draftSetVibrateOnTrigger(vibrate: Boolean?) = updateDraft { it.copy(vibrateOnTrigger = vibrate) }
 
     fun draftSetHapticDurationMs(value: Long?) = updateDraft { it.copy(hapticDurationMs = value) }
+
+    fun draftSetExactTiming(exact: Boolean) = updateDraft { it.copy(exactTiming = exact) }
 
     fun draftAddConstraint(type: String, params: Map<String, String> = emptyMap()) {
         if (!ScriptConstraintCatalog.isAvailable(type)) return
@@ -534,7 +541,7 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
             _editorMessage.value = res.getString(R.string.editor_needs_trigger)
             return
         }
-        // The bridge never sees notifications, feeds or the calendar, so a key shortcut gated on one would behave
+        // The bridge never sees notifications, feeds, the calendar or the time pulses, so a key shortcut gated on one would behave
         // differently in Advanced Mode. The picker hides them there; a draft switched from
         // Automation to a key with one still attached is stopped here.
         val automationOnly = draft.constraints.firstOrNull { it.type in ScriptConstraintCatalog.AUTOMATION_ONLY }
@@ -560,6 +567,7 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
                 consumeOriginalEvent = draft.consumeOriginalEvent,
                 vibrateOnTrigger = draft.vibrateOnTrigger,
                 hapticDurationMs = draft.hapticDurationMs,
+                exactTiming = draft.exactTiming,
             ),
         )
         // The editor is closed by the time any of these is set, so they all go to the shell snackbar:
@@ -576,7 +584,7 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
                 res.getString(
                     R.string.suggestion_saved,
                     name,
-                    getReadableKeyName(res, draft.trigger.keyCodes.first()),
+                    draft.trigger.keyCodes.joinToString("+") { keyDisplayName(res, it, savedKeys.value) },
                 ),
             )
         } else {
@@ -766,7 +774,13 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
         }
 
         viewModelScope.launch {
-            HardwareKeyTriggerCoordinator.recordedKey.collect { keyCode ->
+            HardwareKeyTriggerCoordinator.recordedKey.collect { keyCodes ->
+                // A chord is not added to saved keys and does not touch the legacy single target key.
+                if (keyCodes.size != 1) {
+                    if (_editingScript.value != null) draftSetTriggerKeys(keyCodes)
+                    return@collect
+                }
+                val keyCode = keyCodes.single()
                 val existing = savedKeys.value.find { it.keyCode == keyCode }
                 if (existing != null) {
                     applyRecordedKey(keyCode)

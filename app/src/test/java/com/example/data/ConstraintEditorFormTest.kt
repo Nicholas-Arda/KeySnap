@@ -22,7 +22,7 @@ class ConstraintEditorFormTest {
         "connected_to_wifi_network", "disconnected_from_wifi_network",
         "bluetooth_device_connected", "bluetooth_device_disconnected",
         "battery_above", "battery_below", "time", "day_of_week", "cooldown",
-        "notification_received", "rss_new_item", "calendar_event_active",
+        "notification_received", "rss_new_item", "calendar_event_active", "at_time", "interval",
     )
 
     @Test fun aCalendarConditionNeedsNothingAndSummarisesItsFilters() {
@@ -131,5 +131,77 @@ class ConstraintEditorFormTest {
         assertTrue(ConstraintEditorForms.summarize(ScriptConstraint("time", mapOf("start" to "22:00", "end" to "07:00")), res)!!.isNotBlank())
         assertTrue(ConstraintEditorForms.summarize(ScriptConstraint("day_of_week", mapOf("days" to "mon,tue")), res)!!.contains(", "))
         assertTrue(ConstraintEditorForms.summarize(ScriptConstraint("cooldown", mapOf("minutes" to "15")), res)!!.contains("15"))
+    }
+
+    @Test
+    fun atTimeDefaultsAndSummary() {
+        val form = ConstraintEditorForms.form(ScriptConstraintCatalog.AT_TIME)!!
+        assertEquals(mapOf("time" to "07:00"), ConstraintEditorForms.defaults(form))
+        assertTrue(ConstraintEditorForms.isComplete(ScriptConstraintCatalog.AT_TIME, mapOf("time" to "07:00", "days" to "")))
+        val time = ConstraintEditorForms.formatTime("07:00", res.configuration.locales[0])
+        assertEquals("$time · every day", ConstraintEditorForms.summarize(ScriptConstraint("at_time", mapOf("time" to "07:00")), res))
+        val days = ConstraintEditorForms.summarize(ScriptConstraint("day_of_week", mapOf("days" to "mon,fri")), res)
+        assertEquals("$time · $days", ConstraintEditorForms.summarize(ScriptConstraint("at_time", mapOf("time" to "07:00", "days" to "mon,fri")), res))
+    }
+
+    @Test
+    fun intervalDefaultsToThirtyMinutes() {
+        val form = ConstraintEditorForms.form(ScriptConstraintCatalog.INTERVAL)!!
+        assertEquals(mapOf("every" to "30", "unit" to "m"), ConstraintEditorForms.defaults(form))
+        assertTrue(ConstraintEditorForms.isComplete(ScriptConstraintCatalog.INTERVAL, ConstraintEditorForms.defaults(form)))
+    }
+
+    @Test
+    fun unitChangeClampsValue() {
+        assertEquals("24", ConstraintEditorForms.clampInterval("59", "h"))
+        assertEquals("5", ConstraintEditorForms.clampInterval("2", "s"))
+        assertEquals("30", ConstraintEditorForms.clampInterval("30", "m"))
+        assertEquals("1", ConstraintEditorForms.clampInterval("", "m"))
+    }
+
+    @Test
+    fun intervalIncompleteWhenMalformed() {
+        assertFalse(ConstraintEditorForms.isComplete(ScriptConstraintCatalog.INTERVAL, mapOf("every" to "x", "unit" to "m")))
+        assertFalse(ConstraintEditorForms.isComplete(ScriptConstraintCatalog.INTERVAL, mapOf("every" to "30", "unit" to "d")))
+        // Out of range is still complete: Save stores the clamped value instead.
+        assertTrue(ConstraintEditorForms.isComplete(ScriptConstraintCatalog.INTERVAL, mapOf("every" to "2", "unit" to "s")))
+    }
+
+    @Test
+    fun saveStoresTheClampedInterval() {
+        assertEquals("59", ConstraintEditorForms.clampInterval("99", "m"))
+        assertEquals("5", ConstraintEditorForms.clampInterval(" 2 ", "s"))
+        assertEquals("1", ConstraintEditorForms.clampInterval("0", "h"))
+    }
+
+    @Test
+    fun intervalSummaries() {
+        fun summary(every: String, unit: String) = ConstraintEditorForms.summarize(ScriptConstraint("interval", mapOf("every" to every, "unit" to unit)), res)
+        assertEquals("Every 30 min", summary("30", "m"))
+        assertEquals("Every 10 s", summary("10", "s"))
+        assertEquals("Every 2 h", summary("2", "h"))
+    }
+
+    @Test
+    fun clockExampleShowsTheFirstTicks() {
+        // Dividing periods: ticks within the minute, hour or day.
+        assertEquals(":00, :15, :30, :45", ConstraintEditorForms.clockExample("15", "m"))
+        assertEquals(":00, :10, :20, :30, …", ConstraintEditorForms.clockExample("10", "s"))
+        assertEquals("00:00, 06:00, 12:00, 18:00", ConstraintEditorForms.clockExample("6", "h"))
+        assertEquals("00:00, 12:00", ConstraintEditorForms.clockExample("12", "h"))
+        assertTrue(ConstraintEditorForms.intervalDividesClock("15", "m"))
+        // Non-dividing periods: clock times counted from midnight.
+        assertEquals("00:00, 00:07, 00:14, 00:21, …", ConstraintEditorForms.clockExample("7", "m"))
+        assertEquals("00:00, 07:00, 14:00, 21:00", ConstraintEditorForms.clockExample("7", "h"))
+        assertEquals("00:00:00, 00:00:07, 00:00:14, 00:00:21, …", ConstraintEditorForms.clockExample("7", "s"))
+        assertFalse(ConstraintEditorForms.intervalDividesClock("7", "m"))
+        // Malformed.
+        assertNull(ConstraintEditorForms.clockExample("x", "m"))
+        assertNull(ConstraintEditorForms.clockExample("15", "d"))
+    }
+
+    @Test
+    fun theTimeWindowExplainsItsAutomationEdge() {
+        assertEquals(R.string.helper_time_window_start, ConstraintEditorForms.form("time")!!.helperRes)
     }
 }

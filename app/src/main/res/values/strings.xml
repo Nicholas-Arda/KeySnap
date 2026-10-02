@@ -255,6 +255,8 @@
     <string name="constraint_location_on">Location is on</string>
     <string name="constraint_location_off">Location is off</string>
     <string name="constraint_day_of_week">Day of the week</string>
+    <string name="constraint_at_time">At a time</string>
+    <string name="constraint_interval">Repeat every</string>
     <string name="constraint_calendar_event_active">Calendar event in progress</string>
     <string name="constraint_cooldown">At most once every N minutes</string>
     <string name="constraint_mobile_data_on">Mobile data is on</string>
@@ -388,6 +390,7 @@
     <string name="key_media_play_pause">Play / Pause</string>
     <string name="key_wakeup">Wake</string>
     <string name="key_alert_slider">Alert Slider / Custom Switch</string>
+    <string name="key_unnamed">Unnamed key</string>
 
     <!-- Developer Options guides -->
     <string name="guide_generic">Other</string>
@@ -506,6 +509,21 @@
     <string name="field_cooldown_minutes">Minutes between runs</string>
     <string name="helper_cooldown">Skipped if this shortcut ran less than this many minutes ago. The timer starts over if the phone or KeySnap restarts.</string>
     <string name="constraint_summary_cooldown">At most every %1$d min</string>
+    <string name="field_at_time">Time</string>
+    <string name="field_interval">Every</string>
+    <string name="interval_unit_seconds">Seconds</string>
+    <string name="interval_unit_minutes">Minutes</string>
+    <string name="interval_unit_hours">Hours</string>
+    <string name="constraint_summary_at_time_every_day">%1$s · every day</string>
+    <string name="constraint_summary_at_time_days" translatable="false">%1$s · %2$s</string>
+    <string name="constraint_summary_interval_s">Every %1$d s</string>
+    <string name="constraint_summary_interval_m">Every %1$d min</string>
+    <string name="constraint_summary_interval_h">Every %1$d h</string>
+    <string name="helper_interval_clock">Runs on the clock: %1$s</string>
+    <string name="helper_interval_midnight">Counts from midnight: %1$s</string>
+    <string name="helper_interval_sleep">May run up to 10 min late while the phone sleeps.</string>
+    <string name="helper_time_window_start">On an automation, runs once when the window starts.</string>
+    <string name="time_needs_exact_alarm">Needs “Alarms &amp; reminders” to run on time.</string>
     <string name="constraint_config_choose_app">Choose an app to continue</string>
     <string name="constraint_needs_location">Android only reveals the network name to apps with the Location permission.</string>
     <string name="constraint_grant_permission">Grant</string>
@@ -565,7 +583,7 @@
     <!-- Dialogs -->
     <string name="dialog_expert_connected">ADVANCED MODE CONNECTED</string>
     <string name="dialog_new_input_title">New input detected</string>
-    <string name="dialog_new_input_body">Code: %1$d. Give this input a short name.</string>
+    <string name="dialog_new_input_body">Give this input a short name.</string>
     <string name="dialog_new_input_hint">e.g. Shortcut key</string>
 
     <!-- App picker -->
@@ -581,7 +599,7 @@
     <string name="trigger_picker_no_key">No key yet</string>
     <string name="trigger_picker_saved_key">Or pick a saved key</string>
     <string name="trigger_picker_listening">Listening… tap to stop</string>
-    <string name="trigger_picker_tap_to_record">Tap, then press a physical key</string>
+    <string name="trigger_picker_tap_to_record">Tap, then press a key, or hold several together</string>
     <string name="trigger_picker_save_combo">Save key</string>
     <string name="trigger_picker_use_automation">Use an automation instead</string>
     <string name="trigger_picker_use_key">Use %1$s</string>
@@ -597,10 +615,14 @@
     <string name="script_settings_custom_value">Custom for this shortcut</string>
     <string name="script_settings_consume_input">Consume original input</string>
     <string name="script_settings_consume_input_description">Prevent the key from reaching other apps where Android allows it.</string>
+    <string name="chord_consume_hint">With “Consume original input” on, pressing one of these keys alone won’t do its normal job.</string>
+    <string name="chord_power_hint">Power works in a key combination only in Advanced Mode, and the phone’s own Power action still happens.</string>
     <string name="script_settings_not_global">Not global, only for this shortcut</string>
     <string name="script_settings_reset_to_default">Reset to default (%1$s)</string>
     <string name="script_settings_vibrate">Vibrate when it runs</string>
     <string name="script_settings_vibrate_description">Feel a short buzz when this shortcut fires.</string>
+    <string name="script_settings_exact_timing">Run exactly on time</string>
+    <string name="script_settings_exact_timing_description">Shows an alarm icon in the status bar while it waits.</string>
 
     <!-- Shortcuts list -->
     <string name="scripts_title">My shortcuts</string>
@@ -974,24 +996,62 @@
     <!-- OEM key tip -->
     <string name="oem_key_tip">Tip: set this button to “None” in your phone\'s settings, so only KeySnap reacts to it.</string>
     <!-- Recipe gallery -->
-    <string name="recipe_category_webhook">Webhooks</string>
+    <string name="recipe_category_commands">Ready-made commands</string>
     <string name="recipe_wifi_vibrate">At Work</string>
     <string name="recipe_wifi_vibrate_subtitle">Work Wi-Fi, ringer to vibrate</string>
     <string name="recipe_wifi_ring">Leaving Work</string>
     <string name="recipe_wifi_ring_subtitle">Off that Wi-Fi, ringer back on</string>
     <string name="recipe_morning_dnd_off">Morning Unplug</string>
     <string name="recipe_morning_dnd_off_subtitle">Off charger after 06:00, DND off</string>
-    <string name="recipe_smart_home_subtitle">Paste an automation\'s webhook URL</string>
-    <string name="recipe_chat_channel_subtitle">Paste a channel webhook URL</string>
-    <string name="recipe_phone_notification_subtitle">Paste your topic URL</string>
-    <string name="recipe_spreadsheet_subtitle">Paste your web app URL</string>
+    <string name="recipe_smart_home_subtitle">Paste your Home Assistant webhook URL</string>
+    <string name="recipe_chat_channel_subtitle">Paste your Discord channel webhook URL</string>
+    <string name="recipe_phone_notification_subtitle">Paste your ntfy topic URL</string>
+    <string name="recipe_spreadsheet_subtitle">Paste your Apps Script web app URL</string>
     <string name="recipe_category_routines">Everyday routines</string>
     <string name="recipe_web_address">Call a Web Address</string>
-    <string name="recipe_web_address_subtitle">A key calls a URL you paste</string>
-    <string name="recipe_smart_home">Smart-Home Request</string>
-    <string name="recipe_chat_channel">Post to a Chat Channel</string>
-    <string name="recipe_phone_notification">Send a Notification to My Phone</string>
-    <string name="recipe_spreadsheet">Add a Row to a Spreadsheet</string>
+    <string name="recipe_web_address_subtitle">Paste the address this shortcut calls</string>
+    <string name="recipe_smart_home">Home Assistant Scene</string>
+    <string name="recipe_chat_channel">Discord: Post to a Channel</string>
+    <string name="recipe_phone_notification">ntfy: Notify My Phone</string>
+    <string name="recipe_spreadsheet">Google Sheets: Add a Row</string>
+    <string name="recipe_web_post">Send to a Web Address</string>
+    <string name="recipe_web_post_subtitle">Paste the address this shortcut sends to</string>
+    <string name="recipe_ha_arrived_home">Home Assistant: Arrived Home</string>
+    <string name="recipe_ha_arrived_home_subtitle">Home Wi-Fi + Home Assistant webhook URL</string>
+    <string name="recipe_screen_record">Record Screen for 30 s</string>
+    <string name="recipe_screen_record_subtitle">Saves a clip to your Movies folder</string>
+    <string name="recipe_video_camera">Video Camera</string>
+    <string name="recipe_video_camera_subtitle">Opens the camera ready to film</string>
+    <string name="recipe_internet_panel">Wi-Fi &amp; Data Panel</string>
+    <string name="recipe_internet_panel_subtitle">Pops up the internet panel</string>
+    <string name="recipe_animations_fast">Faster Animations</string>
+    <string name="recipe_animations_fast_subtitle">Animations at half length</string>
+    <string name="recipe_animations_normal">Normal Animations</string>
+    <string name="recipe_animations_normal_subtitle">Animations back to normal speed</string>
+    <string name="recipe_timer_5_min">5-Minute Timer</string>
+    <string name="recipe_timer_5_min_subtitle">Starts a timer in your clock app</string>
+    <string name="recipe_dark_mode_toggle">Dark Mode On/Off</string>
+    <string name="recipe_dark_mode_toggle_subtitle">Switches the system theme</string>
+    <string name="recipe_power_saving_toggle">Power Saving On/Off</string>
+    <string name="recipe_power_saving_toggle_subtitle">Switches power saving mode</string>
+    <string name="recipe_grayscale_toggle">Grayscale On/Off</string>
+    <string name="recipe_grayscale_toggle_subtitle">Black-and-white screen, and back</string>
+    <string name="recipe_nearby_pharmacy">Nearby Pharmacy</string>
+    <string name="recipe_nearby_pharmacy_subtitle">Searches your maps app</string>
+    <string name="recipe_write_email">Write an Email</string>
+    <string name="recipe_write_email_subtitle">Opens a new email</string>
+    <string name="recipe_evening_dark">Evening Dark Theme</string>
+    <string name="recipe_evening_dark_subtitle">Dark mode on at 21:00</string>
+    <string name="recipe_morning_light">Morning Light Theme</string>
+    <string name="recipe_morning_light_subtitle">Dark mode off at 07:00</string>
+    <string name="recipe_low_battery_power_saving" formatted="false">Power Saving at 20%</string>
+    <string name="recipe_low_battery_power_saving_subtitle" formatted="false">Under 20% off the charger, saving on</string>
+    <string name="recipe_bedtime_grayscale">Bedtime Grayscale</string>
+    <string name="recipe_bedtime_grayscale_subtitle">Black-and-white screen at 23:00</string>
+    <string name="recipe_car_gas">Gas Nearby in the Car</string>
+    <string name="recipe_car_gas_subtitle">Pick your car; maps finds gas stations</string>
+    <string name="recipe_car_chargers">Chargers Nearby in the Car</string>
+    <string name="recipe_car_chargers_subtitle">Pick your car; maps finds EV chargers</string>
     <string name="recipe_send_message">Send a Message</string>
     <string name="recipe_send_message_subtitle">Opens a chat with your text typed in</string>
     <string name="recipe_send_message_note">Pick a contact, the app to send with, and your message. With Send automatically on, Advanced Mode sends it; otherwise the chat opens with the message typed in and you tap Send.</string>

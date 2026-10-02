@@ -249,6 +249,8 @@
     <string name="constraint_location_on">Ubicación activada</string>
     <string name="constraint_location_off">Ubicación desactivada</string>
     <string name="constraint_day_of_week">Día de la semana</string>
+    <string name="constraint_at_time">A una hora</string>
+    <string name="constraint_interval">Repetir cada</string>
     <string name="constraint_calendar_event_active">Evento del calendario en curso</string>
     <string name="constraint_cooldown">Como máximo una vez cada N minutos</string>
     <string name="constraint_mobile_data_on">Datos móviles activados</string>
@@ -369,6 +371,7 @@
     <string name="key_media_play_pause">Reproducir / pausar</string>
     <string name="key_wakeup">Activar</string>
     <string name="key_alert_slider">Deslizador de alertas / interruptor personalizado</string>
+    <string name="key_unnamed">Tecla sin nombre</string>
 
     <!-- Guías de Opciones de desarrollador -->
     <string name="guide_generic">Otro</string>
@@ -482,6 +485,20 @@
     <string name="field_cooldown_minutes">Minutos entre ejecuciones</string>
     <string name="helper_cooldown">Se omite si este acceso directo se ejecutó hace menos de estos minutos. El contador vuelve a empezar si el teléfono o KeySnap se reinician.</string>
     <string name="constraint_summary_cooldown">Como máximo cada %1$d min</string>
+    <string name="field_at_time">Hora</string>
+    <string name="field_interval">Cada</string>
+    <string name="interval_unit_seconds">Segundos</string>
+    <string name="interval_unit_minutes">Minutos</string>
+    <string name="interval_unit_hours">Horas</string>
+    <string name="constraint_summary_at_time_every_day">%1$s · todos los días</string>
+    <string name="constraint_summary_interval_s">Cada %1$d s</string>
+    <string name="constraint_summary_interval_m">Cada %1$d min</string>
+    <string name="constraint_summary_interval_h">Cada %1$d h</string>
+    <string name="helper_interval_clock">Se ejecuta según el reloj: %1$s</string>
+    <string name="helper_interval_midnight">Cuenta desde la medianoche: %1$s</string>
+    <string name="helper_interval_sleep">Puede ejecutarse hasta 10 min tarde mientras el teléfono duerme.</string>
+    <string name="helper_time_window_start">En una automatización, se ejecuta una vez al empezar el intervalo.</string>
+    <string name="time_needs_exact_alarm">Necesita “Alarmas y recordatorios” para ejecutarse a tiempo.</string>
     <string name="constraint_config_choose_app">Elige una app para continuar</string>
     <string name="constraint_needs_location">Android solo muestra el nombre de la red a las apps con permiso de ubicación.</string>
     <string name="constraint_grant_permission">Conceder</string>
@@ -537,7 +554,7 @@
     <!-- Diálogos -->
     <string name="dialog_expert_connected">MODO AVANZADO CONECTADO</string>
     <string name="dialog_new_input_title">Nueva entrada detectada</string>
-    <string name="dialog_new_input_body">Código: %1$d. Ponle un nombre corto a esta entrada.</string>
+    <string name="dialog_new_input_body">Ponle un nombre corto a esta entrada.</string>
     <string name="dialog_new_input_hint">p. ej. Tecla de acceso directo</string>
 
     <!-- Selector de apps -->
@@ -557,7 +574,7 @@
     <string name="trigger_picker_no_key">Aún no hay tecla</string>
     <string name="trigger_picker_saved_key">O elige una tecla guardada</string>
     <string name="trigger_picker_listening">Escuchando… toca para detener</string>
-    <string name="trigger_picker_tap_to_record">Toca y luego pulsa una tecla física</string>
+    <string name="trigger_picker_tap_to_record">Toca y luego pulsa una tecla, o mantén varias a la vez</string>
     <string name="trigger_picker_save_combo">Guardar tecla</string>
     <string name="trigger_picker_use_automation">Usar una automatización en su lugar</string>
     <string name="trigger_picker_use_key">Usar %1$s</string>
@@ -573,9 +590,13 @@
     <string name="script_settings_custom_value">Personalizado para este acceso directo</string>
     <string name="script_settings_consume_input">Consumir la entrada original</string>
     <string name="script_settings_consume_input_description">Evita que la tecla llegue a otras apps cuando Android lo permite.</string>
+    <string name="chord_consume_hint">Con «Consumir la entrada original» activado, pulsar una de estas teclas sola no hará su función normal.</string>
+    <string name="chord_power_hint">En una combinación, el botón de encendido solo funciona en el Modo avanzado, y la acción propia del teléfono también se ejecuta.</string>
     <string name="script_settings_not_global">No es global, solo para este acceso directo</string>
     <string name="script_settings_vibrate">Vibrar al ejecutarse</string>
     <string name="script_settings_vibrate_description">Una breve vibración cuando se active este acceso directo.</string>
+    <string name="script_settings_exact_timing">Ejecutar a la hora exacta</string>
+    <string name="script_settings_exact_timing_description">Muestra un icono de alarma en la barra de estado mientras espera.</string>
     <string name="script_settings_reset_to_default">Restablecer al valor predeterminado (%1$s)</string>
 
     <!-- Lista de accesos directos -->
@@ -926,24 +947,62 @@
     <!-- OEM key tip -->
     <string name="oem_key_tip">Consejo: configura este botón como “Ninguno” en los ajustes del teléfono para que solo KeySnap responda a él.</string>
     <!-- Recipe gallery -->
-    <string name="recipe_category_webhook">Webhooks</string>
+    <string name="recipe_category_commands">Comandos listos</string>
     <string name="recipe_wifi_vibrate">En el trabajo</string>
     <string name="recipe_wifi_vibrate_subtitle">WiFi del trabajo: timbre en vibración</string>
     <string name="recipe_wifi_ring">Salir del trabajo</string>
     <string name="recipe_wifi_ring_subtitle">Fuera de esa WiFi: vuelve el timbre</string>
     <string name="recipe_morning_dnd_off">Desenchufar por la mañana</string>
     <string name="recipe_morning_dnd_off_subtitle">Sin cargador tras las 06:00: No molestar desactivado</string>
-    <string name="recipe_smart_home_subtitle">Pega la URL de webhook de una automatización</string>
-    <string name="recipe_chat_channel_subtitle">Pega la URL de webhook de un canal</string>
-    <string name="recipe_phone_notification_subtitle">Pega la URL de tu tema</string>
-    <string name="recipe_spreadsheet_subtitle">Pega la URL de tu aplicación web</string>
+    <string name="recipe_smart_home_subtitle">Pega la URL de webhook de Home Assistant</string>
+    <string name="recipe_chat_channel_subtitle">Pega la URL de webhook del canal de Discord</string>
+    <string name="recipe_phone_notification_subtitle">Pega la URL de tu tema de ntfy</string>
+    <string name="recipe_spreadsheet_subtitle">Pega la URL de la app web de Apps Script</string>
     <string name="recipe_category_routines">Rutinas diarias</string>
     <string name="recipe_web_address">Llamar a una dirección web</string>
-    <string name="recipe_web_address_subtitle">Una tecla llama a una URL que pegas</string>
-    <string name="recipe_smart_home">Petición al hogar inteligente</string>
-    <string name="recipe_chat_channel">Publicar en un canal de chat</string>
-    <string name="recipe_phone_notification">Enviar una notificación a mi teléfono</string>
-    <string name="recipe_spreadsheet">Añadir una fila a una hoja de cálculo</string>
+    <string name="recipe_web_address_subtitle">Pega la dirección a la que llama</string>
+    <string name="recipe_smart_home">Escena de Home Assistant</string>
+    <string name="recipe_chat_channel">Discord: publicar en un canal</string>
+    <string name="recipe_phone_notification">ntfy: avisar a mi teléfono</string>
+    <string name="recipe_spreadsheet">Google Sheets: añadir una fila</string>
+    <string name="recipe_web_post">Enviar a una dirección web</string>
+    <string name="recipe_web_post_subtitle">Pega la dirección a la que envía</string>
+    <string name="recipe_ha_arrived_home">Home Assistant: llegué a casa</string>
+    <string name="recipe_ha_arrived_home_subtitle">WiFi de casa + URL de webhook de Home Assistant</string>
+    <string name="recipe_screen_record">Grabar pantalla 30 s</string>
+    <string name="recipe_screen_record_subtitle">Guarda un clip en la carpeta Movies</string>
+    <string name="recipe_video_camera">Cámara de vídeo</string>
+    <string name="recipe_video_camera_subtitle">Abre la cámara lista para grabar</string>
+    <string name="recipe_internet_panel">Panel de WiFi y datos</string>
+    <string name="recipe_internet_panel_subtitle">Muestra el panel de internet</string>
+    <string name="recipe_animations_fast">Animaciones más rápidas</string>
+    <string name="recipe_animations_fast_subtitle">Animaciones a la mitad de duración</string>
+    <string name="recipe_animations_normal">Animaciones normales</string>
+    <string name="recipe_animations_normal_subtitle">Animaciones a velocidad normal</string>
+    <string name="recipe_timer_5_min">Temporizador de 5 minutos</string>
+    <string name="recipe_timer_5_min_subtitle">Inicia un temporizador en el reloj</string>
+    <string name="recipe_dark_mode_toggle">Modo oscuro sí/no</string>
+    <string name="recipe_dark_mode_toggle_subtitle">Cambia el tema del sistema</string>
+    <string name="recipe_power_saving_toggle">Ahorro de energía sí/no</string>
+    <string name="recipe_power_saving_toggle_subtitle">Activa o desactiva el ahorro de energía</string>
+    <string name="recipe_grayscale_toggle">Escala de grises sí/no</string>
+    <string name="recipe_grayscale_toggle_subtitle">Pantalla en blanco y negro, y vuelta</string>
+    <string name="recipe_nearby_pharmacy">Farmacia cercana</string>
+    <string name="recipe_nearby_pharmacy_subtitle">Busca en tu app de mapas</string>
+    <string name="recipe_write_email">Escribir un correo</string>
+    <string name="recipe_write_email_subtitle">Abre un correo nuevo</string>
+    <string name="recipe_evening_dark">Tema oscuro por la noche</string>
+    <string name="recipe_evening_dark_subtitle">Modo oscuro activado a las 21:00</string>
+    <string name="recipe_morning_light">Tema claro por la mañana</string>
+    <string name="recipe_morning_light_subtitle">Modo oscuro desactivado a las 07:00</string>
+    <string name="recipe_low_battery_power_saving" formatted="false">Ahorro de energía al 20 %</string>
+    <string name="recipe_low_battery_power_saving_subtitle" formatted="false">Menos del 20 % sin cargador: ahorro activo</string>
+    <string name="recipe_bedtime_grayscale">Grises antes de dormir</string>
+    <string name="recipe_bedtime_grayscale_subtitle">Pantalla en blanco y negro a las 23:00</string>
+    <string name="recipe_car_gas">Gasolineras desde el coche</string>
+    <string name="recipe_car_gas_subtitle">Elige tu coche; el mapa busca gasolineras</string>
+    <string name="recipe_car_chargers">Cargadores desde el coche</string>
+    <string name="recipe_car_chargers_subtitle">Elige tu coche; el mapa busca cargadores</string>
     <string name="recipe_send_message">Enviar un mensaje</string>
     <string name="recipe_send_message_subtitle">Abre un chat con tu texto ya escrito</string>
     <string name="recipe_send_message_note">Elige un contacto, la app con la que enviar y tu mensaje. Con Enviar automáticamente activado, el Modo avanzado lo envía; si no, el chat se abre con el mensaje ya escrito y tú tocas Enviar.</string>

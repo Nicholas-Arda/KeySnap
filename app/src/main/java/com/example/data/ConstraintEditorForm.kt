@@ -125,6 +125,7 @@ object ConstraintEditorForms {
             fields = listOf(
                 EditorField.TimeRange("start", "end", R.string.field_time_start, R.string.field_time_end, defaultStart = "22:00", defaultEnd = "07:00"),
             ),
+            helperRes = R.string.helper_time_window_start,
             summary = { res, params, _ ->
                 val start = params.value("start")
                 val end = params.value("end")
@@ -139,10 +140,38 @@ object ConstraintEditorForms {
         ConstraintEditorForm(
             type = "day_of_week",
             fields = listOf(EditorField.DaySet("days", R.string.field_days)),
+            summary = { res, params, _ -> daysSummary(res, params.value("days")) },
+        ),
+        ConstraintEditorForm(
+            type = ScriptConstraintCatalog.AT_TIME,
+            fields = listOf(
+                EditorField.Time("time", R.string.field_at_time, default = "07:00"),
+                EditorField.DaySet("days", R.string.field_days),
+            ),
+            // Blank days mean every day.
+            required = setOf("time"),
             summary = { res, params, _ ->
-                val locale = res.locale()
-                val chosen = parseDays(params.value("days"))
-                weekOrder(locale).filter { it in chosen }.joinToString(", ") { it.getDisplayName(TextStyle.SHORT, locale) }
+                val time = formatTime(params.value("time"), res.locale())
+                val days = params.value("days")
+                if (days.isBlank()) {
+                    res.getString(R.string.constraint_summary_at_time_every_day, time)
+                } else {
+                    res.getString(R.string.constraint_summary_at_time_days, time, daysSummary(res, days))
+                }
+            },
+        ),
+        ConstraintEditorForm(
+            type = ScriptConstraintCatalog.INTERVAL,
+            fields = listOf(EditorField.Interval("every", "unit", R.string.field_interval)),
+            // Out-of-range numbers are fine here: the sheet clamps them on Save.
+            valid = { params -> params.value("every").toIntOrNull() != null && intervalRange(params["unit"]) != null },
+            summary = { res, params, _ ->
+                val n = clampInterval(params.value("every"), params.value("unit")).toInt()
+                when (params.value("unit")) {
+                    "s" -> res.getString(R.string.constraint_summary_interval_s, n)
+                    "h" -> res.getString(R.string.constraint_summary_interval_h, n)
+                    else -> res.getString(R.string.constraint_summary_interval_m, n)
+                }
             },
         ),
         ConstraintEditorForm(
@@ -170,6 +199,11 @@ object ConstraintEditorForms {
                 is EditorField.TimeRange -> {
                     put(field.startKey, field.defaultStart)
                     put(field.endKey, field.defaultEnd)
+                }
+                is EditorField.Time -> put(field.key, field.default)
+                is EditorField.Interval -> {
+                    put(field.valueKey, "30")
+                    put(field.unitKey, "m")
                 }
                 else -> Unit
             }
@@ -209,6 +243,59 @@ object ConstraintEditorForms {
     /** `HH:MM` to hour and minute, or null when the value is not one. */
     fun parseTime(value: String): Pair<Int, Int>? =
         runCatching { LocalTime.parse(value).let { it.hour to it.minute } }.getOrNull()
+
+    /** Allowed `every` values for an interval `unit` (s|m|h), or null for an unknown unit. */
+    fun intervalRange(unit: String?): IntRange? = when (unit?.trim()) {
+        "s" -> 5..59
+        "m" -> 1..59
+        "h" -> 1..24
+        else -> null
+    }
+
+    /** [every] clamped into [unit]'s range, as typed text; blank or junk becomes the minimum. An unknown unit reads as minutes. */
+    fun clampInterval(every: String, unit: String): String {
+        val range = intervalRange(unit) ?: intervalRange("m")!!
+        return (every.trim().toIntOrNull() ?: range.first).coerceIn(range).toString()
+    }
+
+    /** True when the period divides its parent (a minute, an hour, a day), so it lands on the same clock marks each time. */
+    fun intervalDividesClock(every: String, unit: String): Boolean {
+        if (every.trim().toIntOrNull() == null) return false
+        val n = clampInterval(every, unit).toInt()
+        return (if (unit.trim() == "h") 24 else 60) % n == 0
+    }
+
+    /**
+     * The first few runs of an interval as clock marks, e.g. ":00, :15, :30, :45" or, for a period that does not
+     * divide its parent, "00:00, 00:07, 00:14, 00:21, …" counted from midnight. Null when malformed.
+     */
+    fun clockExample(every: String, unit: String): String? {
+        val u = unit.trim()
+        if (intervalRange(u) == null || every.trim().toIntOrNull() == null) return null
+        val n = clampInterval(every, u).toInt()
+        val unitSeconds = when (u) { "s" -> 1; "m" -> 60; else -> 3600 }
+        val divides = intervalDividesClock(every, u)
+        val span = if (divides) (if (u == "h") 24 else 60) * unitSeconds else 86_400
+        val step = n * unitSeconds
+        val count = (span + step - 1) / step
+        val ticks = (0 until minOf(count, 4)).map { k ->
+            val t = k * step
+            when {
+                divides && u == "s" -> ":%02d".format(Locale.ROOT, t)
+                divides && u == "m" -> ":%02d".format(Locale.ROOT, t / 60)
+                u == "s" -> "%02d:%02d:%02d".format(Locale.ROOT, t / 3600, t / 60 % 60, t % 60)
+                else -> "%02d:%02d".format(Locale.ROOT, t / 3600, t / 60 % 60)
+            }
+        }
+        return (if (count > 4) ticks + "…" else ticks).joinToString(", ")
+    }
+
+    /** Picked days in the locale's week order, e.g. "Mon, Fri". */
+    private fun daysSummary(res: Resources, days: String): String {
+        val locale = res.locale()
+        val chosen = parseDays(days)
+        return weekOrder(locale).filter { it in chosen }.joinToString(", ") { it.getDisplayName(TextStyle.SHORT, locale) }
+    }
 
     private fun Resources.locale(): Locale = configuration.locales[0] ?: Locale.getDefault()
 }

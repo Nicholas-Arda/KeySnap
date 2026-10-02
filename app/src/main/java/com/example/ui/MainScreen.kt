@@ -511,6 +511,7 @@ fun MainScreen(viewModel: MainViewModel) {
                     onSetConsumeOriginalEvent = viewModel::draftSetConsumeOriginalEvent,
                     onSetVibrateOnTrigger = viewModel::draftSetVibrateOnTrigger,
                     onSetHapticDurationMs = viewModel::draftSetHapticDurationMs,
+                    onSetExactTiming = viewModel::draftSetExactTiming,
                 )
             }
             pendingConstraintType?.let { type ->

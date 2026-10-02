@@ -51,6 +51,13 @@ internal class KeyPressScheduler(
         }
     }
 
+    /** Drops one key's pending press, e.g. when it turns out to be part of a chord. Mirrors PressTimingMachine.cancel. */
+    fun cancel(keyCode: Int) {
+        synchronized(lock) {
+            states[keyCode]?.let { clearStateLocked(keyCode, it) }
+        }
+    }
+
     private fun onDown(keyCode: Int, eventTime: Long, config: KeyMappingConfig) {
         var triggerSingle = false
         var triggerDouble = false

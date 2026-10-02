@@ -72,7 +72,7 @@ import com.example.data.NOTIFICATION_ACCESS_BADGE
 import com.example.data.NOTIFICATION_POLICY_BADGE
 import com.example.data.WRITE_SETTINGS_BADGE
 import com.example.data.ScriptActionCatalog
-import com.example.data.getReadableKeyName
+import com.example.data.keyDisplayName
 import com.example.service.NotificationEventListener
 import com.example.service.PickedPoints
 import com.example.service.PointPickMode
@@ -234,6 +234,7 @@ fun ActionConfigSheet(
                     is EditorField.BluetoothDevicePick -> BluetoothDeviceFieldRow(field, values)
                     is EditorField.TimeRange -> TimeRangeFieldRow(field, values)
                     is EditorField.DaySet -> DaySetFieldRow(field, values)
+                    is EditorField.Time, is EditorField.Interval -> Unit
                 }
             }
             // CLAUDE.md "Privileged actions must stay legible": the literal link or intent, before it runs.
@@ -323,7 +324,8 @@ internal fun TextFieldRow(field: EditorField.Text, values: MutableMap<String, St
             label = { Text(stringResource(field.labelRes)) },
             placeholder = { field.hintRes?.let { Text(stringResource(it)) } },
             singleLine = !field.multiline,
-            minLines = if (field.multiline) 3 else 1,
+            minLines = if (field.multiline) field.minLines else 1,
+            maxLines = if (field.multiline) field.maxLines else 1,
         )
         if (field.pickContact) PickContactButton("config_pick_contact_${field.key}") { name, _ -> values[field.key] = name }
         field.helperRes?.let { Text(stringResource(it), style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant) }
@@ -388,7 +390,7 @@ private fun KeyCodeFieldRow(
     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
         Text(stringResource(field.labelRes), style = SectionLabel, color = colors.onSurfaceVariant)
         if (current != null) {
-            Text(getReadableKeyName(LocalContext.current.resources, current), style = MaterialTheme.typography.bodyLarge, color = colors.onSurface)
+            Text(keyDisplayName(LocalContext.current.resources, current), style = MaterialTheme.typography.bodyLarge, color = colors.onSurface)
         }
         OutlinedTextField(
             value = values[field.key].orEmpty(),

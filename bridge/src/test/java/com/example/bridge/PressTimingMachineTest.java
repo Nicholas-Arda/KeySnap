@@ -118,4 +118,14 @@ public class PressTimingMachineTest {
         scheduler.shutdown();
         assertTrue(scheduler.awaitTermination(5, TimeUnit.SECONDS));
     }
+
+    @Test
+    public void cancelDropsAPendingPressAndItsRelease() throws Exception {
+        machine.onEvent(7, true, 4_000L, DOUBLE_WINDOW_MS, LONG_THRESHOLD_MS);
+        machine.cancel(7);
+        machine.onEvent(7, false, 4_050L, DOUBLE_WINDOW_MS, LONG_THRESHOLD_MS);
+
+        Thread.sleep(DOUBLE_WINDOW_MS + LONG_THRESHOLD_MS + 100);
+        assertEquals(Collections.emptyList(), new ArrayList<>(gestures));
+    }
 }

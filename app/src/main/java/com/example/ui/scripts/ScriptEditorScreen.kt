@@ -1,5 +1,6 @@
 package com.example.ui.scripts
 
+import android.view.KeyEvent
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.tween
@@ -15,7 +16,10 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -29,6 +33,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -112,12 +117,13 @@ import com.example.data.InstalledApp
 import com.example.data.RunRecord
 import com.example.data.ScriptConstraint
 import com.example.data.ScriptConstraintCatalog
-import com.example.data.getReadableKeyName
+import com.example.data.keyDisplayName
 import com.example.ui.components.AppAlertDialog
 import com.example.ui.components.ConsoleShape
 import com.example.ui.components.IconTile
 import com.example.ui.components.InnerShape
 import com.example.ui.components.MinTouchTarget
+import com.example.ui.components.singleLineWidth
 import com.example.ui.components.trailingEdgeFade
 import com.example.ui.theme.SectionLabel
 import com.example.ui.theme.categoryTileColors
@@ -321,48 +327,70 @@ private fun EditorTopBar(
     onClose: () -> Unit,
 ) {
     val colors = MaterialTheme.colorScheme
+    val placeholder = stringResource(R.string.editor_shortcut_name)
+    val doneLabel = stringResource(R.string.common_done)
+    // Inline, the field needs its placeholder plus its 16 dp lead and 48 dp edit-icon slot, beside
+    // two 48 dp tiles and Done (12 + 18 + 4 + label + 12). Where that does not fit, the name gets a
+    // line of its own under the buttons rather than breaking mid-word. The name the editor opened
+    // with counts too, so a long saved name is not clipped; typing never moves the field.
+    val openedName = remember { name }
+    val nameWidth = maxOf(
+        singleLineWidth(placeholder, MaterialTheme.typography.titleSmall),
+        singleLineWidth(openedName, MaterialTheme.typography.titleSmall),
+    )
+    val inlineWidth = nameWidth + 64.dp +
+        MinTouchTarget * 2 + singleLineWidth(doneLabel, MaterialTheme.typography.labelLarge) + 46.dp
+    BoxWithConstraints(Modifier.fillMaxWidth().background(colors.background).padding(horizontal = 8.dp, vertical = 8.dp)) {
+        val inline = maxWidth >= inlineWidth
+        Column {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                TopBarIconTile(Icons.Filled.Close, stringResource(R.string.editor_discard_changes), onClose)
+                if (inline) ScriptNameField(name, placeholder, onSetName, Modifier.weight(1f)) else Spacer(Modifier.weight(1f))
+                TopBarIconTile(
+                    Icons.Outlined.Settings,
+                    stringResource(R.string.editor_shortcut_settings),
+                    onOpenScriptSettings,
+                    Modifier.testTag("script_settings_button"),
+                )
+                TextButton(onClick = onDone, enabled = canSave, modifier = Modifier.testTag("script_done_button")) {
+                    val tint = if (canSave) colors.primary else colors.onSurfaceVariant.copy(alpha = .4f)
+                    Icon(Icons.Filled.Check, null, tint = tint, modifier = Modifier.size(18.dp))
+                    Spacer(Modifier.width(4.dp))
+                    Text(doneLabel, color = tint, style = MaterialTheme.typography.labelLarge)
+                }
+            }
+            if (!inline) ScriptNameField(name, placeholder, onSetName, Modifier.fillMaxWidth())
+        }
+    }
+}
+
+@Composable
+private fun ScriptNameField(name: String, placeholder: String, onSetName: (String) -> Unit, modifier: Modifier) {
+    val colors = MaterialTheme.colorScheme
     // The field has no container and no unfocused indicator, so without this glyph the name reads
     // as static text and nobody discovers the shortcut can be renamed. It goes once editing starts.
     val interactionSource = remember { MutableInteractionSource() }
     val nameFocused by interactionSource.collectIsFocusedAsState()
-    Row(
-        Modifier.fillMaxWidth().background(colors.background).padding(horizontal = 8.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        TopBarIconTile(Icons.Filled.Close, stringResource(R.string.editor_discard_changes), onClose)
-        TextField(
-            value = name,
-            onValueChange = onSetName,
-            modifier = Modifier.weight(1f).testTag("script_name_field"),
-            placeholder = { Text(stringResource(R.string.editor_shortcut_name), style = MaterialTheme.typography.titleSmall) },
-            trailingIcon = {
-                if (!nameFocused) {
-                    Icon(Icons.Outlined.Edit, null, Modifier.size(18.dp), tint = colors.onSurfaceVariant)
-                }
-            },
-            singleLine = true,
-            interactionSource = interactionSource,
-            textStyle = MaterialTheme.typography.titleSmall,
-            colors = TextFieldDefaults.colors(
-                unfocusedContainerColor = Color.Transparent,
-                focusedContainerColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                focusedIndicatorColor = colors.primary,
-            ),
-        )
-        TopBarIconTile(
-            Icons.Outlined.Settings,
-            stringResource(R.string.editor_shortcut_settings),
-            onOpenScriptSettings,
-            Modifier.testTag("script_settings_button"),
-        )
-        TextButton(onClick = onDone, enabled = canSave, modifier = Modifier.testTag("script_done_button")) {
-            val tint = if (canSave) colors.primary else colors.onSurfaceVariant.copy(alpha = .4f)
-            Icon(Icons.Filled.Check, null, tint = tint, modifier = Modifier.size(18.dp))
-            Spacer(Modifier.width(4.dp))
-            Text(stringResource(R.string.common_done), color = tint, style = MaterialTheme.typography.labelLarge)
-        }
-    }
+    TextField(
+        value = name,
+        onValueChange = onSetName,
+        modifier = modifier.testTag("script_name_field"),
+        placeholder = { Text(placeholder, style = MaterialTheme.typography.titleSmall) },
+        trailingIcon = {
+            if (!nameFocused) {
+                Icon(Icons.Outlined.Edit, null, Modifier.size(18.dp), tint = colors.onSurfaceVariant)
+            }
+        },
+        singleLine = true,
+        interactionSource = interactionSource,
+        textStyle = MaterialTheme.typography.titleSmall,
+        colors = TextFieldDefaults.colors(
+            unfocusedContainerColor = Color.Transparent,
+            focusedContainerColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            focusedIndicatorColor = colors.primary,
+        ),
+    )
 }
 
 @Composable
@@ -431,7 +459,7 @@ private fun ChainArea(
         // Only a saved shortcut can have run; a new draft's id has no history yet.
         if (!draft.isNew) {
             item { ChainLabel(stringResource(R.string.editor_chain_runs), topPadding = 6.dp) }
-            item { RunHistoryCard(runs) }
+            item { RunHistoryCard(runs, draft.trigger?.keyCodes.orEmpty()) }
         }
     }
 }
@@ -512,30 +540,48 @@ private fun TriggerCard(
     val res = LocalContext.current.resources
     val trigger = draft.trigger
     when {
-        trigger != null -> Row(
-            Modifier
-                .fillMaxWidth()
-                .clip(InnerShape)
-                .background(colors.primary.copy(alpha = .12f))
-                .heightIn(min = MinTouchTarget)
-                .clickable(onClick = onOpenKeyPicker)
-                .testTag("assign_key_card")
-                .padding(14.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            IconTile(Icons.Filled.Bolt, size = 36.dp, selected = true)
-            Spacer(Modifier.width(12.dp))
-            Column(Modifier.weight(1f)) {
-                Text(
-                    trigger.keyCodes.joinToString("+") { getReadableKeyName(res, it) },
-                    style = MaterialTheme.typography.titleSmall,
-                    color = colors.onSurface,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-                Text(stringResource(trigger.pressType.titleRes), style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant)
+        trigger != null -> Column {
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .clip(InnerShape)
+                    .background(colors.primary.copy(alpha = .12f))
+                    .heightIn(min = MinTouchTarget)
+                    .clickable(onClick = onOpenKeyPicker)
+                    .testTag("assign_key_card")
+                    .padding(14.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                IconTile(Icons.Filled.Bolt, size = 36.dp, selected = true)
+                Spacer(Modifier.width(12.dp))
+                Column(Modifier.weight(1f)) {
+                    Text(
+                        trigger.keyCodes.joinToString("+") { keyDisplayName(res, it) },
+                        style = MaterialTheme.typography.titleSmall,
+                        color = colors.onSurface,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                    Text(stringResource(trigger.pressType.titleRes), style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant)
+                }
+                Icon(Icons.Outlined.ChevronRight, null, tint = colors.onSurfaceVariant)
             }
-            Icon(Icons.Outlined.ChevronRight, null, tint = colors.onSurfaceVariant)
+            if (trigger.keyCodes.size >= 2) {
+                Text(
+                    stringResource(R.string.chord_consume_hint),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = colors.onSurfaceVariant,
+                    modifier = Modifier.padding(start = 14.dp, top = 6.dp, end = 14.dp),
+                )
+                if (KeyEvent.KEYCODE_POWER in trigger.keyCodes) {
+                    Text(
+                        stringResource(R.string.chord_power_hint),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = colors.onSurfaceVariant,
+                        modifier = Modifier.padding(start = 14.dp, top = 4.dp, end = 14.dp),
+                    )
+                }
+            }
         }
         // Tapping the automation card clears it, back to the key/automation choice.
         draft.automation -> KeylessTriggerCard(
@@ -551,26 +597,45 @@ private fun TriggerCard(
             stringResource(R.string.surface_card_subtitle),
             onClearSurfaceOnly,
         )
-        else -> Row(
-            Modifier
-                .fillMaxWidth()
-                .clip(InnerShape)
-                .border(1.dp, colors.outline.copy(alpha = .6f), InnerShape)
-                .testTag("assign_key_card"),
-        ) {
-            TriggerKindOption(
-                Icons.Outlined.Keyboard,
-                stringResource(R.string.trigger_kind_key),
-                Modifier.weight(1f).testTag("trigger_kind_key"),
-                onOpenKeyPicker,
-            )
-            Box(Modifier.width(1.dp).heightIn(min = MinTouchTarget).background(colors.outline.copy(alpha = .3f)))
-            TriggerKindOption(
-                Icons.Outlined.AutoAwesome,
-                stringResource(R.string.trigger_kind_automation),
-                Modifier.weight(1f).testTag("trigger_kind_automation"),
-                onToggleAutomation,
-            )
+        else -> {
+            val keyLabel = stringResource(R.string.trigger_kind_key)
+            val automationLabel = stringResource(R.string.trigger_kind_automation)
+            val labelStyle = MaterialTheme.typography.bodyLarge
+            // Side by side, each half holds 16 + 18 + 8 + label + 16 dp. A label that does not fit
+            // stacks the two choices rather than breaking mid-word.
+            val halfWidth = maxOf(singleLineWidth(keyLabel, labelStyle), singleLineWidth(automationLabel, labelStyle)) + 58.dp
+            val divider = colors.outline.copy(alpha = .3f)
+            BoxWithConstraints(
+                Modifier
+                    .fillMaxWidth()
+                    .clip(InnerShape)
+                    .border(1.dp, colors.outline.copy(alpha = .6f), InnerShape)
+                    .testTag("assign_key_card"),
+            ) {
+                if (maxWidth >= halfWidth * 2 + 1.dp) {
+                    Row {
+                        TriggerKindOption(Icons.Outlined.Keyboard, keyLabel, Modifier.weight(1f).testTag("trigger_kind_key"), onOpenKeyPicker)
+                        Box(Modifier.width(1.dp).heightIn(min = MinTouchTarget).background(divider))
+                        TriggerKindOption(
+                            Icons.Outlined.AutoAwesome,
+                            automationLabel,
+                            Modifier.weight(1f).testTag("trigger_kind_automation"),
+                            onToggleAutomation,
+                        )
+                    }
+                } else {
+                    Column {
+                        TriggerKindOption(Icons.Outlined.Keyboard, keyLabel, Modifier.fillMaxWidth().testTag("trigger_kind_key"), onOpenKeyPicker)
+                        Box(Modifier.fillMaxWidth().height(1.dp).background(divider))
+                        TriggerKindOption(
+                            Icons.Outlined.AutoAwesome,
+                            automationLabel,
+                            Modifier.fillMaxWidth().testTag("trigger_kind_automation"),
+                            onToggleAutomation,
+                        )
+                    }
+                }
+            }
         }
     }
 }
@@ -896,6 +961,7 @@ private fun AdvancedModeChip(active: Boolean) {
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun BottomToolbar(
     canRun: Boolean,
@@ -905,13 +971,16 @@ private fun BottomToolbar(
     onShare: () -> Unit,
 ) {
     val colors = MaterialTheme.colorScheme
-    Row(
+    // Delete on the start edge, Share and Test run on the end. Where the three do not fit on one
+    // line, Share and Test run move to a second line (and wrap again if needed) instead of being
+    // squeezed into fragments.
+    FlowRow(
         Modifier
             .fillMaxWidth()
             .background(colors.background)
             .navigationBarsPadding()
             .padding(horizontal = 16.dp, vertical = 10.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
+        horizontalArrangement = Arrangement.End,
     ) {
         // A draft that was never saved has nothing to delete; the close tile's discard guard is
         // the way out of it.
@@ -921,10 +990,9 @@ private fun BottomToolbar(
                 Spacer(Modifier.width(4.dp))
                 Text(stringResource(R.string.common_delete), color = colors.error, style = MaterialTheme.typography.labelLarge)
             }
-        } else {
-            Spacer(Modifier)
         }
-        Row {
+        Spacer(Modifier.weight(1f))
+        FlowRow(horizontalArrangement = Arrangement.End) {
             val tint = if (canRun) colors.primary else colors.onSurfaceVariant.copy(alpha = .4f)
             TextButton(onClick = onShare, enabled = canRun, modifier = Modifier.testTag("share_script_button")) {
                 Icon(Icons.Outlined.Share, null, tint = tint, modifier = Modifier.size(18.dp))
@@ -1099,9 +1167,11 @@ fun CategoryIconChip(
 ) {
     val colors = MaterialTheme.colorScheme
     val (fill, glyph) = categoryTileColors(category, selected)
+    // At least as wide as the tile, wider for a label that needs it: the rail scrolls, so a long
+    // translation costs a little travel instead of being cut to "Taschenla…".
     Column(
         Modifier
-            .width(62.dp)
+            .widthIn(min = 62.dp)
             .clickable(onClickLabel = label, onClick = onClick),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -1117,7 +1187,6 @@ fun CategoryIconChip(
             style = MaterialTheme.typography.labelSmall,
             color = if (selected) colors.onSurface else colors.onSurfaceVariant,
             maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
             textAlign = TextAlign.Center,
         )
     }

@@ -50,7 +50,7 @@ import androidx.compose.ui.unit.dp
 import com.example.data.ScriptActionCatalog
 import com.example.data.ScriptConstraintCatalog
 import com.example.data.ShortcutScript
-import com.example.data.getReadableKeyName
+import com.example.data.keyDisplayName
 import com.example.data.isSurfaceOnly
 import com.example.ui.components.AppAlertDialog
 import com.example.ui.components.ConsoleShape
@@ -261,7 +261,7 @@ fun triggerSummary(script: ShortcutScript): Pair<String, Boolean> {
     val automationHasCondition = script.automation &&
         script.constraints.any { ScriptConstraintCatalog.isAutomation(it.type) }
     val text = when {
-        trigger != null -> "${trigger.keyCodes.joinToString("+") { getReadableKeyName(res, it) }} · ${stringResource(trigger.pressType.shortBadgeRes)}"
+        trigger != null -> "${trigger.keyCodes.joinToString("+") { keyDisplayName(res, it) }} · ${stringResource(trigger.pressType.shortBadgeRes)}"
         automationHasCondition -> stringResource(R.string.trigger_kind_automation)
         script.automation -> "${stringResource(R.string.trigger_kind_automation)} · ${stringResource(R.string.scripts_no_condition)}"
         else -> stringResource(R.string.trigger_kind_surface)

@@ -24,7 +24,7 @@ class RunHistoryCardTest {
     private val res = ApplicationProvider.getApplicationContext<Context>().resources
 
     private fun show(runs: List<RunRecord>) = rule.setContent {
-        MyApplicationTheme(themeMode = ThemeMode.DARK) { RunHistoryCard(runs) }
+        MyApplicationTheme(themeMode = ThemeMode.DARK) { RunHistoryCard(runs, emptyList()) }
     }
 
     @Test fun aFailedRunNamesTheActionAndWhy() {

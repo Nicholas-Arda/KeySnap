@@ -242,8 +242,9 @@ public final class BridgeConfig {
             this.longPressThresholdMs = longPressThresholdMs;
         }
 
-        boolean matchesSingleKey(int keyCode) {
-            return keyCodes.size() == 1 && keyCodes.get(0) == keyCode;
+        /** The key this trigger listens to: the code itself, or the chord id for several keys. */
+        int keyId() {
+            return ChordTracker.triggerKeyId(keyCodes);
         }
     }
 
@@ -296,8 +297,8 @@ public final class BridgeConfig {
         this.scripts = scripts;
     }
 
-    /** Every key code, across all enabled scripts, that the bridge should react to. */
-    public List<Script> scriptsFor(int keyCode, String pressType) {
+    /** Enabled scripts with a trigger for this key id (a key code, or a chord id) and press type. */
+    public List<Script> scriptsFor(int keyId, String pressType) {
         List<Script> matched = new ArrayList<>();
         if (!globallyEnabled) {
             return matched;
@@ -307,7 +308,7 @@ public final class BridgeConfig {
                 continue;
             }
             for (Trigger trigger : script.triggers) {
-                if (trigger.matchesSingleKey(keyCode) && trigger.pressType.equals(pressType)) {
+                if (trigger.keyId() == keyId && trigger.pressType.equals(pressType)) {
                     matched.add(script);
                     break;
                 }
@@ -316,7 +317,10 @@ public final class BridgeConfig {
         return matched;
     }
 
-    /** True when at least one enabled script listens to this key, regardless of press type. */
+    /**
+     * True when at least one enabled script listens to this key, alone or as a chord member,
+     * regardless of press type.
+     */
     public boolean isMappedKey(int keyCode) {
         if (!globallyEnabled) {
             return false;
@@ -326,7 +330,7 @@ public final class BridgeConfig {
                 continue;
             }
             for (Trigger trigger : script.triggers) {
-                if (trigger.matchesSingleKey(keyCode)) {
+                if (trigger.keyCodes.contains(keyCode)) {
                     return true;
                 }
             }
@@ -334,27 +338,44 @@ public final class BridgeConfig {
         return false;
     }
 
+    /** Distinct key sets of every enabled multi-key trigger, canonical (sorted). */
+    public List<List<Integer>> chords() {
+        List<List<Integer>> lists = new ArrayList<>();
+        if (!globallyEnabled) {
+            return lists;
+        }
+        for (Script script : scripts) {
+            if (!script.enabled) {
+                continue;
+            }
+            for (Trigger trigger : script.triggers) {
+                lists.add(trigger.keyCodes);
+            }
+        }
+        return ChordTracker.chordsOf(lists);
+    }
+
     /**
      * Mirrors the Kotlin {@code resolveTimingForKey} in {@code app/src/main/java/com/example/data/
      * ScriptTiming.kt} exactly: the first explicit override on a trigger of the matching press
      * type wins, then the first explicit override on any trigger for that key, then the config
      * default. The two must never diverge, since a script authored in the app is later matched by
-     * this process.
+     * this process. {@code keyId} is a key code or a chord id ({@link ChordTracker#chordId}).
      */
     // Mirrors app/src/main/java/com/example/data/KeyModels.kt's TriggerTimingSpecs exactly.
     private static final long DOUBLE_WINDOW_MIN = 150L, DOUBLE_WINDOW_MAX = 750L, DOUBLE_WINDOW_STEP = 50L;
     private static final long LONG_THRESHOLD_MIN = 300L, LONG_THRESHOLD_MAX = 1500L, LONG_THRESHOLD_STEP = 100L;
 
-    public long doublePressWindowFor(int keyCode) {
-        List<Trigger> triggersForKey = triggersForKeyLocked(keyCode);
+    public long doublePressWindowFor(int keyId) {
+        List<Trigger> triggersForKey = triggersForKeyLocked(keyId);
         Long fromMatchingType = firstOverride(triggersForKey, PRESS_DOUBLE, true);
         Long resolved = fromMatchingType != null ? fromMatchingType : firstOverride(triggersForKey, null, true);
         long value = resolved != null ? resolved : doublePressWindowMs;
         return normalize(value, DOUBLE_WINDOW_MIN, DOUBLE_WINDOW_MAX, DOUBLE_WINDOW_STEP);
     }
 
-    public long longPressThresholdFor(int keyCode) {
-        List<Trigger> triggersForKey = triggersForKeyLocked(keyCode);
+    public long longPressThresholdFor(int keyId) {
+        List<Trigger> triggersForKey = triggersForKeyLocked(keyId);
         Long fromMatchingType = firstOverride(triggersForKey, PRESS_LONG, false);
         Long resolved = fromMatchingType != null ? fromMatchingType : firstOverride(triggersForKey, null, false);
         long value = resolved != null ? resolved : longPressThresholdMs;
@@ -368,14 +389,15 @@ public final class BridgeConfig {
         return Math.max(min, Math.min(max, snapped));
     }
 
-    private List<Trigger> triggersForKeyLocked(int keyCode) {
+    /** Enabled triggers whose key id (a key code, or a chord id) equals {@code keyId}. */
+    private List<Trigger> triggersForKeyLocked(int keyId) {
         List<Trigger> result = new ArrayList<>();
         for (Script script : scripts) {
             if (!script.enabled) {
                 continue;
             }
             for (Trigger trigger : script.triggers) {
-                if (trigger.matchesSingleKey(keyCode)) {
+                if (trigger.keyId() == keyId) {
                     result.add(trigger);
                 }
             }

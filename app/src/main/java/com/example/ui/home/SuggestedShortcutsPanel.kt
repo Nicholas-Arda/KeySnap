@@ -10,17 +10,31 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.BatteryAlert
 import androidx.compose.material.icons.outlined.BatteryChargingFull
 import androidx.compose.material.icons.outlined.BatterySaver
 import androidx.compose.material.icons.outlined.Bedtime
+import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.DirectionsCar
+import androidx.compose.material.icons.outlined.Email
+import androidx.compose.material.icons.outlined.EnergySavingsLeaf
+import androidx.compose.material.icons.outlined.EvStation
+import androidx.compose.material.icons.outlined.FiberManualRecord
+import androidx.compose.material.icons.outlined.FilterBAndW
 import androidx.compose.material.icons.outlined.Headphones
+import androidx.compose.material.icons.outlined.LightMode
+import androidx.compose.material.icons.outlined.LocalGasStation
+import androidx.compose.material.icons.outlined.LocalPharmacy
 import androidx.compose.material.icons.outlined.Mic
 import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.SlowMotionVideo
 import androidx.compose.material.icons.outlined.Sos
+import androidx.compose.material.icons.outlined.Speed
+import androidx.compose.material.icons.outlined.Timer
+import androidx.compose.material.icons.outlined.Videocam
+import androidx.compose.material.icons.outlined.Wifi
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -43,6 +57,7 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import io.github.nicholasarda.keysnap.R
 import androidx.compose.ui.unit.dp
+import com.example.data.ActionEditorForms
 import com.example.data.RecipeCategory
 import com.example.data.ScriptActionCatalog
 import com.example.data.ShortcutScript
@@ -155,6 +170,24 @@ private val suggestionIcons: Map<String, ImageVector> = mapOf(
     "suggestion_low_battery" to Icons.Outlined.BatteryAlert,
     "suggestion_night_charge_dnd" to Icons.Outlined.BatteryChargingFull,
     "suggestion_battery_saver" to Icons.Outlined.BatterySaver,
+    // Ready-made commands: a terminal glyph on every row would say nothing about any of them.
+    "recipe_screen_record" to Icons.Outlined.FiberManualRecord,
+    "recipe_video_camera" to Icons.Outlined.Videocam,
+    "recipe_internet_panel" to Icons.Outlined.Wifi,
+    "recipe_animations_fast" to Icons.Outlined.Speed,
+    "recipe_animations_normal" to Icons.Outlined.SlowMotionVideo,
+    "recipe_timer_5_min" to Icons.Outlined.Timer,
+    "recipe_dark_mode_toggle" to Icons.Outlined.DarkMode,
+    "recipe_power_saving_toggle" to Icons.Outlined.EnergySavingsLeaf,
+    "recipe_grayscale_toggle" to Icons.Outlined.FilterBAndW,
+    "recipe_nearby_pharmacy" to Icons.Outlined.LocalPharmacy,
+    "recipe_write_email" to Icons.Outlined.Email,
+    "recipe_evening_dark" to Icons.Outlined.DarkMode,
+    "recipe_morning_light" to Icons.Outlined.LightMode,
+    "recipe_low_battery_power_saving" to Icons.Outlined.EnergySavingsLeaf,
+    "recipe_bedtime_grayscale" to Icons.Outlined.FilterBAndW,
+    "recipe_car_gas" to Icons.Outlined.LocalGasStation,
+    "recipe_car_chargers" to Icons.Outlined.EvStation,
 )
 
 /**
@@ -210,7 +243,9 @@ private fun SuggestionRow(suggestion: SuggestedShortcut, onPick: (SuggestedShort
                 stringResource(suggestion.titleRes),
                 style = MaterialTheme.typography.bodyLarge,
                 color = if (available) colors.onSurface else colors.onSurfaceVariant,
-                maxLines = 1,
+                // Two lines: beside a wide badge ("Automatisation") one line left the title as
+                // "En quittant le tr…".
+                maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
             )
             Text(
@@ -220,6 +255,14 @@ private fun SuggestionRow(suggestion: SuggestedShortcut, onPick: (SuggestedShort
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
+            // Under the subtitle rather than beside the title, so a long translation wraps in the
+            // text column instead of squeezing the title.
+            if (suggestion.actions.any { ActionEditorForms.needsAdvancedMode(it.type) }) {
+                RecipePill(
+                    stringResource(R.string.badge_expert_mode),
+                    Modifier.padding(top = 4.dp).testTag("recipe_advanced_${suggestion.id}"),
+                )
+            }
             // In full, never ellipsized: it carries the limits the user must know before picking it.
             suggestion.noteRes?.let { note ->
                 Text(
@@ -236,7 +279,6 @@ private fun SuggestionRow(suggestion: SuggestedShortcut, onPick: (SuggestedShort
 
 @Composable
 private fun TileBadge(suggestion: SuggestedShortcut) {
-    val colors = MaterialTheme.colorScheme
     val actionCount = suggestion.actions.count { it.type != "delay" }
     val label = when {
         !suggestion.available -> stringResource(R.string.home_suggestion_soon)
@@ -244,10 +286,18 @@ private fun TileBadge(suggestion: SuggestedShortcut) {
         actionCount > 1 -> pluralStringResource(R.plurals.home_suggestion_steps, actionCount, actionCount)
         else -> return
     }
+    RecipePill(label)
+}
+
+@Composable
+private fun RecipePill(label: String, modifier: Modifier = Modifier) {
+    val colors = MaterialTheme.colorScheme
     Text(
         label,
-        Modifier
-            .clip(CircleShape)
+        modifier
+            // Rounded, not CircleShape: a long translation can wrap to two lines at large text sizes,
+            // and a circle's half-height corners would then clip its first and last letters.
+            .clip(RoundedCornerShape(10.dp))
             .background(colors.surfaceVariant)
             .padding(horizontal = 8.dp, vertical = 3.dp),
         style = MaterialTheme.typography.labelSmall,

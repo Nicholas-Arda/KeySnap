@@ -16,7 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.core.content.IntentCompat
 import com.example.data.AppLocale
 import com.example.data.KeyMappingRepository
-import com.example.data.resolveConsumeForScript
+import com.example.data.shouldConsumeKey
 import com.example.service.RunFailureNotifier
 import com.example.ui.MainScreen
 import com.example.ui.theme.MyApplicationTheme
@@ -108,15 +108,12 @@ class MainActivity : ComponentActivity() {
         consumes(keyCode, KeyEvent.ACTION_UP) || super.onKeyUp(keyCode, event)
 
     private fun consumes(keyCode: Int, action: Int): Boolean {
-        val handled = viewModel.onDirectActivityKeyEvent(keyCode, action)
+        // Read before dispatch: the release that ends a recording clears the flag.
+        val recording = viewModel.isRecordingKey.value
+        viewModel.onDirectActivityKeyEvent(keyCode, action)
         val config = viewModel.config.value
-        val boundToConsumingScript = viewModel.isMappingEnabled.value &&
-            viewModel.scripts.value.any { script ->
-                script.enabled &&
-                    script.triggers.any { it.keyCodes.singleOrNull() == keyCode } &&
-                    resolveConsumeForScript(script, config.consumeOriginalEvent)
-            }
-        return boundToConsumingScript || (handled && config.consumeOriginalEvent)
+        return shouldConsumeKey(viewModel.scripts.value, keyCode, viewModel.isMappingEnabled.value, config.consumeOriginalEvent) ||
+            (recording && config.consumeOriginalEvent)
     }
 }
 

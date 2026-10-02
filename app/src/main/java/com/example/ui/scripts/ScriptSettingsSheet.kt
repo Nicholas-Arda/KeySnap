@@ -36,6 +36,7 @@ import com.example.data.KeyMappingConfig
 import com.example.data.MillisecondSettingSpec
 import com.example.data.TriggerPressType
 import com.example.data.TriggerTimingSpecs
+import com.example.service.TimeSchedule
 import com.example.ui.components.ConsoleSwitch
 import com.example.ui.components.MillisecondSliderSetting
 import androidx.compose.ui.res.stringResource
@@ -59,6 +60,7 @@ fun ScriptSettingsSheet(
     onSetConsumeOriginalEvent: (Boolean?) -> Unit = {},
     onSetVibrateOnTrigger: (Boolean?) -> Unit = {},
     onSetHapticDurationMs: (Long?) -> Unit = {},
+    onSetExactTiming: (Boolean) -> Unit = {},
 ) {
     val colors = MaterialTheme.colorScheme
     // Sliders plus a focused name field make this taller than a short screen, so the content
@@ -118,6 +120,10 @@ fun ScriptSettingsSheet(
                 onChange = onSetHapticDurationMs,
             )
             HorizontalDivider(color = colors.outline.copy(alpha = .45f))
+            if (TimeSchedule.hasTimeCondition(draft.automation, draft.constraints)) {
+                ExactTimingSwitch(draft.exactTiming, onSetExactTiming)
+                HorizontalDivider(color = colors.outline.copy(alpha = .45f))
+            }
             if (draft.trigger == null) {
                 Text(
                     stringResource(R.string.script_settings_assign_key_first),
@@ -244,6 +250,31 @@ private fun OverridableVibrateSwitch(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun ExactTimingSwitch(checked: Boolean, onChange: (Boolean) -> Unit) {
+    val colors = MaterialTheme.colorScheme
+    Row(
+        Modifier.fillMaxWidth().toggleable(value = checked, role = Role.Switch, onValueChange = onChange)
+            .testTag("script_settings_exact_timing_switch"),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(Modifier.weight(1f).padding(end = 12.dp)) {
+            Text(
+                stringResource(R.string.script_settings_exact_timing),
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Medium,
+                color = colors.onSurface,
+            )
+            Text(
+                stringResource(R.string.script_settings_exact_timing_description),
+                style = MaterialTheme.typography.bodySmall,
+                color = colors.onSurfaceVariant,
+            )
+        }
+        Switch(checked = checked, onCheckedChange = null)
     }
 }
 

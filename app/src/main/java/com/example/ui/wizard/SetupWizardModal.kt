@@ -7,12 +7,15 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -86,6 +89,7 @@ import com.example.ui.home.loopPosition
 import com.example.ui.home.ramp
 import com.example.ui.home.rememberReducedMotion
 import com.example.ui.components.InnerShape
+import com.example.ui.components.singleLineWidth
 import com.example.ui.theme.MonoBody
 import com.example.ui.theme.MonoLabel
 import com.example.viewmodel.MainViewModel
@@ -137,7 +141,10 @@ fun SetupWizardModal(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+                        // Weighted so a long title wraps in its own space instead of running under
+                        // the close button.
                         Row(
+                            modifier = Modifier.weight(1f).padding(end = 8.dp),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(10.dp)
                         ) {
@@ -210,7 +217,8 @@ fun SetupWizardModal(
                                 colors = ButtonDefaults.outlinedButtonColors(contentColor = colors.onSurfaceVariant),
                                 border = BorderStroke(1.5.dp, colors.outline.copy(alpha = .5f)),
                                 shape = ConsoleShape,
-                                modifier = Modifier.width(104.dp).height(52.dp)
+                                modifier = Modifier.widthIn(min = 104.dp).heightIn(min = 52.dp),
+                                contentPadding = WizardButtonPadding,
                             ) {
                                 Icon(Icons.AutoMirrored.Filled.ArrowBack, null, Modifier.size(15.dp))
                                 Spacer(modifier = Modifier.width(6.dp))
@@ -225,7 +233,7 @@ fun SetupWizardModal(
                                 shape = ConsoleShape,
                                 modifier = Modifier
                                     .weight(1f)
-                                    .height(52.dp)
+                                    .heightIn(min = 52.dp)
                                     .testTag("wizard_next_button"),
                                 enabled = (currentStep == 0) || (currentStep == 1 && isStep1Valid)
                             ) {
@@ -243,9 +251,10 @@ fun SetupWizardModal(
                                 shape = ConsoleShape,
                                 modifier = Modifier
                                     .weight(1f)
-                                    .height(52.dp)
+                                    .heightIn(min = 52.dp)
                                     .testTag("wizard_next_to_done_button"),
-                                enabled = (pairingStatus == PairingStatus.PAIRED_SUCCESS || pairingStatus == PairingStatus.ADVANCED_MODE_RUNNING)
+                                contentPadding = WizardButtonPadding,
+                                enabled =(pairingStatus == PairingStatus.PAIRED_SUCCESS || pairingStatus == PairingStatus.ADVANCED_MODE_RUNNING)
                             ) {
                                 val onColor = if (pairingStatus == PairingStatus.PAIRED_SUCCESS || pairingStatus == PairingStatus.ADVANCED_MODE_RUNNING) colors.background else colors.onSurfaceVariant
                                 Text(stringResource(R.string.wizard_finish_pairing), color = onColor, style = MaterialTheme.typography.labelLarge)
@@ -259,7 +268,7 @@ fun SetupWizardModal(
                                 shape = ConsoleShape,
                                 modifier = Modifier
                                     .weight(1f)
-                                    .height(52.dp)
+                                    .heightIn(min = 52.dp)
                             ) {
                                 Icon(Icons.Default.CheckCircle, null, tint = colors.background, modifier = Modifier.size(17.dp))
                                 Spacer(modifier = Modifier.width(8.dp))
@@ -299,6 +308,12 @@ fun SetupWizardModal(
     }
 }
 
+/**
+ * Back and Finish pairing share one row; Material's 24 dp side padding left "l'accoppiamento" too
+ * little room and split it mid-word.
+ */
+private val WizardButtonPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
+
 @Composable
 fun WizardStepIndicator(currentStep: Int) {
     val colors = MaterialTheme.colorScheme
@@ -307,44 +322,56 @@ fun WizardStepIndicator(currentStep: Int) {
         stringResource(R.string.wizard_step_pairing),
         stringResource(R.string.wizard_step_done),
     )
-    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-        steps.forEachIndexed { index, title ->
-            val isCompleted = currentStep > index
-            val isActive = currentStep == index
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(7.dp)) {
-                Box(
-                    modifier = Modifier
-                        .size(22.dp)
-                        .clip(CircleShape)
-                        .background(if (isCompleted || isActive) colors.primary else colors.surfaceVariant),
-                    contentAlignment = Alignment.Center
-                ) {
-                    if (isCompleted) {
-                        Icon(Icons.Default.Check, null, tint = colors.background, modifier = Modifier.size(12.dp))
-                    } else {
+    // Every label needs its 22 dp dot and 7 dp gap, and each connector at least 16 dp of line plus
+    // its 16 dp of padding. Where long labels or a large font leave less, only the current step is
+    // named and the others keep their numbered dots, rather than the lines vanishing or a label
+    // being clipped.
+    val labelStyle = MaterialTheme.typography.labelMedium
+    val needed = steps.fold(0.dp) { sum, title -> sum + singleLineWidth(title, labelStyle) } +
+        29.dp * steps.size + 32.dp * (steps.size - 1)
+    BoxWithConstraints(Modifier.fillMaxWidth()) {
+        val allNamed = maxWidth >= needed
+        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            steps.forEachIndexed { index, title ->
+                val isCompleted = currentStep > index
+                val isActive = currentStep == index
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(7.dp)) {
+                    Box(
+                        modifier = Modifier
+                            .size(22.dp)
+                            .clip(CircleShape)
+                            .background(if (isCompleted || isActive) colors.primary else colors.surfaceVariant),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (isCompleted) {
+                            Icon(Icons.Default.Check, null, tint = colors.background, modifier = Modifier.size(12.dp))
+                        } else {
+                            Text(
+                                (index + 1).toString(),
+                                color = if (isActive) colors.background else colors.onSurfaceVariant,
+                                style = MaterialTheme.typography.labelMedium,
+                            )
+                        }
+                    }
+                    if (allNamed || isActive) {
                         Text(
-                            (index + 1).toString(),
-                            color = if (isActive) colors.background else colors.onSurfaceVariant,
-                            style = MaterialTheme.typography.labelMedium,
+                            title,
+                            color = if (isActive || isCompleted) colors.onBackground else colors.onSurfaceVariant,
+                            style = labelStyle,
+                            maxLines = 1,
                         )
                     }
                 }
-                Text(
-                    title,
-                    color = if (isActive || isCompleted) colors.onBackground else colors.onSurfaceVariant,
-                    style = MaterialTheme.typography.labelMedium,
-                    maxLines = 1,
-                )
-            }
-            if (index != steps.lastIndex) {
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(horizontal = 8.dp)
-                        .height(2.dp)
-                        .clip(InnerShape)
-                        .background(if (isCompleted) colors.primary else colors.outline.copy(alpha = .4f))
-                )
+                if (index != steps.lastIndex) {
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(horizontal = 8.dp)
+                            .height(2.dp)
+                            .clip(InnerShape)
+                            .background(if (isCompleted) colors.primary else colors.outline.copy(alpha = .4f))
+                    )
+                }
             }
         }
     }
@@ -473,13 +500,14 @@ fun WizardIntroStep(onGoToPairing: () -> Unit) {
     }
 }
 
-/** One capability or limit: a mono "can"/"never" mark, then the line it applies to. */
+/** One capability or limit: a "can"/"never" mark, then the line it applies to. */
 @Composable
 private fun ScopeLine(mark: String, markColor: Color, line: String) {
     Row(horizontalArrangement = Arrangement.spacedBy(9.dp), verticalAlignment = Alignment.Top) {
         // widthIn rather than width: the mark is a word, and a longer translation must push the
-        // sentence across rather than be clipped.
-        Text(mark, style = MonoLabel, color = markColor, modifier = Modifier.widthIn(min = 42.dp).padding(top = 2.dp))
+        // sentence across rather than be clipped. Not the monospace face: it has no Arabic or
+        // Devanagari glyphs, so those marks fell back with odd spacing.
+        Text(mark, style = MaterialTheme.typography.labelSmall, color = markColor, modifier = Modifier.widthIn(min = 42.dp).padding(top = 2.dp))
         Text(line, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
@@ -722,7 +750,7 @@ fun WizardDeveloperOptionsStep(
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .height(52.dp)
+                .heightIn(min = 52.dp)
                 .testTag("open_developer_options_button"),
             colors = ButtonDefaults.buttonColors(containerColor = colors.surfaceVariant),
             shape = ConsoleShape
@@ -864,7 +892,7 @@ fun WizardSuccessStep(
 
                 Button(
                     onClick = onTestFlash,
-                    modifier = Modifier.fillMaxWidth().height(52.dp),
+                    modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = colors.primary.copy(alpha = .14f)),
                     shape = ConsoleShape
                 ) {

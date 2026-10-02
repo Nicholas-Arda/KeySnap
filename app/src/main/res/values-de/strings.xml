@@ -248,6 +248,8 @@
     <string name="constraint_location_on">Standort ist an</string>
     <string name="constraint_location_off">Standort ist aus</string>
     <string name="constraint_day_of_week">Wochentag</string>
+    <string name="constraint_at_time">Zu einer Uhrzeit</string>
+    <string name="constraint_interval">Wiederholen alle</string>
     <string name="constraint_calendar_event_active">Kalendertermin läuft</string>
     <string name="constraint_cooldown">Höchstens einmal alle N Minuten</string>
     <string name="constraint_mobile_data_on">Mobile Daten sind an</string>
@@ -368,6 +370,7 @@
     <string name="key_media_play_pause">Wiedergabe / Pause</string>
     <string name="key_wakeup">Aufwecken</string>
     <string name="key_alert_slider">Alert-Schieberegler / Benutzerdefinierter Schalter</string>
+    <string name="key_unnamed">Unbenannte Taste</string>
 
     <!-- Entwickleroptionen-Anleitungen -->
     <string name="guide_generic">Andere</string>
@@ -481,6 +484,20 @@
     <string name="field_cooldown_minutes">Minuten zwischen Ausführungen</string>
     <string name="helper_cooldown">Wird übersprungen, wenn dieser Kurzbefehl vor weniger als so vielen Minuten ausgeführt wurde. Der Zähler beginnt neu, wenn das Telefon oder KeySnap neu startet.</string>
     <string name="constraint_summary_cooldown">Höchstens alle %1$d Min.</string>
+    <string name="field_at_time">Uhrzeit</string>
+    <string name="field_interval">Alle</string>
+    <string name="interval_unit_seconds">Sekunden</string>
+    <string name="interval_unit_minutes">Minuten</string>
+    <string name="interval_unit_hours">Stunden</string>
+    <string name="constraint_summary_at_time_every_day">%1$s · täglich</string>
+    <string name="constraint_summary_interval_s">Alle %1$d s</string>
+    <string name="constraint_summary_interval_m">Alle %1$d Min.</string>
+    <string name="constraint_summary_interval_h">Alle %1$d Std.</string>
+    <string name="helper_interval_clock">Läuft nach der Uhr: %1$s</string>
+    <string name="helper_interval_midnight">Zählt ab Mitternacht: %1$s</string>
+    <string name="helper_interval_sleep">Kann bis zu 10 Min. später laufen, während das Telefon schläft.</string>
+    <string name="helper_time_window_start">Bei einer Automatisierung läuft es einmal, wenn der Zeitraum beginnt.</string>
+    <string name="time_needs_exact_alarm">Braucht „Wecker und Erinnerungen“, um pünktlich zu laufen.</string>
     <string name="constraint_config_choose_app">Wähle eine App aus, um fortzufahren</string>
     <string name="constraint_needs_location">Android zeigt den Netzwerknamen nur Apps mit Standortberechtigung.</string>
     <string name="constraint_grant_permission">Erteilen</string>
@@ -536,7 +553,7 @@
     <!-- Dialoge -->
     <string name="dialog_expert_connected">ERWEITERTER MODUS VERBUNDEN</string>
     <string name="dialog_new_input_title">Neue Eingabe erkannt</string>
-    <string name="dialog_new_input_body">Code: %1$d. Gib dieser Eingabe einen kurzen Namen.</string>
+    <string name="dialog_new_input_body">Gib dieser Eingabe einen kurzen Namen.</string>
     <string name="dialog_new_input_hint">z. B. Kurzbefehltaste</string>
 
     <!-- App-Auswahl -->
@@ -556,7 +573,7 @@
     <string name="trigger_picker_no_key">Noch keine Taste</string>
     <string name="trigger_picker_saved_key">Oder eine gespeicherte Taste wählen</string>
     <string name="trigger_picker_listening">Wird aufgezeichnet… zum Stoppen tippen</string>
-    <string name="trigger_picker_tap_to_record">Tippen und dann eine physische Taste drücken</string>
+    <string name="trigger_picker_tap_to_record">Tippen und dann eine Taste drücken oder mehrere zusammen halten</string>
     <string name="trigger_picker_save_combo">Taste speichern</string>
     <string name="trigger_picker_use_automation">Stattdessen eine Automatisierung verwenden</string>
     <string name="trigger_picker_use_key">%1$s verwenden</string>
@@ -572,9 +589,13 @@
     <string name="script_settings_custom_value">Eigener Wert für diesen Kurzbefehl</string>
     <string name="script_settings_consume_input">Ursprüngliche Eingabe abfangen</string>
     <string name="script_settings_consume_input_description">Verhindert, dass die Taste andere Apps erreicht, sofern Android dies zulässt.</string>
+    <string name="chord_consume_hint">Ist „Ursprüngliche Eingabe abfangen“ an, erfüllt eine dieser Tasten allein gedrückt ihre normale Funktion nicht.</string>
+    <string name="chord_power_hint">Die Ein/Aus-Taste funktioniert in einer Tastenkombination nur im Erweiterten Modus, und die eigene Ein/Aus-Aktion des Telefons findet trotzdem statt.</string>
     <string name="script_settings_not_global">Nicht global, nur für diesen Kurzbefehl</string>
     <string name="script_settings_vibrate">Bei Ausführung vibrieren</string>
     <string name="script_settings_vibrate_description">Eine kurze Vibration, wenn dieser Kurzbefehl ausgelöst wird.</string>
+    <string name="script_settings_exact_timing">Pünktlich ausführen</string>
+    <string name="script_settings_exact_timing_description">Zeigt beim Warten ein Wecker-Symbol in der Statusleiste.</string>
     <string name="script_settings_reset_to_default">Auf Standard zurücksetzen (%1$s)</string>
 
     <!-- Kurzbefehlsliste -->
@@ -925,24 +946,62 @@
     <!-- OEM key tip -->
     <string name="oem_key_tip">Tipp: Stell diese Taste in den Einstellungen deines Telefons auf „Keine“, damit nur KeySnap darauf reagiert.</string>
     <!-- Recipe gallery -->
-    <string name="recipe_category_webhook">Webhooks</string>
+    <string name="recipe_category_commands">Fertige Befehle</string>
     <string name="recipe_wifi_vibrate">Bei der Arbeit</string>
     <string name="recipe_wifi_vibrate_subtitle">Arbeits-WLAN: Klingelton auf Vibration</string>
     <string name="recipe_wifi_ring">Feierabend</string>
     <string name="recipe_wifi_ring_subtitle">WLAN verlassen: Klingelton wieder an</string>
     <string name="recipe_morning_dnd_off">Morgens abstecken</string>
     <string name="recipe_morning_dnd_off_subtitle">Nach 06:00 vom Ladegerät: Nicht stören aus</string>
-    <string name="recipe_smart_home_subtitle">Webhook-URL einer Automation einfügen</string>
-    <string name="recipe_chat_channel_subtitle">Webhook-URL eines Kanals einfügen</string>
-    <string name="recipe_phone_notification_subtitle">URL deines Topics einfügen</string>
-    <string name="recipe_spreadsheet_subtitle">URL deiner Web-App einfügen</string>
+    <string name="recipe_smart_home_subtitle">Webhook-URL aus Home Assistant einfügen</string>
+    <string name="recipe_chat_channel_subtitle">Webhook-URL des Discord-Kanals einfügen</string>
+    <string name="recipe_phone_notification_subtitle">URL deines ntfy-Topics einfügen</string>
+    <string name="recipe_spreadsheet_subtitle">URL deiner Apps-Script-Web-App einfügen</string>
     <string name="recipe_category_routines">Alltagsroutinen</string>
     <string name="recipe_web_address">Webadresse aufrufen</string>
-    <string name="recipe_web_address_subtitle">Eine Taste ruft eine eingefügte URL auf</string>
-    <string name="recipe_smart_home">Smart-Home-Anfrage</string>
-    <string name="recipe_chat_channel">In einen Chat-Kanal posten</string>
-    <string name="recipe_phone_notification">Benachrichtigung ans Handy senden</string>
-    <string name="recipe_spreadsheet">Zeile in Tabelle einfügen</string>
+    <string name="recipe_web_address_subtitle">Adresse zum Aufrufen einfügen</string>
+    <string name="recipe_smart_home">Home-Assistant-Szene</string>
+    <string name="recipe_chat_channel">Discord: In Kanal posten</string>
+    <string name="recipe_phone_notification">ntfy: Ans Handy melden</string>
+    <string name="recipe_spreadsheet">Google Sheets: Zeile anfügen</string>
+    <string name="recipe_web_post">An Webadresse senden</string>
+    <string name="recipe_web_post_subtitle">Adresse zum Senden einfügen</string>
+    <string name="recipe_ha_arrived_home">Home Assistant: Zu Hause</string>
+    <string name="recipe_ha_arrived_home_subtitle">Heim-WLAN + Home-Assistant-Webhook-URL</string>
+    <string name="recipe_screen_record">Bildschirm 30 s aufnehmen</string>
+    <string name="recipe_screen_record_subtitle">Speichert einen Clip im Ordner Movies</string>
+    <string name="recipe_video_camera">Videokamera</string>
+    <string name="recipe_video_camera_subtitle">Öffnet die Kamera zum Filmen</string>
+    <string name="recipe_internet_panel">WLAN- und Datenfeld</string>
+    <string name="recipe_internet_panel_subtitle">Öffnet das Internet-Feld</string>
+    <string name="recipe_animations_fast">Schnellere Animationen</string>
+    <string name="recipe_animations_fast_subtitle">Animationen in halber Zeit</string>
+    <string name="recipe_animations_normal">Normale Animationen</string>
+    <string name="recipe_animations_normal_subtitle">Animationen wieder normal schnell</string>
+    <string name="recipe_timer_5_min">5-Minuten-Timer</string>
+    <string name="recipe_timer_5_min_subtitle">Startet einen Timer in deiner Uhr-App</string>
+    <string name="recipe_dark_mode_toggle">Dunkles Design an/aus</string>
+    <string name="recipe_dark_mode_toggle_subtitle">Wechselt das System-Design</string>
+    <string name="recipe_power_saving_toggle">Stromsparmodus an/aus</string>
+    <string name="recipe_power_saving_toggle_subtitle">Schaltet den Stromsparmodus um</string>
+    <string name="recipe_grayscale_toggle">Graustufen an/aus</string>
+    <string name="recipe_grayscale_toggle_subtitle">Schwarz-Weiß-Bildschirm und zurück</string>
+    <string name="recipe_nearby_pharmacy">Apotheke in der Nähe</string>
+    <string name="recipe_nearby_pharmacy_subtitle">Sucht in deiner Karten-App</string>
+    <string name="recipe_write_email">E-Mail schreiben</string>
+    <string name="recipe_write_email_subtitle">Öffnet eine neue E-Mail</string>
+    <string name="recipe_evening_dark">Abends dunkles Design</string>
+    <string name="recipe_evening_dark_subtitle">Dunkles Design um 21:00 an</string>
+    <string name="recipe_morning_light">Morgens helles Design</string>
+    <string name="recipe_morning_light_subtitle">Dunkles Design um 07:00 aus</string>
+    <string name="recipe_low_battery_power_saving" formatted="false">Stromsparen bei 20 %</string>
+    <string name="recipe_low_battery_power_saving_subtitle" formatted="false">Unter 20 % ohne Ladegerät: Sparen an</string>
+    <string name="recipe_bedtime_grayscale">Graustufen zur Nacht</string>
+    <string name="recipe_bedtime_grayscale_subtitle">Schwarz-Weiß-Bildschirm um 23:00</string>
+    <string name="recipe_car_gas">Tankstelle vom Auto aus</string>
+    <string name="recipe_car_gas_subtitle">Auto wählen; Karten findet Tankstellen</string>
+    <string name="recipe_car_chargers">Ladesäulen vom Auto aus</string>
+    <string name="recipe_car_chargers_subtitle">Auto wählen; Karten findet Ladesäulen</string>
     <string name="recipe_send_message">Nachricht senden</string>
     <string name="recipe_send_message_subtitle">Öffnet einen Chat mit deinem Text</string>
     <string name="recipe_send_message_note">Wähle einen Kontakt, die App zum Senden und deine Nachricht. Ist „Automatisch senden“ an, sendet der Erweiterte Modus sie; sonst öffnet sich der Chat mit der Nachricht bereits eingetippt und du tippst auf Senden.</string>

@@ -52,6 +52,12 @@ object ScriptConstraintCatalog {
     /** "A non-all-day, non-cancelled calendar event is in progress"; optional `calendar` and `title` filters (contains). */
     const val CALENDAR_EVENT_ACTIVE = "calendar_event_active"
 
+    /** "It is `time` (HH:MM) on one of `days` (`mon,tue,…`, blank = every day)." A pulse, not a state. */
+    const val AT_TIME = "at_time"
+
+    /** "Every `every` `unit` (s|m|h), counted from local midnight." A pulse, not a state. */
+    const val INTERVAL = "interval"
+
     val all: List<ConstraintDescriptor> = listOf(
         // Apps
         ConstraintDescriptor("app_in_foreground", R.string.constraint_app_in_foreground, ConstraintCategory.APPS, ConstraintAvailability.AVAILABLE),
@@ -140,6 +146,8 @@ object ScriptConstraintCatalog {
         // Time
         ConstraintDescriptor("time", R.string.constraint_time, ConstraintCategory.TIME, ConstraintAvailability.AVAILABLE),
         ConstraintDescriptor("day_of_week", R.string.constraint_day_of_week, ConstraintCategory.TIME, ConstraintAvailability.AVAILABLE),
+        ConstraintDescriptor(AT_TIME, R.string.constraint_at_time, ConstraintCategory.TIME, ConstraintAvailability.AVAILABLE),
+        ConstraintDescriptor(INTERVAL, R.string.constraint_interval, ConstraintCategory.TIME, ConstraintAvailability.AVAILABLE),
         ConstraintDescriptor(CALENDAR_EVENT_ACTIVE, R.string.constraint_calendar_event_active, ConstraintCategory.TIME, ConstraintAvailability.AVAILABLE),
         ConstraintDescriptor(COOLDOWN, R.string.constraint_cooldown, ConstraintCategory.TIME, ConstraintAvailability.AVAILABLE),
     )
@@ -155,9 +163,9 @@ object ScriptConstraintCatalog {
      * Constraints that can wake a key-less (automation) script: states Android announces with a
      * broadcast or callback, on which `DeviceEventReceiver` re-evaluates — nothing polls — or, for
      * the [AUTOMATION_ONLY] types, their own wake-up (the NotificationEventListener callback, the
-     * RSS feed job, the calendar alarm). An
+     * RSS feed job, the calendar alarm, the time conditions' alarm (TimeSchedule)). An
      * automation needs at least one of these; the others still gate it. Foreground app, media,
-     * keyboard, mobile data and time are left out for that reason; add one only together with its
+     * keyboard and mobile data are left out for that reason; add one only together with its
      * wake-up source.
      */
     val AUTOMATION_TYPES: Set<String> = setOf(
@@ -174,16 +182,18 @@ object ScriptConstraintCatalog {
         "airplane_mode_on", "airplane_mode_off",
         "location_on", "location_off",
         NOTIFICATION_RECEIVED, RSS_NEW_ITEM, CALENDAR_EVENT_ACTIVE,
+        "time", AT_TIME, INTERVAL,
     )
 
     fun isAutomation(type: String): Boolean = type in AUTOMATION_TYPES && isAvailable(type)
 
     /**
      * Offered and saved only on key-less automations, and evaluated only in the app: the detached
-     * bridge has no notification listener and reads no feed or calendar, so on a key shortcut it
+     * bridge has no notification listener, reads no feed or calendar and gets no "At a time" / "Repeat
+     * every" pulse (those hold only for the alarm's one re-evaluation), so on a key shortcut it
      * would decide differently from the app (for a type it has no constant for, "unknown never blocks").
      */
-    val AUTOMATION_ONLY: Set<String> = setOf(NOTIFICATION_RECEIVED, RSS_NEW_ITEM, CALENDAR_EVENT_ACTIVE)
+    val AUTOMATION_ONLY: Set<String> = setOf(NOTIFICATION_RECEIVED, RSS_NEW_ITEM, CALENDAR_EVENT_ACTIVE, AT_TIME, INTERVAL)
 
     /**
      * True when this shortcut's automation fires only on a notification, so a reply with no chat

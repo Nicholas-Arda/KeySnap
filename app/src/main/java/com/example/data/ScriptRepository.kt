@@ -87,10 +87,8 @@ class ScriptRepository internal constructor(
 
     fun newScriptId(): String = "script-${UUID.randomUUID()}"
 
-    fun shouldConsume(keyCode: Int): Boolean = globallyEnabled.value &&
-        prefs.getBoolean("consume_original", true) && scripts.value.any { script ->
-            script.enabled && script.triggers.any { it.keyCodes.size == 1 && it.keyCodes.single() == keyCode }
-        }
+    fun shouldConsume(keyCode: Int): Boolean =
+        shouldConsumeKey(scripts.value, keyCode, globallyEnabled.value, prefs.getBoolean("consume_original", true))
 
     private fun syncLegacyIfPrimary(script: ShortcutScript) {
         if (_scripts.value.firstOrNull()?.id != script.id) return

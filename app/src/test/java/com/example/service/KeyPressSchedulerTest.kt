@@ -85,4 +85,17 @@ class KeyPressSchedulerTest {
 
         assertEquals(listOf(24 to TriggerPressType.LONG_PRESS), triggered)
     }
+
+    @Test
+    fun cancelDropsAPendingPressAndItsRelease() = runTest {
+        val triggered = mutableListOf<Pair<Int, TriggerPressType>>()
+        val scheduler = KeyPressScheduler(this) { keyCode, type -> triggered += keyCode to type }
+
+        scheduler.onEvent(24, true, 0, KeyMappingConfig())
+        scheduler.cancel(24)
+        scheduler.onEvent(24, false, 50, KeyMappingConfig())
+        advanceUntilIdle()
+
+        assertTrue(triggered.isEmpty())
+    }
 }

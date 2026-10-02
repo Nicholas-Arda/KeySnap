@@ -26,11 +26,12 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.bridge.ChordTracker
 import com.example.data.RunFailure
 import com.example.data.RunRecord
 import com.example.data.ScriptActionCatalog
 import com.example.data.TriggerPressType
-import com.example.data.getReadableKeyName
+import com.example.data.keyDisplayName
 import com.example.ui.components.InnerShape
 import io.github.nicholasarda.keysnap.R
 import java.text.DateFormat
@@ -41,7 +42,7 @@ import java.util.Date
  * actions failed and why. Framed like the Only-if card so the chain reads as one column.
  */
 @Composable
-internal fun RunHistoryCard(runs: List<RunRecord>) {
+internal fun RunHistoryCard(runs: List<RunRecord>, triggerKeys: List<Int>) {
     val colors = MaterialTheme.colorScheme
     val res = LocalContext.current.resources
     val locale = LocalConfiguration.current.locales[0]
@@ -75,7 +76,7 @@ internal fun RunHistoryCard(runs: List<RunRecord>) {
                 )
                 Spacer(Modifier.width(10.dp))
                 Column(Modifier.weight(1f)) {
-                    Text(runTriggerLabel(run, res), color = colors.onSurface, style = MaterialTheme.typography.bodyLarge)
+                    Text(runTriggerLabel(run, res, triggerKeys), color = colors.onSurface, style = MaterialTheme.typography.bodyLarge)
                     Text(timeFormat.format(Date(run.at)), color = colors.onSurfaceVariant, style = MaterialTheme.typography.bodySmall)
                     if (failures.isEmpty()) {
                         Text(
@@ -98,15 +99,23 @@ internal fun RunHistoryCard(runs: List<RunRecord>) {
     }
 }
 
-private fun runTriggerLabel(run: RunRecord, res: Resources): String {
+private fun runTriggerLabel(run: RunRecord, res: Resources, triggerKeys: List<Int>): String {
     val keyCode = run.keyCode
+    val keyLabel = keyCode?.let { runKeyLabel(it, triggerKeys) { code -> keyDisplayName(res, code) } }
     val press = TriggerPressType.entries.firstOrNull { it.name == run.pressType }
     return when {
         run.source == RunRecord.SOURCE_AUTOMATION -> res.getString(R.string.trigger_kind_automation)
         run.source == RunRecord.SOURCE_WIDGET -> res.getString(R.string.run_source_widget)
         run.source == RunRecord.SOURCE_TILE -> res.getString(R.string.run_source_tile)
-        keyCode == null -> res.getString(R.string.trigger_kind_key)
-        press == null -> getReadableKeyName(res, keyCode)
-        else -> "${getReadableKeyName(res, keyCode)} · ${res.getString(press.titleRes)}"
+        keyLabel == null -> res.getString(R.string.trigger_kind_key)
+        press == null -> keyLabel
+        else -> "$keyLabel · ${res.getString(press.titleRes)}"
     }
+}
+
+/** The key part of a run's label: a chord id (negative) is shown as this shortcut's chord, if it still is one. */
+internal fun runKeyLabel(keyCode: Int, triggerKeys: List<Int>, name: (Int) -> String): String? = when {
+    keyCode >= 0 -> name(keyCode)
+    triggerKeys.size >= 2 && ChordTracker.triggerKeyId(triggerKeys) == keyCode -> triggerKeys.joinToString("+", transform = name)
+    else -> null
 }

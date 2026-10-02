@@ -52,6 +52,30 @@ class ScriptRepositoryTest {
         assertEquals(listOf("one", "two"), repository().scripts.value.map { it.id })
     }
 
+    @Test fun perScriptConsumeOverridesTheGlobalSettingForSingleKeysAndChords() {
+        val prefs = context.getSharedPreferences("arda_mapper_prefs", Context.MODE_PRIVATE)
+        val repository = repository()
+        repository.setGloballyEnabled(true)
+        repository.upsert(ShortcutScript("on", "On", true, listOf(ScriptTrigger(listOf(24), TriggerPressType.SINGLE_PRESS)), listOf(ScriptAction.ToggleFlashlight), consumeOriginalEvent = true))
+        repository.upsert(ShortcutScript("off", "Off", true, listOf(ScriptTrigger(listOf(25), TriggerPressType.SINGLE_PRESS)), listOf(ScriptAction.ToggleFlashlight), consumeOriginalEvent = false))
+        repository.upsert(ShortcutScript("chord", "Chord", true, listOf(ScriptTrigger(listOf(26, 27), TriggerPressType.LONG_PRESS)), listOf(ScriptAction.ToggleFlashlight), consumeOriginalEvent = true))
+
+        prefs.edit().putBoolean("consume_original", false).commit()
+        assertTrue(repository.shouldConsume(24))
+        assertFalse(repository.shouldConsume(25))
+        assertTrue(repository.shouldConsume(26))
+        assertTrue(repository.shouldConsume(27))
+
+        prefs.edit().putBoolean("consume_original", true).commit()
+        assertTrue(repository.shouldConsume(24))
+        assertFalse(repository.shouldConsume(25))
+        assertTrue(repository.shouldConsume(26))
+
+        repository.setGloballyEnabled(false)
+        assertFalse(repository.shouldConsume(24))
+        assertFalse(repository.shouldConsume(26))
+    }
+
     @Test fun aV1StoreWrittenBeforeParameterizedActionsExistedRoundTripsUnchanged() {
         // Simulates a document persisted by the pre-v2 app: no "params" on actions, no per-trigger
         // timing overrides. Moshi must fill the new fields with their defaults rather than fail.
@@ -148,6 +172,25 @@ class ScriptRepositoryTest {
         val reloaded = repository().scripts.value.single()
         assertTrue(reloaded.automation)
         assertEquals(listOf(ScriptConstraint("charging")), reloaded.constraints)
+    }
+
+    @Test fun exactTimingIsOnForAStoreWrittenBeforeItExistedAndRoundTripsWhenOff() {
+        val preExactTimingJson = """
+            {"version":2,"globallyEnabled":true,"scripts":[
+              {"id":"alarm","name":"Alarm","enabled":true,"triggers":[],"automation":true,
+               "actions":[{"type":"toggle_flashlight"}],
+               "constraints":[{"type":"at_time","params":{"time":"07:00","days":""}}]}
+            ]}
+        """.trimIndent()
+        context.getSharedPreferences("arda_mapper_prefs", Context.MODE_PRIVATE).edit()
+            .putString("shortcut_scripts_v1", preExactTimingJson).commit()
+
+        val repository = repository()
+        val legacy = repository.scripts.value.single()
+        assertTrue(legacy.exactTiming)
+
+        repository.upsert(legacy.copy(exactTiming = false))
+        assertFalse(repository().scripts.value.single().exactTiming)
     }
 
     @Test fun v1EventTriggersMigrateToAnAutomationWithTheMatchingConstraint() {

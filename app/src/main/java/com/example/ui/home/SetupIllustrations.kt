@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -209,6 +211,7 @@ internal fun AccessibilityIllustration(reduced: Boolean) {
  * Step 2: Android's battery-optimisation dialog — the only door that actually writes the doze
  * allowlist — on the same keyframes as step 3's permission dialog.
  */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun BackgroundDialogIllustration(reduced: Boolean) {
     val colors = MaterialTheme.colorScheme
@@ -238,7 +241,7 @@ internal fun BackgroundDialogIllustration(reduced: Boolean) {
                     textAlign = TextAlign.Center,
                 )
                 Spacer(Modifier.height(2.dp))
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     DialogButton(stringResource(R.string.home_setup_illo_battery_deny), fill = { 0f })
                     DialogButton(stringResource(R.string.home_setup_illo_allow), fill = { ramp(t.value, .28f, .36f) })
                 }
@@ -262,6 +265,7 @@ internal fun BackgroundDialogIllustration(reduced: Boolean) {
 }
 
 /** Step 3: Android's permission dialog, with Allow filling under the press they must not miss. */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun NotificationIllustration(reduced: Boolean) {
     val colors = MaterialTheme.colorScheme
@@ -290,7 +294,7 @@ internal fun NotificationIllustration(reduced: Boolean) {
                     color = colors.onSurface,
                     textAlign = TextAlign.Center,
                 )
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     DialogButton(stringResource(R.string.home_setup_illo_deny), fill = { 0f })
                     DialogButton(stringResource(R.string.home_setup_illo_allow), fill = { ramp(t.value, .28f, .36f) })
                 }

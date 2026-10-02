@@ -24,7 +24,8 @@ import com.example.data.ScriptRepository
 import com.example.data.ShortcutScript
 import com.example.data.TriggerPressType
 import com.example.data.buildRunRecord
-import com.example.data.getReadableKeyName
+import com.example.data.keyDisplayName
+import com.example.data.keyId
 import com.example.data.resolveHapticDurationForScript
 import com.example.data.resolveTimingForKey
 import com.example.data.resolveVibrateForScript
@@ -89,8 +90,11 @@ object HardwareKeyTriggerCoordinator {
     private val _isAdvancedBridgeActive = MutableStateFlow(false)
     val isAdvancedBridgeActive: StateFlow<Boolean> = _isAdvancedBridgeActive.asStateFlow()
 
-    private val _recordedKey = MutableSharedFlow<Int>(extraBufferCapacity = 1)
-    val recordedKey: SharedFlow<Int> = _recordedKey.asSharedFlow()
+    private val _recordedKey = MutableSharedFlow<List<Int>>(extraBufferCapacity = 1)
+    val recordedKey: SharedFlow<List<Int>> = _recordedKey.asSharedFlow()
+
+    /** Keys held during recording; the set is emitted when the first of them is released. */
+    private val recordingHeld = linkedSetOf<Int>()
 
     // Deduplication & Multi-source Synchronization
     private var lastEventKeyCode: Int = 0
@@ -117,17 +121,17 @@ object HardwareKeyTriggerCoordinator {
             .all { cooldownAllows(lastRunAt[script.id], it.params["minutes"], now) }
 
     // Press Timing & Debounce Configuration
-    private var keyPressScheduler: KeyPressScheduler? = null
+    private var keyGestureFeed: KeyGestureFeed? = null
 
     fun initialize(context: Context, keyRepository: KeyMappingRepository) {
-        keyPressScheduler?.reset()
+        keyGestureFeed?.reset()
         appContext = context.applicationContext
         repository = keyRepository
         scriptRepository = ScriptRepository.getInstance(context)
         actionExecutor = ScriptActionExecutor.android(context)
         constraintEvaluator = AndroidConstraintEvaluator(context.applicationContext)
-        keyPressScheduler = KeyPressScheduler(coordinatorScope) { keyCode, pressType ->
-            handleGesture(keyCode, pressType)
+        keyGestureFeed = KeyGestureFeed(coordinatorScope) { keyId, pressType ->
+            handleGesture(keyId, pressType)
         }
         FlashlightController.initialize(context.applicationContext)
         automationWatch?.cancel()
@@ -147,12 +151,19 @@ object HardwareKeyTriggerCoordinator {
                 appContext?.let {
                     RssPolling.sync(it, scripts)
                     CalendarCondition.sync(it, scripts)
+                    TimeSchedule.sync(it, scripts)
                 }
                 automationEdges.reset()
                 reevaluateAutomations()
             }
         }
         launch { FlashlightController.isFlashlightOn.collect { reevaluateAutomations() } }
+        // Pausing everything drops the time alarm (and its alarm-clock icon); resuming re-arms it.
+        launch {
+            scriptRepository?.globallyEnabled?.collect {
+                appContext?.let { TimeSchedule.sync(it, scriptRepository?.scripts?.value.orEmpty()) }
+            }
+        }
     }
 
     fun setAdvancedBridgeActive(active: Boolean) {
@@ -160,7 +171,7 @@ object HardwareKeyTriggerCoordinator {
         _isAdvancedBridgeActive.value = active
         // Drop any half-resolved gesture so a press that started under one owner cannot be
         // completed by the other.
-        keyPressScheduler?.reset()
+        keyGestureFeed?.reset()
         Log.d(TAG, "Advanced bridge ${if (active) "active: bridge owns execution" else "inactive: app owns execution"}")
     }
 
@@ -208,10 +219,12 @@ object HardwareKeyTriggerCoordinator {
     }
 
     fun startRecordingKey() {
+        synchronized(recordingHeld) { recordingHeld.clear() }
         _isRecordingKey.value = true
     }
 
     fun cancelRecordingKey() {
+        synchronized(recordingHeld) { recordingHeld.clear() }
         _isRecordingKey.value = false
     }
 
@@ -235,23 +248,31 @@ object HardwareKeyTriggerCoordinator {
         _lastCapturedSource.value = source
 
         val actionName = ctx.getString(if (isDown) R.string.event_key_down else R.string.event_key_up)
-        val keyName = getReadableKeyName(ctx.resources, keyCode)
+        val keyName = keyDisplayName(ctx.resources, keyCode)
 
-        // 2. Key Recording Mode
-        if (_isRecordingKey.value && isDown) {
-            _recordedKey.tryEmit(keyCode)
-            _isRecordingKey.value = false
-            vibratePhone(ctx, 40)
-            Log.d(TAG, "New target key recorded: $keyName ($keyCode) Kaynak: $source")
-
-            val recordedEvent = LiveKeyEvent(
-                keyCode = keyCode,
-                keyName = keyName,
-                actionName = actionName,
-                isTriggerMatch = true,
-                timestamp = now
+        // 2. Key Recording Mode: every key held together is recorded, saved on the first release.
+        if (_isRecordingKey.value) {
+            // Main (Accessibility/Activity) and the BridgeClient IO thread (bridge echo) both land here.
+            val released = synchronized(recordingHeld) {
+                if (isDown) {
+                    recordingHeld += keyCode
+                    false
+                } else if (keyCode in recordingHeld) {
+                    _recordedKey.tryEmit(recordingHeld.sorted())
+                    recordingHeld.clear()
+                    true
+                } else {
+                    return false
+                }
+            }
+            if (released) {
+                _isRecordingKey.value = false
+                vibratePhone(ctx, 40)
+                Log.d(TAG, "New target key recorded: $keyName ($keyCode) Kaynak: $source")
+            }
+            _latestKeyEvent.tryEmit(
+                LiveKeyEvent(keyCode = keyCode, keyName = keyName, actionName = actionName, isTriggerMatch = true, timestamp = now),
             )
-            _latestKeyEvent.tryEmit(recordedEvent)
             return true
         }
 
@@ -260,20 +281,20 @@ object HardwareKeyTriggerCoordinator {
         // 3. Timing & Debounce Algorithm for Target Key
         val matchingScripts = if (scriptsRepo.globallyEnabled.value) {
             scriptsRepo.scripts.value.filter { script ->
-                script.enabled && script.triggers.any { it.keyCodes.size == 1 && it.keyCodes.single() == keyCode }
+                script.enabled && script.triggers.any { keyCode in it.keyCodes }
             }
         } else emptyList()
         if (matchingScripts.isNotEmpty()) {
             isMatched = true
             // Scheduling always runs, even while the privileged bridge is active: it resolves the
-            // same deterministic single/double/long-press state machine the bridge runs on its own
-            // getevent stream, using the same thresholds, so both land on the same press type for
-            // the same physical press. Execution itself (handleGesture) is what's split so neither
-            // side repeats the other's actions.
-            val effectiveConfig = resolveTimingForKey(scriptsRepo.scripts.value, keyCode, config)
+            // same deterministic chord tracker and single/double/long-press state machine the
+            // bridge runs on its own getevent stream, using the same thresholds, so both land on
+            // the same press type for the same physical press. Execution itself (handleGesture) is
+            // what's split so neither side repeats the other's actions.
+            val scripts = scriptsRepo.scripts.value
             coordinatorScope.launch {
                 stateMutex.withLock {
-                    keyPressScheduler?.onEvent(keyCode, isDown, now, effectiveConfig)
+                    keyGestureFeed?.onEvent(keyCode, isDown, now, scripts, config)
                 }
             }
         } else {
@@ -293,16 +314,14 @@ object HardwareKeyTriggerCoordinator {
         return isMatched
     }
 
-    private fun handleGesture(keyCode: Int, pressType: TriggerPressType) {
+    private fun handleGesture(keyId: Int, pressType: TriggerPressType) {
         val scriptsRepo = scriptRepository ?: return
         val context = appContext ?: return
         if (!scriptsRepo.globallyEnabled.value) return
 
         val matched = scriptsRepo.scripts.value.filter { script ->
             script.enabled && script.triggers.any { trigger ->
-                trigger.keyCodes.size == 1 &&
-                    trigger.keyCodes.single() == keyCode &&
-                    trigger.pressType == pressType
+                trigger.keyId() == keyId && trigger.pressType == pressType
             }
         }.filter { script ->
             val evaluator = constraintEvaluator
@@ -311,7 +330,7 @@ object HardwareKeyTriggerCoordinator {
         if (matched.isEmpty()) return
 
         val defaults = repository?.config?.value ?: return
-        val config = resolveTimingForKey(scriptsRepo.scripts.value, keyCode, defaults)
+        val config = resolveTimingForKey(scriptsRepo.scripts.value, keyId, defaults)
         val label = when (pressType) {
             TriggerPressType.SINGLE_PRESS -> context.getString(R.string.trigger_label_single, config.doublePressWindowMs)
             TriggerPressType.DOUBLE_PRESS -> context.getString(R.string.trigger_label_double, config.doublePressWindowMs)
@@ -325,7 +344,7 @@ object HardwareKeyTriggerCoordinator {
             return
         }
         Log.d(TAG, "$label detected and fired")
-        executeActions(context, config, matched, label, keyCode, pressType)
+        executeActions(context, config, matched, label, keyId, pressType)
     }
 
     /**
@@ -335,10 +354,15 @@ object HardwareKeyTriggerCoordinator {
      * still tracks the edge, so un-pausing never replays it. No constraints means never.
      */
     fun reevaluateAutomations() {
-        val scriptsRepo = scriptRepository ?: return
-        val context = appContext ?: return
-        val defaults = repository?.config?.value ?: return
-        val evaluator = constraintEvaluator ?: return
+        reevaluateAutomationsFired()
+    }
+
+    /** [reevaluateAutomations], true when a script fired. */
+    fun reevaluateAutomationsFired(): Boolean {
+        val scriptsRepo = scriptRepository ?: return false
+        val context = appContext ?: return false
+        val defaults = repository?.config?.value ?: return false
+        val evaluator = constraintEvaluator ?: return false
 
         val now = SystemClock.elapsedRealtime()
         val fired = scriptsRepo.scripts.value.filter { script ->
@@ -348,9 +372,10 @@ object HardwareKeyTriggerCoordinator {
             automationEdges.update(script.id, satisfied) && script.enabled && scriptsRepo.globallyEnabled.value &&
                 passesCooldown(script, now)
         }
-        if (fired.isEmpty()) return
+        if (fired.isEmpty()) return false
         Log.d(TAG, "Automation fired: scripts=${fired.map { it.id }}")
         executeActions(context, defaults, fired, context.getString(R.string.trigger_kind_automation), keyCode = null, pressType = null)
+        return true
     }
 
     /**

@@ -78,18 +78,31 @@ class ScriptConstraintCatalogTest {
             assertTrue("$type is not an AVAILABLE constraint", ScriptConstraintCatalog.isAvailable(type))
             assertTrue(ScriptConstraintCatalog.isAutomation(type))
         }
-        // No wake-up source: foreground app, media, keyboard, mobile data and time only gate.
-        listOf("app_in_foreground", "media_is_playing", "keyboard_showing", "mobile_data_on", "time", "day_of_week", "cooldown").forEach {
+        // No wake-up source: foreground app, media, keyboard, mobile data, day of week and cooldown only gate.
+        listOf("app_in_foreground", "media_is_playing", "keyboard_showing", "mobile_data_on", "day_of_week", "cooldown").forEach {
             assertFalse("$it must not be an automation trigger", ScriptConstraintCatalog.isAutomation(it))
         }
     }
 
     /** App-only; grows with each automation-only condition. On a key the bridge would read these differently. */
     @Test fun theAutomationOnlySetIsPinnedAndEachCanWakeAnAutomation() {
-        assertEquals(setOf("notification_received", "rss_new_item", "calendar_event_active"), ScriptConstraintCatalog.AUTOMATION_ONLY)
+        assertEquals(
+            setOf("notification_received", "rss_new_item", "calendar_event_active", "at_time", "interval"),
+            ScriptConstraintCatalog.AUTOMATION_ONLY,
+        )
         ScriptConstraintCatalog.AUTOMATION_ONLY.forEach { type ->
             assertTrue("$type must be able to wake an automation", ScriptConstraintCatalog.isAutomation(type))
         }
+    }
+
+    @Test
+    fun timeConditionsCanStartAnAutomation() {
+        listOf("time", ScriptConstraintCatalog.AT_TIME, ScriptConstraintCatalog.INTERVAL).forEach {
+            assertTrue(it, ScriptConstraintCatalog.isAutomation(it))
+        }
+        assertTrue(ScriptConstraintCatalog.AT_TIME in ScriptConstraintCatalog.AUTOMATION_ONLY)
+        assertTrue(ScriptConstraintCatalog.INTERVAL in ScriptConstraintCatalog.AUTOMATION_ONLY)
+        assertFalse("time" in ScriptConstraintCatalog.AUTOMATION_ONLY)
     }
 
     @Test fun everyCategoryHasAtLeastOneEntry() {

@@ -248,6 +248,8 @@
     <string name="constraint_location_on">Геолокация включена</string>
     <string name="constraint_location_off">Геолокация выключена</string>
     <string name="constraint_day_of_week">День недели</string>
+    <string name="constraint_at_time">В определённое время</string>
+    <string name="constraint_interval">Повторять каждые</string>
     <string name="constraint_calendar_event_active">Идёт событие календаря</string>
     <string name="constraint_cooldown">Не чаще раза в N минут</string>
     <string name="constraint_mobile_data_on">Мобильный интернет включён</string>
@@ -368,6 +370,7 @@
     <string name="key_media_play_pause">Воспроизведение / пауза</string>
     <string name="key_wakeup">Пробуждение</string>
     <string name="key_alert_slider">Слайдер оповещений / пользовательский переключатель</string>
+    <string name="key_unnamed">Клавиша без названия</string>
 
     <!-- Инструкции по режиму разработчика -->
     <string name="guide_generic">Другое</string>
@@ -481,6 +484,20 @@
     <string name="field_cooldown_minutes">Минут между запусками</string>
     <string name="helper_cooldown">Пропускается, если этот сценарий запускался меньше указанного числа минут назад. Отсчёт начинается заново после перезапуска телефона или KeySnap.</string>
     <string name="constraint_summary_cooldown">Не чаще раза в %1$d мин</string>
+    <string name="field_at_time">Время</string>
+    <string name="field_interval">Каждые</string>
+    <string name="interval_unit_seconds">Секунды</string>
+    <string name="interval_unit_minutes">Минуты</string>
+    <string name="interval_unit_hours">Часы</string>
+    <string name="constraint_summary_at_time_every_day">%1$s · каждый день</string>
+    <string name="constraint_summary_interval_s">Каждые %1$d с</string>
+    <string name="constraint_summary_interval_m">Каждые %1$d мин</string>
+    <string name="constraint_summary_interval_h">Каждые %1$d ч</string>
+    <string name="helper_interval_clock">Срабатывает по часам: %1$s</string>
+    <string name="helper_interval_midnight">Отсчёт от полуночи: %1$s</string>
+    <string name="helper_interval_sleep">Может сработать до 10 мин позже, пока телефон спит.</string>
+    <string name="helper_time_window_start">В автоматизации срабатывает один раз в начале периода.</string>
+    <string name="time_needs_exact_alarm">Чтобы срабатывать вовремя, нужно разрешение «Будильники и напоминания».</string>
     <string name="constraint_config_choose_app">Выберите приложение, чтобы продолжить</string>
     <string name="constraint_needs_location">Android показывает имя сети только приложениям с разрешением на геолокацию.</string>
     <string name="constraint_grant_permission">Предоставить</string>
@@ -536,7 +553,7 @@
     <!-- Диалоги -->
     <string name="dialog_expert_connected">РАСШИРЕННЫЙ РЕЖИМ ПОДКЛЮЧЁН</string>
     <string name="dialog_new_input_title">Обнаружен новый ввод</string>
-    <string name="dialog_new_input_body">Код: %1$d. Дайте этому вводу короткое имя.</string>
+    <string name="dialog_new_input_body">Дайте этому вводу короткое имя.</string>
     <string name="dialog_new_input_hint">например, кнопка сценария</string>
 
     <!-- Выбор приложения -->
@@ -556,7 +573,7 @@
     <string name="trigger_picker_no_key">Клавиша ещё не задана</string>
     <string name="trigger_picker_saved_key">Или выберите сохранённую клавишу</string>
     <string name="trigger_picker_listening">Слушаем… нажмите, чтобы остановить</string>
-    <string name="trigger_picker_tap_to_record">Коснитесь, затем нажмите физическую клавишу</string>
+    <string name="trigger_picker_tap_to_record">Коснитесь, затем нажмите клавишу или удерживайте несколько сразу</string>
     <string name="trigger_picker_save_combo">Сохранить клавишу</string>
     <string name="trigger_picker_use_automation">Использовать вместо этого автоматизацию</string>
     <string name="trigger_picker_use_key">Использовать %1$s</string>
@@ -572,9 +589,13 @@
     <string name="script_settings_custom_value">Своё значение для этого сценария</string>
     <string name="script_settings_consume_input">Перехватывать исходное нажатие</string>
     <string name="script_settings_consume_input_description">Не даёт клавише доходить до других приложений там, где это допускает Android.</string>
+    <string name="chord_consume_hint">Если включено «Перехватывать исходное нажатие», одна из этих кнопок, нажатая отдельно, не выполнит свою обычную функцию.</string>
+    <string name="chord_power_hint">Кнопка питания работает в сочетании только в Расширенном режиме, и собственное действие телефона всё равно произойдёт.</string>
     <string name="script_settings_not_global">Не глобально, только для этого сценария</string>
     <string name="script_settings_vibrate">Вибрация при запуске</string>
     <string name="script_settings_vibrate_description">Короткая вибрация при срабатывании этого сценария.</string>
+    <string name="script_settings_exact_timing">Запускать точно вовремя</string>
+    <string name="script_settings_exact_timing_description">Пока сценарий ждёт, в строке состояния виден значок будильника.</string>
     <string name="script_settings_reset_to_default">Сбросить к значению по умолчанию (%1$s)</string>
 
     <!-- Список сценариев -->
@@ -925,24 +946,62 @@
     <!-- OEM key tip -->
     <string name="oem_key_tip">Совет: в настройках телефона выберите для этой кнопки «Нет», чтобы на неё реагировал только KeySnap.</string>
     <!-- Recipe gallery -->
-    <string name="recipe_category_webhook">Webhooks</string>
+    <string name="recipe_category_commands">Готовые команды</string>
     <string name="recipe_wifi_vibrate">На работе</string>
     <string name="recipe_wifi_vibrate_subtitle">Рабочий Wi-Fi: звонок на вибрацию</string>
     <string name="recipe_wifi_ring">Уход с работы</string>
     <string name="recipe_wifi_ring_subtitle">Вне этого Wi-Fi: звонок снова включён</string>
     <string name="recipe_morning_dnd_off">Утром с зарядки</string>
     <string name="recipe_morning_dnd_off_subtitle">С зарядки после 06:00: Не беспокоить выкл.</string>
-    <string name="recipe_smart_home_subtitle">Вставьте URL вебхука автоматизации</string>
-    <string name="recipe_chat_channel_subtitle">Вставьте URL вебхука канала</string>
-    <string name="recipe_phone_notification_subtitle">Вставьте URL вашей темы</string>
-    <string name="recipe_spreadsheet_subtitle">Вставьте URL вашего веб-приложения</string>
+    <string name="recipe_smart_home_subtitle">Вставьте URL вебхука Home Assistant</string>
+    <string name="recipe_chat_channel_subtitle">Вставьте URL вебхука канала Discord</string>
+    <string name="recipe_phone_notification_subtitle">Вставьте URL вашей темы ntfy</string>
+    <string name="recipe_spreadsheet_subtitle">Вставьте URL веб-приложения Apps Script</string>
     <string name="recipe_category_routines">Повседневные дела</string>
     <string name="recipe_web_address">Вызвать веб-адрес</string>
-    <string name="recipe_web_address_subtitle">Кнопка вызывает вставленный вами URL</string>
-    <string name="recipe_smart_home">Запрос к умному дому</string>
-    <string name="recipe_chat_channel">Написать в канал чата</string>
-    <string name="recipe_phone_notification">Уведомление на мой телефон</string>
-    <string name="recipe_spreadsheet">Добавить строку в таблицу</string>
+    <string name="recipe_web_address_subtitle">Вставьте адрес, который вызывает сценарий</string>
+    <string name="recipe_smart_home">Сцена Home Assistant</string>
+    <string name="recipe_chat_channel">Discord: написать в канал</string>
+    <string name="recipe_phone_notification">ntfy: уведомить мой телефон</string>
+    <string name="recipe_spreadsheet">Google Sheets: добавить строку</string>
+    <string name="recipe_web_post">Отправить на веб-адрес</string>
+    <string name="recipe_web_post_subtitle">Вставьте адрес, куда отправляет сценарий</string>
+    <string name="recipe_ha_arrived_home">Home Assistant: я дома</string>
+    <string name="recipe_ha_arrived_home_subtitle">Домашний Wi-Fi + URL вебхука Home Assistant</string>
+    <string name="recipe_screen_record">Запись экрана 30 с</string>
+    <string name="recipe_screen_record_subtitle">Сохраняет ролик в папку Movies</string>
+    <string name="recipe_video_camera">Видеокамера</string>
+    <string name="recipe_video_camera_subtitle">Открывает камеру сразу для видео</string>
+    <string name="recipe_internet_panel">Панель Wi-Fi и данных</string>
+    <string name="recipe_internet_panel_subtitle">Показывает панель интернета</string>
+    <string name="recipe_animations_fast">Быстрые анимации</string>
+    <string name="recipe_animations_fast_subtitle">Анимации вдвое короче</string>
+    <string name="recipe_animations_normal">Обычные анимации</string>
+    <string name="recipe_animations_normal_subtitle">Анимации снова с обычной скоростью</string>
+    <string name="recipe_timer_5_min">Таймер на 5 минут</string>
+    <string name="recipe_timer_5_min_subtitle">Запускает таймер в приложении часов</string>
+    <string name="recipe_dark_mode_toggle">Тёмная тема вкл./выкл.</string>
+    <string name="recipe_dark_mode_toggle_subtitle">Переключает тему системы</string>
+    <string name="recipe_power_saving_toggle">Энергосбережение вкл./выкл.</string>
+    <string name="recipe_power_saving_toggle_subtitle">Переключает режим энергосбережения</string>
+    <string name="recipe_grayscale_toggle">Оттенки серого вкл./выкл.</string>
+    <string name="recipe_grayscale_toggle_subtitle">Чёрно-белый экран и обратно</string>
+    <string name="recipe_nearby_pharmacy">Аптека рядом</string>
+    <string name="recipe_nearby_pharmacy_subtitle">Ищет в вашем приложении карт</string>
+    <string name="recipe_write_email">Написать письмо</string>
+    <string name="recipe_write_email_subtitle">Открывает новое письмо</string>
+    <string name="recipe_evening_dark">Тёмная тема вечером</string>
+    <string name="recipe_evening_dark_subtitle">Тёмная тема включается в 21:00</string>
+    <string name="recipe_morning_light">Светлая тема утром</string>
+    <string name="recipe_morning_light_subtitle">Тёмная тема выключается в 07:00</string>
+    <string name="recipe_low_battery_power_saving" formatted="false">Энергосбережение при 20%</string>
+    <string name="recipe_low_battery_power_saving_subtitle" formatted="false">Ниже 20% без зарядки: экономия вкл.</string>
+    <string name="recipe_bedtime_grayscale">Серый экран перед сном</string>
+    <string name="recipe_bedtime_grayscale_subtitle">Чёрно-белый экран в 23:00</string>
+    <string name="recipe_car_gas">АЗС рядом в машине</string>
+    <string name="recipe_car_gas_subtitle">Выберите машину; карта найдёт АЗС</string>
+    <string name="recipe_car_chargers">Зарядки рядом в машине</string>
+    <string name="recipe_car_chargers_subtitle">Выберите машину; карта найдёт зарядки</string>
     <string name="recipe_send_message">Отправить сообщение</string>
     <string name="recipe_send_message_subtitle">Открывает чат с уже набранным текстом</string>
     <string name="recipe_send_message_note">Выберите контакт, приложение для отправки и сообщение. Если включено «Отправлять автоматически», сообщение отправит Расширенный режим; иначе чат откроется с уже набранным сообщением, и «Отправить» нажимаете вы.</string>

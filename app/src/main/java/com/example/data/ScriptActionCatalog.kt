@@ -305,7 +305,9 @@ object ScriptActionCatalog {
     /**
      * Actions that run with real privilege on a user-authored command, URI, URL or setting
      * (CLAUDE.md "Privileged actions must stay legible"). An import shows every parameter of these
-     * literally before saving and never switches such a shortcut on; no recipe may pre-fill one.
+     * literally before saving and never switches such a shortcut on. A recipe may pre-fill one only
+     * with an entry of [SuggestedShortcuts.PREFILLED_PAYLOADS] (an HTTP URL never), and such a recipe
+     * always opens the editor ([SuggestedShortcut.needsEditor]) so the command is read before it runs.
      * show_notification is here for its tap target, a user-typed URL that opens like open_url.
      * reply_to_notification is here because it sends user-typed text into the user's own chats, as
      * them: an imported one must arrive off with its text shown, never answer anyone on arrival.

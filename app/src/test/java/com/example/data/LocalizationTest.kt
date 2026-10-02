@@ -88,6 +88,8 @@ class LocalizationTest {
                         is EditorField.BluetoothDevicePick -> listOf(field.labelRes)
                         is EditorField.TimeRange -> listOf(field.startLabelRes, field.endLabelRes)
                         is EditorField.DaySet -> listOf(field.labelRes)
+                        is EditorField.Time -> listOf(field.labelRes)
+                        is EditorField.Interval -> listOf(field.labelRes)
                         is EditorField.ImagePick -> listOf(field.labelRes)
                         is EditorField.ContactPick -> listOf(field.labelRes)
                         is EditorField.Switch -> listOf(field.labelRes)
@@ -110,6 +112,26 @@ class LocalizationTest {
                 assertEquals("[$tag] ${guide.id} step count", expected.getValue(guide.id), steps.size)
                 steps.forEach { assertTrue("[$tag] ${guide.id} has a blank step", it.isNotBlank()) }
             }
+        }
+    }
+
+    /**
+     * CLAUDE.md: a ready-made command may name the service it targets, but no phone-automation or
+     * key-mapping app is ever named in a recipe, in any language or payload.
+     */
+    @Test fun noRecipeNamesAnotherAutomationOrKeyMappingApp() {
+        val banned = Regex("""(?i)\b(macro ?droid|tasker|automate|automagic|key ?mapper|button ?mapper|ifttt)\b""")
+        (shippedLocales + "en").distinct().forEach { tag ->
+            val res = contextFor(tag).resources
+            val texts = RecipeCategory.entries.map { it.titleRes } +
+                SuggestedShortcuts.all.flatMap { listOfNotNull(it.titleRes, it.subtitleRes, it.noteRes) }
+            texts.map(res::getString).forEach { text ->
+                assertTrue("[$tag] blank recipe string", text.isNotBlank())
+                assertTrue("[$tag] names another app: $text", !banned.containsMatchIn(text))
+            }
+        }
+        SuggestedShortcuts.all.flatMap { it.actions }.flatMap { it.params.values }.forEach {
+            assertTrue("payload names another app: $it", !banned.containsMatchIn(it))
         }
     }
 
