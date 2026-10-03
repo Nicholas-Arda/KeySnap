@@ -2,11 +2,11 @@
 
 ## Title (30 chars max)
 
-KeySnap: Button Remapper
+KeySnap: Remap Keys & Automate
 
 ## Short description (80 chars max)
 
-Remap volume, power or any button to 90 actions. No root, no account, no cloud.
+Remap the shortcut key or any button, and automate your phone. No root needed.
 
 ## Full description (4000 chars max, plain text)
 
