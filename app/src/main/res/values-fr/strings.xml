@@ -1027,4 +1027,16 @@
     <string name="import_review_note_privileged">Il exécute les commandes et adresses affichées ci-dessus. Il sera enregistré désactivé ; activez-le dans Mes raccourcis quand vous lui faites confiance.</string>
     <string name="import_error_read">Impossible de lire ce fichier.</string>
     <string name="import_error_busy">Fermez le raccourci en cours de modification, puis importez à nouveau.</string>
+    <string name="settings_autostart_title">Démarrer après redémarrage</string>
+    <string name="settings_autostart_description">Relance le mode avancé après le déverrouillage et la connexion Wi-Fi. Certains téléphones exigent aussi une autorisation de démarrage automatique pour KeySnap.</string>
+    <string name="settings_autostart_permission_description">Le mode avancé accorde une permission supplémentaire : %1$s. Elle est retirée lorsque cette option ou le mode avancé est désactivé. Le débogage sans fil reste actif pendant le fonctionnement du mode avancé. Si KeySnap a activé le débogage, désactiver cette option arrête aussi le mode avancé et restaure le débogage sans fil.</string>
+    <string name="settings_autostart_hint_permission">Lancez le mode avancé une fois. Sur OPPO, OnePlus et realme, activez d’abord « Désactiver la surveillance des permissions » ; sur Xiaomi, « Débogage USB (Paramètres de sécurité) » dans les options de développement. Touchez pour les ouvrir.</string>
+    <string name="settings_autostart_hint_prompt">Sur Android 11–12, autorisez le débogage sans fil sur ce réseau après chaque redémarrage lorsque Android le demande.</string>
+    <string name="settings_autostart_cleanup_failed">La permission de redémarrage ne peut pas être retirée. Reconnectez le mode avancé et désactivez cette option à nouveau.</string>
+    <string name="notif_autostart_title">Le mode avancé ne démarre pas après redémarrage</string>
+    <string name="notif_autostart_no_permission">La permission de redémarrage manque. Ouvrez KeySnap et lancez le mode avancé pour terminer la configuration.</string>
+    <string name="notif_autostart_dev_options_off">Les options de développement sont désactivées. Activez-les et lancez le mode avancé depuis KeySnap.</string>
+    <string name="notif_autostart_wifi_not_allowed">Le débogage sans fil est refusé sur ce réseau Wi-Fi. Ouvrez KeySnap pour terminer la configuration.</string>
+    <string name="notif_autostart_connect_failed">Connexion au débogage sans fil impossible. Ouvrez KeySnap ; un nouvel appairage peut être nécessaire.</string>
+    <string name="settings_autostart_hint_pairing">Si Android fait expirer ou supprime l’appairage, configurez à nouveau le Mode avancé. Les connexions quotidiennes ne maintiennent pas forcément l’appairage actif sur tous les téléphones.</string>
 </resources>

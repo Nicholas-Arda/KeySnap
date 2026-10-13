@@ -31,6 +31,11 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import java.net.NetworkInterface
 
 enum class PairingStatus {
     IDLE,
@@ -111,6 +116,12 @@ object WirelessAdbManager {
     private const val MAX_CONNECT_RETRIES = 2
 
     private val managerScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    private val transportLock = Mutex()
+    private val _advancedAutostartEnabled = MutableStateFlow(false)
+    val advancedAutostartEnabled: StateFlow<Boolean> = _advancedAutostartEnabled.asStateFlow()
+    private val _autostartPermissionHeld = MutableStateFlow(false)
+    val autostartPermissionHeld: StateFlow<Boolean> = _autostartPermissionHeld.asStateFlow()
+    private var initialized = false
 
     /**
      * Advanced Mode is owned by [BridgeController]: it is true exactly while a detached, shell-UID
@@ -197,8 +208,13 @@ object WirelessAdbManager {
     private val connectPortCandidates = LinkedHashSet<Int>()
     private val triedConnectPorts = mutableSetOf<Int>()
 
+    @Synchronized
     fun initialize(context: Context) {
         appContext = context.applicationContext
+        _advancedAutostartEnabled.value = AdvancedAutostart.enabled(context)
+        refreshAutostartPermission()
+        if (initialized) return
+        initialized = true
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         _autoAssistantEnabled.value = prefs.getBoolean(PREF_AUTO_ASSISTANT, true)
         val savedPort = prefs.getInt(PREF_SAVED_CONNECT_PORT, -1)
@@ -235,6 +251,7 @@ object WirelessAdbManager {
                 startupStatusMessage(outcome, BridgeController.statusMessage.value)?.let { _statusMessage.value = it }
             }
             _startupBridgeCheckComplete.value = true
+            if (outcome == StartupBridge.ADOPTED) AdvancedAutostart.syncSecureSettingsGrant(context)
         }
     }
 
@@ -244,29 +261,113 @@ object WirelessAdbManager {
      * [connectShellStream]'s own re-browse when that port refuses. [BridgeController.start] re-probes
      * before spawning, so this can never add a second bridge.
      */
-    private suspend fun restartAfterUpdate(): Boolean {
-        BridgeController.markStarting(BRIDGE_RESTARTING_MESSAGE)
+    private suspend fun restartAfterUpdate(): Boolean = restartBridge(BRIDGE_RESTARTING_MESSAGE, false)
+
+    suspend fun restartAfterBoot(): Boolean = restartBridge("Starting Advanced Mode after the restart…", true)
+
+    private suspend fun restartBridge(message: String, freshDiscovery: Boolean): Boolean {
+        BridgeController.markStarting(message)
         _pairingStatus.value = PairingStatus.CONNECTING_STREAM
-        _statusMessage.value = BRIDGE_RESTARTING_MESSAGE
+        _statusMessage.value = message
         var job: Job? = null
         // ponytail: one overall cap rather than per-stage ones; wireless debugging off or no network
         // fails well inside it, a healthy spawn takes a few seconds.
-        withTimeoutOrNull(RESTART_AFTER_UPDATE_TIMEOUT_MS) {
-            val port = _discoveredConnectPort.value?.takeIf { it > 0 } ?: run {
-                refreshConnectServiceDiscovery()
-                awaitVerifiedConnectPort()
+        try {
+            withTimeoutOrNull(if (freshDiscovery) 30_000L else RESTART_AFTER_UPDATE_TIMEOUT_MS) {
+                if (freshDiscovery) {
+                    expectedPairingHost = null
+                    synchronized(flowLock) { triedConnectPorts.clear() }
+                }
+                val port = (if (freshDiscovery) null else _discoveredConnectPort.value?.takeIf { it > 0 }) ?: run {
+                    refreshConnectServiceDiscovery()
+                    awaitVerifiedConnectPort()
+                }
+                if (port != null) {
+                    job = connectShellStream(_discoveredIp.value, port)
+                    job?.join()
+                }
             }
-            if (port != null) {
-                job = connectShellStream(_discoveredIp.value, port)
-                job?.join()
+        } finally {
+            withContext(NonCancellable) {
+                if (job?.isActive == true) streamClient?.stop()
+                job?.cancelAndJoin()
             }
         }
-        job?.cancelAndJoin()
         if (BridgeController.state.value == BridgeState.RUNNING) return true
         // A spawn cut off by the cap may still bind its port; adopt it rather than call it failed.
         if (adoptLateSpawn(BridgeController::detectExistingBridge)) return true
-        BridgeController.markStopped(BRIDGE_UPDATED_RESTART_MESSAGE)
+        BridgeController.markStopped(if (freshDiscovery) BRIDGE_NOT_RUNNING_MESSAGE else BRIDGE_UPDATED_RESTART_MESSAGE)
         return false
+    }
+
+    fun isAdvancedModeWanted(context: Context? = appContext): Boolean {
+        val prefs = context?.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE) ?: return false
+        return prefs.getBoolean(PREF_ADVANCED_ENABLED, prefs.getBoolean(PREF_ADVANCED_ENABLED_LEGACY, false))
+    }
+
+    fun refreshAutostartPermission() {
+        _autostartPermissionHeld.value = appContext?.let(AdvancedAutostart::hasPermission) == true
+    }
+
+    suspend fun cancelPendingStart() {
+        val pending = streamJob
+        if (pending?.isActive == true) {
+            streamClient?.stop()
+            pending.cancelAndJoin()
+        }
+    }
+
+    suspend fun setAdvancedAutostartEnabled(enabled: Boolean): Boolean {
+        val context = appContext ?: return false
+        _advancedAutostartEnabled.value = enabled
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit()
+            .putBoolean(AdvancedAutostart.PREF_ENABLED, enabled).commit()
+        if (!enabled) {
+            AdvancedAutostart.cancelJobs(context)
+            AdvancedAutostart.clearFailure(context)
+            if (AdvancedAutostart.ownsWifiDebugging(context)) {
+                // Restoring wireless debugging can terminate adbd's bridge child. Stop cleanly first.
+                return BridgeController.stop().also {
+                    if (it || BridgeController.state.value == BridgeState.STOPPED) persistAdvancedModeWanted(false)
+                }
+            }
+        }
+        return AdvancedAutostart.syncSecureSettingsGrant(context)
+    }
+
+    private fun ownAddresses(): Set<String> = runCatching {
+        NetworkInterface.getNetworkInterfaces().toList().flatMap { it.inetAddresses.toList() }
+            .mapNotNull { it.hostAddress }.toSet()
+    }.getOrDefault(emptySet())
+
+    /** Checks the existing pairing with an authenticated session, without a spawn or settings write.
+     * Android does not reliably refresh its paired-key expiry for wireless TLS connections.
+     */
+    suspend fun touchPairing(): Boolean = transportLock.withLock {
+        val context = appContext ?: return@withLock false
+        if (pairingAttemptInProgress || streamJob?.isActive == true) return@withLock false
+        expectedPairingHost = null
+        synchronized(flowLock) { triedConnectPorts.clear() }
+        refreshConnectServiceDiscovery()
+        val port = awaitVerifiedConnectPort() ?: return@withLock false
+        val client = AdbStreamClient(context)
+        var acknowledged = false
+        try {
+            // A successful connect can precede adbd registering the authenticated transport.
+            // Wait for a harmless response before closing it, so the daily touch is a real session.
+            val marker = "KEYSNAP_PAIRING_TOUCH"
+            val completed = client.runCommand(
+                host = _discoveredIp.value,
+                connectPort = port,
+                command = "echo $marker",
+                onLine = { if (it == marker) acknowledged = true },
+                completeWhen = { it == marker },
+            )
+            // Spawn callers accept a lost marker after probing their bridge; this caller must not.
+            completed && acknowledged
+        } finally {
+            client.stop()
+        }
     }
 
     fun setAutoAssistantEnabled(enabled: Boolean) {
@@ -329,7 +430,8 @@ object WirelessAdbManager {
                 val host = serviceInfo.host?.hostAddress
                 Log.d(TAG, "mDNS discovered a pairing service on port $port")
                 val expected = expectedPairingHost
-                if (host.isNullOrBlank() || (expected != null && host != expected)) {
+                if (host.isNullOrBlank() || (expected != null && host != expected) ||
+                    (expected == null && !isOwnAddress(host, ownAddresses()))) {
                     if (!host.isNullOrBlank()) {
                         Log.d(TAG, "Ignoring a pairing service from an unexpected host")
                     }
@@ -356,7 +458,7 @@ object WirelessAdbManager {
                 Log.d(TAG, "mDNS resolved a connect service on port $port")
                 val expected = expectedPairingHost
 
-                if (expected != null && host != expected) {
+                if ((expected != null && host != expected) || (expected == null && !isOwnAddress(host, ownAddresses()))) {
                     // A second wireless-debugging-enabled device (or an emulator) on the same LAN
                     // advertises its own connect port; without this check its port would get
                     // paired with a different device's IP and every connection would refuse.
@@ -510,8 +612,8 @@ object WirelessAdbManager {
 
         streamJob?.cancel()
         activeStreamEndpoint = endpoint
-        return managerScope.launch {
-            val context = appContext ?: return@launch
+        return managerScope.launch { transportLock.withLock {
+            val context = appContext ?: return@withLock
 
             // Short-lived: it protects the setup coroutine while the app may be backgrounded.
             // It is not a keep-alive for Advanced Mode, which now outlives the app entirely.
@@ -520,6 +622,7 @@ object WirelessAdbManager {
                 var currentIp = ip
                 var currentPort = port
                 var started = false
+                var adbConnected = false
                 var attempt = 0
                 synchronized(flowLock) { triedConnectPorts.clear() }
                 while (true) {
@@ -536,7 +639,7 @@ object WirelessAdbManager {
                             command = command,
                             onLine = onLine,
                             completeWhen = { line -> line.contains(BridgeProtocol.SPAWN_MARKER) },
-                        )
+                        ).also { if (it) adbConnected = true }
                     }
                     if (started || attempt >= MAX_CONNECT_RETRIES) break
 
@@ -563,6 +666,8 @@ object WirelessAdbManager {
                     _pairingStatus.value = PairingStatus.ADVANCED_MODE_RUNNING
                     _statusMessage.value = BridgeController.statusMessage.value
                     persistAdvancedModeWanted(true)
+                    if (adbConnected) AdvancedAutostart.recordTouch(context)
+                    AdvancedAutostart.syncSecureSettingsGrant(context)
                 } else {
                     activeStreamEndpoint = null
                     _pairingStatus.value = PairingStatus.ERROR
@@ -574,7 +679,7 @@ object WirelessAdbManager {
                 streamClient?.stop()
                 WirelessAdbHelperService.stop(context)
             }
-        }.also { streamJob = it }
+        } }.also { streamJob = it }
     }
 
     /**
@@ -612,6 +717,8 @@ object WirelessAdbManager {
     }
 
     fun stopAdvancedMode() {
+        appContext?.let(AdvancedAutostart::cancelJobs)
+        val pendingStart = streamJob
         streamJob?.cancel()
         streamJob = null
         streamClient?.stop()
@@ -626,9 +733,14 @@ object WirelessAdbManager {
             activePairingCode = null
         }
         managerScope.launch {
+            pendingStart?.cancelAndJoin()
             // A bridge that still answers is still on: saving "not wanted" or showing IDLE would
             // disagree with what is running. stop() has already said "still running, try again".
             if (BridgeController.stop()) {
+                persistAdvancedModeWanted(false)
+                _pairingStatus.value = PairingStatus.IDLE
+                appContext?.let(AdvancedAutostart::clearFailure)
+            } else if (BridgeController.state.value == BridgeState.STOPPED) {
                 persistAdvancedModeWanted(false)
                 _pairingStatus.value = PairingStatus.IDLE
             }

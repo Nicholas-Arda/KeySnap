@@ -1026,4 +1026,16 @@
     <string name="import_review_note_privileged">यह ऊपर दिखाए गए कमांड और पते चलाता है। इसे बंद करके सेव किया जाएगा; भरोसा होने पर मेरे शॉर्टकट में इसे चालू करें।</string>
     <string name="import_error_read">वह फ़ाइल पढ़ी नहीं जा सकी।</string>
     <string name="import_error_busy">जिस शॉर्टकट को आप एडिट कर रहे हैं उसे बंद करें, फिर दोबारा इम्पोर्ट करें।</string>
+    <string name="settings_autostart_title">रीस्टार्ट के बाद शुरू करें</string>
+    <string name="settings_autostart_description">रीस्टार्ट के बाद फोन अनलॉक होने और Wi-Fi से जुड़ने पर उन्नत मोड फिर शुरू होता है। कुछ फोन पर KeySnap को अपने आप शुरू होने की अनुमति भी देनी होगी।</string>
+    <string name="settings_autostart_permission_description">उन्नत मोड इस कमांड से एक अतिरिक्त अनुमति देता है: %1$s. इस विकल्प या उन्नत मोड को बंद करने पर अनुमति वापस ली जाती है। उन्नत मोड चलते समय वायरलेस डिबगिंग चालू रहती है। अगर KeySnap ने इसे चालू किया था, तो यह विकल्प बंद करने से उन्नत मोड भी रुकता है और वायरलेस डिबगिंग पहले की स्थिति में लौटती है।</string>
+    <string name="settings_autostart_hint_permission">सेटअप पूरा करने के लिए उन्नत मोड एक बार शुरू करें। OPPO, OnePlus और realme पर पहले डेवलपर विकल्पों में “अनुमति की निगरानी बंद करें”, और Xiaomi पर “USB डिबगिंग (सुरक्षा सेटिंग)” चालू करें। डेवलपर विकल्प खोलने के लिए टैप करें।</string>
+    <string name="settings_autostart_hint_prompt">Android 11–12 पर हर रीस्टार्ट के बाद Android के पूछने पर इस नेटवर्क में वायरलेस डिबगिंग की अनुमति दें।</string>
+    <string name="settings_autostart_cleanup_failed">रीस्टार्ट की अनुमति वापस नहीं ली जा सकी। उन्नत मोड फिर जोड़ें और यह विकल्प दोबारा बंद करें।</string>
+    <string name="notif_autostart_title">रीस्टार्ट के बाद उन्नत मोड शुरू नहीं हुआ</string>
+    <string name="notif_autostart_no_permission">रीस्टार्ट की अनुमति नहीं है। सेटअप पूरा करने के लिए KeySnap खोलकर उन्नत मोड शुरू करें।</string>
+    <string name="notif_autostart_dev_options_off">डेवलपर विकल्प बंद हैं। उन्हें चालू करें और KeySnap से उन्नत मोड शुरू करें।</string>
+    <string name="notif_autostart_wifi_not_allowed">इस Wi-Fi नेटवर्क पर वायरलेस डिबगिंग की अनुमति नहीं मिली। सेटअप पूरा करने के लिए KeySnap खोलें।</string>
+    <string name="notif_autostart_connect_failed">वायरलेस डिबगिंग से जुड़ नहीं सके। KeySnap खोलें; दोबारा पेयर करना पड़ सकता है।</string>
+    <string name="settings_autostart_hint_pairing">अगर Android पेयरिंग हटा दे या उसकी अवधि समाप्त हो जाए, तो उन्नत मोड फिर से सेट करें। रोज़ के कनेक्शन हर फ़ोन पर पेयरिंग को सक्रिय नहीं रख सकते।</string>
 </resources>

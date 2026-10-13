@@ -1,6 +1,9 @@
 package com.example.ui.settings
 
 import android.app.Activity
+import android.content.Intent
+import android.os.Build
+import android.provider.Settings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -63,6 +66,7 @@ import com.example.data.AppLocale
 import com.example.data.KeyMappingConfig
 import com.example.data.LiveKeyEvent
 import com.example.data.TriggerTimingSpecs
+import com.example.service.adb.secureSettingsCommand
 import com.example.ui.components.AppAlertDialog
 import com.example.ui.components.ConsolePanel
 import com.example.ui.components.InnerShape
@@ -105,10 +109,14 @@ fun SettingsScreen(
     isAdvancedModeRunning: Boolean = false,
     onToggleAdvancedMode: (Boolean) -> Unit = {},
     onRunSetupAgain: () -> Unit = {},
+    advancedAutostart: Boolean = false,
+    autostartPermissionHeld: Boolean = false,
+    autostartChanging: Boolean = false,
+    onToggleAutostart: (Boolean) -> Unit = {},
     reveal: (index: Int) -> Modifier = { Modifier },
 ) {
     LazyColumn(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().testTag("settings_list"),
         verticalArrangement = Arrangement.spacedBy(12.dp),
         contentPadding = PaddingValues(start = 12.dp, end = 12.dp, top = 18.dp, bottom = 40.dp),
     ) {
@@ -204,6 +212,10 @@ fun SettingsScreen(
                     isRunning = isAdvancedModeRunning,
                     onToggle = onToggleAdvancedMode,
                     onRunSetupAgain = onRunSetupAgain,
+                    autostart = advancedAutostart,
+                    grantHeld = autostartPermissionHeld,
+                    changing = autostartChanging,
+                    onToggleAutostart = onToggleAutostart,
                 )
             }
         }
@@ -242,7 +254,12 @@ private fun AdvancedModePanel(
     isRunning: Boolean,
     onToggle: (Boolean) -> Unit,
     onRunSetupAgain: () -> Unit,
+    autostart: Boolean,
+    grantHeld: Boolean,
+    changing: Boolean,
+    onToggleAutostart: (Boolean) -> Unit,
 ) {
+    val context = LocalContext.current
     val colors = MaterialTheme.colorScheme
     val runSetupLabel = stringResource(R.string.settings_run_setup)
     ConsolePanel(stringResource(R.string.settings_expert_panel), testTag = "advanced_mode") {
@@ -265,6 +282,43 @@ private fun AdvancedModePanel(
                 )
             }
             Switch(checked = isRunning, onCheckedChange = null)
+        }
+        HorizontalDivider(color = colors.outline.copy(alpha = .45f))
+        SettingsSwitchRow(
+            title = stringResource(R.string.settings_autostart_title),
+            description = stringResource(R.string.settings_autostart_description),
+            checked = autostart,
+            enabled = !changing,
+            testTag = "advanced_autostart_switch",
+            onCheckedChange = onToggleAutostart,
+        )
+        // The fixed permission command must be visible before the user enables the option.
+        Text(
+            stringResource(R.string.settings_autostart_permission_description,
+                BidiFormatter.getInstance().unicodeWrap(secureSettingsCommand(context.packageName, true), TextDirectionHeuristicsCompat.LTR)),
+            style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant,
+        )
+        if (autostart) {
+            Text(
+                stringResource(R.string.settings_autostart_hint_pairing),
+                style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant,
+            )
+            if (!grantHeld) {
+                Text(
+                    stringResource(R.string.settings_autostart_hint_permission),
+                    Modifier.clickable {
+                        runCatching { context.startActivity(Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)) }
+                    },
+                    style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant,
+                )
+            }
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
+                Text(stringResource(R.string.settings_autostart_hint_prompt),
+                    style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant)
+            }
+        } else if (grantHeld) {
+            Text(stringResource(R.string.settings_autostart_cleanup_failed),
+                style = MaterialTheme.typography.bodySmall, color = colors.error)
         }
         HorizontalDivider(color = colors.outline.copy(alpha = .45f))
         Row(

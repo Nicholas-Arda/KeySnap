@@ -20,17 +20,16 @@ import com.example.ui.theme.MonoLabel
  * drifting from what the app says.
  *
  * Google Play requires a **hosted** policy URL in the Console listing; showing it in the app does
- * not satisfy that. Nothing is published yet, deliberately: the app's name is still going to
- * change, and a public policy page carrying the old name would have to be taken down and
- * republished anyway. Host `docs/privacy-policy.md` under the final name shortly before the Play
- * upload, then paste that URL into the Console.
+ * not satisfy that. The hosted copy is at https://nicholas-arda.github.io/keysnap-privacy/.
+ * Update that repository's index.md from `docs/privacy-policy.md` before the Play upload,
+ * leaving out the maintainer note.
  *
  * Every claim here is a claim about the code. If an action, permission or stored file changes,
  * this text changes with it.
  */
 object PrivacyPolicy {
 
-    const val LAST_UPDATED = "1 October 2026"
+    const val LAST_UPDATED = "13 October 2026"
 
     /**
      * Left blank deliberately. A published policy needs a contact address, but which address to
@@ -42,11 +41,11 @@ object PrivacyPolicy {
     val sections: List<Pair<String, String>> = listOf(
         "What is collected" to
             "KeySnap has no servers, no accounts, no analytics and no crash reporting. " +
-            "Nothing about your shortcuts, the keys you press or the way you use the app is ever " +
-            "sent to the developer or to anyone else. The only data that leaves your device goes " +
-            "to Google's advertising and billing services, described under \"Advertising and " +
-            "purchases\" below, and it is limited to what those services need to show an ad or " +
-            "confirm a purchase." +
+            "KeySnap does not send the developer your shortcuts, key presses or usage history. " +
+            "Google's advertising and billing services receive the data described under " +
+            "\"Advertising and purchases\" below. Network requests, RSS feeds, messages and sharing " +
+            "that you configure or initiate may also send data to the destinations or apps you " +
+            "choose, as described below." +
             " If you share a shortcut, the app hands its text to the app you pick in Android's share " +
             "sheet and sends it nowhere itself. Names of contacts and chats, phone numbers, RSS feed addresses " +
             "and calendar names are left out of that text.",
@@ -67,8 +66,10 @@ object PrivacyPolicy {
             "the app's private storage on this device.",
 
         "The accessibility service" to
-            "Android gives no other way for an app to see hardware key presses, so the " +
-            "accessibility service exists to detect them. It is restricted to reading screen " +
+            "The accessibility service detects physical hardware key presses to run the shortcuts " +
+            "you configure. It also performs the tap, swipe and pinch gestures you configure in " +
+            "your shortcuts, including when Advanced Mode is off. These gestures do not require " +
+            "reading the screen content of the app where they run. It is restricted to reading screen " +
             "content from the system Settings app only, and it uses that solely to read the " +
             "six-digit pairing code from the Wireless Debugging dialog while you are setting up " +
             "Advanced Mode. It cannot read any other app's screen, it does not receive the text " +
@@ -87,6 +88,27 @@ object PrivacyPolicy {
             "moment in a private temporary file on some Android versions, deleted right away, and " +
             "it is never logged or sent. Turning Advanced Mode off, or rebooting, stops " +
             "it; turning it off also deletes it from the device.",
+
+        "Automatic restart (optional)" to
+            "Start after restart is off by default. When you enable it, KeySnap listens for the " +
+            "phone's restart and waits for the first unlock and a Wi-Fi connection before " +
+            "starting Advanced Mode again with your existing pairing. Android may ask you to " +
+            "allow Wireless Debugging on that network. Some phone makers also require an " +
+            "auto-launch setting. Advanced Mode grants KeySnap WRITE_SECURE_SETTINGS only for " +
+            "this option; it is used only to turn Wireless Debugging on and restore it when " +
+            "you turn the option or Advanced Mode off. The permission is revoked on disable. " +
+            "If the bridge is unavailable, KeySnap asks you to reconnect it to finish removing " +
+            "the permission. Wireless Debugging stays on while Advanced Mode runs. If KeySnap " +
+            "enabled it, disabling this option also stops Advanced Mode before restoring " +
+            "Wireless Debugging. KeySnap does not enable USB debugging or change Android's " +
+            "paired-key expiry setting. While this option and Advanced Mode are on, a daily " +
+            "job briefly reconnects to this device's own Wireless Debugging using the " +
+            "existing pairing. This does not guarantee that Android extends its expiry; " +
+            "an expired or removed pairing needs setup again. The option, whether KeySnap " +
+            "enabled Wireless Debugging, and " +
+            "the last pairing connection time are stored locally and excluded from backup. " +
+            "RECEIVE_BOOT_COMPLETED is used only to schedule this optional restart work. " +
+            "No restart or pairing data is sent to a server.",
 
         "Network use" to
             "The app makes three kinds of network connection. The first is to your own device " +
@@ -123,9 +145,12 @@ object PrivacyPolicy {
             "the app reads each event's title, calendar name, start and end time, and whether it " +
             "is all-day or cancelled, on this device to compare them with that condition and to " +
             "know when to check again, and never " +
-            "stores, logs or sends them. Alarms & reminders: optional, asked only when you add a " +
-            "\"Calendar event in progress\" condition, and used only to wake the app at the start " +
-            "or end of a matching event; nothing is read or sent through it. Do Not " +
+            "stores, logs or sends them. Alarms & reminders: optional, used to wake the app at the " +
+            "start or end of a matching calendar event and at the times, intervals or time-window " +
+            "boundaries you configure for automations. When you enable exact timing, the app may " +
+            "schedule an Android alarm clock so the automation can run while the screen is off; " +
+            "Android may show an alarm icon. Without this permission, time-based automations use " +
+            "inexact alarms and may run late. Nothing is read or sent through this permission. Do Not " +
             "Disturb access: to switch the ringer to Silent. Modify system settings: to change " +
             "brightness and screen rotation without Advanced Mode. " +
             "Notification access: only if you add a \"Notification received\" condition or a " +

@@ -1076,4 +1076,16 @@
     <string name="import_review_note_privileged">It runs the commands and addresses shown above. It will be saved switched off; turn it on in My shortcuts once you trust it.</string>
     <string name="import_error_read">Couldn\'t read that file.</string>
     <string name="import_error_busy">Close the shortcut you\'re editing, then import again.</string>
+    <string name="settings_autostart_title">Start after restart</string>
+    <string name="settings_autostart_description">Start Advanced Mode again after you unlock your restarted phone and connect to Wi-Fi. Some phones also need KeySnap allowed to auto-launch.</string>
+    <string name="settings_autostart_permission_description">Advanced Mode grants one extra permission using: %1$s. It is removed when this option or Advanced Mode is turned off. Wireless debugging stays on while Advanced Mode runs. If KeySnap enabled it, turning this option off also stops Advanced Mode and restores Wireless debugging.</string>
+    <string name="settings_autostart_hint_permission">Start Advanced Mode once to finish setup. On OPPO, OnePlus and realme, enable “Disable permission monitoring” in Developer options first; on Xiaomi, enable “USB debugging (Security settings)”. Tap to open Developer options.</string>
+    <string name="settings_autostart_hint_prompt">On Android 11–12, allow Wireless debugging on this network after each restart when Android asks.</string>
+    <string name="settings_autostart_hint_pairing">If Android expires or removes your pairing, set up Advanced Mode again. Daily connections may not keep a pairing active on every phone.</string>
+    <string name="settings_autostart_cleanup_failed">The restart permission could not be removed. Reconnect Advanced Mode and turn this option off again.</string>
+    <string name="notif_autostart_title">Advanced Mode did not start after restart</string>
+    <string name="notif_autostart_no_permission">The restart permission is missing. Open KeySnap and start Advanced Mode to finish setup.</string>
+    <string name="notif_autostart_dev_options_off">Developer options are off. Turn them on and start Advanced Mode from KeySnap.</string>
+    <string name="notif_autostart_wifi_not_allowed">Wireless debugging was not allowed on this Wi-Fi network. Open KeySnap to finish setup.</string>
+    <string name="notif_autostart_connect_failed">Wireless debugging could not be connected. Open KeySnap; pairing may be needed again.</string>
 </resources>

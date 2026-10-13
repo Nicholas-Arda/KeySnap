@@ -1026,4 +1026,16 @@
     <string name="import_review_note_privileged">Er führt die oben gezeigten Befehle und Adressen aus. Er wird ausgeschaltet gespeichert; schalte ihn unter Meine Kurzbefehle ein, sobald du ihm vertraust.</string>
     <string name="import_error_read">Diese Datei konnte nicht gelesen werden.</string>
     <string name="import_error_busy">Schließe den Kurzbefehl, den du bearbeitest, und importiere dann erneut.</string>
+    <string name="settings_autostart_title">Nach Neustart starten</string>
+    <string name="settings_autostart_description">Startet den erweiterten Modus nach dem Entsperren und der WLAN-Verbindung erneut. Manche Geräte benötigen auch die Autostart-Freigabe für KeySnap.</string>
+    <string name="settings_autostart_permission_description">Der erweiterte Modus erteilt eine zusätzliche Berechtigung: %1$s. Sie wird beim Ausschalten dieser Option oder des erweiterten Modus entzogen. WLAN-Debugging bleibt während des Betriebs an. Hat KeySnap es aktiviert, beendet das Ausschalten dieser Option auch den erweiterten Modus und stellt WLAN-Debugging wieder her.</string>
+    <string name="settings_autostart_hint_permission">Starten Sie den erweiterten Modus einmal. Aktivieren Sie bei OPPO, OnePlus und realme zuerst „Berechtigungsüberwachung deaktivieren“, bei Xiaomi „USB-Debugging (Sicherheitseinstellungen)“ in den Entwickleroptionen. Tippen öffnet die Entwickleroptionen.</string>
+    <string name="settings_autostart_hint_prompt">Erlauben Sie unter Android 11–12 nach jedem Neustart WLAN-Debugging für dieses Netzwerk, wenn Android fragt.</string>
+    <string name="settings_autostart_cleanup_failed">Die Neustart-Berechtigung konnte nicht entzogen werden. Verbinden Sie den erweiterten Modus erneut und schalten Sie diese Option wieder aus.</string>
+    <string name="notif_autostart_title">Erweiterter Modus nach Neustart nicht gestartet</string>
+    <string name="notif_autostart_no_permission">Die Neustart-Berechtigung fehlt. Öffnen Sie KeySnap und starten Sie den erweiterten Modus.</string>
+    <string name="notif_autostart_dev_options_off">Entwickleroptionen sind aus. Aktivieren Sie sie und starten Sie den erweiterten Modus in KeySnap.</string>
+    <string name="notif_autostart_wifi_not_allowed">WLAN-Debugging wurde in diesem Netzwerk nicht erlaubt. Öffnen Sie KeySnap zur Einrichtung.</string>
+    <string name="notif_autostart_connect_failed">Keine Verbindung zum WLAN-Debugging. Öffnen Sie KeySnap; eine erneute Kopplung kann nötig sein.</string>
+    <string name="settings_autostart_hint_pairing">Wenn Android die Kopplung ablaufen lässt oder entfernt, richten Sie den Erweiterten Modus erneut ein. Tägliche Verbindungen halten die Kopplung nicht auf jedem Smartphone aktiv.</string>
 </resources>

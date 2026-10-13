@@ -106,6 +106,9 @@ fun MainScreen(viewModel: MainViewModel) {
     val lastSource by viewModel.lastCapturedSource.collectAsState()
     val editorMessage by viewModel.editorMessage.collectAsState()
     val isAdvancedModeRunning by viewModel.isAdvancedModeRunning.collectAsState()
+    val advancedAutostart by viewModel.advancedAutostart.collectAsState()
+    val autostartPermissionHeld by viewModel.autostartPermissionHeld.collectAsState()
+    val autostartChanging by viewModel.autostartChanging.collectAsState()
     val themeMode by viewModel.themeMode.collectAsState()
     val hijackBannerStage by viewModel.hijackBannerStage.collectAsState()
     val showSetupWizard by viewModel.showSetupWizard.collectAsState()
@@ -302,6 +305,10 @@ fun MainScreen(viewModel: MainViewModel) {
                     onSetThemeMode = viewModel::setThemeMode,
                     onEraseAllData = viewModel::eraseAllData,
                     isAdvancedModeRunning = isAdvancedModeRunning,
+                    advancedAutostart = advancedAutostart,
+                    autostartPermissionHeld = autostartPermissionHeld,
+                    autostartChanging = autostartChanging,
+                    onToggleAutostart = viewModel::setAdvancedAutostart,
                     onToggleAdvancedMode = viewModel::toggleAdvancedMode,
                     onRunSetupAgain = { viewModel.openSetupWizard(0) },
                     reveal = settingsMotion::reveal,

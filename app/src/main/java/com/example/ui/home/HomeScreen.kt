@@ -8,6 +8,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,7 +17,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -46,6 +47,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -58,6 +60,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.constrainHeight
 import com.example.data.EntitlementManager
 import com.example.data.ScriptActionCatalog
 import com.example.data.ShortcutScript
@@ -357,7 +360,8 @@ private fun ComparisonRow(label: String, free: String, pro: String) {
 }
 
 @Composable
-private fun ConsoleHeader(
+@OptIn(ExperimentalLayoutApi::class)
+internal fun ConsoleHeader(
     isMappingEnabled: Boolean,
     isPro: Boolean,
     rewardActive: Boolean,
@@ -367,28 +371,54 @@ private fun ConsoleHeader(
     onRewardButtonClick: () -> Unit,
     onCycleTheme: () -> Unit,
 ) {
-    Row(
-        // The end padding leaves the corner to the Settings gear, which floats over every page.
-        Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 8.dp, end = 52.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Box(Modifier.weight(1f), contentAlignment = Alignment.CenterStart) {
+    Layout(
+        modifier = Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 8.dp),
+        content = {
             // The logo doubles as the theme switch: Light, Dark, Sepia in turn.
             Box(
                 Modifier
                     .heightIn(min = MinTouchTarget)
+                    .testTag("header_logo")
                     .clip(InnerShape)
                     .clickable(onClickLabel = stringResource(R.string.home_switch_theme), onClick = onCycleTheme),
                 contentAlignment = Alignment.Center,
             ) {
                 KeySnapLockup(themeMode)
             }
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.testTag("header_controls"),
+            ) {
+                if (!isPro) {
+                    Box(Modifier.align(Alignment.CenterVertically)) {
+                        RewardAdButton(rewardActive, rewardRemainingLabel, onRewardButtonClick)
+                    }
+                }
+                Box(Modifier.align(Alignment.CenterVertically)) {
+                    MappingBadge(isMappingEnabled, onToggleMapping)
+                }
+            }
+        },
+    ) { measurables, constraints ->
+        val loose = constraints.copy(minWidth = 0, minHeight = 0)
+        // The floating gear occupies only the first row. Lower rows can use the full width.
+        val firstRowWidth = (constraints.maxWidth - 60.dp.roundToPx()).coerceAtLeast(0)
+        val logo = measurables[0].measure(loose.copy(maxWidth = firstRowWidth))
+        val controls = measurables[1].measure(loose)
+        val gap = 12.dp.roundToPx()
+        val singleRow = logo.width + gap + controls.width <= firstRowWidth
+        val height = if (singleRow) maxOf(logo.height, controls.height)
+            else logo.height + gap + controls.height
+        layout(constraints.maxWidth, constraints.constrainHeight(height)) {
+            if (singleRow) {
+                logo.placeRelative(0, (height - logo.height) / 2)
+                controls.placeRelative(firstRowWidth - controls.width, (height - controls.height) / 2)
+            } else {
+                logo.placeRelative(0, 0)
+                controls.placeRelative(0, logo.height + gap)
+            }
         }
-        if (!isPro) {
-            RewardAdButton(rewardActive, rewardRemainingLabel, onRewardButtonClick)
-            Spacer(Modifier.width(8.dp))
-        }
-        MappingBadge(isMappingEnabled, onToggleMapping)
     }
 }
 
@@ -405,36 +435,51 @@ private fun RewardAdButton(active: Boolean, remainingLabel: String, onClick: () 
     } else {
         stringResource(R.string.home_reward_available)
     }
-    Box {
-        Surface(
-            modifier = Modifier
-                .size(MinTouchTarget)
-                .alpha(if (active) 0.55f else 1f)
-                .semantics {
-                    contentDescription = cooldownDescription
+    Layout(
+        // Include the badge in measurement instead of drawing it outside the button's bounds.
+        modifier = Modifier.testTag("reward_ad_envelope"),
+        content = {
+            Surface(
+                modifier = Modifier
+                    .size(MinTouchTarget)
+                    .alpha(if (active) 0.55f else 1f)
+                    .semantics {
+                        contentDescription = cooldownDescription
+                    }
+                    .testTag("reward_ad_button"),
+                onClick = onClick,
+                shape = CircleShape,
+                color = colors.surface.copy(alpha = 0.96f),
+                border = androidx.compose.foundation.BorderStroke(1.dp, colors.outline.copy(alpha = .35f)),
+                shadowElevation = 4.dp,
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(Icons.Filled.PlayCircle, contentDescription = null, tint = colors.primary, modifier = Modifier.size(20.dp))
                 }
-                .testTag("reward_ad_button"),
-            onClick = onClick,
-            shape = CircleShape,
-            color = colors.surface.copy(alpha = 0.96f),
-            border = androidx.compose.foundation.BorderStroke(1.dp, colors.outline.copy(alpha = .35f)),
-            shadowElevation = 4.dp,
-        ) {
-            Box(contentAlignment = Alignment.Center) {
-                Icon(Icons.Filled.PlayCircle, contentDescription = null, tint = colors.primary, modifier = Modifier.size(20.dp))
             }
+            Text(
+                if (active) remainingLabel else stringResource(R.string.home_reward_badge_idle),
+                Modifier
+                    .testTag("reward_ad_badge")
+                    .clip(CircleShape)
+                    .background(if (active) colors.primary else colors.error)
+                    .padding(horizontal = 6.dp, vertical = 2.dp),
+                style = MaterialTheme.typography.labelSmall,
+                color = if (active) colors.onPrimary else colors.onError,
+                maxLines = 1,
+            )
+        },
+    ) { measurables, constraints ->
+        val loose = constraints.copy(minWidth = 0, minHeight = 0)
+        val button = measurables[0].measure(loose)
+        val badge = measurables[1].measure(loose)
+        // Only the top 6 dp of the circle sits behind the badge, even at large font sizes.
+        val buttonY = (badge.height - 6.dp.roundToPx()).coerceAtLeast(0)
+        val width = maxOf(button.width, badge.width)
+        layout(width, buttonY + button.height) {
+            button.placeRelative((width - button.width) / 2, buttonY)
+            badge.placeRelative((width - badge.width) / 2, 0)
         }
-        Text(
-            if (active) remainingLabel else stringResource(R.string.home_reward_badge_idle),
-            Modifier
-                .align(Alignment.TopEnd)
-                .offset(x = 8.dp, y = (-6).dp)
-                .clip(CircleShape)
-                .background(if (active) colors.primary else colors.error)
-                .padding(horizontal = 6.dp, vertical = 2.dp),
-            style = MaterialTheme.typography.labelSmall,
-            color = if (active) colors.onPrimary else colors.onError,
-        )
     }
 }
 
@@ -445,6 +490,7 @@ private fun MappingBadge(active: Boolean, onClick: () -> Unit) {
     val accent = if (active) colors.primary else colors.error
     Row(
         Modifier
+            .testTag("mapping_badge")
             .clip(CircleShape)
             .heightIn(min = MinTouchTarget)
             .clickable(
@@ -463,6 +509,7 @@ private fun MappingBadge(active: Boolean, onClick: () -> Unit) {
         Spacer(Modifier.width(7.dp))
         Text(
             stringResource(if (active) R.string.home_status_live else R.string.home_status_paused),
+            modifier = Modifier.testTag("mapping_status_label"),
             style = MaterialTheme.typography.labelMedium,
             color = accent,
         )

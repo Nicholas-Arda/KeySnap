@@ -11,6 +11,10 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import java.io.InputStream
 
+/** Transport messages and Throwable.toString can contain a device address or an echoed payload. */
+internal fun adbFailureSummary(error: Throwable): String = generateSequence(error) { it.cause }
+    .take(8).map { it.javaClass.simpleName }.distinct().joinToString(" > ")
+
 class AdbStreamClient(private val context: Context) {
 
     companion object {
@@ -34,9 +38,9 @@ class AdbStreamClient(private val context: Context) {
         try {
             // [host] is left out of every log line in this class: WirelessAdbManager passes the
             // device's real address on the user's network, which this project keeps out of logs in
-            // every build type. Port, command and failure detail stay, so the diagnostics this
+            // every build type. Port and failure types stay, so the diagnostics this
             // class exists for are unaffected.
-            Log.d(TAG, "Connecting with libadb on port $connectPort for '$command'")
+            Log.d(TAG, "Connecting with libadb on port $connectPort")
             val manager = LibAdbConnectionManager.get(context)
             if (!manager.connect(host, connectPort)) {
                 error("ADB connection was rejected by the daemon")
@@ -58,7 +62,7 @@ class AdbStreamClient(private val context: Context) {
                     cause = cause.cause
                 }
                 val detail = cause?.message ?: error.localizedMessage ?: error.message ?: error.javaClass.simpleName
-                Log.e(TAG, "ADB shell stream failed: $detail", error)
+                Log.e(TAG, "ADB shell stream failed: ${adbFailureSummary(error)}")
                 onError("ADB Stream Error: $detail")
             }
         } finally {
@@ -106,8 +110,7 @@ class AdbStreamClient(private val context: Context) {
         } catch (cancelled: CancellationException) {
             throw cancelled
         } catch (error: Exception) {
-            val detail = error.localizedMessage ?: error.message ?: error.javaClass.simpleName
-            Log.e(TAG, "ADB one-shot command failed: $detail", error)
+            Log.e(TAG, "ADB one-shot command failed: ${adbFailureSummary(error)}")
             false
         } finally {
             runCatching { stream?.close() }

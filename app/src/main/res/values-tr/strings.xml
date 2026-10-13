@@ -1024,4 +1024,16 @@
     <string name="import_review_note_privileged">Yukarıdaki komutları ve adresleri çalıştırır. Kapalı olarak kaydedilir; güvendiğinizde Kısayollarım\'dan açın.</string>
     <string name="import_error_read">Bu dosya okunamadı.</string>
     <string name="import_error_busy">Düzenlediğiniz kısayolu kapatıp yeniden içe aktarın.</string>
+    <string name="settings_autostart_title">Yeniden başlatınca çalıştır</string>
+    <string name="settings_autostart_description">Telefon yeniden başladıktan sonra kilidi açıp Wi-Fi’a bağlanınca Uzman Modu yeniden başlar. Bazı telefonlarda KeySnap için otomatik başlatmaya da izin vermeniz gerekir.</string>
+    <string name="settings_autostart_permission_description">Uzman Modu şu komutla bir ek izin verir: %1$s. Bu seçenek veya Uzman Modu kapatılınca izin geri alınır. Uzman Modu çalışırken kablosuz hata ayıklama açık kalır. KeySnap açtıysa bu seçeneği kapatmak Uzman Modu’nu da durdurur ve kablosuz hata ayıklamayı eski hâline getirir.</string>
+    <string name="settings_autostart_hint_permission">Kurulumu bitirmek için Uzman Modu’nu bir kez başlatın. OPPO, OnePlus ve realme’de önce Geliştirici seçeneklerinden “İzin izlemeyi devre dışı bırak”, Xiaomi’de “USB hata ayıklama (Güvenlik ayarları)” seçeneğini açın. Geliştirici seçeneklerini açmak için dokunun.</string>
+    <string name="settings_autostart_hint_prompt">Android 11–12’de her yeniden başlatmadan sonra Android sorunca bu ağda kablosuz hata ayıklamaya izin verin.</string>
+    <string name="settings_autostart_cleanup_failed">Yeniden başlatma izni geri alınamadı. Uzman Modu’na yeniden bağlanıp bu seçeneği tekrar kapatın.</string>
+    <string name="notif_autostart_title">Yeniden başlatma sonrası Uzman Modu başlamadı</string>
+    <string name="notif_autostart_no_permission">Yeniden başlatma izni eksik. Kurulumu bitirmek için KeySnap’i açıp Uzman Modu’nu başlatın.</string>
+    <string name="notif_autostart_dev_options_off">Geliştirici seçenekleri kapalı. Açıp KeySnap’ten Uzman Modu’nu başlatın.</string>
+    <string name="notif_autostart_wifi_not_allowed">Bu Wi-Fi ağında kablosuz hata ayıklamaya izin verilmedi. Kurulumu bitirmek için KeySnap’i açın.</string>
+    <string name="notif_autostart_connect_failed">Kablosuz hata ayıklamaya bağlanılamadı. KeySnap’i açın; yeniden eşleştirme gerekebilir.</string>
+    <string name="settings_autostart_hint_pairing">Android eşleşmenin süresini doldurur veya eşleşmeyi kaldırırsa Gelişmiş Mod’u yeniden kurun. Günlük bağlantılar her telefonda eşleşmenin geçerli kalmasını sağlamayabilir.</string>
 </resources>

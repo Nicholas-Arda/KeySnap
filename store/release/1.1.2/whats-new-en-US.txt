@@ -1,0 +1,1 @@
+New: Start after restart can bring Advanced Mode back after unlock and Wi-Fi using your existing pairing. Enable it in Settings; it is off by default. Some phones need auto-launch or network approval. If Android expires or removes the pairing, set up Advanced Mode again.

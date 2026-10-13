@@ -1027,4 +1027,16 @@
     <string name="import_review_note_privileged">Ele executa os comandos e endereços mostrados acima. Será salvo desativado; ative-o em Meus atalhos quando confiar nele.</string>
     <string name="import_error_read">Não foi possível ler esse arquivo.</string>
     <string name="import_error_busy">Feche o atalho que você está editando e importe de novo.</string>
+    <string name="settings_autostart_title">Iniciar após reiniciar</string>
+    <string name="settings_autostart_description">Inicia o modo avançado após desbloquear o telefone reiniciado e conectar ao Wi-Fi. Alguns telefones também exigem permitir a inicialização automática do KeySnap.</string>
+    <string name="settings_autostart_permission_description">O modo avançado concede uma permissão extra: %1$s. Ela é revogada ao desativar esta opção ou o modo avançado. A depuração sem fio permanece ativa enquanto o modo avançado funciona. Se o KeySnap a ativou, desativar esta opção também encerra o modo avançado e restaura a depuração sem fio.</string>
+    <string name="settings_autostart_hint_permission">Inicie o modo avançado uma vez. Em OPPO, OnePlus e realme, ative primeiro “Desativar monitoramento de permissões”; em Xiaomi, “Depuração USB (Configurações de segurança)” nas opções do desenvolvedor. Toque para abri-las.</string>
+    <string name="settings_autostart_hint_prompt">No Android 11–12, permita a depuração sem fio nesta rede após cada reinicialização quando o Android solicitar.</string>
+    <string name="settings_autostart_cleanup_failed">Não foi possível revogar a permissão de reinício. Reconecte o modo avançado e desative esta opção novamente.</string>
+    <string name="notif_autostart_title">Modo avançado não iniciou após reiniciar</string>
+    <string name="notif_autostart_no_permission">A permissão de reinício está ausente. Abra o KeySnap e inicie o modo avançado para concluir a configuração.</string>
+    <string name="notif_autostart_dev_options_off">As opções do desenvolvedor estão desativadas. Ative-as e inicie o modo avançado no KeySnap.</string>
+    <string name="notif_autostart_wifi_not_allowed">A depuração sem fio não foi permitida nesta rede Wi-Fi. Abra o KeySnap para configurar.</string>
+    <string name="notif_autostart_connect_failed">Não foi possível conectar à depuração sem fio. Abra o KeySnap; pode ser necessário parear novamente.</string>
+    <string name="settings_autostart_hint_pairing">Se o Android expirar ou remover o pareamento, configure o Modo avançado novamente. As conexões diárias podem não manter o pareamento ativo em todos os celulares.</string>
 </resources>

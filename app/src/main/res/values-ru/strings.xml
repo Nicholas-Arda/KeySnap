@@ -1026,4 +1026,16 @@
     <string name="import_review_note_privileged">Он выполняет показанные выше команды и адреса. Он будет сохранён выключенным; включите его в разделе «Мои сценарии», когда будете ему доверять.</string>
     <string name="import_error_read">Не удалось прочитать этот файл.</string>
     <string name="import_error_busy">Закройте редактируемый сценарий, затем повторите импорт.</string>
+    <string name="settings_autostart_title">Запуск после перезагрузки</string>
+    <string name="settings_autostart_description">Запускает расширенный режим после разблокировки телефона и подключения к Wi-Fi. На некоторых телефонах нужно разрешить автозапуск KeySnap.</string>
+    <string name="settings_autostart_permission_description">Расширенный режим выдаёт дополнительное разрешение командой: %1$s. Оно отзывается при отключении этой опции или расширенного режима. Беспроводная отладка остаётся включённой во время работы режима. Если KeySnap включил её, отключение этой опции также останавливает расширенный режим и восстанавливает беспроводную отладку.</string>
+    <string name="settings_autostart_hint_permission">Запустите расширенный режим один раз. На OPPO, OnePlus и realme сначала включите «Отключить мониторинг разрешений», на Xiaomi — «Отладка по USB (Настройки безопасности)» в настройках разработчика. Нажмите, чтобы открыть их.</string>
+    <string name="settings_autostart_hint_prompt">На Android 11–12 после каждой перезагрузки разрешайте беспроводную отладку в этой сети, когда Android запрашивает её.</string>
+    <string name="settings_autostart_cleanup_failed">Не удалось отозвать разрешение перезапуска. Подключите расширенный режим и снова отключите эту опцию.</string>
+    <string name="notif_autostart_title">Расширенный режим не запущен после перезагрузки</string>
+    <string name="notif_autostart_no_permission">Нет разрешения перезапуска. Откройте KeySnap и запустите расширенный режим для завершения настройки.</string>
+    <string name="notif_autostart_dev_options_off">Настройки разработчика отключены. Включите их и запустите расширенный режим в KeySnap.</string>
+    <string name="notif_autostart_wifi_not_allowed">Беспроводная отладка в этой сети Wi-Fi не разрешена. Откройте KeySnap для настройки.</string>
+    <string name="notif_autostart_connect_failed">Не удалось подключиться к беспроводной отладке. Откройте KeySnap; может потребоваться повторное сопряжение.</string>
+    <string name="settings_autostart_hint_pairing">Если Android удалит сопряжение или срок его действия истечёт, настройте Расширенный режим заново. Ежедневные подключения могут не сохранять сопряжение на всех телефонах.</string>
 </resources>

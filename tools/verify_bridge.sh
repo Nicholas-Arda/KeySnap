@@ -8,13 +8,23 @@
 # reports everything around them.
 #
 # Usage:  tools/verify_bridge.sh [adb-serial]
+# For side-by-side phone tests, set KEYSNAP_TEST_PACKAGE to the .dev package.
+# KEYSNAP_KEY_WAIT_SECONDS extends the physical-key window (default: 20 seconds).
 #
 set -u
 
 SERIAL="${1:-}"
 if [ -n "$SERIAL" ]; then ADB=(adb -s "$SERIAL"); else ADB=(adb); fi
 
-PKG=io.github.nicholasarda.keysnap
+PKG="${KEYSNAP_TEST_PACKAGE:-io.github.nicholasarda.keysnap}"
+KEY_WAIT_SECONDS="${KEYSNAP_KEY_WAIT_SECONDS:-20}"
+case "$KEY_WAIT_SECONDS" in
+  ''|*[!0-9]*) echo "KEYSNAP_KEY_WAIT_SECONDS must be a positive integer." >&2; exit 1 ;;
+esac
+if [ "$KEY_WAIT_SECONDS" -lt 1 ] || [ "$KEY_WAIT_SECONDS" -gt 180 ]; then
+  echo "KEYSNAP_KEY_WAIT_SECONDS must be between 1 and 180." >&2
+  exit 1
+fi
 BASE=/data/local/tmp/ardamapper
 NICE=arda_bridge
 
@@ -75,10 +85,10 @@ else
 fi
 
 echo "== 5. Press your mapped physical key now =="
-echo "  Watching the bridge log for a trigger (20s)..."
+echo "  Watching the bridge log for a trigger (${KEY_WAIT_SECONDS}s)..."
 BEFORE=$("${ADB[@]}" shell "grep -c Triggered $BASE/bridge.log" 2>/dev/null | tr -d ' \r\n')
 BEFORE=${BEFORE:-0}
-for _ in $(seq 1 20); do
+for _ in $(seq 1 "$KEY_WAIT_SECONDS"); do
   sleep 1
   NOW=$("${ADB[@]}" shell "grep -c Triggered $BASE/bridge.log" 2>/dev/null | tr -d ' \r\n')
   NOW=${NOW:-0}

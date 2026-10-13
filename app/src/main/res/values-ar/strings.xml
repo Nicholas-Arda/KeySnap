@@ -1023,4 +1023,16 @@
     <string name="import_review_note_privileged">يشغّل الأوامر والعناوين المعروضة أعلاه. سيُحفظ متوقفًا؛ شغّله من اختصاراتي عندما تثق به.</string>
     <string name="import_error_read">تعذّرت قراءة ذلك الملف.</string>
     <string name="import_error_busy">أغلق الاختصار الذي تعدّله، ثم استورد مرة أخرى.</string>
+    <string name="settings_autostart_title">التشغيل بعد إعادة التشغيل</string>
+    <string name="settings_autostart_description">يبدأ الوضع المتقدم بعد فتح قفل الهاتف المعاد تشغيله والاتصال بشبكة Wi-Fi. قد تحتاج بعض الهواتف إلى السماح بالتشغيل التلقائي لـ KeySnap.</string>
+    <string name="settings_autostart_permission_description">يمنح الوضع المتقدم إذنًا إضافيًا باستخدام: %1$s. يُسحب الإذن عند إيقاف هذا الخيار أو الوضع المتقدم. يبقى تصحيح الأخطاء اللاسلكي مفعّلًا أثناء عمل الوضع المتقدم. إذا فعّله KeySnap، فإن إيقاف هذا الخيار يوقف الوضع المتقدم أيضًا ويعيد تصحيح الأخطاء اللاسلكي إلى حالته السابقة.</string>
+    <string name="settings_autostart_hint_permission">شغّل الوضع المتقدم مرة لإكمال الإعداد. على OPPO وOnePlus وrealme فعّل أولًا «تعطيل مراقبة الأذونات»، وعلى Xiaomi فعّل «تصحيح أخطاء USB (إعدادات الأمان)» في خيارات المطوّر. انقر لفتحها.</string>
+    <string name="settings_autostart_hint_prompt">على Android 11–12، اسمح بتصحيح الأخطاء اللاسلكي على هذه الشبكة بعد كل إعادة تشغيل عندما يطلب Android ذلك.</string>
+    <string name="settings_autostart_cleanup_failed">تعذّر سحب إذن إعادة التشغيل. أعد الاتصال بالوضع المتقدم ثم أوقف هذا الخيار مجددًا.</string>
+    <string name="notif_autostart_title">لم يبدأ الوضع المتقدم بعد إعادة التشغيل</string>
+    <string name="notif_autostart_no_permission">إذن إعادة التشغيل غير موجود. افتح KeySnap وشغّل الوضع المتقدم لإكمال الإعداد.</string>
+    <string name="notif_autostart_dev_options_off">خيارات المطوّر متوقفة. فعّلها وشغّل الوضع المتقدم من KeySnap.</string>
+    <string name="notif_autostart_wifi_not_allowed">لم يُسمح بتصحيح الأخطاء اللاسلكي على شبكة Wi-Fi هذه. افتح KeySnap لإكمال الإعداد.</string>
+    <string name="notif_autostart_connect_failed">تعذّر الاتصال بتصحيح الأخطاء اللاسلكي. افتح KeySnap؛ قد تحتاج إلى الاقتران مجددًا.</string>
+    <string name="settings_autostart_hint_pairing">إذا أزال Android الاقتران أو انتهت صلاحيته، فأعد إعداد الوضع المتقدم. قد لا تُبقي الاتصالات اليومية الاقتران نشطًا على كل هاتف.</string>
 </resources>

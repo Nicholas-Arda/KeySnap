@@ -9,6 +9,7 @@ import com.example.data.KeyMappingRepository
 import com.example.data.ScriptAction
 import com.example.data.ScriptRepository
 import com.example.service.HardwareKeyTriggerCoordinator
+import com.example.service.adb.AdvancedAutostart
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -85,6 +86,7 @@ object BridgeController {
      * one must not report "nothing running" while the other is still shutting a stale bridge down.
      */
     private val probeLock = Mutex()
+    private val lifecycleLock = Mutex()
 
     /** Set once a stale bridge from before an app update was shut down; see [takeStaleReplacement]. */
     internal val staleReplaced = AtomicBoolean(false)
@@ -219,7 +221,7 @@ object BridgeController {
      * Publishes the config before spawning so the bridge has a valid mapping the moment it
      * starts, and never spawns when one is already running.
      */
-    suspend fun start(runner: ShellCommandRunner): Boolean {
+    suspend fun start(runner: ShellCommandRunner): Boolean = lifecycleLock.withLock {
         val current = payload ?: return false
         if (detectExistingBridge()) {
             return true
@@ -273,6 +275,17 @@ object BridgeController {
      * answers (including when none was running); false when one still does.
      */
     suspend fun stop(): Boolean {
+        val context = appContext
+        if (context != null) AdvancedAutostart.cancelJobs(context)
+        com.example.service.adb.WirelessAdbManager.cancelPendingStart()
+        return lifecycleLock.withLock { stopBridge(context) }
+    }
+
+    private suspend fun stopBridge(context: Context?): Boolean {
+        if (context != null && !AdvancedAutostart.prepareStop(context)) {
+            _statusMessage.value = "Couldn't remove the restart permission. Reconnect Advanced Mode and try again."
+            return false
+        }
         val requested = client()?.requestShutdown() ?: false
         // A lost or misread BYE must not read as "off" while the bridge still answers: keep it RUNNING,
         // with its payload, and say so, so the user can try again.
@@ -290,6 +303,10 @@ object BridgeController {
         HardwareKeyTriggerCoordinator.setAdvancedBridgeActive(false)
         payload?.uninstall()
         setStopped(if (requested) "Advanced Mode stopped." else "No running bridge found.")
+        if (context != null && !AdvancedAutostart.finishStop(context)) {
+            _statusMessage.value = "Advanced Mode stopped, but Wireless debugging could not be restored."
+            return false
+        }
         return true
     }
 

@@ -71,10 +71,18 @@ android {
     // Mode — is an Android 11 feature anyway, so nothing below 30 could use the app's core.
     minSdk = 30
     targetSdk = 36
-    versionCode = 11
-    versionName = "1.1.1"
+    versionCode = 12
+    versionName = "1.1.2"
 
-    testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    val autostartStateProbe = project.hasProperty("autostartStateProbe")
+    if (autostartStateProbe) {
+      require(project.hasProperty("sideBySide")) { "The autostart state probe is for the .dev phone install only" }
+    }
+    testInstrumentationRunner = if (autostartStateProbe) {
+      "com.example.service.adb.AdvancedAutostartStateInstrumentation"
+    } else {
+      "androidx.test.runner.AndroidJUnitRunner"
+    }
 
     manifestPlaceholders["admobAppId"] =
       admobId("ADMOB_APP_ID", "ca-app-pub-3940256099942544~3347511713")
@@ -119,6 +127,13 @@ android {
       isShrinkResources = true
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
       signingConfig = signingConfigs.findByName("release")
+      // Exercise R8/resource shrinking on the phone without replacing the Play install.
+      // Reuse the dev signature so a debug .dev install can be updated without losing its data.
+      if (project.hasProperty("sideBySide")) {
+        applicationIdSuffix = ".dev"
+        versionNameSuffix = "-dev-release"
+        signingConfig = signingConfigs.getByName("debug")
+      }
     }
   }
   compileOptions {

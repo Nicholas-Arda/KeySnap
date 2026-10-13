@@ -53,6 +53,7 @@ import com.example.service.ScreenPointPicker
 import com.example.service.TwoPointGesture
 import com.example.service.ScriptActionExecutor
 import com.example.service.adb.PairingStatus
+import com.example.service.adb.AdvancedAutostart
 import com.example.service.adb.WirelessAdbManager
 import com.example.service.bridge.BridgeController
 import com.example.service.bridge.BridgeState
@@ -618,6 +619,21 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
     val pairingStatus: StateFlow<PairingStatus> = WirelessAdbManager.pairingStatus
     val statusMessage: StateFlow<String> = WirelessAdbManager.statusMessage
     val autoAssistantEnabled: StateFlow<Boolean> = WirelessAdbManager.autoAssistantEnabled
+    val advancedAutostart: StateFlow<Boolean> = WirelessAdbManager.advancedAutostartEnabled
+    val autostartPermissionHeld: StateFlow<Boolean> = WirelessAdbManager.autostartPermissionHeld
+    private val _autostartChanging = MutableStateFlow(false)
+    val autostartChanging: StateFlow<Boolean> = _autostartChanging.asStateFlow()
+
+    fun setAdvancedAutostart(enabled: Boolean) {
+        if (_autostartChanging.value) return
+        _autostartChanging.value = true
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val ok = WirelessAdbManager.setAdvancedAutostartEnabled(enabled)
+                if (!ok && !enabled) _scriptsMessage.value = ScriptsMessage(res.getString(R.string.settings_autostart_cleanup_failed))
+            } finally { _autostartChanging.value = false }
+        }
+    }
     val discoveredIp: StateFlow<String> = WirelessAdbManager.discoveredIp
     val discoveredPairingPort: StateFlow<Int?> = WirelessAdbManager.discoveredPairingPort
     val discoveredPairingCode: StateFlow<String?> = WirelessAdbManager.discoveredPairingCode
@@ -798,6 +814,7 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
     }
 
     fun refreshServiceStatus() {
+        WirelessAdbManager.refreshAutostartPermission()
         val runningFromService = KeyMapperAccessibilityService.isServiceActive.value
         val enabledInSettings = isAccessibilityServiceEnabled(appContext, KeyMapperAccessibilityService::class.java)
         _isServiceActive.value = runningFromService || enabledInSettings

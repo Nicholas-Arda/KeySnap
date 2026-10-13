@@ -1027,4 +1027,16 @@
     <string name="import_review_note_privileged">Ejecuta los comandos y direcciones que se muestran arriba. Se guardará desactivado; actívalo en Mis accesos directos cuando confíes en él.</string>
     <string name="import_error_read">No se pudo leer ese archivo.</string>
     <string name="import_error_busy">Cierra el acceso directo que estás editando y vuelve a importar.</string>
+    <string name="settings_autostart_title">Iniciar tras reiniciar</string>
+    <string name="settings_autostart_description">Inicia el modo avanzado después de desbloquear el teléfono reiniciado y conectarse al Wi-Fi. Algunos teléfonos requieren permitir el inicio automático de KeySnap.</string>
+    <string name="settings_autostart_permission_description">El modo avanzado concede un permiso adicional: %1$s. Se revoca al desactivar esta opción o el modo avanzado. La depuración inalámbrica permanece activa mientras funciona el modo avanzado. Si KeySnap la activó, desactivar esta opción también detiene el modo avanzado y restaura la depuración inalámbrica.</string>
+    <string name="settings_autostart_hint_permission">Inicia el modo avanzado una vez. En OPPO, OnePlus y realme, activa primero “Desactivar supervisión de permisos”; en Xiaomi, “Depuración USB (Ajustes de seguridad)”, en las opciones de desarrollador. Toca para abrirlas.</string>
+    <string name="settings_autostart_hint_prompt">En Android 11–12, permite la depuración inalámbrica en esta red cuando Android lo solicite tras cada reinicio.</string>
+    <string name="settings_autostart_cleanup_failed">No se pudo revocar el permiso de reinicio. Reconecta el modo avanzado y desactiva esta opción otra vez.</string>
+    <string name="notif_autostart_title">El modo avanzado no se inició tras reiniciar</string>
+    <string name="notif_autostart_no_permission">Falta el permiso de reinicio. Abre KeySnap e inicia el modo avanzado para completar la configuración.</string>
+    <string name="notif_autostart_dev_options_off">Las opciones de desarrollador están desactivadas. Actívalas e inicia el modo avanzado desde KeySnap.</string>
+    <string name="notif_autostart_wifi_not_allowed">No se permitió la depuración inalámbrica en esta red Wi-Fi. Abre KeySnap para configurar.</string>
+    <string name="notif_autostart_connect_failed">No se pudo conectar a la depuración inalámbrica. Abre KeySnap; puede ser necesario volver a emparejar.</string>
+    <string name="settings_autostart_hint_pairing">Si Android caduca o elimina el emparejamiento, configura de nuevo el Modo avanzado. Las conexiones diarias pueden no mantenerlo activo en todos los teléfonos.</string>
 </resources>

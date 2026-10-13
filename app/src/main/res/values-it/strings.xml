@@ -1028,4 +1028,16 @@
     <string name="import_review_note_privileged">Esegue i comandi e gli indirizzi mostrati sopra. Verrà salvata disattivata; attivala in Le mie scorciatoie quando ti fidi.</string>
     <string name="import_error_read">Impossibile leggere quel file.</string>
     <string name="import_error_busy">Chiudi la scorciatoia che stai modificando, poi importa di nuovo.</string>
+    <string name="settings_autostart_title">Avvia dopo il riavvio</string>
+    <string name="settings_autostart_description">Riavvia la modalità avanzata dopo lo sblocco e la connessione Wi-Fi. Alcuni telefoni richiedono anche il permesso di avvio automatico per KeySnap.</string>
+    <string name="settings_autostart_permission_description">La modalità avanzata concede un permesso aggiuntivo: %1$s. Viene revocato disattivando questa opzione o la modalità avanzata. Il debug wireless resta attivo durante il funzionamento della modalità avanzata. Se KeySnap lo ha attivato, disattivare questa opzione arresta anche la modalità avanzata e ripristina il debug wireless.</string>
+    <string name="settings_autostart_hint_permission">Avvia la modalità avanzata una volta. Su OPPO, OnePlus e realme, abilita prima “Disattiva monitoraggio autorizzazioni”; su Xiaomi, “Debug USB (Impostazioni di sicurezza)” nelle opzioni sviluppatore. Tocca per aprirle.</string>
+    <string name="settings_autostart_hint_prompt">Su Android 11–12, consenti il debug wireless su questa rete dopo ogni riavvio quando Android lo richiede.</string>
+    <string name="settings_autostart_cleanup_failed">Impossibile revocare il permesso di riavvio. Ricollega la modalità avanzata e disattiva nuovamente questa opzione.</string>
+    <string name="notif_autostart_title">Modalità avanzata non avviata dopo il riavvio</string>
+    <string name="notif_autostart_no_permission">Manca il permesso di riavvio. Apri KeySnap e avvia la modalità avanzata per completare la configurazione.</string>
+    <string name="notif_autostart_dev_options_off">Opzioni sviluppatore disattivate. Attivale e avvia la modalità avanzata da KeySnap.</string>
+    <string name="notif_autostart_wifi_not_allowed">Debug wireless non consentito su questa rete Wi-Fi. Apri KeySnap per completare la configurazione.</string>
+    <string name="notif_autostart_connect_failed">Connessione al debug wireless non riuscita. Apri KeySnap; potrebbe essere necessario un nuovo abbinamento.</string>
+    <string name="settings_autostart_hint_pairing">Se Android fa scadere o rimuove l’associazione, configura di nuovo la Modalità avanzata. Le connessioni giornaliere potrebbero non mantenerla attiva su tutti i telefoni.</string>
 </resources>

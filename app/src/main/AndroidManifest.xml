@@ -6,6 +6,11 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <!-- Only the opt-in restart setting schedules work after the first unlock following reboot. -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!-- Granted by the user's Advanced Mode bridge only for automatic restart; removed on disable.
+         Only adb_wifi_enabled is written, never USB debugging or the paired-key security timeout. -->
+    <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <!-- Core function: the app reacts to hardware keys while backgrounded, so setup step 2 asks for
@@ -138,6 +143,12 @@
             android:exported="false" />
 
         <!-- Checks the RSS feeds automations follow, at most every 15 minutes and only while online. -->
+        <receiver android:name="com.example.service.adb.AdvancedAutostartReceiver" android:exported="false">
+            <intent-filter><action android:name="android.intent.action.BOOT_COMPLETED" /></intent-filter>
+        </receiver>
+        <service android:name="com.example.service.adb.AdvancedAutostartJobService"
+            android:permission="android.permission.BIND_JOB_SERVICE" android:exported="false" />
+
         <service
             android:name="com.example.service.RssPollJobService"
             android:permission="android.permission.BIND_JOB_SERVICE"

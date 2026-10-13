@@ -64,7 +64,7 @@ Shortcuts run in the background, and the whole thing works without an account, a
 
 Android only lets a normal app see the keys it decides to share, which leaves the power button, the assistant button and many OEM buttons out of reach. Advanced Mode fixes that without root.
 
-The app pairs with your phone's own **Wireless Debugging** over the local network and starts a small helper, the *bridge*, with shell privileges. The bridge reads key presses straight from the kernel and runs your shortcuts on its own, so it keeps working after Android closes the app in the background. It reads its configuration from a file the app writes, keeps no record of what you press, never leaves your network, and deletes itself when you turn Advanced Mode off. When a *Send a message* action has *Send automatically* on, the bridge also reads the screen layout of the messaging app KeySnap just opened, only while that app is in front and for a few seconds, to find its Send button and to check that the chat is with the person you chose and that the message field holds exactly your text, before it taps Send and once after. That layout is not stored, except for a moment in a private temporary file on some Android versions, deleted right away, and it is never logged or sent. It does not survive a reboot; the app re-launches it the next time you open it.
+The app pairs with your phone's own **Wireless Debugging** over the local network and starts a small helper, the *bridge*, with shell privileges. The bridge reads key presses straight from the kernel and runs your shortcuts on its own, so it keeps working after Android closes the app in the background. It reads its configuration from a file the app writes, keeps no record of what you press, never leaves your network, and deletes itself when you turn Advanced Mode off. When a *Send a message* action has *Send automatically* on, the bridge also reads the screen layout of the messaging app KeySnap just opened, only while that app is in front and for a few seconds, to find its Send button and to check that the chat is with the person you chose and that the message field holds exactly your text, before it taps Send and once after. That layout is not stored, except for a moment in a private temporary file on some Android versions, deleted right away, and it is never logged or sent. A reboot stops the bridge. With the optional Start after restart setting, KeySnap brings it back after unlock and Wi-Fi; otherwise restart it through setup.
 
 Input capture is strictly read-only. The bridge listens to the kernel's event stream and never grabs or forges input.
 
@@ -81,6 +81,7 @@ KeySnap asks for a permission only when you use the feature that needs it, and e
 - **Bluetooth, Do Not Disturb access, usage access, modify system settings, display over other apps.** Each unlocks one group of actions or conditions and is requested from inside that feature.
 - **Set wallpaper** is granted at install and used only by the *Set wallpaper* action. The picture comes from Android's photo picker, so KeySnap sees the one image you pick and never the rest of your photos.
 - **Camera** is deliberately not requested. The flashlight uses an API that needs no permission.
+- **Start after restart (optional).** Uses the restart broadcast and `WRITE_SECURE_SETTINGS`, granted through your Advanced Mode bridge, to bring Advanced Mode back after unlock and Wi-Fi. The extra permission is removed on disable. Only Wireless Debugging is changed; USB debugging and Android's paired-key expiry setting are left alone.
 
 The full list with reasons is in the [privacy policy](https://nicholas-arda.github.io/keysnap-privacy/).
 
@@ -121,7 +122,7 @@ Android Studio with its bundled JDK is all you need. `:app` is the Kotlin and Je
 
 **Why did my shortcuts stop after a day?** Some phone makers kill background apps aggressively. Home shows a setup card with the two switches that stop this. Advanced Mode is immune because its helper is not part of the app process.
 
-**Why does Advanced Mode turn off after a reboot?** The helper is a process, not a service, so a reboot ends it. Open KeySnap once after rebooting and it starts again with the same pairing.
+**Can Advanced Mode return after a reboot?** Enable *Settings → Advanced Mode → Start after restart*. It starts again after your first unlock and a Wi-Fi connection, using the existing pairing. Android 11–12 can ask for network approval after each restart; some phone makers require auto-launch permission. The option is off by default. Wireless Debugging stays on while Advanced Mode runs. If KeySnap enabled it, turning the option off also stops Advanced Mode and restores Wireless Debugging. A daily local connection checks the existing pairing but does not guarantee that Android extends its expiry; an expired or removed pairing needs setup again.
 
 **Does it need internet?** No. The app never contacts a server of its own. The only network use is pairing with your own phone over your local network, the ads in the free version, and any URL or RSS feed you put into a shortcut yourself.
 
