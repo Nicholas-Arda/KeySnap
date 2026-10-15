@@ -123,8 +123,12 @@ class ConsoleHeaderLayoutTest {
             val badge = bounds("reward_ad_badge")
             val button = bounds("reward_ad_button")
             assertTrue("reward/mapping gap", separated(envelope, mapping, 12f))
-            assertTrue("badge contained", envelope.contains(badge.topLeft) &&
-                badge.right <= envelope.right && badge.bottom <= envelope.bottom)
+            // The badge hangs over the circle's top edge without taking layout height, so it sits
+            // outside the envelope; it must stay on screen and clear of every other control.
+            assertTrue("badge on screen", badge.top >= 0f && badge.left >= 0f && badge.right <= width.toFloat())
+            assertTrue("badge over the button", badge.bottom > button.top && badge.top < button.top &&
+                badge.left < button.right && badge.right > button.left)
+            listOf(logo, mapping, gear).forEach { assertTrue("badge clear of controls", separated(badge, it, 0f)) }
             assertTrue("48 dp reward target", button.width >= 48f && button.height >= 48f)
             rule.onNodeWithTag("reward_ad_button").performClick()
             assertEquals(1, rewardClicks)

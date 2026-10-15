@@ -61,6 +61,7 @@ import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.constrainHeight
+import androidx.compose.ui.unit.isSpecified
 import com.example.data.EntitlementManager
 import com.example.data.ScriptActionCatalog
 import com.example.data.ShortcutScript
@@ -371,6 +372,10 @@ internal fun ConsoleHeader(
     onRewardButtonClick: () -> Unit,
     onCycleTheme: () -> Unit,
 ) {
+    // The reward badge hangs above the controls (see RewardAdButton); when the controls wrap
+    // under the logo that overhang needs room. Matches the badge: label line + 2 dp padding twice, less 6 dp.
+    val badgeStyle = MaterialTheme.typography.labelSmall
+    val badgeLine = badgeStyle.lineHeight.takeIf { it.isSpecified } ?: badgeStyle.fontSize
     Layout(
         modifier = Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 8.dp),
         content = {
@@ -408,15 +413,17 @@ internal fun ConsoleHeader(
         val controls = measurables[1].measure(loose)
         val gap = 12.dp.roundToPx()
         val singleRow = logo.width + gap + controls.width <= firstRowWidth
+        val overhang = if (isPro) 0 else (badgeLine.roundToPx() + 4.dp.roundToPx() - 6.dp.roundToPx()).coerceAtLeast(0)
+        val wrappedGap = gap + overhang
         val height = if (singleRow) maxOf(logo.height, controls.height)
-            else logo.height + gap + controls.height
+            else logo.height + wrappedGap + controls.height
         layout(constraints.maxWidth, constraints.constrainHeight(height)) {
             if (singleRow) {
                 logo.placeRelative(0, (height - logo.height) / 2)
                 controls.placeRelative(firstRowWidth - controls.width, (height - controls.height) / 2)
             } else {
                 logo.placeRelative(0, 0)
-                controls.placeRelative(0, logo.height + gap)
+                controls.placeRelative(0, logo.height + wrappedGap)
             }
         }
     }
