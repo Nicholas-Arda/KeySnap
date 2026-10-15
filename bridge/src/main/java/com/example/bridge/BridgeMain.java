@@ -669,10 +669,12 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
             return ShellKeyInjector.runShellUnlogged("am", "start", "-a", "android.intent.action.VIEW", "-d", url);
         }
         if (BridgeConfig.ACTION_LAUNCH_VOICE_ASSISTANT.equals(action.type)) {
-            return ShellKeyInjector.runShell("am", "start", "-a", "android.intent.action.VOICE_COMMAND");
+            return AssistantLauncher.show()
+                    || ShellKeyInjector.runShell("am", "start", "-a", "android.intent.action.VOICE_COMMAND");
         }
         if (BridgeConfig.ACTION_LAUNCH_DEVICE_ASSISTANT.equals(action.type)) {
-            return ShellKeyInjector.runShell("am", "start", "-a", "android.intent.action.ASSIST");
+            return AssistantLauncher.show()
+                    || ShellKeyInjector.runShell("am", "start", "-a", "android.intent.action.ASSIST");
         }
         if (BridgeConfig.ACTION_OPEN_CAMERA.equals(action.type)) {
             return ShellKeyInjector.runShell("am", "start", "-a", "android.media.action.STILL_IMAGE_CAMERA");
