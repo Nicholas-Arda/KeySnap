@@ -774,6 +774,9 @@
     <string name="theme_light">فاتح</string>
     <string name="theme_dark">داكن</string>
     <string name="theme_sepia">سيبيا</string>
+    <string name="theme_system">النظام</string>
+    <string name="theme_oled">وضع OLED</string>
+    <string name="theme_oled_subtitle">خلفية سوداء نقية في السمة الداكنة</string>
 
     <!-- Sliders -->
     <string name="slider_milliseconds">%1$d مللي ثانية</string>

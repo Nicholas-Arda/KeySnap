@@ -775,6 +775,9 @@
     <string name="theme_light">Açık</string>
     <string name="theme_dark">Koyu</string>
     <string name="theme_sepia">Sepya</string>
+    <string name="theme_system">Sistem</string>
+    <string name="theme_oled">OLED modu</string>
+    <string name="theme_oled_subtitle">Koyu temada saf siyah arka plan</string>
 
     <!-- Kaydırıcılar -->
     <string name="slider_milliseconds">%1$d milisaniye</string>

@@ -1,1 +1,4 @@
 New: Start after restart can bring Advanced Mode back after unlock and Wi-Fi using your existing pairing. Enable it in Settings; it is off by default. Some phones need auto-launch or network approval. If Android expires or removes the pairing, set up Advanced Mode again.
+
+Fixed: In Advanced Mode, the assistant actions open your assistant's on-screen panel again instead of the plain app.
+New: a System theme that follows your phone, and an OLED mode for a pure black dark theme.

@@ -778,6 +778,9 @@
     <string name="theme_light">Claro</string>
     <string name="theme_dark">Escuro</string>
     <string name="theme_sepia">Sépia</string>
+    <string name="theme_system">Sistema</string>
+    <string name="theme_oled">Modo OLED</string>
+    <string name="theme_oled_subtitle">Fundo totalmente preto no tema escuro</string>
 
     <!-- Controles deslizantes -->
     <string name="slider_milliseconds">%1$d milissegundos</string>

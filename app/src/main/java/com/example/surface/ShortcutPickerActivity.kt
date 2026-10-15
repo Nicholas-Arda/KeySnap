@@ -75,6 +75,7 @@ import com.example.ui.scripts.actionIconFor
 import com.example.ui.scripts.triggerSummary
 import com.example.ui.theme.MyApplicationTheme
 import com.example.ui.theme.storedThemeMode
+import com.example.ui.theme.storedThemePrefs
 import io.github.nicholasarda.keysnap.R
 import kotlin.math.roundToInt
 
@@ -104,9 +105,10 @@ class ShortcutPickerActivity : ComponentActivity() {
         val overLimit = target is Target.Widget && !SurfaceBindings.widgetAllowed(this, target.id)
         enableEdgeToEdge()
         val themeMode = storedThemeMode(this)
+        val oled = storedThemePrefs(this).oled
         val scripts = ScriptRepository.getInstance(this).scripts
         setContent {
-            MyApplicationTheme(themeMode = themeMode) {
+            MyApplicationTheme(themeMode = themeMode, oled = oled) {
                 if (overLimit) {
                     WidgetLimitScreen(onUnlockPro = ::openProInApp, onCancel = ::finish)
                 } else {

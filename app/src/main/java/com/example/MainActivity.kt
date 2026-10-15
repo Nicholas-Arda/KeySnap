@@ -8,6 +8,7 @@ import android.view.KeyEvent
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.activity.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -20,6 +21,7 @@ import com.example.data.shouldConsumeKey
 import com.example.service.RunFailureNotifier
 import com.example.ui.MainScreen
 import com.example.ui.theme.MyApplicationTheme
+import com.example.ui.theme.resolveThemeMode
 import com.example.viewmodel.MainViewModel
 
 class MainActivity : ComponentActivity() {
@@ -43,8 +45,11 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         requestFastestRefreshRate()
         setContent {
-            val themeMode by viewModel.themeMode.collectAsState()
-            MyApplicationTheme(themeMode = themeMode) {
+            val storedMode by viewModel.themeMode.collectAsState()
+            val followSystem by viewModel.themeFollowSystem.collectAsState()
+            val oled by viewModel.oledMode.collectAsState()
+            val themeMode = resolveThemeMode(storedMode, followSystem, isSystemInDarkTheme())
+            MyApplicationTheme(themeMode = themeMode, oled = oled) {
                 MainScreen(viewModel = viewModel)
             }
         }

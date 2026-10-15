@@ -42,6 +42,7 @@ import com.example.ui.theme.GlassColors
 import com.example.ui.theme.PageGround
 import com.example.ui.theme.ThemeMode
 import com.example.ui.theme.ThemeTransitionMs
+import com.example.ui.theme.LocalOled
 import com.example.ui.theme.groundFor
 
 /**
@@ -77,8 +78,9 @@ fun GroundedPage(
 /** [groundFor] drawn over the whole of its parent, crossfading with the colour scheme. */
 @Composable
 private fun PageGroundLayer(themeMode: ThemeMode, modifier: Modifier = Modifier) {
-    Crossfade(themeMode, modifier, animationSpec = tween(ThemeTransitionMs), label = "pageGround") { mode ->
-        val ground = groundFor(mode)
+    val oled = LocalOled.current
+    Crossfade(themeMode to oled, modifier, animationSpec = tween(ThemeTransitionMs), label = "pageGround") { (mode, oledOn) ->
+        val ground = groundFor(mode, oledOn)
         Spacer(Modifier.fillMaxSize().drawBehind { drawGround(ground) })
     }
 }

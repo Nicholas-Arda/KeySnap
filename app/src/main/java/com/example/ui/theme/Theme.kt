@@ -36,10 +36,57 @@ enum class ThemeMode {
  * The theme the user chose, for screens outside MainActivity. MainViewModel writes it; an install
  * that only has the old `dark_theme` flag still maps to DARK or LIGHT.
  */
-fun storedThemeMode(context: Context): ThemeMode {
+fun storedThemeMode(context: Context): ThemeMode = storedThemePrefs(context).let {
+    resolveThemeMode(it.mode, it.followSystem, context.resources.configuration.isNightModeActive)
+}
+
+/** What Settings → Appearance stores: the picked mode, the "System" choice, and the OLED switch. */
+data class ThemePrefs(val mode: ThemeMode, val followSystem: Boolean, val oled: Boolean)
+
+/** "System" resolves to Dark or Light by the phone's setting; any other choice is used as picked. */
+fun resolveThemeMode(stored: ThemeMode, followSystem: Boolean, systemDark: Boolean): ThemeMode =
+    if (followSystem) (if (systemDark) ThemeMode.DARK else ThemeMode.LIGHT) else stored
+
+/** OLED only ever applies to the dark theme. */
+fun isOledActive(mode: ThemeMode, oled: Boolean): Boolean = oled && mode == ThemeMode.DARK
+
+/**
+ * System is the default only for a fresh install. An install that already has a stored choice, or
+ * that is being updated, keeps what it had; the answer is written once so a later update cannot flip it.
+ */
+fun defaultFollowSystem(hasStoredChoice: Boolean, freshInstall: Boolean): Boolean = !hasStoredChoice && freshInstall
+
+fun storedThemePrefs(context: Context): ThemePrefs {
     val prefs = context.getSharedPreferences("arda_mapper_appearance", Context.MODE_PRIVATE)
-    return prefs.getString("theme_mode", null)?.let { runCatching { ThemeMode.valueOf(it) }.getOrNull() }
+    val mode = prefs.getString("theme_mode", null)?.let { runCatching { ThemeMode.valueOf(it) }.getOrNull() }
         ?: if (prefs.getBoolean("dark_theme", true)) ThemeMode.DARK else ThemeMode.LIGHT
+    val follow = if (prefs.contains("theme_system")) {
+        prefs.getBoolean("theme_system", false)
+    } else {
+        val fresh = runCatching {
+            val info = context.packageManager.getPackageInfo(context.packageName, 0)
+            info.firstInstallTime == info.lastUpdateTime
+        }.getOrDefault(false)
+        defaultFollowSystem(prefs.contains("theme_mode") || prefs.contains("dark_theme"), fresh)
+            .also { prefs.edit().putBoolean("theme_system", it).apply() }
+    }
+    return ThemePrefs(mode, follow, prefs.getBoolean("oled_mode", false))
+}
+
+/** Saving a concrete mode also leaves "System". */
+fun saveThemeMode(context: Context, mode: ThemeMode) {
+    context.getSharedPreferences("arda_mapper_appearance", Context.MODE_PRIVATE).edit()
+        .putString("theme_mode", mode.name).putBoolean("theme_system", false).apply()
+}
+
+fun saveThemeSystem(context: Context) {
+    context.getSharedPreferences("arda_mapper_appearance", Context.MODE_PRIVATE).edit()
+        .putBoolean("theme_system", true).apply()
+}
+
+fun saveOled(context: Context, oled: Boolean) {
+    context.getSharedPreferences("arda_mapper_appearance", Context.MODE_PRIVATE).edit()
+        .putBoolean("oled_mode", oled).apply()
 }
 
 /** Shared by every theme-driven crossfade, so the scheme and the page ground move together. */
@@ -70,6 +117,17 @@ private val DarkColorScheme = darkColorScheme(
     surfaceDim = NavyBackground, surfaceBright = NavySurfaceVariant,
     surfaceContainerLowest = NavyBackground, surfaceContainerLow = NavySurface, surfaceContainer = NavySurface,
     surfaceContainerHigh = NavySurfaceVariant, surfaceContainerHighest = NavySurfaceVariant,
+)
+
+
+/** True black for OLED panels. Cards keep a lifted fill and a stronger rim so they do not vanish on it. */
+private val OledColorScheme = DarkColorScheme.copy(
+    onPrimary = Color.Black, onSecondary = Color.Black, onError = Color.Black,
+    background = Color.Black, surface = Color.Black, surfaceDim = Color.Black,
+    surfaceVariant = Color(0xFF14161A), primaryContainer = Color(0xFF14161A), secondaryContainer = Color(0xFF14161A),
+    surfaceBright = Color(0xFF14161A), outline = Color(0xFF2C323C),
+    surfaceContainerLowest = Color.Black, surfaceContainerLow = Color.Black, surfaceContainer = Color.Black,
+    surfaceContainerHigh = Color(0xFF14161A), surfaceContainerHighest = Color(0xFF14161A),
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -135,7 +193,7 @@ const val PageFloorStop = 0.62f
  * differently per appearance: [AmberOnSepia] barely shifts a background that is already warm, so
  * it needs more of it than the same blue reads as against a light background.
  */
-fun backgroundGlowAlpha(themeMode: ThemeMode): Pair<Float, Float> = when (themeMode) {
+fun backgroundGlowAlpha(themeMode: ThemeMode, oled: Boolean = false): Pair<Float, Float> = if (isOledActive(themeMode, oled)) 0f to 0f else when (themeMode) {
     ThemeMode.DARK -> 0.16f to 0.09f
     ThemeMode.LIGHT -> 0.14f to 0.07f
     ThemeMode.SEPIA -> 0.30f to 0.16f
@@ -219,7 +277,13 @@ private val SepiaGround = PageGround(
     ),
 )
 
-fun groundFor(themeMode: ThemeMode): PageGround = when (themeMode) {
+
+private val OledGround = PageGround(
+    stops = listOf(GroundStop(0f, Color.Black), GroundStop(760f, Color.Black)),
+    glows = emptyList(),
+)
+
+fun groundFor(themeMode: ThemeMode, oled: Boolean = false): PageGround = if (isOledActive(themeMode, oled)) OledGround else when (themeMode) {
     ThemeMode.DARK -> DarkGround
     ThemeMode.LIGHT -> LightGround
     ThemeMode.SEPIA -> SepiaGround
@@ -313,6 +377,22 @@ private val SepiaGlass = GlassColors(
     lensHighlight = Color(0xE6FFFFFF),
 )
 
+
+private val OledGlass = DarkGlass.copy(
+    cardTop = Color(0x1FFFFFFF),
+    cardBottom = Color(0x0FFFFFFF),
+    cardRim = Color(0x38FFFFFF),
+    cardShadow = Color.Transparent,
+    sheetTop = Color(0xFF0B0C0E),
+    sheetMid = Color(0xFF050506),
+    sheetBottom = Color.Black,
+    barFill = Color.Black.copy(alpha = .6f),
+    barRim = Color(0x40FFFFFF),
+)
+
+/** Whether the OLED black treatment is in force, for the few places that draw outside the scheme. */
+val LocalOled = compositionLocalOf { false }
+
 val LocalGlass = compositionLocalOf { LightGlass }
 
 @Composable
@@ -320,9 +400,9 @@ private fun animatedColor(target: Color, label: String): Color =
     animateColorAsState(target, tween(ThemeTransitionMs), label = label).value
 
 @Composable
-private fun animatedGlass(themeMode: ThemeMode): GlassColors {
+private fun animatedGlass(themeMode: ThemeMode, oled: Boolean): GlassColors {
     val target = when (themeMode) {
-        ThemeMode.DARK -> DarkGlass
+        ThemeMode.DARK -> if (isOledActive(themeMode, oled)) OledGlass else DarkGlass
         ThemeMode.LIGHT -> LightGlass
         ThemeMode.SEPIA -> SepiaGlass
     }
@@ -348,9 +428,10 @@ private fun animatedGlass(themeMode: ThemeMode): GlassColors {
 }
 
 @Composable
-fun MyApplicationTheme(themeMode: ThemeMode, content: @Composable () -> Unit) {
+fun MyApplicationTheme(themeMode: ThemeMode, oled: Boolean = false, content: @Composable () -> Unit) {
+    val oledOn = isOledActive(themeMode, oled)
     val targetScheme = when (themeMode) {
-        ThemeMode.DARK -> DarkColorScheme
+        ThemeMode.DARK -> if (oledOn) OledColorScheme else DarkColorScheme
         ThemeMode.LIGHT -> LightColorScheme
         ThemeMode.SEPIA -> SepiaColorScheme
     }
@@ -393,7 +474,7 @@ fun MyApplicationTheme(themeMode: ThemeMode, content: @Composable () -> Unit) {
     }
     val locale = LocalConfiguration.current.locales[0]
     val typography = remember(locale) { typographyFor(locale) }
-    CompositionLocalProvider(LocalGlass provides animatedGlass(themeMode)) {
+    CompositionLocalProvider(LocalGlass provides animatedGlass(themeMode, oled), LocalOled provides oledOn) {
         MaterialTheme(colorScheme = animatedScheme, typography = typography, content = content)
     }
 }

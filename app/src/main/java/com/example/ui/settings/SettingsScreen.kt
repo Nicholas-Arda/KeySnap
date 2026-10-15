@@ -29,6 +29,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Terminal
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material.icons.outlined.Delete
@@ -105,6 +106,10 @@ fun SettingsScreen(
     onClearHistory: () -> Unit = {},
     themeMode: ThemeMode? = null,
     onSetThemeMode: (ThemeMode) -> Unit = {},
+    themeFollowSystem: Boolean = false,
+    onSetThemeSystem: () -> Unit = {},
+    oledMode: Boolean = false,
+    onSetOledMode: (Boolean) -> Unit = {},
     onEraseAllData: () -> Unit = {},
     isAdvancedModeRunning: Boolean = false,
     onToggleAdvancedMode: (Boolean) -> Unit = {},
@@ -224,7 +229,17 @@ fun SettingsScreen(
         if (themeMode != null) {
             item {
                 ConsolePanel(stringResource(R.string.settings_appearance_panel), testTag = "appearance", modifier = reveal(9)) {
-                    AppearanceRow(themeMode, onSetThemeMode)
+                    AppearanceRow(themeMode, themeFollowSystem, onSetThemeMode, onSetThemeSystem)
+                    if (themeMode == ThemeMode.DARK) {
+                        SettingsSwitchRow(
+                            title = stringResource(R.string.theme_oled),
+                            description = stringResource(R.string.theme_oled_subtitle),
+                            checked = oledMode,
+                            enabled = true,
+                            testTag = "oled_mode_switch",
+                            onCheckedChange = onSetOledMode,
+                        )
+                    }
                 }
             }
         }
@@ -445,7 +460,12 @@ private fun AboutRow(
 
 /** Appearance is a single choice, so it is a radio group and announces itself as one. */
 @Composable
-private fun AppearanceRow(selected: ThemeMode, onSelect: (ThemeMode) -> Unit) {
+private fun AppearanceRow(
+    selected: ThemeMode,
+    followSystem: Boolean,
+    onSelect: (ThemeMode) -> Unit,
+    onSelectSystem: () -> Unit,
+) {
     val colors = MaterialTheme.colorScheme
     val labels = mapOf(
         ThemeMode.LIGHT to stringResource(R.string.theme_light),
@@ -456,8 +476,8 @@ private fun AppearanceRow(selected: ThemeMode, onSelect: (ThemeMode) -> Unit) {
         Modifier.fillMaxWidth().selectableGroup().testTag("appearance_toggle_button"),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        ThemeMode.entries.forEach { mode ->
-            val isSelected = mode == selected
+        (listOf<ThemeMode?>(null) + ThemeMode.entries).forEach { mode ->
+            val isSelected = if (mode == null) followSystem else !followSystem && mode == selected
             Column(
                 Modifier
                     .weight(1f)
@@ -465,10 +485,10 @@ private fun AppearanceRow(selected: ThemeMode, onSelect: (ThemeMode) -> Unit) {
                     .selectable(
                         selected = isSelected,
                         role = Role.RadioButton,
-                        onClick = { onSelect(mode) },
+                        onClick = { if (mode == null) onSelectSystem() else onSelect(mode) },
                     )
                     .padding(vertical = 4.dp)
-                    .testTag("appearance_option_${mode.name.lowercase()}"),
+                    .testTag("appearance_option_${mode?.name?.lowercase() ?: "system"}"),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Box(
@@ -485,11 +505,11 @@ private fun AppearanceRow(selected: ThemeMode, onSelect: (ThemeMode) -> Unit) {
                         ),
                     contentAlignment = Alignment.Center,
                 ) {
-                    ThemeToggleIcon(themeMode = mode)
+                    if (mode == null) Icon(Icons.Default.Settings, null, tint = colors.primary) else ThemeToggleIcon(themeMode = mode)
                 }
                 Spacer(Modifier.height(6.dp))
                 Text(
-                    labels.getValue(mode),
+                    if (mode == null) stringResource(R.string.theme_system) else labels.getValue(mode),
                     style = MaterialTheme.typography.labelSmall,
                     color = if (isSelected) colors.onSurface else colors.onSurfaceVariant,
                 )

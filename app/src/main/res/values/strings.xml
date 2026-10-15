@@ -815,6 +815,9 @@
     <string name="theme_light">Light</string>
     <string name="theme_dark">Dark</string>
     <string name="theme_sepia">Sepia</string>
+    <string name="theme_system">System</string>
+    <string name="theme_oled">OLED mode</string>
+    <string name="theme_oled_subtitle">Pure black background in dark theme</string>
 
     <!-- Sliders -->
     <string name="slider_ms_unit" translatable="false">ms</string>

@@ -645,9 +645,13 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
     val bridgeStatusMessage: StateFlow<String> = BridgeController.statusMessage
     val bridgeInfo = BridgeController.bridgeInfo
 
-    private val appearancePrefs = appContext.getSharedPreferences("arda_mapper_appearance", Context.MODE_PRIVATE)
-    private val _themeMode = MutableStateFlow(com.example.ui.theme.storedThemeMode(appContext))
+    private val initialTheme = com.example.ui.theme.storedThemePrefs(appContext)
+    private val _themeMode = MutableStateFlow(initialTheme.mode)
     val themeMode: StateFlow<com.example.ui.theme.ThemeMode> = _themeMode.asStateFlow()
+    private val _themeFollowSystem = MutableStateFlow(initialTheme.followSystem)
+    val themeFollowSystem: StateFlow<Boolean> = _themeFollowSystem.asStateFlow()
+    private val _oledMode = MutableStateFlow(initialTheme.oled)
+    val oledMode: StateFlow<Boolean> = _oledMode.asStateFlow()
 
     // Setup Wizard UI State & Persistence
     private val wizardPrefs = appContext.getSharedPreferences("arda_mapper_wizard_prefs", Context.MODE_PRIVATE)
@@ -972,7 +976,18 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
 
     fun setThemeMode(mode: com.example.ui.theme.ThemeMode) {
         _themeMode.value = mode
-        appearancePrefs.edit().putString("theme_mode", mode.name).apply()
+        _themeFollowSystem.value = false
+        com.example.ui.theme.saveThemeMode(appContext, mode)
+    }
+
+    fun setThemeSystem() {
+        _themeFollowSystem.value = true
+        com.example.ui.theme.saveThemeSystem(appContext)
+    }
+
+    fun setOledMode(enabled: Boolean) {
+        _oledMode.value = enabled
+        com.example.ui.theme.saveOled(appContext, enabled)
     }
 
     fun setAutoAssistantEnabled(enabled: Boolean) {

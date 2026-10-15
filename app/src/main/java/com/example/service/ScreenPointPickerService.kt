@@ -3,7 +3,6 @@ package com.example.service
 import android.content.Context
 import android.app.Service
 import android.content.Intent
-import android.content.SharedPreferences
 import android.graphics.PixelFormat
 import android.os.IBinder
 import android.view.Gravity
@@ -139,12 +138,7 @@ class ScreenPointPickerService : Service() {
         return START_NOT_STICKY
     }
 
-    private fun themeMode(): ThemeMode {
-        val prefs: SharedPreferences = getSharedPreferences("arda_mapper_appearance", MODE_PRIVATE)
-        return prefs.getString("theme_mode", null)
-            ?.let { runCatching { ThemeMode.valueOf(it) }.getOrNull() }
-            ?: if (prefs.getBoolean("dark_theme", true)) ThemeMode.DARK else ThemeMode.LIGHT
-    }
+    private fun themeMode(): ThemeMode = com.example.ui.theme.storedThemeMode(this)
 
     private fun showOverlay() {
         val metrics = resources.displayMetrics

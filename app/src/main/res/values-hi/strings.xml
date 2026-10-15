@@ -777,6 +777,9 @@
     <string name="theme_light">लाइट</string>
     <string name="theme_dark">डार्क</string>
     <string name="theme_sepia">सीपिया</string>
+    <string name="theme_system">सिस्टम</string>
+    <string name="theme_oled">OLED मोड</string>
+    <string name="theme_oled_subtitle">डार्क थीम में बिल्कुल काली पृष्ठभूमि</string>
 
     <!-- स्लाइडर -->
     <string name="slider_milliseconds">%1$d मिलीसेकंड</string>

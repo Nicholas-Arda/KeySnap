@@ -777,6 +777,9 @@
     <string name="theme_light">Hell</string>
     <string name="theme_dark">Dunkel</string>
     <string name="theme_sepia">Sepia</string>
+    <string name="theme_system">System</string>
+    <string name="theme_oled">OLED-Modus</string>
+    <string name="theme_oled_subtitle">Rein schwarzer Hintergrund im dunklen Design</string>
 
     <!-- Schieberegler -->
     <string name="slider_milliseconds">%1$d Millisekunden</string>

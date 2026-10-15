@@ -16,6 +16,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
@@ -85,6 +86,7 @@ import com.example.ui.theme.PageFloorStop
 import com.example.ui.theme.ThemeTransitionMs
 import com.example.ui.theme.backgroundGlowAlpha
 import com.example.ui.theme.pageFloorFor
+import com.example.ui.theme.resolveThemeMode
 import com.example.ui.wizard.SetupWizardModal
 import com.example.viewmodel.HijackBannerStage
 import com.example.viewmodel.MainViewModel
@@ -109,7 +111,10 @@ fun MainScreen(viewModel: MainViewModel) {
     val advancedAutostart by viewModel.advancedAutostart.collectAsState()
     val autostartPermissionHeld by viewModel.autostartPermissionHeld.collectAsState()
     val autostartChanging by viewModel.autostartChanging.collectAsState()
-    val themeMode by viewModel.themeMode.collectAsState()
+    val storedThemeMode by viewModel.themeMode.collectAsState()
+    val themeFollowSystem by viewModel.themeFollowSystem.collectAsState()
+    val oledMode by viewModel.oledMode.collectAsState()
+    val themeMode = resolveThemeMode(storedThemeMode, themeFollowSystem, isSystemInDarkTheme())
     val hijackBannerStage by viewModel.hijackBannerStage.collectAsState()
     val showSetupWizard by viewModel.showSetupWizard.collectAsState()
     val savedKeys by viewModel.savedKeys.collectAsState()
@@ -172,7 +177,7 @@ fun MainScreen(viewModel: MainViewModel) {
         val accent = MaterialTheme.colorScheme.primary
         // The colour scheme crossfades over ThemeTransitionMs; the ground has to move on the same
         // clock or it snaps to the new theme while the cards are still fading.
-        val (targetNearGlow, targetFarGlow) = backgroundGlowAlpha(themeMode)
+        val (targetNearGlow, targetFarGlow) = backgroundGlowAlpha(themeMode, oledMode)
         val nearGlowAlpha by animateFloatAsState(targetNearGlow, tween(ThemeTransitionMs), label = "nearGlow")
         val farGlowAlpha by animateFloatAsState(targetFarGlow, tween(ThemeTransitionMs), label = "farGlow")
         val pageFloor by animateColorAsState(pageFloorFor(themeMode), tween(ThemeTransitionMs), label = "pageFloor")
@@ -303,6 +308,10 @@ fun MainScreen(viewModel: MainViewModel) {
                     onClearHistory = viewModel::clearHistory,
                     themeMode = themeMode,
                     onSetThemeMode = viewModel::setThemeMode,
+                    themeFollowSystem = themeFollowSystem,
+                    onSetThemeSystem = viewModel::setThemeSystem,
+                    oledMode = oledMode,
+                    onSetOledMode = viewModel::setOledMode,
                     onEraseAllData = viewModel::eraseAllData,
                     isAdvancedModeRunning = isAdvancedModeRunning,
                     advancedAutostart = advancedAutostart,

@@ -777,6 +777,9 @@
     <string name="theme_light">Светлая</string>
     <string name="theme_dark">Тёмная</string>
     <string name="theme_sepia">Сепия</string>
+    <string name="theme_system">Системная</string>
+    <string name="theme_oled">Режим OLED</string>
+    <string name="theme_oled_subtitle">Чисто чёрный фон в тёмной теме</string>
 
     <!-- Ползунки -->
     <string name="slider_milliseconds">%1$d миллисекунд</string>
