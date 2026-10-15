@@ -2,6 +2,7 @@ package com.example.service
 
 import com.example.data.KeyMappingConfig
 import com.example.data.TriggerPressType
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -84,6 +85,39 @@ class KeyPressSchedulerTest {
         advanceUntilIdle()
 
         assertEquals(listOf(24 to TriggerPressType.LONG_PRESS), triggered)
+    }
+
+    // One physical press delivered as odd event streams must never yield two SINGLE_PRESS fires.
+    private fun TestScope.singlesFor(vararg events: Triple<Boolean, Long, Long>): List<TriggerPressType> {
+        val triggered = mutableListOf<TriggerPressType>()
+        val scheduler = KeyPressScheduler(this) { _, type -> triggered += type }
+        for ((down, at, _) in events) scheduler.onEvent(24, down, at, KeyMappingConfig())
+        advanceUntilIdle()
+        return triggered
+    }
+
+    @Test
+    fun downUpTwiceWithin150msIsNotTwoSingles() = runTest {
+        val fired = singlesFor(Triple(true, 0, 0), Triple(false, 20, 0), Triple(true, 80, 0), Triple(false, 100, 0))
+        assertTrue(fired.count { it == TriggerPressType.SINGLE_PRESS } <= 1)
+    }
+
+    @Test
+    fun repeatedDownAndUpEchoFireOneSingle() = runTest {
+        val fired = singlesFor(Triple(true, 0, 0), Triple(true, 30, 0), Triple(false, 60, 0), Triple(false, 70, 0))
+        assertEquals(listOf(TriggerPressType.SINGLE_PRESS), fired)
+    }
+
+    @Test
+    fun upBeforeItsDownIsIgnored() = runTest {
+        val fired = singlesFor(Triple(false, 0, 0), Triple(true, 5, 0), Triple(false, 60, 0))
+        assertEquals(listOf(TriggerPressType.SINGLE_PRESS), fired)
+    }
+
+    @Test
+    fun lateUpEchoAfterSingleFiredDoesNothing() = runTest {
+        val fired = singlesFor(Triple(true, 0, 0), Triple(false, 20, 0), Triple(false, 500, 0))
+        assertEquals(listOf(TriggerPressType.SINGLE_PRESS), fired)
     }
 
     @Test

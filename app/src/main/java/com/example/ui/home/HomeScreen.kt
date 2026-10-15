@@ -442,19 +442,25 @@ private fun RewardAdButton(active: Boolean, remainingLabel: String, onClick: () 
             Surface(
                 modifier = Modifier
                     .size(MinTouchTarget)
-                    .alpha(if (active) 0.55f else 1f)
                     .semantics {
                         contentDescription = cooldownDescription
                     }
                     .testTag("reward_ad_button"),
                 onClick = onClick,
                 shape = CircleShape,
-                color = colors.surface.copy(alpha = 0.96f),
-                border = androidx.compose.foundation.BorderStroke(1.dp, colors.outline.copy(alpha = .35f)),
-                shadowElevation = 4.dp,
+                // Cooldown dims fill, border and icon directly and drops the shadow: no layer alpha,
+                // so nothing is clipped and no stacked layers show through each other.
+                color = colors.surface.copy(alpha = if (active) 0.55f else 0.96f),
+                border = androidx.compose.foundation.BorderStroke(1.dp, colors.outline.copy(alpha = if (active) .2f else .35f)),
+                shadowElevation = if (active) 0.dp else 4.dp,
             ) {
                 Box(contentAlignment = Alignment.Center) {
-                    Icon(Icons.Filled.PlayCircle, contentDescription = null, tint = colors.primary, modifier = Modifier.size(20.dp))
+                    Icon(
+                        Icons.Filled.PlayCircle,
+                        contentDescription = null,
+                        tint = colors.primary.copy(alpha = if (active) 0.55f else 1f),
+                        modifier = Modifier.size(20.dp),
+                    )
                 }
             }
             Text(
@@ -473,12 +479,13 @@ private fun RewardAdButton(active: Boolean, remainingLabel: String, onClick: () 
         val loose = constraints.copy(minWidth = 0, minHeight = 0)
         val button = measurables[0].measure(loose)
         val badge = measurables[1].measure(loose)
-        // Only the top 6 dp of the circle sits behind the badge, even at large font sizes.
-        val buttonY = (badge.height - 6.dp.roundToPx()).coerceAtLeast(0)
+        // The badge overlays the circle's top 6 dp and hangs above it without adding layout
+        // height, so the circle's centre is the envelope's centre (shared with Live pill and gear).
+        val badgeY = 6.dp.roundToPx() - badge.height
         val width = maxOf(button.width, badge.width)
-        layout(width, buttonY + button.height) {
-            button.placeRelative((width - button.width) / 2, buttonY)
-            badge.placeRelative((width - badge.width) / 2, 0)
+        layout(width, button.height) {
+            button.placeRelative((width - button.width) / 2, 0)
+            badge.placeRelative((width - badge.width) / 2, badgeY)
         }
     }
 }
