@@ -197,8 +197,6 @@ object HardwareKeyTriggerCoordinator {
         if (success) {
             _triggerCount.value = _triggerCount.value + 1
         }
-        val context = appContext
-        val config = repository?.config?.value
         val script = scriptRepository?.scripts?.value?.firstOrNull { it.id == scriptId }
         if (script != null) {
             // Runs the app's share (often nothing: executeEach calls no handler for the bridge's
@@ -208,13 +206,8 @@ object HardwareKeyTriggerCoordinator {
                 recordRun(script, keyCode, pressType, appResults, actionResults)
             }
         }
-        if (success && context != null && config != null) {
-            val shouldVibrate = script?.let { resolveVibrateForScript(it, config.vibrateOnTrigger) } ?: config.vibrateOnTrigger
-            if (shouldVibrate) {
-                val duration = script?.let { resolveHapticDurationForScript(it, config.hapticDurationMs) } ?: config.hapticDurationMs
-                vibratePhone(context, duration)
-            }
-        }
+        // No haptic here: the bridge buzzes itself (BridgeMain.runScript), so it still fires when
+        // this process was killed, and buzzing again would double it.
         Log.d(TAG, "Bridge tetikledi: script=$scriptId key=$keyCode press=$pressType success=$success")
     }
 

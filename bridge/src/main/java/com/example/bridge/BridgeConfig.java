@@ -227,6 +227,9 @@ public final class BridgeConfig {
     public final long doublePressWindowMs;
     public final long longPressThresholdMs;
     public final List<Script> scripts;
+    /** Global haptic defaults; an old config without them gets the app's own (on, 60 ms). */
+    public final boolean vibrateOnTrigger;
+    public final long hapticDurationMs;
 
     public static final class Trigger {
         public final List<Integer> keyCodes;
@@ -275,8 +278,14 @@ public final class BridgeConfig {
         public final List<Trigger> triggers;
         public final List<Action> actions;
         public final List<Constraint> constraints;
+        /** Null defers to the config-wide default; see {@link BridgeConfig#shouldVibrate}. */
+        public final Boolean vibrateOnTrigger;
+        public final Long hapticDurationMs;
 
-        Script(String id, String name, boolean enabled, List<Trigger> triggers, List<Action> actions, List<Constraint> constraints) {
+        Script(String id, String name, boolean enabled, List<Trigger> triggers, List<Action> actions,
+               List<Constraint> constraints, Boolean vibrateOnTrigger, Long hapticDurationMs) {
+            this.vibrateOnTrigger = vibrateOnTrigger;
+            this.hapticDurationMs = hapticDurationMs;
             this.id = id;
             this.name = name;
             this.enabled = enabled;
@@ -287,7 +296,10 @@ public final class BridgeConfig {
     }
 
     private BridgeConfig(int port, String token, String packageName, boolean globallyEnabled,
-                         long doublePressWindowMs, long longPressThresholdMs, List<Script> scripts) {
+                         long doublePressWindowMs, long longPressThresholdMs, List<Script> scripts,
+                         boolean vibrateOnTrigger, long hapticDurationMs) {
+        this.vibrateOnTrigger = vibrateOnTrigger;
+        this.hapticDurationMs = hapticDurationMs;
         this.port = port;
         this.token = token;
         this.packageName = packageName;
@@ -389,6 +401,17 @@ public final class BridgeConfig {
         return Math.max(min, Math.min(max, snapped));
     }
 
+    /** Mirrors resolveVibrateForScript in app/.../data/ScriptTiming.kt exactly. */
+    public boolean shouldVibrate(Script script) {
+        return script.vibrateOnTrigger != null ? script.vibrateOnTrigger : vibrateOnTrigger;
+    }
+
+    /** Mirrors resolveHapticDurationForScript in app/.../data/ScriptTiming.kt exactly. */
+    public long hapticDurationFor(Script script) {
+        long value = script.hapticDurationMs != null ? script.hapticDurationMs : hapticDurationMs;
+        return normalize(value, 20L, 200L, 10L); // TriggerTimingSpecs.hapticDuration
+    }
+
     /** Enabled triggers whose key id (a key code, or a chord id) equals {@code keyId}. */
     private List<Trigger> triggersForKeyLocked(int keyId) {
         List<Trigger> result = new ArrayList<>();
@@ -440,7 +463,8 @@ public final class BridgeConfig {
             }
         }
         return new BridgeConfig(port, token, packageName, globallyEnabled, doubleWindow, longThreshold,
-                Collections.unmodifiableList(scripts));
+                Collections.unmodifiableList(scripts),
+                root.optBoolean("vibrateOnTrigger", true), root.optLong("hapticDurationMs", 60L));
     }
 
     /** Actions out of a bare {"actions":[...]} object, as the control port's RUN command sends. */
@@ -545,7 +569,9 @@ public final class BridgeConfig {
             return null;
         }
         return new Script(id, obj.optString("name", "Unnamed script"), obj.optBoolean("enabled", true),
-                triggers, actions, Collections.unmodifiableList(constraints));
+                triggers, actions, Collections.unmodifiableList(constraints),
+                obj.has("vibrateOnTrigger") && !obj.isNull("vibrateOnTrigger") ? obj.optBoolean("vibrateOnTrigger") : null,
+                obj.has("hapticDurationMs") && !obj.isNull("hapticDurationMs") ? obj.optLong("hapticDurationMs") : null);
     }
 
     private static String readFully(File file) throws Exception {

@@ -32,6 +32,8 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
     private static final int MAX_REPEAT_COUNT = 20;
 
     private final File configFile;
+    // 5 missed 1 s polls: the app's rewrite never removes the file, so this only trips on uninstall.
+    private final MissingConfigWatch missingConfig = new MissingConfigWatch(5);
     private final ScheduledExecutorService scheduler =
             Executors.newScheduledThreadPool(2, runnable -> {
                 Thread thread = new Thread(runnable, "arda-bridge-timer");
@@ -182,6 +184,11 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
     private void reloadConfigIfChanged() {
         try {
             long modified = configFile.lastModified();
+            if (missingConfig.shouldShutDown(configFile.exists())) {
+                BridgeLog.w("Config file gone (app uninstalled?); shutting down");
+                shutDown();
+                return;
+            }
             if (modified == configLastModified || modified == 0L) {
                 return;
             }
@@ -296,6 +303,12 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
     private void runScript(BridgeConfig.Script script, int keyCode, String pressType) {
         // One result per configured action for the app's run log; a "repeat_previous" counts as ok
         // only if every repetition was.
+        // The bridge owns the trigger haptic: the app process may be dead (OEM kill) and could not
+        // buzz on the TRIGGER broadcast. Once per press; the app no longer vibrates for these.
+        BridgeConfig current = config;
+        if (current != null && current.shouldVibrate(script)) {
+            vibrate(current.hapticDurationFor(script));
+        }
         boolean[] ok = new boolean[script.actions.size()];
         java.util.Arrays.fill(ok, true);
         runActions(script.actions, (index, action, success) -> {
@@ -411,6 +424,15 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
      * COMING_SOON in the app UI and is deliberately inert here, so an old persisted script
      * referencing a not-yet-implemented action fails safe instead of crashing the bridge.
      */
+    private static boolean vibrate(long ms) {
+        // Android 12+ moved vibration to the "vibrator_manager" service; "vibrator" is gone
+        // on some 13+ builds. Try the current API first, fall back to the pre-12 one.
+        String clamped = String.valueOf(ms);
+        return ShellKeyInjector.runShell("cmd", "vibrator_manager", "synced",
+                "-d", "arda_mapper", "oneshot", clamped)
+                || ShellKeyInjector.runShell("cmd", "vibrator", "vibrate", clamped, "arda_mapper");
+    }
+
     private boolean executeAction(BridgeConfig.Action action) {
         try {
             return runAction(action);
@@ -750,12 +772,7 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
             if (duration == null || duration <= 0) {
                 return false;
             }
-            // Android 12+ moved vibration to the "vibrator_manager" service; "vibrator" is gone
-            // on some 13+ builds. Try the current API first, fall back to the pre-12 one.
-            String clamped = String.valueOf(Math.min(duration, MAX_DELAY_MS));
-            return ShellKeyInjector.runShell("cmd", "vibrator_manager", "synced",
-                    "-d", "arda_mapper", "oneshot", clamped)
-                    || ShellKeyInjector.runShell("cmd", "vibrator", "vibrate", clamped, "arda_mapper");
+            return vibrate(Math.min(duration, MAX_DELAY_MS));
         }
         // Speaking/playing audio needs a bound engine (TTS engine app, or the audio framework for
         // arbitrary content URIs); this process has no package identity to bind as and no window,
@@ -973,6 +990,10 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
     @Override
     public void onShutdownRequested() {
         BridgeLog.i("Shutdown requested over control socket");
+        shutDown();
+    }
+
+    private void shutDown() {
         new Thread(() -> {
             try {
                 if (torch.isOn()) {

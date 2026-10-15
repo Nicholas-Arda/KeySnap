@@ -166,6 +166,8 @@ class BridgePayload(context: Context) {
             root.put("globallyEnabled", globallyEnabled)
             root.put("doublePressWindowMs", config.doublePressWindowMs)
             root.put("longPressThresholdMs", config.longPressThresholdMs)
+            root.put("vibrateOnTrigger", config.vibrateOnTrigger)
+            root.put("hapticDurationMs", config.hapticDurationMs)
 
             val scriptArray = JSONArray()
             // Only key shortcuts: the bridge drops a trigger-less script anyway, and an automation's
@@ -189,15 +191,17 @@ class BridgePayload(context: Context) {
                     constraint.params.forEach { (key, value) -> paramsJson.put(key, value) }
                     constraints.put(JSONObject().put("type", constraint.type).put("params", paramsJson))
                 }
-                scriptArray.put(
-                    JSONObject()
-                        .put("id", script.id)
-                        .put("name", script.name)
-                        .put("enabled", script.enabled)
-                        .put("triggers", triggers)
-                        .put("actions", actions)
-                        .put("constraints", constraints),
-                )
+                val scriptJson = JSONObject()
+                    .put("id", script.id)
+                    .put("name", script.name)
+                    .put("enabled", script.enabled)
+                    .put("triggers", triggers)
+                    .put("actions", actions)
+                    .put("constraints", constraints)
+                // Absent = defer to the global default, like the null override in the app.
+                script.vibrateOnTrigger?.let { scriptJson.put("vibrateOnTrigger", it) }
+                script.hapticDurationMs?.let { scriptJson.put("hapticDurationMs", it) }
+                scriptArray.put(scriptJson)
             }
             root.put("scripts", scriptArray)
 

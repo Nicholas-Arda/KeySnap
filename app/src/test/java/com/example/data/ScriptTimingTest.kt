@@ -86,4 +86,29 @@ class ScriptTimingTest {
         assertEquals(450L, resolveTimingForKey(scripts, id, KeyMappingConfig()).doublePressWindowMs)
         assertEquals(300L, resolveTimingForKey(scripts, 24, KeyMappingConfig()).doublePressWindowMs)
     }
+
+    private fun hapticScript(vibrate: Boolean?, duration: Long?) = ShortcutScript(
+        "h", "h", true,
+        listOf(ScriptTrigger(listOf(24), TriggerPressType.SINGLE_PRESS)),
+        listOf(ScriptAction.ToggleFlashlight),
+        vibrateOnTrigger = vibrate,
+        hapticDurationMs = duration,
+    )
+
+    @Test
+    fun hapticResolutionCases() {
+        // Same cases as BridgeConfigHapticTest in :bridge, which mirrors these rules.
+        assertEquals(true, resolveVibrateForScript(hapticScript(null, null), true))
+        assertEquals(false, resolveVibrateForScript(hapticScript(null, null), false))
+        assertEquals(false, resolveVibrateForScript(hapticScript(false, null), true))
+        assertEquals(true, resolveVibrateForScript(hapticScript(true, null), false))
+
+        assertEquals(60L, resolveHapticDurationForScript(hapticScript(null, null), 60L))
+        assertEquals(100L, resolveHapticDurationForScript(hapticScript(null, 100L), 60L))
+        assertEquals(20L, resolveHapticDurationForScript(hapticScript(null, null), 5L))
+        assertEquals(200L, resolveHapticDurationForScript(hapticScript(null, 999L), 60L))
+        assertEquals(60L, resolveHapticDurationForScript(hapticScript(null, null), 64L))
+        assertEquals(70L, resolveHapticDurationForScript(hapticScript(null, null), 65L))
+        assertEquals(30L, resolveHapticDurationForScript(hapticScript(null, 25L), 60L))
+    }
 }
