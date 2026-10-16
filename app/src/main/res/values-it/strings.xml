@@ -1043,4 +1043,15 @@
     <string name="notif_autostart_wifi_not_allowed">Debug wireless non consentito su questa rete Wi-Fi. Apri KeySnap per completare la configurazione.</string>
     <string name="notif_autostart_connect_failed">Connessione al debug wireless non riuscita. Apri KeySnap; potrebbe essere necessario un nuovo abbinamento.</string>
     <string name="settings_autostart_hint_pairing">Se Android fa scadere o rimuove l’associazione, configura di nuovo la Modalità avanzata. Le connessioni giornaliere potrebbero non mantenerla attiva su tutti i telefoni.</string>
+    <string name="diagnostic_title">Registrazione del problema</string>
+    <string name="diagnostic_description">Include informazioni sul dispositivo, eventi dei tasti e risultati delle azioni. Resta solo in memoria; termina dopo 10 minuti o 500 voci. Sono esclusi nomi delle scorciatoie, parametri delle azioni e dettagli di rete.</string>
+    <string name="diagnostic_start">Avvia registrazione</string>
+    <string name="diagnostic_stop">Ferma registrazione</string>
+    <string name="diagnostic_recording">Registrazione · Ferma</string>
+    <string name="diagnostic_stopped">Registrazione terminata. Controlla il testo prima di inviarlo.</string>
+    <string name="diagnostic_review">Controlla registrazione</string>
+    <string name="diagnostic_send">Invia per e-mail</string>
+    <string name="diagnostic_discard">Elimina</string>
+    <string name="diagnostic_send_note">Controlla la registrazione completa qui sotto. La tua app e-mail aprirà una bozza per support@ardasenn.com. Decidi tu se inviarla. KeySnap cancella la registrazione quando si apre la bozza.</string>
+    <string name="diagnostic_no_email">Nessuna app e-mail trovata. La registrazione è ancora disponibile.</string>
 </resources>

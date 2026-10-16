@@ -273,6 +273,8 @@ fun AboutDialog(onEraseAllData: () -> Unit, onDismiss: () -> Unit) {
                             Icon(Icons.Outlined.ChevronRight, null, tint = colors.onSurfaceVariant)
                         }
                         HorizontalDivider(color = colors.outline.copy(alpha = .45f))
+                        ProblemRecordingSection()
+                        HorizontalDivider(color = colors.outline.copy(alpha = .45f))
                         Text(
                             stringResource(
                                 R.string.about_footer_line,

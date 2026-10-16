@@ -1091,4 +1091,15 @@
     <string name="notif_autostart_dev_options_off">Developer options are off. Turn them on and start Advanced Mode from KeySnap.</string>
     <string name="notif_autostart_wifi_not_allowed">Wireless debugging was not allowed on this Wi-Fi network. Open KeySnap to finish setup.</string>
     <string name="notif_autostart_connect_failed">Wireless debugging could not be connected. Open KeySnap; pairing may be needed again.</string>
+    <string name="diagnostic_title">Problem recording</string>
+    <string name="diagnostic_description">Includes device info, key events and action results. Kept in memory only; stops after 10 minutes or 500 entries. Shortcut names, action parameters and network details are excluded.</string>
+    <string name="diagnostic_start">Start recording</string>
+    <string name="diagnostic_stop">Stop recording</string>
+    <string name="diagnostic_recording">Recording · Stop</string>
+    <string name="diagnostic_stopped">Recording stopped. Review the text before sending.</string>
+    <string name="diagnostic_review">Review recording</string>
+    <string name="diagnostic_send">Send by e-mail</string>
+    <string name="diagnostic_discard">Discard</string>
+    <string name="diagnostic_send_note">Review the full recording below. Your e-mail app will open a draft to support@ardasenn.com. You decide whether to send it. KeySnap clears its recording when the draft opens.</string>
+    <string name="diagnostic_no_email">No e-mail app found. The recording is still available.</string>
 </resources>

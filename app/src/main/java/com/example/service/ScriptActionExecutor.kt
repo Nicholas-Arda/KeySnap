@@ -26,10 +26,13 @@ import android.view.accessibility.AccessibilityNodeInfo
 import androidx.core.app.NotificationCompat
 import com.example.data.AppLocale
 import com.example.data.ScriptAction
+import com.example.data.ScriptActionCatalog
+import com.example.data.TriggerPressType
 import com.example.bridge.BridgeProtocol
 import com.example.data.ScriptRepository
 import com.example.service.bridge.BridgeController
 import io.github.nicholasarda.keysnap.R
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
@@ -284,8 +287,10 @@ class ScriptActionExecutor(private val handler: ScriptActionHandler) {
     suspend fun execute(
         actions: List<ScriptAction>,
         notificationKey: String? = null,
+        diagnosticScriptId: Int = 0,
+        diagnosticPressType: TriggerPressType? = null,
         shouldRun: (ScriptAction) -> Boolean = { true },
-    ): List<Boolean> = runEach(actions, notificationKey, shouldRun).flatMap { it ?: listOf(false) }
+    ): List<Boolean> = runEach(actions, notificationKey, shouldRun, diagnosticScriptId, diagnosticPressType).flatMap { it ?: listOf(false) }
 
     /**
      * One entry per action in [actions], for the run log: true when it (every repetition, for a
@@ -297,14 +302,18 @@ class ScriptActionExecutor(private val handler: ScriptActionHandler) {
     suspend fun executeEach(
         actions: List<ScriptAction>,
         notificationKey: String? = null,
+        diagnosticScriptId: Int = 0,
+        diagnosticPressType: TriggerPressType? = null,
         shouldRun: (ScriptAction) -> Boolean = { true },
-    ): List<Boolean?> = runEach(actions, notificationKey, shouldRun).map { runs -> runs?.all { it } }
+    ): List<Boolean?> = runEach(actions, notificationKey, shouldRun, diagnosticScriptId, diagnosticPressType).map { runs -> runs?.all { it } }
 
     /** Each configured action's repetition results, or null when [shouldRun] skipped it. */
     private suspend fun runEach(
         actions: List<ScriptAction>,
         notificationKey: String?,
         shouldRun: (ScriptAction) -> Boolean,
+        diagnosticScriptId: Int = 0,
+        diagnosticPressType: TriggerPressType? = null,
     ): List<List<Boolean>?> {
         val out = mutableListOf<List<Boolean>?>()
         var previous: ScriptAction? = null
@@ -314,17 +323,39 @@ class ScriptActionExecutor(private val handler: ScriptActionHandler) {
                 val count = action.params["count"]?.toIntOrNull()?.coerceIn(0, MAX_REPEAT_COUNT) ?: 0
                 out.add(
                     when {
-                        target == null || count <= 0 -> listOf(false)
+                        target == null || count <= 0 -> {
+                            if (DiagnosticRecorder.recording) {
+                                DiagnosticRecorder.action(diagnosticScriptId, diagnosticPressType, ScriptActionCatalog.all.indexOfFirst { it.type == action.type }, false)
+                            }
+                            listOf(false)
+                        }
                         !shouldRun(target) -> null
-                        else -> List(count) { handler.execute(target.withTriggerNotification(notificationKey)) }
+                        else -> List(count) { executeObserved(target.withTriggerNotification(notificationKey), diagnosticScriptId, diagnosticPressType) }
                     },
                 )
             } else {
-                out.add(if (shouldRun(action)) listOf(handler.execute(action.withTriggerNotification(notificationKey))) else null)
+                out.add(if (shouldRun(action)) listOf(executeObserved(action.withTriggerNotification(notificationKey), diagnosticScriptId, diagnosticPressType)) else null)
                 previous = action
             }
         }
         return out
+    }
+
+    private suspend fun executeObserved(action: ScriptAction, scriptId: Int, pressType: TriggerPressType?): Boolean {
+        val ok = try {
+            handler.execute(action)
+        } catch (cancelled: CancellationException) {
+            throw cancelled
+        } catch (error: Exception) {
+            if (DiagnosticRecorder.recording) {
+                DiagnosticRecorder.action(scriptId, pressType, ScriptActionCatalog.all.indexOfFirst { it.type == action.type }, false, DiagnosticRecorder.Failure.EXCEPTION)
+            }
+            throw error
+        }
+        if (DiagnosticRecorder.recording) {
+            DiagnosticRecorder.action(scriptId, pressType, ScriptActionCatalog.all.indexOfFirst { it.type == action.type }, ok)
+        }
+        return ok
     }
 
     companion object {

@@ -100,6 +100,7 @@ object HardwareKeyTriggerCoordinator {
     private var lastEventKeyCode: Int = 0
     private var lastEventIsDown: Boolean = false
     private var lastEventTimestamp: Long = 0
+    @Volatile private var lastDiagnosticPath = DiagnosticRecorder.InputPath.ACTIVITY
     private const val DEDUPLICATION_WINDOW_MS = 80L
 
     // Last known "all conditions true" value per key-less script; a script fires on the
@@ -193,6 +194,14 @@ object HardwareKeyTriggerCoordinator {
         success: Boolean,
         actionResults: List<Pair<String, Boolean>>? = null,
     ) {
+        if (DiagnosticRecorder.recording) {
+            DiagnosticRecorder.gesture(
+                scriptId.hashCode(), keyCode, TriggerPressType.entries.firstOrNull { it.name == pressType },
+                DiagnosticRecorder.InputPath.ADVANCED_MODE_BRIDGE,
+                matched = scriptRepository?.scripts?.value?.any { it.id == scriptId } == true,
+            )
+            recordBridgeDiagnostics(scriptId.hashCode(), TriggerPressType.entries.firstOrNull { it.name == pressType }, actionResults)
+        }
         lastRunAt[scriptId] = SystemClock.elapsedRealtime()
         if (success) {
             _triggerCount.value = _triggerCount.value + 1
@@ -202,7 +211,11 @@ object HardwareKeyTriggerCoordinator {
             // Runs the app's share (often nothing: executeEach calls no handler for the bridge's
             // actions) and records the whole run, the bridge's part included.
             coordinatorScope.launch {
-                val appResults = actionExecutor?.executeAppShare(script.actions) ?: return@launch
+                val appResults = actionExecutor?.executeAppShare(
+                    script.actions,
+                    diagnosticScriptId = if (DiagnosticRecorder.recording) script.id.hashCode() else 0,
+                    diagnosticPressType = if (DiagnosticRecorder.recording) TriggerPressType.entries.firstOrNull { it.name == pressType } else null,
+                ) ?: return@launch
                 recordRun(script, keyCode, pressType, appResults, actionResults)
             }
         }
@@ -224,7 +237,12 @@ object HardwareKeyTriggerCoordinator {
     /**
      * Dispatches a key event from any subsystem (Accessibility Service, Linux getevent, or Activity).
      */
-    fun dispatchKeyEvent(keyCode: Int, isDown: Boolean, source: String): Boolean {
+    fun dispatchKeyEvent(
+        keyCode: Int,
+        isDown: Boolean,
+        source: String,
+        diagnosticPath: DiagnosticRecorder.InputPath = DiagnosticRecorder.InputPath.ADVANCED_MODE_BRIDGE,
+    ): Boolean {
         val now = System.currentTimeMillis()
         val repo = repository ?: return false
         val scriptsRepo = scriptRepository ?: return false
@@ -233,6 +251,7 @@ object HardwareKeyTriggerCoordinator {
 
         // 1. Deduplicate multi-source arrivals (e.g. Accessibility + getevent arriving concurrently)
         if (keyCode == lastEventKeyCode && isDown == lastEventIsDown && (now - lastEventTimestamp) < DEDUPLICATION_WINDOW_MS) {
+            if (DiagnosticRecorder.recording) recordKeyDiagnostic(keyCode, isDown, diagnosticPath, deduplicated = true)
             return false
         }
         lastEventKeyCode = keyCode
@@ -255,6 +274,7 @@ object HardwareKeyTriggerCoordinator {
                     recordingHeld.clear()
                     true
                 } else {
+                    if (DiagnosticRecorder.recording) recordKeyDiagnostic(keyCode, isDown, diagnosticPath, deduplicated = false, matched = false)
                     return false
                 }
             }
@@ -266,6 +286,7 @@ object HardwareKeyTriggerCoordinator {
             _latestKeyEvent.tryEmit(
                 LiveKeyEvent(keyCode = keyCode, keyName = keyName, actionName = actionName, isTriggerMatch = true, timestamp = now),
             )
+            if (DiagnosticRecorder.recording) recordKeyDiagnostic(keyCode, isDown, diagnosticPath, deduplicated = false, matched = true)
             return true
         }
 
@@ -304,13 +325,22 @@ object HardwareKeyTriggerCoordinator {
         )
         _latestKeyEvent.tryEmit(liveEvent)
 
+        if (DiagnosticRecorder.recording) recordKeyDiagnostic(keyCode, isDown, diagnosticPath, deduplicated = false, matched = isMatched)
         return isMatched
+    }
+
+    private fun recordKeyDiagnostic(keyCode: Int, isDown: Boolean, path: DiagnosticRecorder.InputPath, deduplicated: Boolean, matched: Boolean? = null) {
+        if (!deduplicated) lastDiagnosticPath = path
+        DiagnosticRecorder.keyEvent(path, DiagnosticRecorder.Stage.COORDINATOR, keyCode, isDown, deduplicated = deduplicated, matched = matched)
     }
 
     private fun handleGesture(keyId: Int, pressType: TriggerPressType) {
         val scriptsRepo = scriptRepository ?: return
         val context = appContext ?: return
-        if (!scriptsRepo.globallyEnabled.value) return
+        if (!scriptsRepo.globallyEnabled.value) {
+            if (DiagnosticRecorder.recording) DiagnosticRecorder.gesture(null, keyId, pressType, lastDiagnosticPath, matched = false)
+            return
+        }
 
         val matched = scriptsRepo.scripts.value.filter { script ->
             script.enabled && script.triggers.any { trigger ->
@@ -320,6 +350,13 @@ object HardwareKeyTriggerCoordinator {
             val evaluator = constraintEvaluator
             script.constraints.isEmpty() || evaluator == null || script.constraints.all(evaluator::isSatisfied)
         }.filter { passesCooldown(it, SystemClock.elapsedRealtime()) }
+        // While the bridge owns execution it reports its own gesture; logging this one too would
+        // read as a double run.
+        if (DiagnosticRecorder.recording && !_isAdvancedBridgeActive.value) {
+            val path = lastDiagnosticPath
+            if (matched.isEmpty()) DiagnosticRecorder.gesture(null, keyId, pressType, path, matched = false)
+            matched.forEach { DiagnosticRecorder.gesture(it.id.hashCode(), keyId, pressType, path, matched = true) }
+        }
         if (matched.isEmpty()) return
 
         val defaults = repository?.config?.value ?: return
@@ -438,7 +475,7 @@ object HardwareKeyTriggerCoordinator {
         // Nothing may have adopted a running bridge in a cold process yet; the probe does socket and
         // config-file I/O, as it does off the main thread at app start.
         withContext(Dispatchers.IO) { BridgeController.ensureAdopted(context) }
-        val run = runChain(script.actions, executor, runOnBridge = BridgeController::runActions)
+        val run = runChain(script.actions, executor, diagnosticScriptId = if (DiagnosticRecorder.recording) script.id.hashCode() else 0, runOnBridge = BridgeController::runActions)
         _triggerCount.value = _triggerCount.value + 1
         val record = recordRun(script, keyCode = null, pressType = null, run.appResults, run.bridgeReport, source)
         val ran = record?.actions?.count { it.ok } ?: 0
@@ -475,9 +512,9 @@ object HardwareKeyTriggerCoordinator {
                     // here. A key run reaches this only while the bridge is down (handleGesture),
                     // and must not ask it: a bridge coming up meanwhile has matched the press itself.
                     val run = if (keyCode == null) {
-                        runChain(script.actions, executor, triggerNotifications[script.id], BridgeController::runActions)
+                        runChain(script.actions, executor, triggerNotifications[script.id], diagnosticScriptId = if (DiagnosticRecorder.recording) script.id.hashCode() else 0, runOnBridge = BridgeController::runActions)
                     } else {
-                        ChainResults(executor.executeEach(script.actions), bridgeReport = null)
+                        ChainResults(executor.executeEach(script.actions, diagnosticScriptId = if (DiagnosticRecorder.recording) script.id.hashCode() else 0, diagnosticPressType = pressType), bridgeReport = null)
                     }
                     recordRun(script, keyCode, pressType?.name, run.appResults, run.bridgeReport)
                 }
@@ -546,8 +583,12 @@ object HardwareKeyTriggerCoordinator {
 internal data class ChainResults(val appResults: List<Boolean?>, val bridgeReport: List<Pair<String, Boolean>>?)
 
 /** The part of a bridge-run chain the app runs itself; see [ScriptActionCatalog.UNSUPPORTED_BY_BRIDGE]. */
-internal suspend fun ScriptActionExecutor.executeAppShare(actions: List<ScriptAction>, notificationKey: String? = null): List<Boolean?> =
-    executeEach(actions, notificationKey) { it.type in ScriptActionCatalog.UNSUPPORTED_BY_BRIDGE }
+internal suspend fun ScriptActionExecutor.executeAppShare(
+    actions: List<ScriptAction>,
+    notificationKey: String? = null,
+    diagnosticScriptId: Int = 0,
+    diagnosticPressType: TriggerPressType? = null,
+): List<Boolean?> = executeEach(actions, notificationKey, diagnosticScriptId, diagnosticPressType) { it.type in ScriptActionCatalog.UNSUPPORTED_BY_BRIDGE }
 
 /**
  * Runs a chain the way a key press would: [runOnBridge] runs what it supports, then the app runs
@@ -559,10 +600,21 @@ internal suspend fun runChain(
     actions: List<ScriptAction>,
     executor: ScriptActionExecutor,
     notificationKey: String? = null,
+    diagnosticScriptId: Int = 0,
     runOnBridge: suspend (List<ScriptAction>) -> BridgeRunResult?,
 ): ChainResults {
-    val bridge = runOnBridge(actions) ?: return ChainResults(executor.executeEach(actions, notificationKey), bridgeReport = null)
-    return ChainResults(executor.executeAppShare(actions, notificationKey), bridge.actionResults)
+    val bridge = runOnBridge(actions) ?: return ChainResults(executor.executeEach(actions, notificationKey, diagnosticScriptId), bridgeReport = null)
+    if (DiagnosticRecorder.recording) recordBridgeDiagnostics(diagnosticScriptId, null, bridge.actionResults)
+    return ChainResults(executor.executeAppShare(actions, notificationKey, diagnosticScriptId), bridge.actionResults)
+}
+
+internal fun recordBridgeDiagnostics(scriptId: Int, pressType: TriggerPressType?, results: List<Pair<String, Boolean>>?) {
+    results?.forEach { (type, ok) ->
+        DiagnosticRecorder.action(
+            scriptId, pressType, ScriptActionCatalog.all.indexOfFirst { it.type == type }, ok,
+            DiagnosticRecorder.Failure.BRIDGE_ACTION_FAILED, DiagnosticRecorder.ActionPath.ADVANCED_MODE_BRIDGE,
+        )
+    }
 }
 
 /** Rising-edge detector keyed by script id. [update] is true only for a false -> true change; a first sighting only records. */

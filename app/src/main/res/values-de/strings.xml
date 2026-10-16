@@ -1041,4 +1041,15 @@
     <string name="notif_autostart_wifi_not_allowed">WLAN-Debugging wurde in diesem Netzwerk nicht erlaubt. Öffnen Sie KeySnap zur Einrichtung.</string>
     <string name="notif_autostart_connect_failed">Keine Verbindung zum WLAN-Debugging. Öffnen Sie KeySnap; eine erneute Kopplung kann nötig sein.</string>
     <string name="settings_autostart_hint_pairing">Wenn Android die Kopplung ablaufen lässt oder entfernt, richten Sie den Erweiterten Modus erneut ein. Tägliche Verbindungen halten die Kopplung nicht auf jedem Smartphone aktiv.</string>
+    <string name="diagnostic_title">Problemaufzeichnung</string>
+    <string name="diagnostic_description">Enthält Geräteinfos, Tastenereignisse und Aktionsergebnisse. Bleibt nur im Arbeitsspeicher; endet nach 10 Minuten oder 500 Einträgen. Kurzbefehl-Namen, Aktionsparameter und Netzwerkdetails sind ausgeschlossen.</string>
+    <string name="diagnostic_start">Aufzeichnung starten</string>
+    <string name="diagnostic_stop">Aufzeichnung stoppen</string>
+    <string name="diagnostic_recording">Aufzeichnung läuft · Stoppen</string>
+    <string name="diagnostic_stopped">Aufzeichnung beendet. Prüfe den Text vor dem Senden.</string>
+    <string name="diagnostic_review">Aufzeichnung prüfen</string>
+    <string name="diagnostic_send">Per E-Mail senden</string>
+    <string name="diagnostic_discard">Verwerfen</string>
+    <string name="diagnostic_send_note">Prüfe unten die vollständige Aufzeichnung. Deine E-Mail-App öffnet einen Entwurf an support@ardasenn.com. Du entscheidest, ob du ihn sendest. KeySnap löscht die Aufzeichnung, sobald sich der Entwurf öffnet.</string>
+    <string name="diagnostic_no_email">Keine E-Mail-App gefunden. Die Aufzeichnung ist weiterhin verfügbar.</string>
 </resources>

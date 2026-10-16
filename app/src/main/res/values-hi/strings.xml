@@ -1041,4 +1041,15 @@
     <string name="notif_autostart_wifi_not_allowed">इस Wi-Fi नेटवर्क पर वायरलेस डिबगिंग की अनुमति नहीं मिली। सेटअप पूरा करने के लिए KeySnap खोलें।</string>
     <string name="notif_autostart_connect_failed">वायरलेस डिबगिंग से जुड़ नहीं सके। KeySnap खोलें; दोबारा पेयर करना पड़ सकता है।</string>
     <string name="settings_autostart_hint_pairing">अगर Android पेयरिंग हटा दे या उसकी अवधि समाप्त हो जाए, तो उन्नत मोड फिर से सेट करें। रोज़ के कनेक्शन हर फ़ोन पर पेयरिंग को सक्रिय नहीं रख सकते।</string>
+    <string name="diagnostic_title">समस्या की रिकॉर्डिंग</string>
+    <string name="diagnostic_description">डिवाइस की जानकारी, की इवेंट और ऐक्शन के नतीजे शामिल हैं। केवल मेमोरी में रहती है; 10 मिनट या 500 एंट्री के बाद रुक जाती है। शॉर्टकट के नाम, ऐक्शन पैरामीटर और नेटवर्क की जानकारी शामिल नहीं हैं।</string>
+    <string name="diagnostic_start">रिकॉर्डिंग शुरू करें</string>
+    <string name="diagnostic_stop">रिकॉर्डिंग रोकें</string>
+    <string name="diagnostic_recording">रिकॉर्डिंग जारी · रोकें</string>
+    <string name="diagnostic_stopped">रिकॉर्डिंग रुक गई। भेजने से पहले टेक्स्ट देखें।</string>
+    <string name="diagnostic_review">रिकॉर्डिंग देखें</string>
+    <string name="diagnostic_send">ई-मेल से भेजें</string>
+    <string name="diagnostic_discard">मिटाएँ</string>
+    <string name="diagnostic_send_note">नीचे पूरी रिकॉर्डिंग देखें। आपका ई-मेल ऐप support@ardasenn.com के लिए ड्राफ़्ट खोलेगा। भेजना है या नहीं, यह आप तय करते हैं। ड्राफ़्ट खुलने पर KeySnap रिकॉर्डिंग मिटा देता है।</string>
+    <string name="diagnostic_no_email">कोई ई-मेल ऐप नहीं मिला। रिकॉर्डिंग अभी भी उपलब्ध है।</string>
 </resources>

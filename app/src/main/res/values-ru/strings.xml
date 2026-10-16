@@ -1041,4 +1041,15 @@
     <string name="notif_autostart_wifi_not_allowed">Беспроводная отладка в этой сети Wi-Fi не разрешена. Откройте KeySnap для настройки.</string>
     <string name="notif_autostart_connect_failed">Не удалось подключиться к беспроводной отладке. Откройте KeySnap; может потребоваться повторное сопряжение.</string>
     <string name="settings_autostart_hint_pairing">Если Android удалит сопряжение или срок его действия истечёт, настройте Расширенный режим заново. Ежедневные подключения могут не сохранять сопряжение на всех телефонах.</string>
+    <string name="diagnostic_title">Запись проблемы</string>
+    <string name="diagnostic_description">Включает сведения об устройстве, события клавиш и результаты действий. Хранится только в памяти; останавливается через 10 минут или 500 записей. Названия команд, параметры действий и сетевые данные не включаются.</string>
+    <string name="diagnostic_start">Начать запись</string>
+    <string name="diagnostic_stop">Остановить запись</string>
+    <string name="diagnostic_recording">Идёт запись · Остановить</string>
+    <string name="diagnostic_stopped">Запись остановлена. Проверьте текст перед отправкой.</string>
+    <string name="diagnostic_review">Просмотреть запись</string>
+    <string name="diagnostic_send">Отправить по почте</string>
+    <string name="diagnostic_discard">Удалить</string>
+    <string name="diagnostic_send_note">Просмотрите полную запись ниже. Почтовое приложение откроет черновик для support@ardasenn.com. Вы сами решаете, отправлять ли его. KeySnap очищает запись при открытии черновика.</string>
+    <string name="diagnostic_no_email">Почтовое приложение не найдено. Запись по-прежнему доступна.</string>
 </resources>

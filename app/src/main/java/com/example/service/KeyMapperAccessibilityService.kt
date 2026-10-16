@@ -261,10 +261,26 @@ class KeyMapperAccessibilityService : AccessibilityService() {
         val isMatched = HardwareKeyTriggerCoordinator.dispatchKeyEvent(
             keyCode = keyCode,
             isDown = isDown,
-            source = getString(R.string.source_accessibility)
+            source = getString(R.string.source_accessibility),
+            diagnosticPath = DiagnosticRecorder.InputPath.ACCESSIBILITY,
         )
 
         val shouldConsume = ScriptRepository.getInstance(applicationContext).shouldConsume(keyCode)
-        return if (shouldConsume) true else super.onKeyEvent(event)
+        val consumed = if (shouldConsume) true else super.onKeyEvent(event)
+        if (DiagnosticRecorder.recording) {
+            DiagnosticRecorder.keyEvent(
+                path = DiagnosticRecorder.InputPath.ACCESSIBILITY,
+                stage = DiagnosticRecorder.Stage.ENTRY,
+                keyCode = keyCode,
+                isDown = isDown,
+                repeatCount = event.repeatCount,
+                flags = event.flags,
+                source = event.source,
+                deviceId = event.deviceId,
+                matched = isMatched,
+                consumed = consumed,
+            )
+        }
+        return consumed
     }
 }

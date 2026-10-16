@@ -1042,4 +1042,15 @@
     <string name="notif_autostart_wifi_not_allowed">Le débogage sans fil est refusé sur ce réseau Wi-Fi. Ouvrez KeySnap pour terminer la configuration.</string>
     <string name="notif_autostart_connect_failed">Connexion au débogage sans fil impossible. Ouvrez KeySnap ; un nouvel appairage peut être nécessaire.</string>
     <string name="settings_autostart_hint_pairing">Si Android fait expirer ou supprime l’appairage, configurez à nouveau le Mode avancé. Les connexions quotidiennes ne maintiennent pas forcément l’appairage actif sur tous les téléphones.</string>
+    <string name="diagnostic_title">Enregistrement du problème</string>
+    <string name="diagnostic_description">Contient les infos de l\'appareil, les événements des touches et les résultats des actions. Conservé uniquement en mémoire ; arrêt après 10 minutes ou 500 entrées. Les noms des raccourcis, paramètres des actions et détails réseau sont exclus.</string>
+    <string name="diagnostic_start">Démarrer l\'enregistrement</string>
+    <string name="diagnostic_stop">Arrêter l\'enregistrement</string>
+    <string name="diagnostic_recording">Enregistrement · Arrêter</string>
+    <string name="diagnostic_stopped">Enregistrement arrêté. Vérifiez le texte avant de l\'envoyer.</string>
+    <string name="diagnostic_review">Vérifier l\'enregistrement</string>
+    <string name="diagnostic_send">Envoyer par e-mail</string>
+    <string name="diagnostic_discard">Supprimer</string>
+    <string name="diagnostic_send_note">Vérifiez l\'enregistrement complet ci-dessous. Votre application de messagerie ouvrira un brouillon pour support@ardasenn.com. Vous décidez de l\'envoyer ou non. KeySnap efface l\'enregistrement à l\'ouverture du brouillon.</string>
+    <string name="diagnostic_no_email">Aucune application de messagerie trouvée. L\'enregistrement reste disponible.</string>
 </resources>

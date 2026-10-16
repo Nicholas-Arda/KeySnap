@@ -1038,4 +1038,15 @@
     <string name="notif_autostart_wifi_not_allowed">لم يُسمح بتصحيح الأخطاء اللاسلكي على شبكة Wi-Fi هذه. افتح KeySnap لإكمال الإعداد.</string>
     <string name="notif_autostart_connect_failed">تعذّر الاتصال بتصحيح الأخطاء اللاسلكي. افتح KeySnap؛ قد تحتاج إلى الاقتران مجددًا.</string>
     <string name="settings_autostart_hint_pairing">إذا أزال Android الاقتران أو انتهت صلاحيته، فأعد إعداد الوضع المتقدم. قد لا تُبقي الاتصالات اليومية الاقتران نشطًا على كل هاتف.</string>
+    <string name="diagnostic_title">تسجيل المشكلة</string>
+    <string name="diagnostic_description">يتضمن معلومات الجهاز وأحداث المفاتيح ونتائج الإجراءات. يبقى في الذاكرة فقط؛ يتوقف بعد 10 دقائق أو 500 إدخال. لا يتضمن أسماء الاختصارات أو معلمات الإجراءات أو تفاصيل الشبكة.</string>
+    <string name="diagnostic_start">بدء التسجيل</string>
+    <string name="diagnostic_stop">إيقاف التسجيل</string>
+    <string name="diagnostic_recording">جارٍ التسجيل · إيقاف</string>
+    <string name="diagnostic_stopped">توقف التسجيل. راجع النص قبل إرساله.</string>
+    <string name="diagnostic_review">مراجعة التسجيل</string>
+    <string name="diagnostic_send">إرسال بالبريد الإلكتروني</string>
+    <string name="diagnostic_discard">حذف</string>
+    <string name="diagnostic_send_note">راجع التسجيل الكامل أدناه. سيفتح تطبيق البريد مسودة إلى support@ardasenn.com. أنت تقرر إرسالها. يمسح KeySnap التسجيل عند فتح المسودة.</string>
+    <string name="diagnostic_no_email">لم يُعثر على تطبيق بريد إلكتروني. ما زال التسجيل متاحًا.</string>
 </resources>

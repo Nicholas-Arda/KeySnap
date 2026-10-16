@@ -1042,4 +1042,15 @@
     <string name="notif_autostart_wifi_not_allowed">A depuração sem fio não foi permitida nesta rede Wi-Fi. Abra o KeySnap para configurar.</string>
     <string name="notif_autostart_connect_failed">Não foi possível conectar à depuração sem fio. Abra o KeySnap; pode ser necessário parear novamente.</string>
     <string name="settings_autostart_hint_pairing">Se o Android expirar ou remover o pareamento, configure o Modo avançado novamente. As conexões diárias podem não manter o pareamento ativo em todos os celulares.</string>
+    <string name="diagnostic_title">Registro do problema</string>
+    <string name="diagnostic_description">Inclui informações do dispositivo, eventos de teclas e resultados das ações. Mantido apenas na memória; para após 10 minutos ou 500 entradas. Nomes de atalhos, parâmetros de ações e detalhes de rede são excluídos.</string>
+    <string name="diagnostic_start">Iniciar registro</string>
+    <string name="diagnostic_stop">Parar registro</string>
+    <string name="diagnostic_recording">Registrando · Parar</string>
+    <string name="diagnostic_stopped">Registro encerrado. Revise o texto antes de enviar.</string>
+    <string name="diagnostic_review">Revisar registro</string>
+    <string name="diagnostic_send">Enviar por e-mail</string>
+    <string name="diagnostic_discard">Descartar</string>
+    <string name="diagnostic_send_note">Revise o registro completo abaixo. Seu app de e-mail abrirá um rascunho para support@ardasenn.com. Você decide se deseja enviar. O KeySnap apaga o registro quando o rascunho abre.</string>
+    <string name="diagnostic_no_email">Nenhum app de e-mail encontrado. O registro continua disponível.</string>
 </resources>

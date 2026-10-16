@@ -9,17 +9,27 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
 import androidx.activity.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.core.content.IntentCompat
 import com.example.data.AppLocale
 import com.example.data.KeyMappingRepository
 import com.example.data.shouldConsumeKey
 import com.example.service.RunFailureNotifier
+import com.example.service.DiagnosticRecorder
 import com.example.ui.MainScreen
+import com.example.ui.components.BottomBarClearance
+import com.example.ui.settings.RecordingIndicator
 import com.example.ui.theme.MyApplicationTheme
 import com.example.ui.theme.resolveThemeMode
 import com.example.viewmodel.MainViewModel
@@ -50,7 +60,12 @@ class MainActivity : ComponentActivity() {
             val oled by viewModel.oledMode.collectAsState()
             val themeMode = resolveThemeMode(storedMode, followSystem, isSystemInDarkTheme())
             MyApplicationTheme(themeMode = themeMode, oled = oled) {
-                MainScreen(viewModel = viewModel)
+                Box(Modifier.fillMaxSize()) {
+                    MainScreen(viewModel = viewModel)
+                    RecordingIndicator(
+                        Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(bottom = BottomBarClearance + 8.dp),
+                    )
+                }
             }
         }
         // A recreated activity has already handled the intent it was started with; rotating the
@@ -100,6 +115,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
+        if (DiagnosticRecorder.recording) DiagnosticRecorder.checkTimeout()
         viewModel.refreshServiceStatus()
         viewModel.refreshPurchases()
     }
@@ -107,18 +123,33 @@ class MainActivity : ComponentActivity() {
     // Foreground key events are intercepted for real-time monitoring and recording. Down and up
     // must reach the view model separately but decide identically, so both delegate here.
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean =
-        consumes(keyCode, KeyEvent.ACTION_DOWN) || super.onKeyDown(keyCode, event)
+        consumes(keyCode, KeyEvent.ACTION_DOWN, event) || super.onKeyDown(keyCode, event)
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean =
-        consumes(keyCode, KeyEvent.ACTION_UP) || super.onKeyUp(keyCode, event)
+        consumes(keyCode, KeyEvent.ACTION_UP, event) || super.onKeyUp(keyCode, event)
 
-    private fun consumes(keyCode: Int, action: Int): Boolean {
+    private fun consumes(keyCode: Int, action: Int, event: KeyEvent?): Boolean {
         // Read before dispatch: the release that ends a recording clears the flag.
         val recording = viewModel.isRecordingKey.value
-        viewModel.onDirectActivityKeyEvent(keyCode, action)
+        val isMatched = viewModel.onDirectActivityKeyEvent(keyCode, action)
         val config = viewModel.config.value
-        return shouldConsumeKey(viewModel.scripts.value, keyCode, viewModel.isMappingEnabled.value, config.consumeOriginalEvent) ||
+        val consumed = shouldConsumeKey(viewModel.scripts.value, keyCode, viewModel.isMappingEnabled.value, config.consumeOriginalEvent) ||
             (recording && config.consumeOriginalEvent)
+        if (DiagnosticRecorder.recording) {
+            DiagnosticRecorder.keyEvent(
+                path = DiagnosticRecorder.InputPath.ACTIVITY,
+                stage = DiagnosticRecorder.Stage.ENTRY,
+                keyCode = keyCode,
+                isDown = action == KeyEvent.ACTION_DOWN,
+                repeatCount = event?.repeatCount,
+                flags = event?.flags,
+                source = event?.source,
+                deviceId = event?.deviceId,
+                matched = isMatched,
+                consumed = consumed,
+            )
+        }
+        return consumed
     }
 }
 

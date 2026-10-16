@@ -1042,4 +1042,15 @@
     <string name="notif_autostart_wifi_not_allowed">No se permitió la depuración inalámbrica en esta red Wi-Fi. Abre KeySnap para configurar.</string>
     <string name="notif_autostart_connect_failed">No se pudo conectar a la depuración inalámbrica. Abre KeySnap; puede ser necesario volver a emparejar.</string>
     <string name="settings_autostart_hint_pairing">Si Android caduca o elimina el emparejamiento, configura de nuevo el Modo avanzado. Las conexiones diarias pueden no mantenerlo activo en todos los teléfonos.</string>
+    <string name="diagnostic_title">Registro del problema</string>
+    <string name="diagnostic_description">Incluye información del dispositivo, eventos de teclas y resultados de acciones. Solo se conserva en memoria; se detiene a los 10 minutos o 500 entradas. Se excluyen nombres de atajos, parámetros de acciones y detalles de red.</string>
+    <string name="diagnostic_start">Iniciar registro</string>
+    <string name="diagnostic_stop">Detener registro</string>
+    <string name="diagnostic_recording">Registrando · Detener</string>
+    <string name="diagnostic_stopped">Registro detenido. Revisa el texto antes de enviarlo.</string>
+    <string name="diagnostic_review">Revisar registro</string>
+    <string name="diagnostic_send">Enviar por correo</string>
+    <string name="diagnostic_discard">Descartar</string>
+    <string name="diagnostic_send_note">Revisa el registro completo a continuación. Tu app de correo abrirá un borrador para support@ardasenn.com. Tú decides si enviarlo. KeySnap borra el registro al abrir el borrador.</string>
+    <string name="diagnostic_no_email">No se encontró una app de correo. El registro sigue disponible.</string>
 </resources>

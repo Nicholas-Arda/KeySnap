@@ -1039,4 +1039,15 @@
     <string name="notif_autostart_wifi_not_allowed">Bu Wi-Fi ağında kablosuz hata ayıklamaya izin verilmedi. Kurulumu bitirmek için KeySnap’i açın.</string>
     <string name="notif_autostart_connect_failed">Kablosuz hata ayıklamaya bağlanılamadı. KeySnap’i açın; yeniden eşleştirme gerekebilir.</string>
     <string name="settings_autostart_hint_pairing">Android eşleşmenin süresini doldurur veya eşleşmeyi kaldırırsa Gelişmiş Mod’u yeniden kurun. Günlük bağlantılar her telefonda eşleşmenin geçerli kalmasını sağlamayabilir.</string>
+    <string name="diagnostic_title">Sorun kaydı</string>
+    <string name="diagnostic_description">Cihaz bilgilerini, tuş olaylarını ve eylem sonuçlarını içerir. Yalnızca bellekte tutulur; 10 dakika veya 500 satır sonra durur. Kısayol adları, eylem parametreleri ve ağ ayrıntıları dahil edilmez.</string>
+    <string name="diagnostic_start">Kaydı başlat</string>
+    <string name="diagnostic_stop">Kaydı durdur</string>
+    <string name="diagnostic_recording">Kaydediliyor · Durdur</string>
+    <string name="diagnostic_stopped">Kayıt durdu. Göndermeden önce metni inceleyin.</string>
+    <string name="diagnostic_review">Kaydı incele</string>
+    <string name="diagnostic_send">E-postayla gönder</string>
+    <string name="diagnostic_discard">Kaydı sil</string>
+    <string name="diagnostic_send_note">Aşağıdaki kaydın tamamını inceleyin. E-posta uygulamanız support@ardasenn.com adresine bir taslak açar. Gönderme kararını siz verirsiniz. Taslak açılınca KeySnap kaydı temizler.</string>
+    <string name="diagnostic_no_email">E-posta uygulaması bulunamadı. Kayıt hâlâ kullanılabilir.</string>
 </resources>

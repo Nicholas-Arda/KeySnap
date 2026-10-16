@@ -1,4 +1,6 @@
-New: Start after restart can bring Advanced Mode back after unlock and Wi-Fi using your existing pairing. Off by default; some phones need auto-launch or network approval. If the pairing expires, set up Advanced Mode again.
-New: a System theme and an OLED pure black mode.
-Fixed: in Advanced Mode, assistant actions open your assistant's panel again, and the shortcut vibration no longer goes missing.
-Fixed: uninstalling the app now also stops Advanced Mode.
+New: Start after restart brings Advanced Mode back after unlock and Wi-Fi. Off by default; some phones need auto-launch or network approval.
+New: System theme and OLED black mode.
+New: Problem recording (Settings → About) lets you e-mail us what went wrong.
+Fixed: in Advanced Mode, assistant actions open your assistant again and shortcut vibration no longer goes missing.
+Fixed: uninstalling now also stops Advanced Mode.
+Fixed: tapping anywhere in a search box opens the keyboard.

@@ -44,6 +44,7 @@ import com.example.data.TriggerPressType
 import com.example.data.keyDisplayName
 import com.example.data.isSurfaceOnly
 import com.example.service.CalendarCondition
+import com.example.service.DiagnosticRecorder
 import com.example.service.FlashlightController
 import com.example.service.HardwareKeyTriggerCoordinator
 import com.example.service.KeyMapperAccessibilityService
@@ -52,6 +53,7 @@ import com.example.service.PointPickMode
 import com.example.service.ScreenPointPicker
 import com.example.service.TwoPointGesture
 import com.example.service.ScriptActionExecutor
+import com.example.service.recordBridgeDiagnostics
 import com.example.service.adb.PairingStatus
 import com.example.service.adb.AdvancedAutostart
 import com.example.service.adb.WirelessAdbManager
@@ -401,7 +403,8 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
 
     /** Runs the chain once from the editor and reports what happened - a silent Run reads as broken. */
     fun draftRunOnce() {
-        val actions = _editingScript.value?.actions.orEmpty()
+        val draft = _editingScript.value
+        val actions = draft?.actions.orEmpty()
         if (actions.isEmpty()) return
         viewModelScope.launch {
             // While the bridge owns execution, Run has to go through it or it demonstrates the
@@ -411,10 +414,12 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
             // Cleared first, so a value read below can only come from an auto-send in this run.
             ScriptActionExecutor.lastAutoSendOutcome = null
             val onBridge = BridgeController.runActions(actions)
+            val diagnosticScriptId = if (DiagnosticRecorder.recording) draft?.id.hashCode() else 0
+            if (DiagnosticRecorder.recording) recordBridgeDiagnostics(diagnosticScriptId, null, onBridge?.actionResults)
             val results = if (onBridge == null) {
-                actionExecutor.execute(actions)
+                actionExecutor.execute(actions, diagnosticScriptId = diagnosticScriptId)
             } else {
-                actionExecutor.execute(actions) { it.type in ScriptActionCatalog.UNSUPPORTED_BY_BRIDGE }
+                actionExecutor.execute(actions, diagnosticScriptId = diagnosticScriptId) { it.type in ScriptActionCatalog.UNSUPPORTED_BY_BRIDGE }
             }
             val ran = results.count { it } + (onBridge?.ran ?: 0)
             // A Run is not logged (it may be an unsaved draft), so a message that was not sent for
@@ -838,7 +843,9 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
 
     fun onDirectActivityKeyEvent(keyCode: Int, action: Int): Boolean {
         val isDown = action == KeyEvent.ACTION_DOWN
-        return HardwareKeyTriggerCoordinator.dispatchKeyEvent(keyCode, isDown, res.getString(R.string.source_activity))
+        return HardwareKeyTriggerCoordinator.dispatchKeyEvent(
+            keyCode, isDown, res.getString(R.string.source_activity), DiagnosticRecorder.InputPath.ACTIVITY,
+        )
     }
 
     fun toggleFlashlight() {
