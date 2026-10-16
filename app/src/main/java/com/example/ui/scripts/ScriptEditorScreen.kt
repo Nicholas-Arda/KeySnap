@@ -1128,29 +1128,31 @@ fun TopBarIconTile(
 @Composable
 fun SearchField(query: String, onQueryChange: (String) -> Unit, placeholder: String, modifier: Modifier = Modifier) {
     val colors = MaterialTheme.colorScheme
-    Row(
-        modifier
+    // The styled box is the text field itself, so a tap anywhere in it focuses the field.
+    BasicTextField(
+        value = query,
+        onValueChange = onQueryChange,
+        modifier = modifier
             .clip(InnerShape)
             .background(colors.surfaceVariant)
             .border(1.dp, colors.outline.copy(alpha = .4f), InnerShape)
             .padding(horizontal = 14.dp, vertical = 11.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Icon(Icons.Outlined.Search, null, tint = colors.onSurfaceVariant, modifier = Modifier.size(18.dp))
-        Spacer(Modifier.width(10.dp))
-        Box(Modifier.weight(1f)) {
-            if (query.isEmpty()) {
-                Text(placeholder, style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
+        singleLine = true,
+        textStyle = MaterialTheme.typography.bodyMedium.copy(color = colors.onSurface),
+        cursorBrush = SolidColor(colors.primary),
+        decorationBox = { inner ->
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Outlined.Search, null, tint = colors.onSurfaceVariant, modifier = Modifier.size(18.dp))
+                Spacer(Modifier.width(10.dp))
+                Box(Modifier.weight(1f)) {
+                    if (query.isEmpty()) {
+                        Text(placeholder, style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
+                    }
+                    inner()
+                }
             }
-            BasicTextField(
-                value = query,
-                onValueChange = onQueryChange,
-                singleLine = true,
-                textStyle = MaterialTheme.typography.bodyMedium.copy(color = colors.onSurface),
-                cursorBrush = SolidColor(colors.primary),
-            )
-        }
-    }
+        },
+    )
 }
 
 /**
