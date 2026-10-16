@@ -395,6 +395,14 @@ val LocalOled = compositionLocalOf { false }
 
 val LocalGlass = compositionLocalOf { LightGlass }
 
+/** Flat release notes use neutral dark surfaces instead of the page's navy glass treatment. */
+@Composable
+fun whatsNewSurfaceColors(themeMode: ThemeMode): Pair<Color, Color> = when {
+    LocalOled.current -> OledColorScheme.surface to OledColorScheme.surfaceVariant
+    themeMode == ThemeMode.DARK -> Color(0xFF1C1C1E) to Color(0xFF2A2A2D)
+    else -> MaterialTheme.colorScheme.surface to MaterialTheme.colorScheme.surfaceVariant
+}
+
 @Composable
 private fun animatedColor(target: Color, label: String): Color =
     animateColorAsState(target, tween(ThemeTransitionMs), label = label).value

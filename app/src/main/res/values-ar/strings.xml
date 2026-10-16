@@ -1049,4 +1049,22 @@
     <string name="diagnostic_discard">حذف</string>
     <string name="diagnostic_send_note">راجع التسجيل الكامل أدناه. سيفتح تطبيق البريد مسودة إلى support@ardasenn.com. أنت تقرر إرسالها. يمسح KeySnap التسجيل عند فتح المسودة.</string>
     <string name="diagnostic_no_email">لم يُعثر على تطبيق بريد إلكتروني. ما زال التسجيل متاحًا.</string>
+    <string name="whats_new_title">ما الجديد</string>
+    <string name="whats_new_version">الإصدار %1$s</string>
+    <string name="whats_new_new">جديد</string>
+    <string name="whats_new_fixed">إصلاحات</string>
+    <string name="whats_new_restart_title">التشغيل بعد إعادة التشغيل</string>
+    <string name="whats_new_restart_description">يعود الوضع المتقدم تلقائيًا بعد إعادة تشغيل الهاتف.</string>
+    <string name="whats_new_theme_title">سمة النظام وOLED</string>
+    <string name="whats_new_theme_description">اتبع سمة هاتفك أو اختر الأسود الخالص.</string>
+    <string name="whats_new_recording_title">تسجيل المشكلة</string>
+    <string name="whats_new_recording_description">هل هناك شيء لا يعمل؟ سجّله وأرسله إلينا بالبريد الإلكتروني.</string>
+    <string name="whats_new_turn_on">تفعيل</string>
+    <string name="whats_new_try">تجربة</string>
+    <string name="whats_new_open">فتح</string>
+    <string name="whats_new_fix_assistant">يفتح مساعدك مجددًا بضغطة مفتاح في الوضع المتقدم</string>
+    <string name="whats_new_fix_vibration">لم يعد اهتزاز الاختصارات يتوقف عن العمل</string>
+    <string name="whats_new_fix_uninstall">إلغاء التثبيت يوقف الآن الوضع المتقدم أيضًا</string>
+    <string name="whats_new_fix_search">النقر في أي مكان داخل مربع البحث يفتح لوحة المفاتيح</string>
+    <string name="whats_new_got_it">فهمت</string>
 </resources>

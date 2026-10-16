@@ -41,6 +41,10 @@ import com.example.data.ImportedShortcut
 import com.example.data.ShortcutShare
 import com.example.data.SuggestedShortcut
 import com.example.data.TriggerPressType
+import com.example.data.WhatsNewDecision
+import com.example.data.WhatsNewRelease
+import com.example.data.whatsNewDecision
+import com.example.data.whatsNewReleases
 import com.example.data.keyDisplayName
 import com.example.data.isSurfaceOnly
 import com.example.service.CalendarCondition
@@ -63,6 +67,7 @@ import com.google.android.gms.ads.MobileAds
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import io.github.nicholasarda.keysnap.R
+import io.github.nicholasarda.keysnap.BuildConfig
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -663,6 +668,38 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
     private val _showSetupWizard = MutableStateFlow(wizardPrefs.getBoolean("wizard_is_open", false))
     val showSetupWizard: StateFlow<Boolean> = _showSetupWizard.asStateFlow()
 
+    private val currentVersionCode = BuildConfig.VERSION_CODE.toLong()
+    private val _whatsNew = MutableStateFlow<WhatsNewRelease?>(null)
+    val whatsNew: StateFlow<WhatsNewRelease?> = _whatsNew.asStateFlow()
+
+    private fun refreshWhatsNew() {
+        val lastSeen = if (wizardPrefs.contains("whats_new_last_seen_version")) {
+            wizardPrefs.getLong("whats_new_last_seen_version", 0L)
+        } else {
+            null
+        }
+        val packageInfo = appContext.packageManager.getPackageInfo(appContext.packageName, 0)
+        val release = whatsNewReleases[currentVersionCode]
+        when (whatsNewDecision(
+            lastSeenVersionCode = lastSeen,
+            currentVersionCode = currentVersionCode,
+            freshInstall = packageInfo.firstInstallTime == packageInfo.lastUpdateTime,
+            // SetupWizardModal is also this version's onboarding; there is no separate onboarding gate.
+            onboardingFinished = !_showSetupWizard.value,
+            setupWizardShowing = _showSetupWizard.value,
+            hasContent = release != null,
+        )) {
+            WhatsNewDecision.MARK_SEEN -> dismissWhatsNew()
+            WhatsNewDecision.SHOW -> _whatsNew.value = release
+            WhatsNewDecision.NONE -> _whatsNew.value = null
+        }
+    }
+
+    fun dismissWhatsNew() {
+        wizardPrefs.edit().putLong("whats_new_last_seen_version", currentVersionCode).apply()
+        _whatsNew.value = null
+    }
+
     private val _wizardStep = MutableStateFlow(wizardPrefs.getInt("wizard_current_step", 0))
     val wizardStep: StateFlow<Int> = _wizardStep.asStateFlow()
 
@@ -695,6 +732,7 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
     private var bannerJob: Job? = null
 
     init {
+        refreshWhatsNew()
         HardwareKeyTriggerCoordinator.initialize(appContext, repository)
         WirelessAdbManager.initialize(appContext)
         refreshServiceStatus()
@@ -935,6 +973,7 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
     fun openSetupWizard(step: Int = 0) {
         _wizardStep.value = step
         _showSetupWizard.value = true
+        _whatsNew.value = null
         wizardPrefs.edit()
             .putBoolean("wizard_is_open", true)
             .putInt("wizard_current_step", step)
@@ -947,6 +986,7 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
     fun closeSetupWizard() {
         _showSetupWizard.value = false
         wizardPrefs.edit().putBoolean("wizard_is_open", false).apply()
+        refreshWhatsNew()
     }
 
     fun setWizardStep(step: Int) {

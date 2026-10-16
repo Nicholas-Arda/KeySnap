@@ -1053,4 +1053,22 @@
     <string name="diagnostic_discard">Descartar</string>
     <string name="diagnostic_send_note">Revise o registro completo abaixo. Seu app de e-mail abrirá um rascunho para support@ardasenn.com. Você decide se deseja enviar. O KeySnap apaga o registro quando o rascunho abre.</string>
     <string name="diagnostic_no_email">Nenhum app de e-mail encontrado. O registro continua disponível.</string>
+    <string name="whats_new_title">Novidades</string>
+    <string name="whats_new_version">Versão %1$s</string>
+    <string name="whats_new_new">Novo</string>
+    <string name="whats_new_fixed">Correções</string>
+    <string name="whats_new_restart_title">Iniciar após reiniciar</string>
+    <string name="whats_new_restart_description">O Modo Avançado volta sozinho após reiniciar o telefone.</string>
+    <string name="whats_new_theme_title">Tema do sistema e OLED</string>
+    <string name="whats_new_theme_description">Siga o tema do telefone ou use preto puro.</string>
+    <string name="whats_new_recording_title">Registro do problema</string>
+    <string name="whats_new_recording_description">Algo não funciona? Grave e envie para nós por e-mail.</string>
+    <string name="whats_new_turn_on">Ativar</string>
+    <string name="whats_new_try">Testar</string>
+    <string name="whats_new_open">Abrir</string>
+    <string name="whats_new_fix_assistant">Seu assistente volta a abrir com uma tecla no Modo Avançado</string>
+    <string name="whats_new_fix_vibration">A vibração dos atalhos não desaparece mais</string>
+    <string name="whats_new_fix_uninstall">Desinstalar agora também interrompe o Modo Avançado</string>
+    <string name="whats_new_fix_search">Tocar em qualquer parte da caixa de pesquisa abre o teclado</string>
+    <string name="whats_new_got_it">Entendi</string>
 </resources>

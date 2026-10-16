@@ -1052,4 +1052,22 @@
     <string name="diagnostic_discard">मिटाएँ</string>
     <string name="diagnostic_send_note">नीचे पूरी रिकॉर्डिंग देखें। आपका ई-मेल ऐप support@ardasenn.com के लिए ड्राफ़्ट खोलेगा। भेजना है या नहीं, यह आप तय करते हैं। ड्राफ़्ट खुलने पर KeySnap रिकॉर्डिंग मिटा देता है।</string>
     <string name="diagnostic_no_email">कोई ई-मेल ऐप नहीं मिला। रिकॉर्डिंग अभी भी उपलब्ध है।</string>
+    <string name="whats_new_title">नया क्या है</string>
+    <string name="whats_new_version">संस्करण %1$s</string>
+    <string name="whats_new_new">नया</string>
+    <string name="whats_new_fixed">सुधार</string>
+    <string name="whats_new_restart_title">रीस्टार्ट के बाद शुरू करें</string>
+    <string name="whats_new_restart_description">रीस्टार्ट के बाद उन्नत मोड अपने आप वापस आ जाता है।</string>
+    <string name="whats_new_theme_title">सिस्टम थीम और OLED</string>
+    <string name="whats_new_theme_description">फ़ोन की थीम अपनाएँ या पूरी तरह काला चुनें।</string>
+    <string name="whats_new_recording_title">समस्या की रिकॉर्डिंग</string>
+    <string name="whats_new_recording_description">कुछ काम नहीं कर रहा? रिकॉर्ड करें और हमें ईमेल भेजें।</string>
+    <string name="whats_new_turn_on">चालू करें</string>
+    <string name="whats_new_try">आज़माएँ</string>
+    <string name="whats_new_open">खोलें</string>
+    <string name="whats_new_fix_assistant">उन्नत मोड में आपका सहायक फिर से एक कुंजी से खुलता है</string>
+    <string name="whats_new_fix_vibration">शॉर्टकट का कंपन अब बंद नहीं पड़ता</string>
+    <string name="whats_new_fix_uninstall">अनइंस्टॉल करने पर अब उन्नत मोड भी बंद हो जाता है</string>
+    <string name="whats_new_fix_search">खोज बॉक्स में कहीं भी टैप करने से कीबोर्ड खुलता है</string>
+    <string name="whats_new_got_it">समझ गया</string>
 </resources>

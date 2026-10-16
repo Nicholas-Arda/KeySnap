@@ -1050,4 +1050,22 @@
     <string name="diagnostic_discard">Kaydı sil</string>
     <string name="diagnostic_send_note">Aşağıdaki kaydın tamamını inceleyin. E-posta uygulamanız support@ardasenn.com adresine bir taslak açar. Gönderme kararını siz verirsiniz. Taslak açılınca KeySnap kaydı temizler.</string>
     <string name="diagnostic_no_email">E-posta uygulaması bulunamadı. Kayıt hâlâ kullanılabilir.</string>
+    <string name="whats_new_title">Yenilikler</string>
+    <string name="whats_new_version">Sürüm %1$s</string>
+    <string name="whats_new_new">Yeni</string>
+    <string name="whats_new_fixed">Düzeltmeler</string>
+    <string name="whats_new_restart_title">Yeniden başlatınca çalıştır</string>
+    <string name="whats_new_restart_description">Telefon yeniden başlatılınca Uzman Modu kendiliğinden geri gelir.</string>
+    <string name="whats_new_theme_title">Sistem teması ve OLED</string>
+    <string name="whats_new_theme_description">Telefonunun temasını izle veya tam siyaha geç.</string>
+    <string name="whats_new_recording_title">Sorun kaydı</string>
+    <string name="whats_new_recording_description">Bir şey çalışmıyor mu? Kaydet ve bize e-postayla gönder.</string>
+    <string name="whats_new_turn_on">Aç</string>
+    <string name="whats_new_try">Dene</string>
+    <string name="whats_new_open">Aç</string>
+    <string name="whats_new_fix_assistant">Asistanın Uzman Modu’nda bir tuşla yeniden açılıyor</string>
+    <string name="whats_new_fix_vibration">Kısayol titreşimi artık kaybolmuyor</string>
+    <string name="whats_new_fix_uninstall">Uygulamayı kaldırmak artık Uzman Modu’nu da durduruyor</string>
+    <string name="whats_new_fix_search">Arama kutusunun herhangi bir yerine dokunmak klavyeyi açıyor</string>
+    <string name="whats_new_got_it">Anladım</string>
 </resources>

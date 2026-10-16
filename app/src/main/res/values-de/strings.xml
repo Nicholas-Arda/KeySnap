@@ -1052,4 +1052,22 @@
     <string name="diagnostic_discard">Verwerfen</string>
     <string name="diagnostic_send_note">Prüfe unten die vollständige Aufzeichnung. Deine E-Mail-App öffnet einen Entwurf an support@ardasenn.com. Du entscheidest, ob du ihn sendest. KeySnap löscht die Aufzeichnung, sobald sich der Entwurf öffnet.</string>
     <string name="diagnostic_no_email">Keine E-Mail-App gefunden. Die Aufzeichnung ist weiterhin verfügbar.</string>
+    <string name="whats_new_title">Was ist neu?</string>
+    <string name="whats_new_version">Version %1$s</string>
+    <string name="whats_new_new">Neu</string>
+    <string name="whats_new_fixed">Behoben</string>
+    <string name="whats_new_restart_title">Nach Neustart starten</string>
+    <string name="whats_new_restart_description">Der Erweiterte Modus kehrt nach einem Neustart automatisch zurück.</string>
+    <string name="whats_new_theme_title">Systemdesign &amp; OLED</string>
+    <string name="whats_new_theme_description">Dem Telefon folgen oder zu reinem Schwarz wechseln.</string>
+    <string name="whats_new_recording_title">Problemaufzeichnung</string>
+    <string name="whats_new_recording_description">Etwas funktioniert nicht? Aufzeichnen und uns per E-Mail senden.</string>
+    <string name="whats_new_turn_on">Aktivieren</string>
+    <string name="whats_new_try">Testen</string>
+    <string name="whats_new_open">Öffnen</string>
+    <string name="whats_new_fix_assistant">Dein Assistent öffnet sich im Erweiterten Modus wieder per Taste</string>
+    <string name="whats_new_fix_vibration">Die Vibration bei Kurzbefehlen fällt nicht mehr aus</string>
+    <string name="whats_new_fix_uninstall">Die Deinstallation beendet jetzt auch den Erweiterten Modus</string>
+    <string name="whats_new_fix_search">Tippen auf eine beliebige Stelle im Suchfeld öffnet die Tastatur</string>
+    <string name="whats_new_got_it">Verstanden</string>
 </resources>

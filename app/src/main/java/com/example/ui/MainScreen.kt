@@ -61,12 +61,14 @@ import com.example.data.EntitlementManager
 import com.example.data.ScriptActionCatalog
 import com.example.data.ScriptConstraintCatalog
 import com.example.data.ShortcutShare
+import com.example.data.WhatsNewDestination
 import com.example.data.latestFailedScriptIds
 import com.example.ui.components.AppBottomBar
 import com.example.ui.components.AdvancedActivationBanner
 import com.example.ui.components.AccessibilityDisclosureDialog
 import com.example.ui.components.BottomBarClearance
 import com.example.ui.components.NameKeyDialog
+import com.example.ui.components.WhatsNewDialog
 import com.example.ui.home.HomeScreen
 import com.example.ui.scripts.ASSISTANT_SETTINGS_ACTION_TYPES
 import com.example.ui.scripts.ActionConfigSheet
@@ -79,6 +81,7 @@ import com.example.ui.scripts.TriggerPickerSheet
 import com.example.ui.scripts.shareShortcutText
 import com.example.ui.settings.SettingsGear
 import com.example.ui.settings.SettingsScreen
+import com.example.ui.settings.SettingsSection
 import com.example.ui.settings.SettingsScrim
 import com.example.ui.settings.SettingsSheet
 import com.example.ui.settings.rememberSettingsMotion
@@ -117,6 +120,7 @@ fun MainScreen(viewModel: MainViewModel) {
     val themeMode = resolveThemeMode(storedThemeMode, themeFollowSystem, isSystemInDarkTheme())
     val hijackBannerStage by viewModel.hijackBannerStage.collectAsState()
     val showSetupWizard by viewModel.showSetupWizard.collectAsState()
+    val whatsNew by viewModel.whatsNew.collectAsState()
     val savedKeys by viewModel.savedKeys.collectAsState()
     val showNameKeyDialogForCode by viewModel.showNameKeyDialogForCode.collectAsState()
     val editingScript by viewModel.editingScript.collectAsState()
@@ -211,6 +215,7 @@ fun MainScreen(viewModel: MainViewModel) {
         val suggestionDraft = draft?.takeIf { it.fromSuggestion }
         if (draft == null || suggestionDraft != null) {
             var settingsOpen by rememberSaveable { mutableStateOf(false) }
+            var settingsSection by rememberSaveable { mutableStateOf<SettingsSection?>(null) }
             val settingsMotion = rememberSettingsMotion(settingsOpen)
             val goToPage: (Int) -> Unit = { page -> pagerScope.launch { pagerState.animateScrollToPage(page, animationSpec = PageSlide) } }
             // Back from Shortcuts goes Home; on Home it falls through and exits.
@@ -321,7 +326,29 @@ fun MainScreen(viewModel: MainViewModel) {
                     onToggleAdvancedMode = viewModel::toggleAdvancedMode,
                     onRunSetupAgain = { viewModel.openSetupWizard(0) },
                     reveal = settingsMotion::reveal,
+                    targetSection = settingsSection,
+                    onSectionShown = { settingsSection = null },
                 )
+            }
+            if (!settingsOpen && pagerState.currentPage == 0 && suggestionDraft == null && !showSetupWizard &&
+                pendingImport == null && showNameKeyDialogForCode == null && !showAccessibilityDisclosure
+            ) {
+                whatsNew?.let { release ->
+                    WhatsNewDialog(
+                        release = release,
+                        themeMode = themeMode,
+                        onDismiss = viewModel::dismissWhatsNew,
+                        onOpenSettings = { destination ->
+                            viewModel.dismissWhatsNew()
+                            settingsSection = when (destination) {
+                                WhatsNewDestination.ADVANCED_MODE -> SettingsSection.ADVANCED_MODE
+                                WhatsNewDestination.APPEARANCE -> SettingsSection.APPEARANCE
+                                WhatsNewDestination.ABOUT -> SettingsSection.ABOUT
+                            }
+                            settingsOpen = true
+                        },
+                    )
+                }
             }
             SettingsGear(
                 settingsMotion,

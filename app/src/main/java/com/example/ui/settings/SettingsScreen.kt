@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
@@ -43,6 +44,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -91,6 +93,12 @@ private const val VISIBLE_EVENTS = 6
 private val LogTimeFormat: DateTimeFormatter =
     DateTimeFormatter.ofPattern("HH:mm:ss").withZone(ZoneId.systemDefault())
 
+enum class SettingsSection {
+    ADVANCED_MODE,
+    APPEARANCE,
+    ABOUT,
+}
+
 @Composable
 fun SettingsScreen(
     config: KeyMappingConfig,
@@ -119,8 +127,22 @@ fun SettingsScreen(
     autostartChanging: Boolean = false,
     onToggleAutostart: (Boolean) -> Unit = {},
     reveal: (index: Int) -> Modifier = { Modifier },
+    targetSection: SettingsSection? = null,
+    onSectionShown: () -> Unit = {},
 ) {
+    val listState = rememberLazyListState()
+    LaunchedEffect(targetSection) {
+        val index = when (targetSection) {
+            SettingsSection.ADVANCED_MODE -> 6
+            SettingsSection.APPEARANCE -> 9
+            SettingsSection.ABOUT -> if (themeMode != null) 11 else 10
+            null -> return@LaunchedEffect
+        }
+        listState.scrollToItem(index)
+        if (targetSection != SettingsSection.ABOUT) onSectionShown()
+    }
     LazyColumn(
+        state = listState,
         modifier = Modifier.fillMaxSize().testTag("settings_list"),
         verticalArrangement = Arrangement.spacedBy(12.dp),
         contentPadding = PaddingValues(start = 12.dp, end = 12.dp, top = 18.dp, bottom = 40.dp),
@@ -244,7 +266,15 @@ fun SettingsScreen(
             }
         }
         item { Box(reveal(10)) { LanguagePanel() } }
-        item { Box(reveal(11)) { AboutPanel(onEraseAllData) } }
+        item {
+            Box(reveal(11)) {
+                AboutPanel(
+                    onEraseAllData = onEraseAllData,
+                    openRequested = targetSection == SettingsSection.ABOUT,
+                    onOpenHandled = onSectionShown,
+                )
+            }
+        }
     }
 }
 
@@ -363,11 +393,23 @@ private fun AdvancedModePanel(
  * in-app wording and the wording published for Play cannot drift apart.
  */
 @Composable
-private fun AboutPanel(onEraseAllData: () -> Unit) {
+private fun AboutPanel(
+    onEraseAllData: () -> Unit,
+    openRequested: Boolean,
+    onOpenHandled: () -> Unit,
+) {
     val colors = MaterialTheme.colorScheme
     var confirming by remember { mutableStateOf(false) }
     var showPolicy by remember { mutableStateOf(false) }
     var showAbout by remember { mutableStateOf(false) }
+    var showProblemRecording by remember { mutableStateOf(false) }
+    LaunchedEffect(openRequested) {
+        if (openRequested) {
+            showProblemRecording = true
+            showAbout = true
+            onOpenHandled()
+        }
+    }
 
     ConsolePanel(stringResource(R.string.settings_about_panel), testTag = "about") {
         AboutRow(
@@ -377,7 +419,10 @@ private fun AboutPanel(onEraseAllData: () -> Unit) {
             icon = Icons.Outlined.ChevronRight,
             color = colors.onSurface,
             testTag = "about_app_button",
-            onClick = { showAbout = true },
+            onClick = {
+                showProblemRecording = false
+                showAbout = true
+            },
         )
 
         HorizontalDivider(color = colors.outline.copy(alpha = .45f))
@@ -406,7 +451,11 @@ private fun AboutPanel(onEraseAllData: () -> Unit) {
     }
 
     if (showAbout) {
-        AboutDialog(onEraseAllData = onEraseAllData, onDismiss = { showAbout = false })
+        AboutDialog(
+            onEraseAllData = onEraseAllData,
+            onDismiss = { showAbout = false },
+            showProblemRecording = showProblemRecording,
+        )
     }
     if (showPolicy) {
         PrivacyPolicyDialog(onDismiss = { showPolicy = false })

@@ -78,7 +78,11 @@ import io.github.nicholasarda.keysnap.R
  * file changes, both change together.
  */
 @Composable
-fun AboutDialog(onEraseAllData: () -> Unit, onDismiss: () -> Unit) {
+fun AboutDialog(
+    onEraseAllData: () -> Unit,
+    onDismiss: () -> Unit,
+    showProblemRecording: Boolean = false,
+) {
     val colors = MaterialTheme.colorScheme
     val reduced = rememberReducedMotion()
     val uriHandler = LocalUriHandler.current
@@ -119,7 +123,7 @@ fun AboutDialog(onEraseAllData: () -> Unit, onDismiss: () -> Unit) {
             Column(
                 Modifier
                     .fillMaxWidth()
-                    .verticalScroll(rememberScrollState())
+                    .verticalScroll(rememberScrollState(initial = if (showProblemRecording) Int.MAX_VALUE else 0))
                     // Window insets read as zero inside a decorFitsSystemWindows=false dialog, the
                     // same way they do in the setup wizard, so the last panel needs the gesture
                     // handle cleared by hand.

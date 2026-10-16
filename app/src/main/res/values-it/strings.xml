@@ -1054,4 +1054,22 @@
     <string name="diagnostic_discard">Elimina</string>
     <string name="diagnostic_send_note">Controlla la registrazione completa qui sotto. La tua app e-mail aprirà una bozza per support@ardasenn.com. Decidi tu se inviarla. KeySnap cancella la registrazione quando si apre la bozza.</string>
     <string name="diagnostic_no_email">Nessuna app e-mail trovata. La registrazione è ancora disponibile.</string>
+    <string name="whats_new_title">Novità</string>
+    <string name="whats_new_version">Versione %1$s</string>
+    <string name="whats_new_new">Novità</string>
+    <string name="whats_new_fixed">Correzioni</string>
+    <string name="whats_new_restart_title">Avvia dopo il riavvio</string>
+    <string name="whats_new_restart_description">La Modalità avanzata si riattiva da sola dopo un riavvio.</string>
+    <string name="whats_new_theme_title">Tema di sistema e OLED</string>
+    <string name="whats_new_theme_description">Segui il tema del telefono o passa al nero puro.</string>
+    <string name="whats_new_recording_title">Registrazione del problema</string>
+    <string name="whats_new_recording_description">Qualcosa non funziona? Registralo e inviaci un’e-mail.</string>
+    <string name="whats_new_turn_on">Attiva</string>
+    <string name="whats_new_try">Prova</string>
+    <string name="whats_new_open">Apri</string>
+    <string name="whats_new_fix_assistant">Il tuo assistente si apre di nuovo con un tasto in Modalità avanzata</string>
+    <string name="whats_new_fix_vibration">La vibrazione delle scorciatoie non scompare più</string>
+    <string name="whats_new_fix_uninstall">La disinstallazione ora arresta anche la Modalità avanzata</string>
+    <string name="whats_new_fix_search">Toccare un punto qualsiasi della casella di ricerca apre la tastiera</string>
+    <string name="whats_new_got_it">Capito</string>
 </resources>

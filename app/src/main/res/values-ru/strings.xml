@@ -1052,4 +1052,22 @@
     <string name="diagnostic_discard">Удалить</string>
     <string name="diagnostic_send_note">Просмотрите полную запись ниже. Почтовое приложение откроет черновик для support@ardasenn.com. Вы сами решаете, отправлять ли его. KeySnap очищает запись при открытии черновика.</string>
     <string name="diagnostic_no_email">Почтовое приложение не найдено. Запись по-прежнему доступна.</string>
+    <string name="whats_new_title">Что нового</string>
+    <string name="whats_new_version">Версия %1$s</string>
+    <string name="whats_new_new">Новое</string>
+    <string name="whats_new_fixed">Исправлено</string>
+    <string name="whats_new_restart_title">Запуск после перезагрузки</string>
+    <string name="whats_new_restart_description">Расширенный режим возвращается сам после перезагрузки.</string>
+    <string name="whats_new_theme_title">Системная тема и OLED</string>
+    <string name="whats_new_theme_description">Следуйте теме телефона или выберите чистый чёрный.</string>
+    <string name="whats_new_recording_title">Запись проблемы</string>
+    <string name="whats_new_recording_description">Что-то не работает? Запишите и отправьте нам по почте.</string>
+    <string name="whats_new_turn_on">Включить</string>
+    <string name="whats_new_try">Попробовать</string>
+    <string name="whats_new_open">Открыть</string>
+    <string name="whats_new_fix_assistant">Ваш ассистент снова открывается кнопкой в Расширенном режиме</string>
+    <string name="whats_new_fix_vibration">Вибрация ярлыков больше не пропадает</string>
+    <string name="whats_new_fix_uninstall">Удаление приложения теперь останавливает и Расширенный режим</string>
+    <string name="whats_new_fix_search">Нажатие в любом месте поля поиска открывает клавиатуру</string>
+    <string name="whats_new_got_it">Понятно</string>
 </resources>
