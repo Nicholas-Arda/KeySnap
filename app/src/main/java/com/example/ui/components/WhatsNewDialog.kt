@@ -21,6 +21,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.outlined.BugReport
+import androidx.compose.material.icons.outlined.Celebration
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.RestartAlt
@@ -105,6 +106,21 @@ fun WhatsNewDialog(
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = colors.onSurfaceVariant,
                                 )
+                            }
+                        }
+                        if (release.highlightTitle != null && release.highlightDescription != null) {
+                            Surface(shape = RoundedCornerShape(16.dp), color = colors.primary.copy(alpha = .14f), modifier = Modifier.testTag("whats_new_highlight")) {
+                                Row(
+                                    Modifier.fillMaxWidth().padding(12.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                ) {
+                                    if (!compact) WhatsNewIconTile(Icons.Outlined.Celebration)
+                                    Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                                        Text(stringResource(release.highlightTitle), style = MaterialTheme.typography.titleSmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph), fontWeight = FontWeight.Bold)
+                                        Text(stringResource(release.highlightDescription), style = MaterialTheme.typography.bodySmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph), color = colors.onSurfaceVariant)
+                                    }
+                                }
                             }
                         }
                         WhatsNewSectionLabel(stringResource(R.string.whats_new_new))

@@ -279,7 +279,7 @@ class LargeScaleLayoutTest(private val language: String, private val fontScale: 
     @Test fun whatsNewBodiesUseFullWidthAndParagraphHyphenation() {
         content {
             Column(Modifier.verticalScroll(rememberScrollState()).padding(20.dp)) {
-                val release = whatsNewReleases.getValue(12L)
+                val release = whatsNewReleases.getValue(13L)
                 release.features.forEach { WhatsNewFeatureCard(it) {} }
                 release.fixes.forEach { WhatsNewFix(it, compact = true) }
             }
@@ -292,12 +292,12 @@ class LargeScaleLayoutTest(private val language: String, private val fontScale: 
             assertWholeWords(layout)
         }
         capture("whats-new")
-        rule.onNodeWithTag("whats_new_fix_${whatsNewReleases.getValue(12L).fixes.last()}").performScrollTo()
+        rule.onNodeWithTag("whats_new_fix_${whatsNewReleases.getValue(13L).fixes.last()}").performScrollTo()
         capture("whats-new-fixes")
     }
 
     @Test fun whatsNewDialogKeepsItsDismissButtonBelowScrollableContent() {
-        content { WhatsNewDialog(whatsNewReleases.getValue(12L), ThemeMode.DARK, {}, {}) }
+        content { WhatsNewDialog(whatsNewReleases.getValue(13L), ThemeMode.DARK, {}, {}) }
         val resources = RuntimeEnvironment.getApplication().resources
         assertEquals(Locale.forLanguageTag(language).language, resources.configuration.locales[0].language)
         // Italian uses "Novità" for both the dialog title and its New section.
@@ -314,7 +314,7 @@ class LargeScaleLayoutTest(private val language: String, private val fontScale: 
         rule.onNodeWithTag("whats_new_dialog").captureRoboImage(
             "build/outputs/largescale-review/dialog-$language-$fontScale.png",
         )
-        rule.onNodeWithTag("whats_new_fix_${whatsNewReleases.getValue(12L).fixes.last()}").performScrollTo()
+        rule.onNodeWithTag("whats_new_fix_${whatsNewReleases.getValue(13L).fixes.last()}").performScrollTo()
         rule.onNodeWithTag("whats_new_dialog").captureRoboImage(
             "build/outputs/largescale-review/dialog-fixes-$language-$fontScale.png",
         )

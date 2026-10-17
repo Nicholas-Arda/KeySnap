@@ -40,37 +40,48 @@ data class WhatsNewFeature(
 data class WhatsNewRelease(
     val features: List<WhatsNewFeature>,
     val fixes: List<Int>,
+    /** Leads the dialog when a release has one headline that needs no button. */
+    @StringRes val highlightTitle: Int? = null,
+    @StringRes val highlightDescription: Int? = null,
+)
+
+private val release112Features = listOf(
+    WhatsNewFeature(
+        R.string.whats_new_restart_title,
+        R.string.whats_new_restart_description,
+        R.string.whats_new_turn_on,
+        WhatsNewDestination.ADVANCED_MODE,
+    ),
+    WhatsNewFeature(
+        R.string.whats_new_theme_title,
+        R.string.whats_new_theme_description,
+        R.string.whats_new_try,
+        WhatsNewDestination.APPEARANCE,
+    ),
+    WhatsNewFeature(
+        R.string.whats_new_recording_title,
+        R.string.whats_new_recording_description,
+        R.string.whats_new_open,
+        WhatsNewDestination.ABOUT,
+    ),
+)
+
+private val release112Fixes = listOf(
+    R.string.whats_new_fix_assistant,
+    R.string.whats_new_fix_vibration,
+    R.string.whats_new_fix_uninstall,
+    R.string.whats_new_fix_search,
 )
 
 /** Add the next release under its version code; a version without an entry has no dialog. */
 val whatsNewReleases = mapOf(
-    12L to WhatsNewRelease(
-        features = listOf(
-            WhatsNewFeature(
-                R.string.whats_new_restart_title,
-                R.string.whats_new_restart_description,
-                R.string.whats_new_turn_on,
-                WhatsNewDestination.ADVANCED_MODE,
-            ),
-            WhatsNewFeature(
-                R.string.whats_new_theme_title,
-                R.string.whats_new_theme_description,
-                R.string.whats_new_try,
-                WhatsNewDestination.APPEARANCE,
-            ),
-            WhatsNewFeature(
-                R.string.whats_new_recording_title,
-                R.string.whats_new_recording_description,
-                R.string.whats_new_open,
-                WhatsNewDestination.ABOUT,
-            ),
-        ),
-        fixes = listOf(
-            R.string.whats_new_fix_assistant,
-            R.string.whats_new_fix_vibration,
-            R.string.whats_new_fix_uninstall,
-            R.string.whats_new_fix_search,
-        ),
+    12L to WhatsNewRelease(release112Features, release112Fixes),
+    // 1.1.3 repeats 1.1.2's news: most updates skip straight past 1.1.2.
+    13L to WhatsNewRelease(
+        features = release112Features,
+        fixes = listOf(R.string.whats_new_fix_large_text, R.string.whats_new_fix_nav_bar) + release112Fixes,
+        highlightTitle = R.string.whats_new_no_ads_title,
+        highlightDescription = R.string.whats_new_no_ads_description,
     ),
 )
 

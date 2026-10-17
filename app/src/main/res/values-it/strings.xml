@@ -1059,5 +1059,9 @@
     <string name="whats_new_fix_vibration">La vibrazione delle scorciatoie non scompare più</string>
     <string name="whats_new_fix_uninstall">La disinstallazione ora arresta anche la Modalità avanzata</string>
     <string name="whats_new_fix_search">Toccare un punto qualsiasi della casella di ricerca apre la tastiera</string>
+    <string name="whats_new_no_ads_title">Niente più pubblicità</string>
+    <string name="whats_new_no_ads_description">KeySnap ora è senza pubblicità e 3 scorciatoie restano attive gratis.</string>
+    <string name="whats_new_fix_large_text">Il testo non si spezza né si schiaccia più con dimensioni grandi di schermo e carattere</string>
+    <string name="whats_new_fix_nav_bar">I pulsanti non finiscono più dietro la barra di navigazione a 3 tasti</string>
     <string name="whats_new_got_it">Capito</string>
 </resources>

@@ -57,8 +57,8 @@ android {
     // Mode — is an Android 11 feature anyway, so nothing below 30 could use the app's core.
     minSdk = 30
     targetSdk = 36
-    versionCode = 12
-    versionName = "1.1.2"
+    versionCode = 13
+    versionName = "1.1.3"
 
     val autostartStateProbe = project.hasProperty("autostartStateProbe")
     if (autostartStateProbe) {

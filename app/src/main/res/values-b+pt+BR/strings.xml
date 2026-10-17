@@ -1058,5 +1058,9 @@
     <string name="whats_new_fix_vibration">A vibração dos atalhos não desaparece mais</string>
     <string name="whats_new_fix_uninstall">Desinstalar agora também interrompe o Modo Avançado</string>
     <string name="whats_new_fix_search">Tocar em qualquer parte da caixa de pesquisa abre o teclado</string>
+    <string name="whats_new_no_ads_title">Chega de anúncios</string>
+    <string name="whats_new_no_ads_description">O KeySnap agora não tem anúncios, e 3 atalhos ficam ativos de graça.</string>
+    <string name="whats_new_fix_large_text">O texto não quebra nem fica espremido em tamanhos grandes de tela e de fonte</string>
+    <string name="whats_new_fix_nav_bar">Os botões não ficam mais escondidos atrás da barra de navegação de 3 botões</string>
     <string name="whats_new_got_it">Entendi</string>
 </resources>

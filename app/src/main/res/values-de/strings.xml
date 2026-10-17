@@ -1057,5 +1057,9 @@
     <string name="whats_new_fix_vibration">Die Vibration bei Kurzbefehlen fällt nicht mehr aus</string>
     <string name="whats_new_fix_uninstall">Die Deinstallation beendet jetzt auch den Erweiterten Modus</string>
     <string name="whats_new_fix_search">Tippen auf eine beliebige Stelle im Suchfeld öffnet die Tastatur</string>
+    <string name="whats_new_no_ads_title">Keine Werbung mehr</string>
+    <string name="whats_new_no_ads_description">KeySnap ist jetzt werbefrei, und 3 Kurzbefehle bleiben kostenlos aktiv.</string>
+    <string name="whats_new_fix_large_text">Bei großer Anzeige- und Schriftgröße wird Text nicht mehr zerrissen oder gequetscht</string>
+    <string name="whats_new_fix_nav_bar">Schaltflächen verschwinden nicht mehr hinter der 3-Tasten-Navigationsleiste</string>
     <string name="whats_new_got_it">Verstanden</string>
 </resources>

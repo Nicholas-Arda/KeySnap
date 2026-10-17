@@ -1107,5 +1107,9 @@
     <string name="whats_new_fix_vibration">Shortcut vibration no longer goes missing</string>
     <string name="whats_new_fix_uninstall">Uninstalling now also stops Advanced Mode</string>
     <string name="whats_new_fix_search">Tapping anywhere in a search box opens the keyboard</string>
+    <string name="whats_new_no_ads_title">No more ads</string>
+    <string name="whats_new_no_ads_description">KeySnap is ad-free now, and 3 shortcuts stay on for free.</string>
+    <string name="whats_new_fix_large_text">Text no longer breaks or gets squeezed at large display and font sizes</string>
+    <string name="whats_new_fix_nav_bar">Buttons no longer hide behind a 3-button navigation bar</string>
     <string name="whats_new_got_it">Got it</string>
 </resources>

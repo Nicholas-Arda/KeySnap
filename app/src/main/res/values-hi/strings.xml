@@ -1057,5 +1057,9 @@
     <string name="whats_new_fix_vibration">शॉर्टकट का कंपन अब बंद नहीं पड़ता</string>
     <string name="whats_new_fix_uninstall">अनइंस्टॉल करने पर अब उन्नत मोड भी बंद हो जाता है</string>
     <string name="whats_new_fix_search">खोज बॉक्स में कहीं भी टैप करने से कीबोर्ड खुलता है</string>
+    <string name="whats_new_no_ads_title">अब कोई विज्ञापन नहीं</string>
+    <string name="whats_new_no_ads_description">KeySnap अब विज्ञापन-मुक्त है, और 3 शॉर्टकट मुफ़्त में चालू रहते हैं।</string>
+    <string name="whats_new_fix_large_text">बड़े डिस्प्ले और फ़ॉन्ट साइज़ पर टेक्स्ट अब टूटता या सिकुड़ता नहीं</string>
+    <string name="whats_new_fix_nav_bar">बटन अब 3-बटन नेविगेशन बार के पीछे नहीं छिपते</string>
     <string name="whats_new_got_it">समझ गया</string>
 </resources>

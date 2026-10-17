@@ -1057,5 +1057,9 @@
     <string name="whats_new_fix_vibration">Вибрация ярлыков больше не пропадает</string>
     <string name="whats_new_fix_uninstall">Удаление приложения теперь останавливает и Расширенный режим</string>
     <string name="whats_new_fix_search">Нажатие в любом месте поля поиска открывает клавиатуру</string>
+    <string name="whats_new_no_ads_title">Больше никакой рекламы</string>
+    <string name="whats_new_no_ads_description">В KeySnap больше нет рекламы, а 3 сценария остаются включёнными бесплатно.</string>
+    <string name="whats_new_fix_large_text">Текст больше не рвётся и не сжимается при крупном масштабе экрана и шрифта</string>
+    <string name="whats_new_fix_nav_bar">Кнопки больше не прячутся за панелью навигации с 3 кнопками</string>
     <string name="whats_new_got_it">Понятно</string>
 </resources>

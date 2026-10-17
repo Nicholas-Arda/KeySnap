@@ -1,6 +1,19 @@
 package com.example.ui.home
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.CubicBezierEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -39,8 +52,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.unit.LayoutDirection
+import kotlin.math.PI
+import kotlin.math.sin
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -380,7 +403,19 @@ internal fun ConsoleHeader(
 @Composable
 private fun MappingBadge(active: Boolean, onClick: () -> Unit) {
     val colors = MaterialTheme.colorScheme
-    val accent = if (active) colors.primary else colors.error
+    // Moves only when the state flips — a colour sweep, the dot hopping into pause bars and the
+    // label rolling over — and stands still otherwise. All of it follows the system animation scale.
+    val accent by animateColorAsState(if (active) colors.primary else colors.error, tween(BadgeMs), label = "badge_accent")
+    val paused by animateFloatAsState(if (active) 0f else 1f, tween(BadgeMs, easing = BadgeEasing), label = "badge_icon")
+    val sweep = remember { Animatable(1f) }
+    val hop = remember { Animatable(1f) }
+    var settled by remember { mutableStateOf(false) }
+    LaunchedEffect(active) {
+        // The first composition is not a flip.
+        if (!settled) { settled = true; return@LaunchedEffect }
+        launch { sweep.snapTo(0f); sweep.animateTo(1f, tween(500, easing = BadgeEasing)) }
+        launch { hop.snapTo(0f); hop.animateTo(1f, tween(450, easing = BadgeEasing)) }
+    }
     Row(
         Modifier
             .testTag("mapping_badge")
@@ -394,23 +429,59 @@ private fun MappingBadge(active: Boolean, onClick: () -> Unit) {
             // Role.Switch alone leaves TalkBack with no on/off to read out.
             .semantics { toggleableState = ToggleableState(active) }
             .background(accent.copy(alpha = .14f))
+            .drawBehind {
+                // Fills from the start edge over the first 60%, then fades out.
+                val p = sweep.value
+                if (p >= 1f) return@drawBehind
+                val fill = size.width * (p / .6f).coerceAtMost(1f)
+                val alpha = if (p < .6f) 1f else 1f - (p - .6f) / .4f
+                val left = if (layoutDirection == LayoutDirection.Rtl) size.width - fill else 0f
+                drawRect(accent.copy(alpha = .25f * alpha), Offset(left, 0f), Size(fill, size.height))
+            }
             .border(1.dp, accent.copy(alpha = .55f), CircleShape)
             .padding(horizontal = 12.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(Modifier.size(8.dp).clip(CircleShape).background(accent))
+        Canvas(
+            Modifier.size(8.dp).graphicsLayer {
+                val lift = sin(hop.value * PI.toFloat())
+                translationY = -5.dp.toPx() * lift
+                scaleX = 1f + .3f * lift
+                scaleY = scaleX
+            },
+        ) {
+            // A dot that narrows into the first pause bar while the second bar fades in.
+            val barWidth = size.width - (size.width - 2.5.dp.toPx()) * paused
+            val corner = CornerRadius(barWidth / 2f)
+            drawRoundRect(accent, Offset(.75.dp.toPx() * paused, 0f), Size(barWidth, size.height), corner)
+            drawRoundRect(accent.copy(alpha = paused), Offset(size.width - barWidth - .75.dp.toPx() * paused, 0f), Size(barWidth, size.height), corner)
+        }
         Spacer(Modifier.width(7.dp))
-        Text(
-            stringResource(if (active) R.string.home_status_live else R.string.home_status_paused),
-            modifier = Modifier.testTag("mapping_status_label"),
-            style = MaterialTheme.typography.labelMedium,
-            color = accent,
-            maxLines = 1,
-            softWrap = false,
-            overflow = TextOverflow.Ellipsis,
-        )
+        AnimatedContent(
+            targetState = active,
+            transitionSpec = {
+                val down = if (targetState) -1 else 1
+                (slideInVertically(tween(BadgeMs, easing = BadgeEasing)) { it * down } + fadeIn(tween(BadgeMs)))
+                    .togetherWith(slideOutVertically(tween(BadgeMs, easing = BadgeEasing)) { -it * down } + fadeOut(tween(BadgeMs)))
+                    .using(SizeTransform(clip = true) { _, _ -> tween(BadgeMs, easing = BadgeEasing) })
+            },
+            label = "badge_label",
+        ) { on ->
+            Text(
+                stringResource(if (on) R.string.home_status_live else R.string.home_status_paused),
+                modifier = Modifier.testTag("mapping_status_label"),
+                style = MaterialTheme.typography.labelMedium,
+                color = accent,
+                maxLines = 1,
+                softWrap = false,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
     }
 }
+
+private const val BadgeMs = 350
+private val BadgeEasing = CubicBezierEasing(.2f, .9f, .2f, 1f)
 
 @Composable
 private fun LiveStatusPanel(

@@ -1054,5 +1054,9 @@
     <string name="whats_new_fix_vibration">لم يعد اهتزاز الاختصارات يتوقف عن العمل</string>
     <string name="whats_new_fix_uninstall">إلغاء التثبيت يوقف الآن الوضع المتقدم أيضًا</string>
     <string name="whats_new_fix_search">النقر في أي مكان داخل مربع البحث يفتح لوحة المفاتيح</string>
+    <string name="whats_new_no_ads_title">وداعًا للإعلانات</string>
+    <string name="whats_new_no_ads_description">أصبح KeySnap بلا إعلانات، وتبقى 3 اختصارات مفعّلة مجانًا.</string>
+    <string name="whats_new_fix_large_text">لم يعد النص يتقطع أو ينضغط مع أحجام العرض والخط الكبيرة</string>
+    <string name="whats_new_fix_nav_bar">لم تعد الأزرار تختفي خلف شريط التنقل ذي الأزرار الثلاثة</string>
     <string name="whats_new_got_it">فهمت</string>
 </resources>

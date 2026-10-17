@@ -1055,5 +1055,9 @@
     <string name="whats_new_fix_vibration">Kısayol titreşimi artık kaybolmuyor</string>
     <string name="whats_new_fix_uninstall">Uygulamayı kaldırmak artık Uzman Modu’nu da durduruyor</string>
     <string name="whats_new_fix_search">Arama kutusunun herhangi bir yerine dokunmak klavyeyi açıyor</string>
+    <string name="whats_new_no_ads_title">Reklamlar kalktı</string>
+    <string name="whats_new_no_ads_description">KeySnap artık reklamsız ve 3 kısayol ücretsiz açık kalıyor.</string>
+    <string name="whats_new_fix_large_text">Büyük ekran ve yazı boyutlarında yazılar artık bölünmüyor ya da sıkışmıyor</string>
+    <string name="whats_new_fix_nav_bar">Düğmeler artık 3 tuşlu gezinme çubuğunun arkasında kalmıyor</string>
     <string name="whats_new_got_it">Anladım</string>
 </resources>
