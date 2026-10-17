@@ -639,6 +639,8 @@
 
     <!-- होम -->
     <string name="home_suggested_shortcuts">सुझाए गए शॉर्टकट</string>
+    <string name="ad_slot_tag">विज्ञापन स्थान</string>
+    <string name="ad_slot_title">आपका विज्ञापन यहाँ हो सकता है</string>
     <string name="home_suggestions_group_single">एक बटन, एक एक्शन</string>
     <string name="home_suggestions_group_multi">एक बटन, कई चरण</string>
     <string name="home_suggestions_group_automation">अपने आप चलता है</string>
@@ -699,31 +701,18 @@
     <string name="home_nudge_title">अपना पहला शॉर्टकट बनाएँ</string>
     <string name="home_nudge_subtitle">टॉर्च नीचे ही है, एक टैप दूर।</string>
     <string name="home_nudge_dismiss">बंद करें</string>
-    <string name="home_reward_cooldown">रिवॉर्ड कूलडाउन पर है, %1$s बचा है। Pro लें।</string>
-    <string name="home_reward_available">4 घंटे के लिए एक अतिरिक्त शॉर्टकट पाने के लिए विज्ञापन देखें</string>
-    <string name="home_reward_badge_idle">+1</string>
 
     <!-- Pro अपसेल -->
     <string name="pro_card_subtitle">मुफ़्त वर्शन %1$d शॉर्टकट चालू रखता है। Pro सभी को चालू रखता है।</string>
     <string name="pro_card_at_cap">अगला शॉर्टकट चालू क्यों नहीं रहेगा</string>
     <string name="pro_active_shortcuts">सक्रिय शॉर्टकट</string>
     <string name="pro_progress_description">%2$d में से %1$d सक्रिय शॉर्टकट</string>
-    <string name="pro_reward_remaining">%1$s बचा</string>
-    <string name="pro_reward_offer">%2$d घंटे के लिए +%1$d</string>
     <string name="pro_unlock">Pro अनलॉक करें</string>
     <string name="pro_unlock_with_price">Pro अनलॉक करें · %1$s</string>
     <string name="pro_table_free">फ़्री</string>
     <string name="pro_table_pro">Pro</string>
     <string name="pro_table_unlimited">अनलिमिटेड</string>
-    <string name="pro_table_free_limit_with_reward">%1$d (रिवॉर्ड के साथ %2$d)</string>
-    <string name="pro_table_ads">विज्ञापन</string>
-    <string name="pro_table_shown">दिखाए जाते हैं</string>
-    <string name="pro_table_none">कोई नहीं</string>
     <string name="pro_table_row_description">%1$s: फ़्री %2$s, Pro %3$s</string>
-
-    <!-- विज्ञापन -->
-    <string name="ad_loading">विज्ञापन लोड हो रहा है…</string>
-    <string name="ad_sponsored">प्रायोजित</string>
 
     <!-- सेटिंग -->
     <string name="settings_title">सेटिंग</string>
@@ -812,8 +801,8 @@
     <string name="about_traffic_device_body">वायरलेस डिबगिंग पेयरिंग। सिर्फ़ लोकल नेटवर्क।</string>
     <string name="about_traffic_yours">आपके खुद लिखे हुए पते</string>
     <string name="about_traffic_yours_body">HTTP या URL खोलें एक्शन, या कोई ऑटोमेशन जिस RSS फ़ीड को फ़ॉलो करता है, ठीक वहीं जाता है जहाँ आपने लिखा, बिना बदलाव के।</string>
-    <string name="about_traffic_google">Google विज्ञापन और Google Play</string>
-    <string name="about_traffic_google_body">मुफ़्त संस्करण में विज्ञापन दिखाने और यह जाँचने के लिए कि आपने Pro खरीदा है या नहीं। इनमें से किसी को भी कोई की-प्रेस या शॉर्टकट कभी नहीं मिलता।</string>
+    <string name="about_traffic_google">Google Play बिलिंग</string>
+    <string name="about_traffic_google_body">Pro की खरीदारी पूरी करने और यह जाँचने के लिए कि आपके पास Pro है या नहीं। इसे कोई की-प्रेस या शॉर्टकट कभी नहीं मिलता।</string>
     <string name="about_traffic_all">पूरी सूची बस इतनी है।</string>
     <string name="about_erase_title">जब चाहें, सब वापस ले लें</string>
     <string name="about_erase_body">सारा डेटा मिटाएं हर शॉर्टकट, सेव की गई की, प्राथमिकता और ब्रिज फ़ाइल हटा देता है, और पहले उन्नत मोड बंद करता है ताकि पीछे कुछ चलता न रह जाए।</string>
@@ -891,9 +880,8 @@
     <string name="saved_needs_trigger">सेव हो गया। इसे चलाने के लिए एक बटन असाइन करें।</string>
     <string name="saved_named">\"%1$s\" सेव हो गया</string>
     <string name="saved_needs_condition">सेव हो गया। इसे चलाने के लिए ऐसी शर्त जोड़ें जो अपने आप बदलती हो, जैसे चार्ज हो रहा है या ब्लूटूथ डिवाइस कनेक्टेड।</string>
-    <string name="free_limit_saved_off">फ़्री प्लान: %1$d सक्रिय शॉर्टकट। बंद के रूप में सेव किया गया — इसे चालू करने के लिए विज्ञापन देखें या Pro लें।</string>
-    <string name="free_limit_reached">फ़्री प्लान की सीमा पूरी हो गई। अनलिमिटेड शॉर्टकट के लिए Pro लें।</string>
-    <string name="free_limit_toggle_blocked">फ़्री प्लान: %1$d सक्रिय शॉर्टकट। इसे भी चालू करने के लिए विज्ञापन देखें या Pro लें।</string>
+    <string name="free_limit_saved_off">फ़्री प्लान: %1$d सक्रिय शॉर्टकट। बंद के रूप में सेव किया गया — इसे चालू करने के लिए Pro लें।</string>
+    <string name="free_limit_toggle_blocked">फ़्री प्लान: %1$d सक्रिय शॉर्टकट। इसे भी चालू करने के लिए Pro लें।</string>
 
     <!-- प्राइवेसी पॉलिसी डायलॉग का ढांचा। पॉलिसी का मुख्य टेक्स्ट PrivacyPolicy.kt में अंग्रेज़ी में ही रहता है:
          इसे Play के लिए प्रकाशित अंग्रेज़ी दस्तावेज़ से हूबहू मेल खाना ज़रूरी है। -->

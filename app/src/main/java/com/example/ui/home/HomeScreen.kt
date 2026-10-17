@@ -7,6 +7,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -25,7 +26,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material3.Button
@@ -34,8 +34,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -49,6 +47,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -57,11 +56,12 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.toggleableState
 import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.Hyphens
+import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.constrainHeight
-import androidx.compose.ui.unit.isSpecified
 import com.example.data.EntitlementManager
 import com.example.data.ScriptActionCatalog
 import com.example.data.ShortcutScript
@@ -85,8 +85,6 @@ fun HomeScreen(
     lastSource: String,
     isPro: Boolean,
     proPrice: String?,
-    rewardActive: Boolean,
-    rewardRemainingLabel: String,
     activeScriptCount: Int,
     activeScriptLimit: Int,
     themeMode: ThemeMode,
@@ -96,7 +94,6 @@ fun HomeScreen(
     onOpenWizard: () -> Unit,
     onOpenAccessibility: () -> Unit,
     onPickSuggestion: (SuggestedShortcut) -> Unit,
-    onRewardButtonClick: () -> Unit,
     onOpenProScreen: () -> Unit,
     onCycleTheme: () -> Unit = {},
     nudgeDismissed: Boolean = true,
@@ -122,12 +119,8 @@ fun HomeScreen(
     GroundedPage(themeMode, scrollState) {
         ConsoleHeader(
             isMappingEnabled = isMappingEnabled,
-            isPro = isPro,
-            rewardActive = rewardActive,
-            rewardRemainingLabel = rewardRemainingLabel,
             themeMode = themeMode,
             onToggleMapping = onToggleMapping,
-            onRewardButtonClick = onRewardButtonClick,
             onCycleTheme = onCycleTheme,
         )
         if (!setupCardRetired) {
@@ -154,9 +147,6 @@ fun HomeScreen(
                 activeCount = activeScriptCount,
                 limit = activeScriptLimit,
                 proPrice = proPrice,
-                rewardActive = rewardActive,
-                rewardRemainingLabel = rewardRemainingLabel,
-                onRewardButtonClick = onRewardButtonClick,
                 onOpenProScreen = onOpenProScreen,
             )
         }
@@ -164,23 +154,19 @@ fun HomeScreen(
 }
 
 /**
- * Answers "why won't my next shortcut stay on" right where the free limit actually lives, instead of
- * only in the small header reward button — same two ways past it: the existing rewarded-ad bonus
- * ([EntitlementManager.grantRewardWindow]) or [onOpenProScreen], the existing paywall dialog.
+ * Explains the free limit beside its usage count and opens the existing Pro purchase dialog.
  */
 @Composable
-private fun ProUpsellCard(
+@OptIn(ExperimentalLayoutApi::class)
+internal fun ProUpsellCard(
     activeCount: Int,
     limit: Int,
     proPrice: String?,
-    rewardActive: Boolean,
-    rewardRemainingLabel: String,
-    onRewardButtonClick: () -> Unit,
     onOpenProScreen: () -> Unit,
 ) {
     val colors = MaterialTheme.colorScheme
     val atCap = activeCount >= limit
-    Column(
+    BoxWithConstraints(
         Modifier
             .fillMaxWidth()
             .clip(ConsoleShape)
@@ -188,107 +174,108 @@ private fun ProUpsellCard(
             .border(1.dp, colors.primary.copy(alpha = .4f), ConsoleShape)
             .testTag("pro_upsell_card")
             .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            Box(
-                Modifier.size(36.dp).clip(InnerShape).background(colors.primary.copy(alpha = .2f)),
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(Icons.Filled.WorkspacePremium, null, tint = colors.primary, modifier = Modifier.size(19.dp))
-            }
-            Column {
-                Text(stringResource(R.string.app_name_pro), style = MaterialTheme.typography.titleSmall, color = colors.onSurface)
-                Text(
-                    if (atCap) {
-                        stringResource(R.string.pro_card_at_cap)
-                    } else {
-                        stringResource(R.string.pro_card_subtitle, EntitlementManager.FREE_SCRIPT_LIMIT)
-                    },
-                    style = MaterialTheme.typography.labelSmall,
-                    color = colors.onSurfaceVariant,
-                )
-            }
-        }
-
-        // Label, "1 / 3" and the bar are one fact. Spoken separately TalkBack says the ratio twice
-        // and then a percentage; cleared and relabelled it says it once, in words.
-        val progressDescription = stringResource(R.string.pro_progress_description, activeCount, limit)
-        Column(
-            Modifier.clearAndSetSemantics { contentDescription = progressDescription },
-            verticalArrangement = Arrangement.spacedBy(5.dp),
-        ) {
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text(stringResource(R.string.pro_active_shortcuts), style = MaterialTheme.typography.labelSmall, color = colors.onSurfaceVariant)
-                Text(
-                    "$activeCount / $limit",
-                    // A count pair reads left to right in every language; RTL would flip it to "2 / 1".
-                    style = MaterialTheme.typography.labelMedium.copy(textDirection = TextDirection.Ltr),
-                    color = colors.onSurface,
-                )
-            }
-            LinearProgressIndicator(
-                progress = { if (limit == 0) 1f else (activeCount.toFloat() / limit).coerceIn(0f, 1f) },
-                modifier = Modifier.fillMaxWidth().height(6.dp).clip(CircleShape),
-                color = if (atCap) colors.error else colors.primary,
-                trackColor = colors.surfaceVariant,
-            )
-        }
-
-        FreeVsProTable(rewardActive)
-
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            OutlinedButton(
-                onClick = onRewardButtonClick,
-                modifier = Modifier.weight(1f).heightIn(min = MinTouchTarget).testTag("pro_upsell_ad_button"),
-            ) {
-                if (rewardActive) {
-                    Text(stringResource(R.string.pro_reward_remaining, rewardRemainingLabel), style = MaterialTheme.typography.labelMedium, maxLines = 1)
-                } else {
-                    Icon(Icons.Filled.PlayCircle, null, modifier = Modifier.size(16.dp))
-                    Spacer(Modifier.width(6.dp))
+        val stacked = maxWidth / LocalDensity.current.fontScale < 240.dp
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                if (!stacked) {
+                    Box(
+                        Modifier.size(36.dp).clip(InnerShape).background(colors.primary.copy(alpha = .2f)),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Icon(Icons.Filled.WorkspacePremium, null, tint = colors.primary, modifier = Modifier.size(19.dp))
+                    }
+                }
+                Column(Modifier.weight(1f)) {
+                    Text(stringResource(R.string.app_name_pro), style = MaterialTheme.typography.titleSmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph), color = colors.onSurface)
                     Text(
-                        stringResource(
-                            R.string.pro_reward_offer,
-                            EntitlementManager.REWARD_BONUS_SCRIPTS,
-                            EntitlementManager.REWARD_WINDOW_MS / 3_600_000,
-                        ),
-                        style = MaterialTheme.typography.labelMedium,
-                        // "+1 for 4h" plus the icon does not fit half the row in every locale.
-                        textAlign = TextAlign.Center,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis,
+                        if (atCap) {
+                            stringResource(R.string.pro_card_at_cap)
+                        } else {
+                            stringResource(R.string.pro_card_subtitle, EntitlementManager.FREE_SCRIPT_LIMIT)
+                        },
+                        style = MaterialTheme.typography.labelSmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
+                        color = colors.onSurfaceVariant,
                     )
                 }
             }
-            Button(
-                onClick = onOpenProScreen,
-                colors = ButtonDefaults.buttonColors(containerColor = colors.primary, contentColor = colors.onPrimary),
-                modifier = Modifier.weight(1f).heightIn(min = MinTouchTarget).testTag("pro_upsell_purchase_button"),
-                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
+
+            // Label, "1 / 3" and the bar are one fact. Spoken separately TalkBack says the ratio twice
+            // and then a percentage; cleared and relabelled it says it once, in words.
+            val progressDescription = stringResource(R.string.pro_progress_description, activeCount, limit)
+            Column(
+                Modifier.clearAndSetSemantics { contentDescription = progressDescription },
+                verticalArrangement = Arrangement.spacedBy(5.dp),
             ) {
-                // Play's formatted price only exists once the product query answers; without it the
-                // button keeps its price-less label rather than showing a guessed amount. No line
-                // cap: in a long language the price must wrap, not be cut to "…".
-                Text(
-                    if (proPrice != null) {
-                        stringResource(R.string.pro_unlock_with_price, proPrice)
-                    } else {
-                        stringResource(R.string.pro_unlock)
-                    },
-                    style = MaterialTheme.typography.labelMedium,
-                    textAlign = TextAlign.Center,
+                FlowRow(
+                    Modifier.fillMaxWidth(),
+                    maxItemsInEachRow = if (stacked) 1 else 2,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text(stringResource(R.string.pro_active_shortcuts), style = MaterialTheme.typography.labelSmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph), color = colors.onSurfaceVariant)
+                    Text(
+                        "$activeCount / $limit",
+                        // A count pair reads left to right in every language; RTL would flip it to "2 / 1".
+                        style = MaterialTheme.typography.labelMedium.copy(textDirection = TextDirection.Ltr),
+                        color = colors.onSurface,
+                    )
+                }
+                LinearProgressIndicator(
+                    progress = { if (limit == 0) 1f else (activeCount.toFloat() / limit).coerceIn(0f, 1f) },
+                    modifier = Modifier.fillMaxWidth().height(6.dp).clip(CircleShape),
+                    color = if (atCap) colors.error else colors.primary,
+                    trackColor = colors.surfaceVariant,
                 )
+            }
+
+            FreeVsProTable(stacked)
+
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Button(
+                    onClick = onOpenProScreen,
+                    colors = ButtonDefaults.buttonColors(containerColor = colors.primary, contentColor = colors.onPrimary),
+                    modifier = Modifier.weight(1f).heightIn(min = MinTouchTarget).testTag("pro_upsell_purchase_button"),
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
+                ) {
+                    // Play's formatted price only exists once the product query answers; without it the
+                    // button keeps its price-less label rather than showing a guessed amount. No line
+                    // cap: in a long language the price must wrap, not be cut to "…".
+                    Text(
+                        if (proPrice != null) {
+                            stringResource(R.string.pro_unlock_with_price, proPrice)
+                        } else {
+                            stringResource(R.string.pro_unlock)
+                        },
+                        style = MaterialTheme.typography.labelMedium.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
+                        textAlign = TextAlign.Center,
+                    )
+                }
             }
         }
     }
 }
 
-/** Free vs. Pro at a glance — replaces a benefit checklist plus a separate free-plan caption with
- *  one comparison, since the two were saying the same three facts twice. */
+/** The free and Pro active-shortcut limits, compared in one place. */
 @Composable
-private fun FreeVsProTable(rewardActive: Boolean) {
+private fun FreeVsProTable(stacked: Boolean) {
     val colors = MaterialTheme.colorScheme
+    if (stacked) {
+        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            HorizontalDivider(color = colors.outline.copy(alpha = .3f))
+            Text(stringResource(R.string.pro_active_shortcuts), style = MaterialTheme.typography.bodySmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph), color = colors.onSurface)
+            Text(
+                "${stringResource(R.string.pro_table_free)}: ${EntitlementManager.FREE_SCRIPT_LIMIT}",
+                style = MaterialTheme.typography.labelSmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
+                color = colors.onSurfaceVariant,
+            )
+            Text(
+                "${stringResource(R.string.pro_table_pro)}: ${stringResource(R.string.pro_table_unlimited)}",
+                style = MaterialTheme.typography.labelSmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
+                color = colors.onSurface,
+            )
+        }
+        return
+    }
     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
         // Three cells per row: read one at a time they are just loose words with no column to
         // belong to, so every row is merged into a single "<label>: Free x, Pro y" utterance.
@@ -312,21 +299,8 @@ private fun FreeVsProTable(rewardActive: Boolean) {
         HorizontalDivider(color = colors.outline.copy(alpha = .3f))
         ComparisonRow(
             stringResource(R.string.pro_active_shortcuts),
-            free = if (rewardActive) {
-                stringResource(
-                    R.string.pro_table_free_limit_with_reward,
-                    EntitlementManager.FREE_SCRIPT_LIMIT,
-                    EntitlementManager.FREE_SCRIPT_LIMIT + EntitlementManager.REWARD_BONUS_SCRIPTS,
-                )
-            } else {
-                "${EntitlementManager.FREE_SCRIPT_LIMIT}"
-            },
+            free = "${EntitlementManager.FREE_SCRIPT_LIMIT}",
             pro = stringResource(R.string.pro_table_unlimited),
-        )
-        ComparisonRow(
-            stringResource(R.string.pro_table_ads),
-            free = stringResource(R.string.pro_table_shown),
-            pro = stringResource(R.string.pro_table_none),
         )
     }
 }
@@ -361,21 +335,12 @@ private fun ComparisonRow(label: String, free: String, pro: String) {
 }
 
 @Composable
-@OptIn(ExperimentalLayoutApi::class)
 internal fun ConsoleHeader(
     isMappingEnabled: Boolean,
-    isPro: Boolean,
-    rewardActive: Boolean,
-    rewardRemainingLabel: String,
     themeMode: ThemeMode,
     onToggleMapping: () -> Unit,
-    onRewardButtonClick: () -> Unit,
     onCycleTheme: () -> Unit,
 ) {
-    // The reward badge hangs above the controls (see RewardAdButton); when the controls wrap
-    // under the logo that overhang needs room. Matches the badge: label line + 2 dp padding twice, less 6 dp.
-    val badgeStyle = MaterialTheme.typography.labelSmall
-    val badgeLine = badgeStyle.lineHeight.takeIf { it.isSpecified } ?: badgeStyle.fontSize
     Layout(
         modifier = Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 8.dp),
         content = {
@@ -390,109 +355,23 @@ internal fun ConsoleHeader(
             ) {
                 KeySnapLockup(themeMode)
             }
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier.testTag("header_controls"),
-            ) {
-                if (!isPro) {
-                    Box(Modifier.align(Alignment.CenterVertically)) {
-                        RewardAdButton(rewardActive, rewardRemainingLabel, onRewardButtonClick)
-                    }
-                }
-                Box(Modifier.align(Alignment.CenterVertically)) {
-                    MappingBadge(isMappingEnabled, onToggleMapping)
-                }
+            Box(Modifier.testTag("header_controls")) {
+                MappingBadge(isMappingEnabled, onToggleMapping)
             }
         },
     ) { measurables, constraints ->
         val loose = constraints.copy(minWidth = 0, minHeight = 0)
-        // The floating gear occupies only the first row. Lower rows can use the full width.
-        val firstRowWidth = (constraints.maxWidth - 60.dp.roundToPx()).coerceAtLeast(0)
-        val logo = measurables[0].measure(loose.copy(maxWidth = firstRowWidth))
-        val controls = measurables[1].measure(loose)
-        val gap = 12.dp.roundToPx()
-        val singleRow = logo.width + gap + controls.width <= firstRowWidth
-        val overhang = if (isPro) 0 else (badgeLine.roundToPx() + 4.dp.roundToPx() - 6.dp.roundToPx()).coerceAtLeast(0)
-        val wrappedGap = gap + overhang
-        val height = if (singleRow) maxOf(logo.height, controls.height)
-            else logo.height + wrappedGap + controls.height
+        // Keep the status beside the floating Settings gear on one row, including at 200% text.
+        // Share tight widths with the vector logo; the status can ellipsize within what remains.
+        val rowWidth = (constraints.maxWidth - 60.dp.roundToPx()).coerceAtLeast(0)
+        val gap = minOf(12.dp.roundToPx(), rowWidth)
+        val contentWidth = rowWidth - gap
+        val logo = measurables[0].measure(loose.copy(maxWidth = (contentWidth * .55f).toInt()))
+        val controls = measurables[1].measure(loose.copy(maxWidth = contentWidth - logo.width))
+        val height = maxOf(logo.height, controls.height)
         layout(constraints.maxWidth, constraints.constrainHeight(height)) {
-            if (singleRow) {
-                logo.placeRelative(0, (height - logo.height) / 2)
-                controls.placeRelative(firstRowWidth - controls.width, (height - controls.height) / 2)
-            } else {
-                logo.placeRelative(0, 0)
-                controls.placeRelative(0, logo.height + wrappedGap)
-            }
-        }
-    }
-}
-
-/**
- * Available: tapping shows a rewarded ad. On cooldown: dims and the badge becomes a countdown,
- * tapping routes to the Pro screen instead of loading another ad (the caller decides which,
- * [onClick] is already the right action for the current state).
- */
-@Composable
-private fun RewardAdButton(active: Boolean, remainingLabel: String, onClick: () -> Unit) {
-    val colors = MaterialTheme.colorScheme
-    val cooldownDescription = if (active) {
-        stringResource(R.string.home_reward_cooldown, remainingLabel)
-    } else {
-        stringResource(R.string.home_reward_available)
-    }
-    Layout(
-        // Include the badge in measurement instead of drawing it outside the button's bounds.
-        modifier = Modifier.testTag("reward_ad_envelope"),
-        content = {
-            Surface(
-                modifier = Modifier
-                    .size(MinTouchTarget)
-                    .semantics {
-                        contentDescription = cooldownDescription
-                    }
-                    .testTag("reward_ad_button"),
-                onClick = onClick,
-                shape = CircleShape,
-                // Cooldown dims fill, border and icon directly and drops the shadow: no layer alpha,
-                // so nothing is clipped and no stacked layers show through each other.
-                color = colors.surface.copy(alpha = if (active) 0.55f else 0.96f),
-                border = androidx.compose.foundation.BorderStroke(1.dp, colors.outline.copy(alpha = if (active) .2f else .35f)),
-                shadowElevation = if (active) 0.dp else 4.dp,
-            ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Icon(
-                        Icons.Filled.PlayCircle,
-                        contentDescription = null,
-                        tint = colors.primary.copy(alpha = if (active) 0.55f else 1f),
-                        modifier = Modifier.size(20.dp),
-                    )
-                }
-            }
-            Text(
-                if (active) remainingLabel else stringResource(R.string.home_reward_badge_idle),
-                Modifier
-                    .testTag("reward_ad_badge")
-                    .clip(CircleShape)
-                    .background(if (active) colors.primary else colors.error)
-                    .padding(horizontal = 6.dp, vertical = 2.dp),
-                style = MaterialTheme.typography.labelSmall,
-                color = if (active) colors.onPrimary else colors.onError,
-                maxLines = 1,
-            )
-        },
-    ) { measurables, constraints ->
-        val loose = constraints.copy(minWidth = 0, minHeight = 0)
-        val button = measurables[0].measure(loose)
-        val badge = measurables[1].measure(loose)
-        // The badge overlays the circle's top 6 dp and hangs above it without adding layout
-        // height, so the circle's centre is the envelope's centre (shared with Live pill and gear).
-        val badgeY = 6.dp.roundToPx() - badge.height
-        val width = maxOf(button.width, badge.width)
-        layout(width, button.height) {
-            button.placeRelative((width - button.width) / 2, 0)
-            badge.placeRelative((width - badge.width) / 2, badgeY)
+            logo.placeRelative(0, (height - logo.height) / 2)
+            controls.placeRelative(rowWidth - controls.width, (height - controls.height) / 2)
         }
     }
 }
@@ -526,6 +405,9 @@ private fun MappingBadge(active: Boolean, onClick: () -> Unit) {
             modifier = Modifier.testTag("mapping_status_label"),
             style = MaterialTheme.typography.labelMedium,
             color = accent,
+            maxLines = 1,
+            softWrap = false,
+            overflow = TextOverflow.Ellipsis,
         )
     }
 }
@@ -602,6 +484,7 @@ private fun LiveStatusPanel(
 
 /** One system dependency, reported, with the screen that changes it one tap away. */
 @Composable
+@OptIn(ExperimentalLayoutApi::class)
 private fun StatusLine(
     label: String,
     status: String,
@@ -610,7 +493,7 @@ private fun StatusLine(
 ) {
     val colors = MaterialTheme.colorScheme
     val statusColor = if (active) colors.primary else colors.onSurfaceVariant
-    Row(
+    BoxWithConstraints(
         Modifier
             .fillMaxWidth()
             .heightIn(min = MinTouchTarget)
@@ -620,23 +503,30 @@ private fun StatusLine(
                 onClick = onClick,
             )
             .padding(vertical = 9.dp),
-        verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(
-            label,
-            Modifier.weight(1f),
-            style = MaterialTheme.typography.bodyLarge,
-            color = colors.onSurface,
-        )
-        Box(Modifier.size(7.dp).clip(CircleShape).background(statusColor))
-        Spacer(Modifier.width(6.dp))
-        Text(status, style = MaterialTheme.typography.labelMedium, color = statusColor)
-        Icon(
-            Icons.Outlined.ChevronRight,
-            null,
-            Modifier.padding(start = 2.dp).size(18.dp),
-            tint = colors.onSurfaceVariant,
-        )
+        val stacked = maxWidth / LocalDensity.current.fontScale < 240.dp
+        FlowRow(
+            Modifier.fillMaxWidth(),
+            maxItemsInEachRow = if (stacked) 1 else 2,
+        ) {
+            Text(
+                label,
+                (if (stacked) Modifier.fillMaxWidth() else Modifier.weight(1f)).align(Alignment.CenterVertically),
+                style = MaterialTheme.typography.bodyLarge.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
+                color = colors.onSurface,
+            )
+            Row(Modifier.align(Alignment.CenterVertically), verticalAlignment = Alignment.CenterVertically) {
+                Box(Modifier.size(7.dp).clip(CircleShape).background(statusColor))
+                Spacer(Modifier.width(6.dp))
+                Text(status, style = MaterialTheme.typography.labelMedium.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph), color = statusColor)
+                Icon(
+                    Icons.Outlined.ChevronRight,
+                    null,
+                    Modifier.padding(start = 2.dp).size(18.dp),
+                    tint = colors.onSurfaceVariant,
+                )
+            }
+        }
     }
 }
 
@@ -659,7 +549,7 @@ private fun YourShortcutsPanel(scripts: List<ShortcutScript>, onOpenScript: (Str
 }
 
 @Composable
-private fun ShortcutRow(script: ShortcutScript, onOpenScript: (String) -> Unit) {
+internal fun ShortcutRow(script: ShortcutScript, onOpenScript: (String) -> Unit) {
     val colors = MaterialTheme.colorScheme
     val name = script.name.ifBlank { stringResource(R.string.scripts_unnamed) }
     val (triggerText, triggerOk) = triggerSummary(script)
@@ -688,14 +578,14 @@ private fun ShortcutRow(script: ShortcutScript, onOpenScript: (String) -> Unit) 
                 name,
                 style = MaterialTheme.typography.bodyLarge,
                 color = colors.onSurface,
-                maxLines = 1,
+                maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
             )
             Text(
                 triggerText,
                 style = MaterialTheme.typography.bodySmall,
                 color = if (triggerOk) colors.onSurfaceVariant else colors.error,
-                maxLines = 1,
+                maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
             )
         }

@@ -637,6 +637,8 @@
 
     <!-- Ana sayfa -->
     <string name="home_suggested_shortcuts">Önerilen kısayollar</string>
+    <string name="ad_slot_tag">Reklam alanı</string>
+    <string name="ad_slot_title">Reklamınız burada olabilir</string>
     <string name="home_suggestions_group_single">Tek tuş, tek eylem</string>
     <string name="home_suggestions_group_multi">Tek tuş, birkaç adım</string>
     <string name="home_suggestions_group_automation">Kendi kendine çalışır</string>
@@ -697,31 +699,18 @@
     <string name="home_nudge_title">İlk kısayolunuzu oluşturun</string>
     <string name="home_nudge_subtitle">Fener hemen aşağıda, tek dokunuş.</string>
     <string name="home_nudge_dismiss">Kapat</string>
-    <string name="home_reward_cooldown">Ödül bekleme süresinde, %1$s kaldı. Pro\'ya geçin.</string>
-    <string name="home_reward_available">4 saat boyunca bir ek kısayol için reklam izleyin</string>
-    <string name="home_reward_badge_idle">+1</string>
 
     <!-- Pro tanıtımı -->
     <string name="pro_card_subtitle">Ücretsiz sürüm %1$d kısayolu açık tutar. Pro hepsini açık tutar.</string>
     <string name="pro_card_at_cap">Sıradaki kısayol neden açık kalmıyor?</string>
     <string name="pro_active_shortcuts">Etkin kısayollar</string>
     <string name="pro_progress_description">%2$d etkin kısayoldan %1$d tanesi</string>
-    <string name="pro_reward_remaining">%1$s kaldı</string>
-    <string name="pro_reward_offer">%2$d saat için +%1$d</string>
     <string name="pro_unlock">Pro\'yu aç</string>
     <string name="pro_unlock_with_price">Pro\'yu aç · %1$s</string>
     <string name="pro_table_free">Ücretsiz</string>
     <string name="pro_table_pro">Pro</string>
     <string name="pro_table_unlimited">Sınırsız</string>
-    <string name="pro_table_free_limit_with_reward">%1$d (ödülle %2$d)</string>
-    <string name="pro_table_ads">Reklamlar</string>
-    <string name="pro_table_shown">Var</string>
-    <string name="pro_table_none">Yok</string>
     <string name="pro_table_row_description">%1$s: Ücretsiz %2$s, Pro %3$s</string>
-
-    <!-- Reklamlar -->
-    <string name="ad_loading">Reklam yükleniyor…</string>
-    <string name="ad_sponsored">Sponsorlu</string>
 
     <!-- Ayarlar -->
     <string name="settings_title">Ayarlar</string>
@@ -810,8 +799,8 @@
     <string name="about_traffic_device_body">Kablosuz Hata Ayıklama eşleştirmesi. Yalnızca yerel ağ.</string>
     <string name="about_traffic_yours">Kendi yazdığınız adresler</string>
     <string name="about_traffic_yours_body">Bir HTTP veya URL açma eylemi ya da bir otomasyonun takip ettiği RSS akışı, tam olarak yazdığınız yere, değiştirilmeden gider.</string>
-    <string name="about_traffic_google">Google reklamları ve Google Play</string>
-    <string name="about_traffic_google_body">Ücretsiz sürümde reklamı göstermek ve Pro satın alıp almadığınızı sormak için. İkisi de bir tuş basışını veya kısayolu almaz.</string>
+    <string name="about_traffic_google">Google Play Faturalandırma</string>
+    <string name="about_traffic_google_body">Pro satın alımını işlemek ve Pro sahibi olup olmadığınızı kontrol etmek için. Hiçbir tuş basışı veya kısayol almaz.</string>
     <string name="about_traffic_all">Listenin tamamı bu.</string>
     <string name="about_erase_title">İstediğiniz an hepsini geri alın</string>
     <string name="about_erase_body">Tüm verileri sil; her kısayolu, kayıtlı tuşu, tercihi ve köprü dosyasını kaldırır ve önce Uzman Modu\'nu durdurur, böylece arkada çalışan hiçbir şey kalmaz.</string>
@@ -889,9 +878,8 @@
     <string name="saved_needs_trigger">Kaydedildi. Çalışabilmesi için bir tuş atayın.</string>
     <string name="saved_named">\"%1$s\" kaydedildi</string>
     <string name="saved_needs_condition">Kaydedildi. Çalışabilmesi için kendiliğinden değişen bir koşul ekleyin, örneğin Şarjda veya Bluetooth cihazı bağlı.</string>
-    <string name="free_limit_saved_off">Ücretsiz plan: %1$d etkin kısayol. Kapalı olarak kaydedildi — açmak için reklam izleyin veya Pro\'ya geçin.</string>
-    <string name="free_limit_reached">Ücretsiz plan sınırına ulaşıldı. Sınırsız kısayol için Pro\'ya geçin.</string>
-    <string name="free_limit_toggle_blocked">Ücretsiz plan: %1$d etkin kısayol. Bunu da açmak için reklam izleyin veya Pro\'ya geçin.</string>
+    <string name="free_limit_saved_off">Ücretsiz plan: %1$d etkin kısayol. Kapalı olarak kaydedildi — açmak için Pro\'ya geçin.</string>
+    <string name="free_limit_toggle_blocked">Ücretsiz plan: %1$d etkin kısayol. Bunu da açmak için Pro\'ya geçin.</string>
 
     <!-- Gizlilik politikası penceresi. Politika metninin kendisi İngilizce kalır: Play için
          yayımlanan belgeyle birebir aynı olmak zorundadır. -->

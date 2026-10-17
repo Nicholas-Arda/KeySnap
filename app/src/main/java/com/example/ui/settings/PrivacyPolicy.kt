@@ -29,7 +29,7 @@ import com.example.ui.theme.MonoLabel
  */
 object PrivacyPolicy {
 
-    const val LAST_UPDATED = "13 October 2026"
+    const val LAST_UPDATED = "17 October 2026"
 
     /**
      * Left blank deliberately. A published policy needs a contact address, but which address to
@@ -42,8 +42,8 @@ object PrivacyPolicy {
         "What is collected" to
             "KeySnap has no servers, no accounts, no analytics and no crash reporting. " +
             "KeySnap does not send the developer your shortcuts, key presses or usage history. " +
-            "Google's advertising and billing services receive the data described under " +
-            "\"Advertising and purchases\" below. Network requests, RSS feeds, messages and sharing " +
+            "Google Play Billing receives the purchase data described under " +
+            "\"Purchases\" below. Network requests, RSS feeds, messages and sharing " +
             "that you configure or initiate may also send data to the destinations or apps you " +
             "choose, as described below." +
             " If you share a shortcut, the app hands its text to the app you pick in Android's share " +
@@ -121,8 +121,8 @@ object PrivacyPolicy {
             "carries nothing from your shortcuts, only Android's standard headers, whose " +
             "user-agent names the phone's model and Android version. The feed's server may " +
             "redirect the request to another https address; it is never followed to an http one. " +
-            "The third is to Google, to fetch ads and to " +
-            "ask Google Play whether you have bought Pro. The app makes no other requests of its " +
+            "The third is to Google Play, to process the Pro purchase and " +
+            "check whether you have bought Pro. The app makes no other requests of its " +
             "own.",
 
         "Permissions and why" to
@@ -185,15 +185,12 @@ object PrivacyPolicy {
             "the app removes its storage as well; if Advanced Mode is running when you uninstall, " +
             "turn it off first so the bridge can clean itself up.",
 
-        "Advertising and purchases" to
-            "The free version shows ads supplied by Google AdMob. AdMob receives only what its " +
-            "own SDK needs to select and measure an ad, such as your device model, coarse " +
-            "language and region, and the advertising ID that Android gives it, which you can " +
-            "reset or delete in Android's own settings. It never receives your shortcuts, the " +
-            "keys you press, or anything else this app records. Buying Pro removes the ads and " +
-            "is handled entirely by Google Play Billing: the app never sees your payment details " +
-            "and only asks Google Play whether the purchase exists. What Google does with what " +
-            "those two services receive is covered by Google's privacy policy at " +
+        "Purchases" to
+            "Pro is a one-time purchase handled entirely by Google Play Billing. " +
+            "Google Play processes the purchase and supplies its purchase state to the app; " +
+            "the app never sees your payment details. Google Play Billing never receives " +
+            "your shortcuts, key presses or usage history from KeySnap. Google's handling " +
+            "of purchase data is covered by Google's privacy policy at " +
             "policies.google.com/privacy. The app is not directed at children.",
 
         "Changes" to

@@ -636,6 +636,8 @@
 
     <!-- Home -->
     <string name="home_suggested_shortcuts">اختصارات مقترحة</string>
+    <string name="ad_slot_tag">مساحة إعلانية</string>
+    <string name="ad_slot_title">يمكن أن يكون إعلانك هنا</string>
     <string name="home_suggestions_group_single">مفتاح واحد، إجراء واحد</string>
     <string name="home_suggestions_group_multi">مفتاح واحد، عدة خطوات</string>
     <string name="home_suggestions_group_automation">يعمل تلقائيًا</string>
@@ -696,31 +698,18 @@
     <string name="home_nudge_title">أنشئ اختصارك الأول</string>
     <string name="home_nudge_subtitle">المصباح أسفل هذا مباشرة، بضغطة واحدة.</string>
     <string name="home_nudge_dismiss">إغلاق</string>
-    <string name="home_reward_cooldown">المكافأة في فترة تهدئة، تبقّى %1$s. احصل على Pro.</string>
-    <string name="home_reward_available">شاهد إعلانًا للحصول على اختصار إضافي واحد لمدة 4 ساعات</string>
-    <string name="home_reward_badge_idle">+1</string>
 
     <!-- Pro upsell -->
     <string name="pro_card_subtitle">الحد المجاني: %1$d اختصارات مفعّلة. Pro يبقيها كلها مفعّلة.</string>
     <string name="pro_card_at_cap">لماذا لن يبقى الاختصار التالي مفعّلًا</string>
     <string name="pro_active_shortcuts">الاختصارات النشطة</string>
     <string name="pro_progress_description">%1$d من %2$d اختصارات نشطة</string>
-    <string name="pro_reward_remaining">تبقّى %1$s</string>
-    <string name="pro_reward_offer">+%1$d لمدة %2$d ساعة</string>
     <string name="pro_unlock">فتح Pro</string>
     <string name="pro_unlock_with_price">فتح Pro · %1$s</string>
     <string name="pro_table_free">مجاني</string>
     <string name="pro_table_pro">Pro</string>
     <string name="pro_table_unlimited">غير محدود</string>
-    <string name="pro_table_free_limit_with_reward">%1$d (%2$d مع مكافأة)</string>
-    <string name="pro_table_ads">الإعلانات</string>
-    <string name="pro_table_shown">تُعرض</string>
-    <string name="pro_table_none">بدون</string>
     <string name="pro_table_row_description">%1$s: مجاني %2$s، Pro %3$s</string>
-
-    <!-- Ads -->
-    <string name="ad_loading">جارٍ تحميل الإعلان…</string>
-    <string name="ad_sponsored">إعلان ممول</string>
 
     <!-- Settings -->
     <string name="settings_title">الإعدادات</string>
@@ -809,8 +798,8 @@
     <string name="about_traffic_device_body">إقران تصحيح الأخطاء اللاسلكي. الشبكة المحلية فقط.</string>
     <string name="about_traffic_yours">العناوين التي كتبتها بنفسك</string>
     <string name="about_traffic_yours_body">أي إجراء HTTP أو فتح رابط، أو موجز RSS تتابعه أتمتة، يذهب تماماً إلى حيث كتبته، دون تغيير.</string>
-    <string name="about_traffic_google">إعلانات Google و Google Play</string>
-    <string name="about_traffic_google_body">لعرض الإعلان في النسخة المجانية وللتحقق مما إذا كنت قد اشتريت Pro. ولا يتلقى أي منهما ضغطة مفتاح أو اختصاراً على الإطلاق.</string>
+    <string name="about_traffic_google">فوترة Google Play</string>
+    <string name="about_traffic_google_body">لمعالجة شراء Pro والتحقق من امتلاكك له. لا تتلقى أي ضغطة مفتاح أو اختصار على الإطلاق.</string>
     <string name="about_traffic_all">هذه هي القائمة كاملة.</string>
     <string name="about_erase_title">استعِد كل شيء متى شئت</string>
     <string name="about_erase_body">مسح جميع البيانات يزيل كل اختصار ومفتاح محفوظ وإعداد وملف من ملفات الجسر، ويوقف الوضع المتقدم أولاً حتى لا يبقى شيء يعمل.</string>
@@ -888,9 +877,8 @@
     <string name="saved_needs_trigger">تم الحفظ. عيّن مفتاحًا ليتمكن من العمل.</string>
     <string name="saved_named">تم حفظ «%1$s»</string>
     <string name="saved_needs_condition">تم الحفظ. أضف شرطًا يتغير من تلقاء نفسه، مثل «قيد الشحن» أو «جهاز بلوتوث متصل»، ليتمكن من العمل.</string>
-    <string name="free_limit_saved_off">الخطة المجانية: %1$d اختصارات نشطة. تم الحفظ متوقفًا — شاهد إعلانًا أو احصل على Pro لتفعيله.</string>
-    <string name="free_limit_reached">تم بلوغ حد الخطة المجانية. احصل على Pro لعدد غير محدود من الاختصارات.</string>
-    <string name="free_limit_toggle_blocked">الخطة المجانية: %1$d اختصارات نشطة. شاهد إعلانًا أو احصل على Pro لتفعيل هذا أيضًا.</string>
+    <string name="free_limit_saved_off">الخطة المجانية: %1$d اختصارات نشطة. تم الحفظ متوقفًا — احصل على Pro لتفعيله.</string>
+    <string name="free_limit_toggle_blocked">الخطة المجانية: %1$d اختصارات نشطة. احصل على Pro لتفعيل هذا أيضًا.</string>
 
     <!-- Privacy policy dialog chrome. The policy body itself stays in PrivacyPolicy.kt: it has to
          match the English document published for Play word for word. -->

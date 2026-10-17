@@ -2,6 +2,9 @@ package com.example.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -20,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -27,6 +31,7 @@ import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.Hyphens
+import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.res.stringResource
 import io.github.nicholasarda.keysnap.R
 import androidx.compose.ui.unit.dp
@@ -39,7 +44,7 @@ import kotlin.math.roundToLong
  * Settings screen (global defaults) and the per-script settings sheet (overrides), which resets to
  * "follow the global value" rather than to [MillisecondSettingSpec.default] and so passes its own
  * [onReset] and [resetEnabled]. */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun MillisecondSliderSetting(
     title: String,
@@ -61,54 +66,54 @@ fun MillisecondSliderSetting(
         disabledInactiveTickColor = Color.Transparent,
     )
     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.Top,
-        ) {
-            Column(modifier = Modifier.weight(1f).padding(end = 12.dp)) {
-                Text(
-                    title,
-                    color = if (enabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
-                    // Android only breaks a hyphenated compound ("Doppeldruck-Zeitfenster") at its
-                    // hyphen when hyphenation is on; without it the word split at its last letters.
-                    style = MaterialTheme.typography.bodyLarge.copy(hyphens = Hyphens.Auto),
-                    fontWeight = FontWeight.Medium,
-                )
-                Text(
-                    description,
-                    color = if (enabled) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
-                    style = MaterialTheme.typography.bodySmall,
-                )
-            }
-            Surface(
-                modifier = Modifier.widthIn(min = 76.dp),
-                shape = InnerShape,
-                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = if (enabled) 0.75f else 0.4f),
-            ) {
-                Row(
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 7.dp),
-                    verticalAlignment = Alignment.Bottom,
-                ) {
+        BoxWithConstraints(Modifier.fillMaxWidth()) {
+            val stacked = maxWidth / LocalDensity.current.fontScale < 240.dp
+            FlowRow(Modifier.fillMaxWidth(), maxItemsInEachRow = if (stacked) 1 else 2) {
+                Column(modifier = if (stacked) Modifier.fillMaxWidth() else Modifier.weight(1f).padding(end = 12.dp)) {
                     Text(
-                        text = valueMs.toString(),
-                        color = if (enabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
-                        style = MaterialTheme.typography.titleMedium.copy(
-                            fontFamily = FontFamily.Serif,
-                            fontWeight = FontWeight.Bold,
-                            letterSpacing = (-0.25).sp,
-                        ),
-                        maxLines = 1,
+                        title,
+                        color = if (enabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                        // Android only breaks a hyphenated compound ("Doppeldruck-Zeitfenster") at its
+                        // hyphen when hyphenation is on; without it the word split at its last letters.
+                        style = MaterialTheme.typography.bodyLarge.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
+                        fontWeight = FontWeight.Medium,
                     )
                     Text(
-                        text = stringResource(R.string.slider_ms_unit),
-                        modifier = Modifier.padding(start = 4.dp, bottom = 2.dp),
+                        description,
                         color = if (enabled) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
-                        style = MaterialTheme.typography.labelSmall.copy(
-                            fontWeight = FontWeight.Bold,
-                            letterSpacing = 1.sp,
-                        ),
-                        maxLines = 1,
+                        style = MaterialTheme.typography.bodySmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
                     )
+                }
+                Surface(
+                    modifier = Modifier.widthIn(min = 76.dp),
+                    shape = InnerShape,
+                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = if (enabled) 0.75f else 0.4f),
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 7.dp),
+                        verticalAlignment = Alignment.Bottom,
+                    ) {
+                        Text(
+                            text = valueMs.toString(),
+                            color = if (enabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                fontFamily = FontFamily.Serif,
+                                fontWeight = FontWeight.Bold,
+                                letterSpacing = (-0.25).sp,
+                            ),
+                            maxLines = 1,
+                        )
+                        Text(
+                            text = stringResource(R.string.slider_ms_unit),
+                            modifier = Modifier.padding(start = 4.dp, bottom = 2.dp),
+                            color = if (enabled) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                fontWeight = FontWeight.Bold,
+                                letterSpacing = 1.sp,
+                            ),
+                            maxLines = 1,
+                        )
+                    }
                 }
             }
         }

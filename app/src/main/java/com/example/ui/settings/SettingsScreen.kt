@@ -9,6 +9,9 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -55,6 +58,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -62,6 +66,8 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.style.Hyphens
+import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.unit.dp
 import androidx.core.text.BidiFormatter
 import androidx.core.text.TextDirectionHeuristicsCompat
@@ -148,19 +154,19 @@ fun SettingsScreen(
         contentPadding = PaddingValues(start = 12.dp, end = 12.dp, top = 18.dp, bottom = 40.dp),
     ) {
         item {
-            // The end padding keeps the title clear of the close button in this corner.
             Column(
-                reveal(0).padding(start = 8.dp, end = 60.dp, bottom = 4.dp),
+                reveal(0).padding(horizontal = 8.dp).padding(bottom = 4.dp),
                 verticalArrangement = Arrangement.spacedBy(2.dp),
             ) {
                 Text(
                     stringResource(R.string.settings_title),
-                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.testTag("settings_title"),
+                    style = MaterialTheme.typography.titleLarge.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
                     color = MaterialTheme.colorScheme.onSurface,
                 )
                 Text(
                     stringResource(R.string.settings_subtitle),
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.bodyMedium.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
@@ -308,26 +314,17 @@ private fun AdvancedModePanel(
     val colors = MaterialTheme.colorScheme
     val runSetupLabel = stringResource(R.string.settings_run_setup)
     ConsolePanel(stringResource(R.string.settings_expert_panel), testTag = "advanced_mode") {
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .heightIn(min = MinTouchTarget)
-                .toggleable(value = isRunning, role = Role.Switch, onValueChange = onToggle)
-                .testTag("advanced_mode_switch"),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Column(Modifier.weight(1f).padding(end = 12.dp)) {
-                Text(stringResource(R.string.settings_detached_bridge), style = MaterialTheme.typography.bodyLarge, color = colors.onSurface)
-                Text(
-                    stringResource(
-                        if (isRunning) R.string.settings_bridge_running else R.string.settings_bridge_stopped,
-                    ),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = colors.onSurfaceVariant,
-                )
-            }
-            Switch(checked = isRunning, onCheckedChange = null)
-        }
+        // The shared switch row, so at large text the switch drops under the text instead of squeezing it.
+        SettingsSwitchRow(
+            title = stringResource(R.string.settings_detached_bridge),
+            description = stringResource(
+                if (isRunning) R.string.settings_bridge_running else R.string.settings_bridge_stopped,
+            ),
+            checked = isRunning,
+            enabled = true,
+            testTag = "advanced_mode_switch",
+            onCheckedChange = onToggle,
+        )
         HorizontalDivider(color = colors.outline.copy(alpha = .45f))
         SettingsSwitchRow(
             title = stringResource(R.string.settings_autostart_title),
@@ -411,7 +408,11 @@ private fun AboutPanel(
         }
     }
 
-    ConsolePanel(stringResource(R.string.settings_about_panel), testTag = "about") {
+    ConsolePanel(
+        stringResource(R.string.settings_about_panel),
+        testTag = "about",
+        contentPadding = if (LocalDensity.current.fontScale > 1.15f) 8.dp else 16.dp,
+    ) {
         AboutRow(
             label = stringResource(R.string.settings_about_app),
             sublabel = stringResource(R.string.settings_about_app_summary),
@@ -485,30 +486,34 @@ private fun AboutRow(
     leadingIcon: ImageVector? = null,
 ) {
     val colors = MaterialTheme.colorScheme
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .heightIn(min = MinTouchTarget)
-            .clickable(onClickLabel = label, onClick = onClick)
-            .testTag(testTag),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        if (leadingIcon != null) {
-            Icon(leadingIcon, null, Modifier.size(20.dp), tint = colors.primary)
-        }
-        Column(Modifier.weight(1f)) {
-            Text(label, style = MaterialTheme.typography.bodyLarge, color = color)
-            if (sublabel != null) {
-                Text(sublabel, style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant)
+    BoxWithConstraints(Modifier.fillMaxWidth()) {
+        val compact = maxWidth / LocalDensity.current.fontScale < 240.dp
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .heightIn(min = MinTouchTarget)
+                .clickable(onClickLabel = label, onClick = onClick)
+                .testTag(testTag),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            if (!compact && leadingIcon != null) {
+                Icon(leadingIcon, null, Modifier.size(20.dp), tint = colors.primary)
             }
+            Column(Modifier.weight(1f)) {
+                Text(label, Modifier.testTag("${testTag}_label"), style = MaterialTheme.typography.bodyLarge.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph), color = color)
+                if (sublabel != null) {
+                    Text(sublabel, style = MaterialTheme.typography.bodySmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph), color = colors.onSurfaceVariant)
+                }
+            }
+            if (!compact) Icon(icon, null, tint = color)
         }
-        Icon(icon, null, tint = color)
     }
 }
 
 /** Appearance is a single choice, so it is a radio group and announces itself as one. */
 @Composable
+@OptIn(ExperimentalLayoutApi::class)
 private fun AppearanceRow(
     selected: ThemeMode,
     followSystem: Boolean,
@@ -521,47 +526,52 @@ private fun AppearanceRow(
         ThemeMode.DARK to stringResource(R.string.theme_dark),
         ThemeMode.SEPIA to stringResource(R.string.theme_sepia),
     )
-    Row(
-        Modifier.fillMaxWidth().selectableGroup().testTag("appearance_toggle_button"),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        (listOf<ThemeMode?>(null) + ThemeMode.entries).forEach { mode ->
-            val isSelected = if (mode == null) followSystem else !followSystem && mode == selected
-            Column(
-                Modifier
-                    .weight(1f)
-                    .clip(InnerShape)
-                    .selectable(
-                        selected = isSelected,
-                        role = Role.RadioButton,
-                        onClick = { if (mode == null) onSelectSystem() else onSelect(mode) },
-                    )
-                    .padding(vertical = 4.dp)
-                    .testTag("appearance_option_${mode?.name?.lowercase() ?: "system"}"),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Box(
+    BoxWithConstraints(Modifier.fillMaxWidth()) {
+        val stacked = maxWidth / LocalDensity.current.fontScale < 240.dp
+        FlowRow(
+            Modifier.fillMaxWidth().selectableGroup().testTag("appearance_toggle_button"),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            maxItemsInEachRow = if (stacked) 2 else 4,
+        ) {
+            (listOf<ThemeMode?>(null) + ThemeMode.entries).forEach { mode ->
+                val isSelected = if (mode == null) followSystem else !followSystem && mode == selected
+                Column(
                     Modifier
-                        .size(56.dp)
+                        .weight(1f)
                         .clip(InnerShape)
-                        .background(colors.surfaceVariant.copy(alpha = if (isSelected) .35f else .15f))
-                        .then(
-                            if (isSelected) {
-                                Modifier.border(2.5.dp, colors.primary, InnerShape)
-                            } else {
-                                Modifier
-                            },
-                        ),
-                    contentAlignment = Alignment.Center,
+                        .selectable(
+                            selected = isSelected,
+                            role = Role.RadioButton,
+                            onClick = { if (mode == null) onSelectSystem() else onSelect(mode) },
+                        )
+                        .padding(vertical = 4.dp)
+                        .testTag("appearance_option_${mode?.name?.lowercase() ?: "system"}"),
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    if (mode == null) Icon(Icons.Default.Settings, null, tint = colors.primary) else ThemeToggleIcon(themeMode = mode)
+                    Box(
+                        Modifier
+                            .size(56.dp)
+                            .clip(InnerShape)
+                            .background(colors.surfaceVariant.copy(alpha = if (isSelected) .35f else .15f))
+                            .then(
+                                if (isSelected) {
+                                    Modifier.border(2.5.dp, colors.primary, InnerShape)
+                                } else {
+                                    Modifier
+                                },
+                            ),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        if (mode == null) Icon(Icons.Default.Settings, null, tint = colors.primary) else ThemeToggleIcon(themeMode = mode)
+                    }
+                    Spacer(Modifier.height(6.dp))
+                    Text(
+                        if (mode == null) stringResource(R.string.theme_system) else labels.getValue(mode),
+                        style = MaterialTheme.typography.labelSmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
+                        color = if (isSelected) colors.onSurface else colors.onSurfaceVariant,
+                    )
                 }
-                Spacer(Modifier.height(6.dp))
-                Text(
-                    if (mode == null) stringResource(R.string.theme_system) else labels.getValue(mode),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = if (isSelected) colors.onSurface else colors.onSurfaceVariant,
-                )
             }
         }
     }
@@ -674,6 +684,7 @@ private fun EventRow(event: LiveKeyEvent) {
 }
 
 @Composable
+@OptIn(ExperimentalLayoutApi::class)
 private fun SettingsSwitchRow(
     title: String,
     description: String,
@@ -683,7 +694,7 @@ private fun SettingsSwitchRow(
     onCheckedChange: (Boolean) -> Unit,
 ) {
     val colors = MaterialTheme.colorScheme
-    Row(
+    BoxWithConstraints(
         modifier = Modifier
             .fillMaxWidth()
             .heightIn(min = MinTouchTarget)
@@ -695,21 +706,29 @@ private fun SettingsSwitchRow(
             )
             .testTag(testTag)
             .padding(vertical = 4.dp),
-        verticalAlignment = Alignment.CenterVertically,
     ) {
-        Column(modifier = Modifier.weight(1f).padding(end = 12.dp)) {
-            Text(
-                title,
-                color = if (enabled) colors.onSurface else colors.onSurface.copy(alpha = 0.5f),
-                style = MaterialTheme.typography.bodyLarge,
-            )
-            Text(
-                description,
-                color = if (enabled) colors.onSurfaceVariant else colors.onSurfaceVariant.copy(alpha = 0.5f),
-                style = MaterialTheme.typography.bodySmall,
-            )
+        val stacked = maxWidth / LocalDensity.current.fontScale < 240.dp
+        FlowRow(
+            Modifier.fillMaxWidth(),
+            maxItemsInEachRow = if (stacked) 1 else 2,
+        ) {
+            Column(
+                (if (stacked) Modifier.fillMaxWidth() else Modifier.weight(1f).padding(end = 12.dp))
+                    .align(Alignment.CenterVertically),
+            ) {
+                Text(
+                    title,
+                    color = if (enabled) colors.onSurface else colors.onSurface.copy(alpha = 0.5f),
+                    style = MaterialTheme.typography.bodyLarge.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
+                )
+                Text(
+                    description,
+                    color = if (enabled) colors.onSurfaceVariant else colors.onSurfaceVariant.copy(alpha = 0.5f),
+                    style = MaterialTheme.typography.bodySmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
+                )
+            }
+            Switch(checked = checked, onCheckedChange = null, enabled = enabled, modifier = Modifier.align(Alignment.CenterVertically))
         }
-        Switch(checked = checked, onCheckedChange = null, enabled = enabled)
     }
 }
 
@@ -726,23 +745,28 @@ private fun LanguagePanel() {
     var selected by remember { mutableStateOf(AppLocale.stored(context)) }
     var showPicker by remember { mutableStateOf(false) }
     ConsolePanel(stringResource(R.string.settings_language_panel), testTag = "language") {
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .heightIn(min = MinTouchTarget)
-                .clickable { showPicker = true }
-                .testTag("language_picker_button"),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            LocaleFlag(selected)
-            Spacer(Modifier.width(10.dp))
-            Text(
-                stringResource(AppLocale.labelFor(selected)),
-                style = MaterialTheme.typography.bodyLarge,
-                color = colors.onSurface,
-                modifier = Modifier.weight(1f),
-            )
-            Icon(Icons.Outlined.ChevronRight, null, tint = colors.onSurfaceVariant)
+        BoxWithConstraints {
+            val compact = maxWidth / LocalDensity.current.fontScale < 240.dp
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = MinTouchTarget)
+                    .clickable { showPicker = true }
+                    .testTag("language_picker_button"),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                if (!compact) {
+                    LocaleFlag(selected)
+                    Spacer(Modifier.width(10.dp))
+                }
+                Text(
+                    stringResource(AppLocale.labelFor(selected)),
+                    style = MaterialTheme.typography.bodyLarge.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
+                    color = colors.onSurface,
+                    modifier = Modifier.weight(1f).testTag("settings_language_label"),
+                )
+                if (!compact) Icon(Icons.Outlined.ChevronRight, null, tint = colors.onSurfaceVariant)
+            }
         }
     }
     if (showPicker) {

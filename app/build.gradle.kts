@@ -1,5 +1,3 @@
-import java.util.Properties
-
 plugins {
   alias(libs.plugins.android.application)
   alias(libs.plugins.kotlin.compose)
@@ -47,18 +45,6 @@ androidComponents {
   }
 }
 
-// AdMob identifiers. The real ones live in local.properties (gitignored) or the environment, never
-// in the repository: this is a public source tree, and an ad unit id copied out of it into someone
-// else's app draws invalid traffic that gets *this* AdMob account suspended. A checkout without
-// them builds against Google's published test ids, which is what a contributor should test with
-// anyway — clicking a real ad in a debug build is itself a policy violation.
-val localProperties = Properties().apply {
-  rootProject.file("local.properties").takeIf { it.isFile }?.inputStream()?.use(::load)
-}
-
-fun admobId(key: String, testId: String): String =
-  (localProperties.getProperty(key) ?: System.getenv(key))?.takeIf { it.isNotBlank() } ?: testId
-
 android {
   namespace = "io.github.nicholasarda.keysnap"
   compileSdk { version = release(36) { minorApiLevel = 1 } }
@@ -83,19 +69,6 @@ android {
     } else {
       "androidx.test.runner.AndroidJUnitRunner"
     }
-
-    manifestPlaceholders["admobAppId"] =
-      admobId("ADMOB_APP_ID", "ca-app-pub-3940256099942544~3347511713")
-    buildConfigField(
-      "String",
-      "ADMOB_REWARDED_UNIT_ID",
-      "\"${admobId("ADMOB_REWARDED_UNIT_ID", "ca-app-pub-3940256099942544/5224354917")}\"",
-    )
-    buildConfigField(
-      "String",
-      "ADMOB_NATIVE_UNIT_ID",
-      "\"${admobId("ADMOB_NATIVE_UNIT_ID", "ca-app-pub-3940256099942544/2247696110")}\"",
-    )
   }
 
   // Supplied by the environment so no keystore path or password is ever committed. Absent on a
@@ -191,7 +164,6 @@ dependencies {
   implementation(libs.kotlinx.coroutines.core)
   // Plain moshi: adapters are KSP-generated, so the reflection artifact (and kotlin-reflect) is dead weight.
   implementation(libs.moshi)
-  implementation(libs.play.services.ads)
   implementation(libs.billing.ktx)
   implementation(libs.androidx.fragment)
   implementation(libs.bcprov)

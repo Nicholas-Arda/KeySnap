@@ -1,6 +1,23 @@
 package com.example.ui.home
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.style.Hyphens
+import androidx.compose.ui.text.style.LineBreak
+import androidx.compose.ui.unit.Dp
+import androidx.compose.material.icons.outlined.Campaign
+import androidx.compose.material.icons.outlined.ChevronRight
+import androidx.compose.material3.Icon
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -97,7 +114,7 @@ fun SuggestedShortcutsPanel(isPro: Boolean, scripts: List<ShortcutScript>, onPic
         Column {
             RecipeCategoryChips(groups.map { it.first }, active) { selected = it }
             // Counted over the whole panel, not per group: the first group alone is a dozen rows, so a
-            // group-boundary ad would sit far below the fold.
+            // group-boundary slot would sit far below the fold.
             var row = 0
             shown.forEachIndexed { groupIndex, (category, items) ->
                 Text(
@@ -110,11 +127,8 @@ fun SuggestedShortcutsPanel(isPro: Boolean, scripts: List<ShortcutScript>, onPic
                     if (index > 0) HorizontalDivider(color = colors.outline.copy(alpha = .45f))
                     SuggestionRow(suggestion, onPick)
                     row++
-                    // Ad as the panel's 2nd and 9th row, never as its last item.
-                    if (!isPro && (row == 1 || row == 8) && row < shownCount) {
-                        HorizontalDivider(color = colors.outline.copy(alpha = .45f))
-                        NativeAdCard(Modifier.padding(vertical = 4.dp))
-                    }
+                    // Where the AdMob cards used to be: the panel's 2nd and 9th row, never its last item.
+                    if (!isPro && (row == 1 || row == 8) && row < shownCount) AdSlotRow()
                 }
             }
         }
@@ -228,57 +242,69 @@ private fun SuggestionRow(suggestion: SuggestedShortcut, onPick: (SuggestedShort
         base
     }
 
-    Row(
-        rowModifier.padding(vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        IconTile(
-            suggestionIcons[suggestion.id] ?: actionIconFor(suggestion.iconType),
-            // Same rule as a built shortcut's row, so the colour does not change once it is built.
-            ScriptActionCatalog.descriptor(suggestion.actions.first().type)?.category,
-            size = 38.dp,
-        )
-        Column(Modifier.weight(1f).padding(start = 12.dp, end = 8.dp)) {
-            Text(
-                stringResource(suggestion.titleRes),
-                style = MaterialTheme.typography.bodyLarge,
-                color = if (available) colors.onSurface else colors.onSurfaceVariant,
-                // Two lines: beside a wide badge ("Automatisation") one line left the title as
-                // "En quittant le tr…".
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
+    // Below this a trailing badge ("Automazione", "18 steps") left the title one letter wide, so the
+    // badge moves under the subtitle and the text gets the whole column. Same rule as ScriptCard.
+    BoxWithConstraints(rowModifier.padding(vertical = 8.dp)) {
+        val stacked = isNarrow(maxWidth)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            IconTile(
+                suggestionIcons[suggestion.id] ?: actionIconFor(suggestion.iconType),
+                // Same rule as a built shortcut's row, so the colour does not change once it is built.
+                ScriptActionCatalog.descriptor(suggestion.actions.first().type)?.category,
+                // Narrow, a smaller tile and gutter leave "Воспроизведение" room for a line of its own.
+                size = if (stacked) 30.dp else 38.dp,
             )
-            Text(
-                stringResource(suggestion.subtitleRes),
-                style = MaterialTheme.typography.bodySmall,
-                color = colors.onSurfaceVariant,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-            // Under the subtitle rather than beside the title, so a long translation wraps in the
-            // text column instead of squeezing the title.
-            if (suggestion.actions.any { ActionEditorForms.needsAdvancedMode(it.type) }) {
-                RecipePill(
-                    stringResource(R.string.badge_expert_mode),
-                    Modifier.padding(top = 4.dp).testTag("recipe_advanced_${suggestion.id}"),
-                )
-            }
-            // In full, never ellipsized: it carries the limits the user must know before picking it.
-            suggestion.noteRes?.let { note ->
+            Column(Modifier.weight(1f).padding(start = if (stacked) 10.dp else 12.dp, end = if (stacked) 0.dp else 8.dp)) {
                 Text(
-                    stringResource(note),
-                    Modifier.padding(top = 4.dp).testTag("recipe_note_${suggestion.id}"),
+                    stringResource(suggestion.titleRes),
+                    Modifier.testTag("suggestion_title_${suggestion.id}"),
+                    style = MaterialTheme.typography.bodyLarge.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
+                    color = if (available) colors.onSurface else colors.onSurfaceVariant,
+                    // Two lines: beside a wide badge ("Automatisation") one line left the title as
+                    // "En quittant le tr…". Stacked, nothing sits beside it, so give it room to finish.
+                    maxLines = if (stacked) 4 else 2,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                Text(
+                    stringResource(suggestion.subtitleRes),
                     style = MaterialTheme.typography.bodySmall,
                     color = colors.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
+                // Under the subtitle rather than beside the title, so a long translation wraps in the
+                // text column instead of squeezing the title.
+                if (suggestion.actions.any { ActionEditorForms.needsAdvancedMode(it.type) }) {
+                    RecipePill(
+                        stringResource(R.string.badge_expert_mode),
+                        Modifier.padding(top = 4.dp).testTag("recipe_advanced_${suggestion.id}"),
+                    )
+                }
+                // In full, never ellipsized: it carries the limits the user must know before picking it.
+                suggestion.noteRes?.let { note ->
+                    Text(
+                        stringResource(note),
+                        Modifier.padding(top = 4.dp).testTag("recipe_note_${suggestion.id}"),
+                        style = MaterialTheme.typography.bodySmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
+                        color = colors.onSurfaceVariant,
+                    )
+                }
+                if (stacked) TileBadge(suggestion, Modifier.padding(top = 4.dp))
             }
+            if (!stacked) TileBadge(suggestion)
         }
-        TileBadge(suggestion)
     }
 }
 
+/**
+ * Too narrow, at this text size, for anything trailing beside a text column: a pill there squeezes
+ * the text to a letter a line. Shared by the rows on Home that move their trailing pill under the text.
+ */
 @Composable
-private fun TileBadge(suggestion: SuggestedShortcut) {
+internal fun isNarrow(width: Dp): Boolean = width / LocalDensity.current.fontScale < 240.dp
+
+@Composable
+private fun TileBadge(suggestion: SuggestedShortcut, modifier: Modifier = Modifier) {
     val actionCount = suggestion.actions.count { it.type != "delay" }
     val label = when {
         !suggestion.available -> stringResource(R.string.home_suggestion_soon)
@@ -286,8 +312,71 @@ private fun TileBadge(suggestion: SuggestedShortcut) {
         actionCount > 1 -> pluralStringResource(R.plurals.home_suggestion_steps, actionCount, actionCount)
         else -> return
     }
-    RecipePill(label)
+    RecipePill(label, modifier.testTag("suggestion_badge_${suggestion.id}"))
 }
+
+/**
+ * A house "your ad here" slot, not an ad: no SDK, nothing loaded, nothing sent. A tap only opens the
+ * user's own mail app addressed to [AD_SLOT_EMAIL].
+ */
+@Composable
+private fun AdSlotRow() {
+    val colors = MaterialTheme.colorScheme
+    val context = LocalContext.current
+    val dash = colors.outline
+    BoxWithConstraints(
+        Modifier
+            .padding(vertical = 8.dp)
+            .fillMaxWidth()
+            .heightIn(min = MinTouchTarget)
+            .testTag("ad_slot")
+            .clip(RoundedCornerShape(14.dp))
+            .drawBehind {
+                drawRoundRect(
+                    dash,
+                    cornerRadius = CornerRadius(14.dp.toPx()),
+                    style = Stroke(1.5.dp.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(6.dp.toPx(), 4.dp.toPx()))),
+                )
+            }
+            .clickable(role = Role.Button) {
+                val uri = Uri.parse("mailto:$AD_SLOT_EMAIL?subject=${Uri.encode("Advertising on KeySnap")}")
+                runCatching { context.startActivity(Intent(Intent.ACTION_SENDTO, uri)) }
+            }
+            .padding(10.dp),
+    ) {
+        // Narrow, the icon's gutter cost the title a line and the address its last half; even at
+        // 28 dp "ardasenn.com" no longer fit a line at the largest text size, so the icon goes.
+        val narrow = isNarrow(maxWidth)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            if (!narrow) {
+                Box(
+                    Modifier.size(38.dp).clip(RoundedCornerShape(12.dp)).background(colors.primary.copy(alpha = .16f)),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(Icons.Outlined.Campaign, null, Modifier.size(20.dp), tint = colors.primary)
+                }
+            }
+            Column(Modifier.weight(1f).padding(start = if (narrow) 2.dp else 12.dp, end = if (narrow) 4.dp else 8.dp)) {
+                RecipePill(stringResource(R.string.ad_slot_tag), Modifier.padding(bottom = 4.dp).testTag("ad_slot_tag"))
+                Text(
+                    stringResource(R.string.ad_slot_title),
+                    style = MaterialTheme.typography.bodyLarge.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
+                    color = colors.onSurface,
+                )
+                // In full, wrapping after the @ when it must: a cut-off address is no address at all.
+                Text(
+                    AD_SLOT_EMAIL.replace("@", "@​"),
+                    Modifier.testTag("ad_slot_email"),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = colors.onSurfaceVariant,
+                )
+            }
+            Icon(Icons.Outlined.ChevronRight, null, tint = colors.onSurfaceVariant)
+        }
+    }
+}
+
+private const val AD_SLOT_EMAIL = "business@ardasenn.com"
 
 @Composable
 private fun RecipePill(label: String, modifier: Modifier = Modifier) {
@@ -300,7 +389,8 @@ private fun RecipePill(label: String, modifier: Modifier = Modifier) {
             .clip(RoundedCornerShape(10.dp))
             .background(colors.surfaceVariant)
             .padding(horizontal = 8.dp, vertical = 3.dp),
-        style = MaterialTheme.typography.labelSmall,
+        // "Рекламное место" broke as "Рекламно/е" at the largest text size without this.
+        style = MaterialTheme.typography.labelSmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
         // onSurfaceVariant on this fill measures 4.05:1 on light, under AA. onSurface keeps the
         // pill exactly as it looks and reads 13.4:1 light, 9.6:1 sepia, 12.8:1 dark.
         color = colors.onSurface,

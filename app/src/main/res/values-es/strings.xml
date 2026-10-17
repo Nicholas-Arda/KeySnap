@@ -640,6 +640,8 @@
 
     <!-- Inicio -->
     <string name="home_suggested_shortcuts">Accesos directos sugeridos</string>
+    <string name="ad_slot_tag">Espacio publicitario</string>
+    <string name="ad_slot_title">Tu anuncio podría estar aquí</string>
     <string name="home_suggestions_group_single">Una tecla, una acción</string>
     <string name="home_suggestions_group_multi">Una tecla, varios pasos</string>
     <string name="home_suggestions_group_automation">Se ejecuta solo</string>
@@ -700,31 +702,18 @@
     <string name="home_nudge_title">Crea tu primer acceso directo</string>
     <string name="home_nudge_subtitle">La linterna está justo debajo, a un toque.</string>
     <string name="home_nudge_dismiss">Cerrar</string>
-    <string name="home_reward_cooldown">Recompensa en espera, quedan %1$s. Pásate a Pro.</string>
-    <string name="home_reward_available">Mira un anuncio para conseguir un acceso directo extra durante 4 horas</string>
-    <string name="home_reward_badge_idle">+1</string>
 
     <!-- Promoción de Pro -->
     <string name="pro_card_subtitle">La versión gratuita mantiene %1$d accesos directos activos. Pro los mantiene todos.</string>
     <string name="pro_card_at_cap">Por qué el siguiente acceso directo no se mantiene activado</string>
     <string name="pro_active_shortcuts">Accesos directos activos</string>
     <string name="pro_progress_description">%1$d de %2$d accesos directos activos</string>
-    <string name="pro_reward_remaining">Quedan %1$s</string>
-    <string name="pro_reward_offer">+%1$d por %2$d h</string>
     <string name="pro_unlock">Desbloquear Pro</string>
     <string name="pro_unlock_with_price">Desbloquear Pro · %1$s</string>
     <string name="pro_table_free">Gratis</string>
     <string name="pro_table_pro">Pro</string>
     <string name="pro_table_unlimited">Ilimitado</string>
-    <string name="pro_table_free_limit_with_reward">%1$d (%2$d con recompensa)</string>
-    <string name="pro_table_ads">Anuncios</string>
-    <string name="pro_table_shown">Se muestran</string>
-    <string name="pro_table_none">Ninguno</string>
     <string name="pro_table_row_description">%1$s: Gratis %2$s, Pro %3$s</string>
-
-    <!-- Anuncios -->
-    <string name="ad_loading">Cargando anuncio…</string>
-    <string name="ad_sponsored">Patrocinado</string>
 
     <!-- Ajustes -->
     <string name="settings_title">Ajustes</string>
@@ -813,8 +802,8 @@
     <string name="about_traffic_device_body">Vinculación por Depuración inalámbrica. Solo red local.</string>
     <string name="about_traffic_yours">Las direcciones que escribes tú</string>
     <string name="about_traffic_yours_body">Una acción HTTP o Abrir URL, o un feed RSS que sigue una automatización, va exactamente a donde la escribiste, sin cambios.</string>
-    <string name="about_traffic_google">Anuncios de Google y Google Play</string>
-    <string name="about_traffic_google_body">Para mostrar el anuncio en la versión gratuita y comprobar si has comprado Pro. Ninguno recibe jamás una pulsación de tecla ni un acceso directo.</string>
+    <string name="about_traffic_google">Facturación de Google Play</string>
+    <string name="about_traffic_google_body">Para procesar la compra de Pro y comprobar si lo tienes. Nunca recibe una pulsación de tecla ni un acceso directo.</string>
     <string name="about_traffic_all">Esa es toda la lista.</string>
     <string name="about_erase_title">Recupéralo todo cuando quieras</string>
     <string name="about_erase_body">Borrar todos los datos elimina cada acceso directo, tecla guardada, preferencia y archivo del puente, y detiene antes el Modo avanzado para que no quede nada en marcha.</string>
@@ -892,9 +881,8 @@
     <string name="saved_needs_trigger">Guardado. Asigna una tecla para que pueda ejecutarse.</string>
     <string name="saved_named">\"%1$s\" guardado</string>
     <string name="saved_needs_condition">Guardado. Añade una condición que cambie por sí sola, como Cargando o Dispositivo Bluetooth conectado, para que pueda ejecutarse.</string>
-    <string name="free_limit_saved_off">Plan gratuito: %1$d accesos directos activos. Se guardó desactivado — mira un anuncio o pásate a Pro para activarlo.</string>
-    <string name="free_limit_reached">Se alcanzó el límite del plan gratuito. Pásate a Pro para accesos directos ilimitados.</string>
-    <string name="free_limit_toggle_blocked">Plan gratuito: %1$d accesos directos activos. Mira un anuncio o pásate a Pro para activar también este.</string>
+    <string name="free_limit_saved_off">Plan gratuito: %1$d accesos directos activos. Se guardó desactivado — pásate a Pro para activarlo.</string>
+    <string name="free_limit_toggle_blocked">Plan gratuito: %1$d accesos directos activos. Pásate a Pro para activar también este.</string>
 
     <!-- Privacy policy dialog chrome. The policy body itself stays in PrivacyPolicy.kt: it has to
          match the English document published for Play word for word. -->

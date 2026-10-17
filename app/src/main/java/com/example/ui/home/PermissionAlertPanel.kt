@@ -41,6 +41,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -85,6 +86,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.text.style.Hyphens
+import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationManagerCompat
@@ -190,7 +193,7 @@ fun SetupCard(
         exit = shrinkVertically(tween(dur(reduced, 320), easing = FastOutSlowInEasing)) +
             fadeOut(tween(dur(reduced, 200))),
     ) {
-        Column(
+        BoxWithConstraints(
             Modifier
                 .fillMaxWidth()
                 .glassCard(LocalGlass.current, rim = colors.primary.copy(alpha = .45f))
@@ -198,76 +201,86 @@ fun SetupCard(
                 .testTag("permission_alerts")
                 // animateContentSize clips to its bounds; it goes before the padding so the current
                 // step's scaled-up marker can overshoot the content edge without being cut.
-                .animateContentSize(spring(dampingRatio = 0.9f))
-                .padding(16.dp),
+                .animateContentSize(spring(dampingRatio = 0.9f)),
         ) {
-            AnimatedVisibility(
-                visible = phase == CardPhase.Steps,
-                exit = fadeOut(tween(dur(reduced, 120))) +
-                    shrinkVertically(tween(dur(reduced, 240), easing = FastOutSlowInEasing)),
-            ) {
-                Column {
-                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        Column(Modifier.weight(1f)) {
-                            // Nothing runs at all without the service, so that case gets the blunt
-                            // title; with it on, the two remaining steps only risk a later kill.
-                            Text(
-                                stringResource(
-                                    if (isServiceActive) R.string.home_setup_title_at_risk else R.string.home_setup_title_off,
-                                ),
-                                style = MaterialTheme.typography.titleSmall,
-                                color = colors.onSurface,
-                            )
+            // At large text on a narrow phone the step text split words ("Разре/шите"): every gutter
+            // gives a little back, and nothing trails beside a text column.
+            val narrow = isNarrow(maxWidth)
+            Column(Modifier.padding(if (narrow) 12.dp else 16.dp)) {
+                AnimatedVisibility(
+                    visible = phase == CardPhase.Steps,
+                    exit = fadeOut(tween(dur(reduced, 120))) +
+                        shrinkVertically(tween(dur(reduced, 240), easing = FastOutSlowInEasing)),
+                ) {
+                    Column {
+                        val subtitle = @Composable {
                             Text(
                                 stringResource(
                                     if (isServiceActive) R.string.home_setup_subtitle_at_risk else R.string.home_setup_subtitle_off,
                                 ),
-                                style = MaterialTheme.typography.labelSmall,
+                                style = MaterialTheme.typography.labelSmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
                                 color = colors.onSurfaceVariant,
                             )
                         }
-                        Text(
-                            stringResource(R.string.home_setup_progress, done.count { it }),
-                            Modifier
-                                .clip(InnerShape)
-                                .background(colors.primary.copy(alpha = .14f))
-                                .padding(horizontal = 7.dp, vertical = 4.dp),
-                            style = MaterialTheme.typography.labelMedium,
-                            color = colors.primary,
-                        )
-                    }
-                    Spacer(Modifier.height(16.dp))
-                    steps.forEachIndexed { index, step ->
-                        SetupStepRow(
-                            number = index + 1,
-                            step = step,
-                            state = states[index],
-                            isLast = index == steps.lastIndex,
-                            reduced = reduced,
-                        )
+                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                            Column(Modifier.weight(1f)) {
+                                // Nothing runs at all without the service, so that case gets the blunt
+                                // title; with it on, the two remaining steps only risk a later kill.
+                                Text(
+                                    stringResource(
+                                        if (isServiceActive) R.string.home_setup_title_at_risk else R.string.home_setup_title_off,
+                                    ),
+                                    style = MaterialTheme.typography.titleSmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
+                                    color = colors.onSurface,
+                                )
+                                // Narrow, the subtitle runs the full width under the progress pill.
+                                if (!narrow) subtitle()
+                            }
+                            Text(
+                                stringResource(R.string.home_setup_progress, done.count { it }),
+                                Modifier
+                                    .clip(InnerShape)
+                                    .background(colors.primary.copy(alpha = .14f))
+                                    .padding(horizontal = 7.dp, vertical = 4.dp),
+                                style = MaterialTheme.typography.labelMedium,
+                                color = colors.primary,
+                            )
+                        }
+                        if (narrow) subtitle()
+                        Spacer(Modifier.height(16.dp))
+                        steps.forEachIndexed { index, step ->
+                            SetupStepRow(
+                                number = index + 1,
+                                step = step,
+                                state = states[index],
+                                isLast = index == steps.lastIndex,
+                                reduced = reduced,
+                                narrow = narrow,
+                            )
+                        }
                     }
                 }
-            }
-            AnimatedVisibility(
-                visible = phase == CardPhase.Closing,
-                enter = fadeIn(tween(dur(reduced, 300))) +
-                    slideInVertically(tween(dur(reduced, 300), easing = FastOutSlowInEasing)) { it / 3 },
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                AnimatedVisibility(
+                    visible = phase == CardPhase.Closing,
+                    enter = fadeIn(tween(dur(reduced, 300))) +
+                        slideInVertically(tween(dur(reduced, 300), easing = FastOutSlowInEasing)) { it / 3 },
                 ) {
-                    Box(
-                        Modifier.size(26.dp).background(colors.primary, CircleShape),
-                        contentAlignment = Alignment.Center,
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
                     ) {
-                        Icon(Icons.Filled.Check, null, Modifier.size(15.dp), tint = colors.onPrimary)
+                        Box(
+                            Modifier.size(26.dp).background(colors.primary, CircleShape),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Icon(Icons.Filled.Check, null, Modifier.size(15.dp), tint = colors.onPrimary)
+                        }
+                        Text(
+                            stringResource(R.string.home_setup_all_done),
+                            style = MaterialTheme.typography.bodyLarge.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
+                            color = colors.onSurface,
+                        )
                     }
-                    Text(
-                        stringResource(R.string.home_setup_all_done),
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = colors.onSurface,
-                    )
                 }
             }
         }
@@ -276,6 +289,9 @@ fun SetupCard(
 
 /** Steps, then the closing line, then gone — the card's own three-beat handoff. */
 private enum class CardPhase { Steps, Closing, Gone }
+
+/** Marker-to-text gap on a narrow card, where every dp goes to the step text. */
+private val MarkerGapNarrow = 8.dp
 
 private class SetupStep(
     val title: String,
@@ -289,7 +305,14 @@ private class SetupStep(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun SetupStepRow(number: Int, step: SetupStep, state: SetupStepState, isLast: Boolean, reduced: Boolean) {
+private fun SetupStepRow(
+    number: Int,
+    step: SetupStep,
+    state: SetupStepState,
+    isLast: Boolean,
+    reduced: Boolean,
+    narrow: Boolean,
+) {
     val colors = MaterialTheme.colorScheme
     val transition = updateTransition(state, label = "step$number")
     val rail = transition.animateFloat(
@@ -318,26 +341,32 @@ private fun SetupStepRow(number: Int, step: SetupStep, state: SetupStepState, is
                 .heightIn(min = MinTouchTarget)
                 .semantics(mergeDescendants = true) { stateDescription = stateLabel },
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(if (narrow) MarkerGapNarrow else 12.dp),
         ) {
             StepMarker(number, state, transition, reduced)
-            Text(
-                step.title,
-                Modifier.weight(1f),
-                style = if (state == SetupStepState.Done) {
-                    MaterialTheme.typography.bodyMedium
-                } else {
-                    MaterialTheme.typography.bodyLarge
-                },
-                color = titleColor,
-            )
-            AnimatedVisibility(
-                visible = state == SetupStepState.Done,
-                enter = fadeIn(tween(dur(reduced, 250), delayMillis = dur(reduced, 120))) +
-                    slideInHorizontally(tween(dur(reduced, 250), delayMillis = dur(reduced, 120))) { it / 2 },
-            ) {
-                Text(step.doneNote, style = MaterialTheme.typography.labelMedium, color = colors.primary)
+            val doneNote = @Composable {
+                AnimatedVisibility(
+                    visible = state == SetupStepState.Done,
+                    enter = fadeIn(tween(dur(reduced, 250), delayMillis = dur(reduced, 120))) +
+                        slideInHorizontally(tween(dur(reduced, 250), delayMillis = dur(reduced, 120))) { it / 2 },
+                ) {
+                    Text(step.doneNote, style = MaterialTheme.typography.labelMedium, color = colors.primary)
+                }
             }
+            Column(Modifier.weight(1f)) {
+                Text(
+                    step.title,
+                    style = if (state == SetupStepState.Done) {
+                        MaterialTheme.typography.bodyMedium
+                    } else {
+                        MaterialTheme.typography.bodyLarge
+                    }.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
+                    color = titleColor,
+                )
+                // Narrow, "Включено" beside the title left it a word a line; under it, it costs nothing.
+                if (narrow) doneNote()
+            }
+            if (!narrow) doneNote()
         }
         AnimatedVisibility(
             visible = state == SetupStepState.Current,
@@ -346,8 +375,9 @@ private fun SetupStepRow(number: Int, step: SetupStep, state: SetupStepState, is
             exit = shrinkVertically(tween(dur(reduced, 220), easing = FastOutSlowInEasing)) +
                 fadeOut(tween(dur(reduced, 160))),
         ) {
-            Column(Modifier.padding(start = 38.dp, bottom = 14.dp)) {
-                Text(step.why, style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant)
+            // Lined up with the title: the marker's 26 dp plus the row's gap.
+            Column(Modifier.padding(start = 26.dp + if (narrow) MarkerGapNarrow else 12.dp, bottom = 14.dp)) {
+                Text(step.why, style = MaterialTheme.typography.bodySmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph), color = colors.onSurfaceVariant)
                 step.illustration()
                 // The long answer, for the user who wants one before granting: opened per step, and
                 // forgotten again as soon as the step stops being the current one.
@@ -362,7 +392,7 @@ private fun SetupStepRow(number: Int, step: SetupStep, state: SetupStepState, is
                     Text(
                         step.whyText,
                         Modifier.padding(top = 12.dp),
-                        style = MaterialTheme.typography.bodySmall,
+                        style = MaterialTheme.typography.bodySmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
                         color = colors.onSurfaceVariant,
                     )
                 }
@@ -379,7 +409,7 @@ private fun SetupStepRow(number: Int, step: SetupStep, state: SetupStepState, is
                         onClick = step.onClick,
                         contentPadding = PaddingValues(horizontal = 18.dp, vertical = 11.dp),
                     ) {
-                        Text(step.button, style = MaterialTheme.typography.labelLarge)
+                        Text(step.button, style = MaterialTheme.typography.labelLarge.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph))
                     }
                     TextButton(
                         onClick = { whyOpen = !whyOpen },
@@ -503,40 +533,45 @@ fun FirstShortcutNudge(onDismiss: () -> Unit) {
         animationSpec = infiniteRepeatable(tween(800, easing = FastOutSlowInEasing), RepeatMode.Reverse),
         label = "bob",
     )
-    Row(
+    BoxWithConstraints(
         Modifier
             .fillMaxWidth()
             .clip(InnerShape)
             .background(colors.primary.copy(alpha = .10f))
             .border(1.dp, colors.primary.copy(alpha = .30f), InnerShape)
             .padding(start = 14.dp, end = 4.dp, top = 8.dp, bottom = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Icon(
-            Icons.Filled.ArrowDownward,
-            null,
-            Modifier.graphicsLayer { translationY = if (reduced) 0f else bob.value.dp.toPx() },
-            tint = colors.primary,
-        )
-        Column(Modifier.weight(1f)) {
-            Text(
-                stringResource(R.string.home_nudge_title),
-                style = MaterialTheme.typography.bodyLarge,
-                color = colors.onSurface,
-            )
-            Text(
-                stringResource(R.string.home_nudge_subtitle),
-                style = MaterialTheme.typography.labelSmall,
-                color = colors.onSurfaceVariant,
-            )
-        }
-        IconButton(onDismiss) {
-            Icon(
-                Icons.Filled.Close,
-                stringResource(R.string.home_nudge_dismiss),
-                tint = colors.onSurfaceVariant,
-            )
+        // Between the arrow and the 48 dp close button the text had a third of the row; narrow,
+        // the arrow goes and the text keeps the room.
+        val narrow = isNarrow(maxWidth)
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            if (!narrow) {
+                Icon(
+                    Icons.Filled.ArrowDownward,
+                    null,
+                    Modifier.graphicsLayer { translationY = if (reduced) 0f else bob.value.dp.toPx() },
+                    tint = colors.primary,
+                )
+            }
+            Column(Modifier.weight(1f)) {
+                Text(
+                    stringResource(R.string.home_nudge_title),
+                    style = MaterialTheme.typography.bodyLarge.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
+                    color = colors.onSurface,
+                )
+                Text(
+                    stringResource(R.string.home_nudge_subtitle),
+                    style = MaterialTheme.typography.labelSmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
+                    color = colors.onSurfaceVariant,
+                )
+            }
+            IconButton(onDismiss) {
+                Icon(
+                    Icons.Filled.Close,
+                    stringResource(R.string.home_nudge_dismiss),
+                    tint = colors.onSurfaceVariant,
+                )
+            }
         }
     }
 }

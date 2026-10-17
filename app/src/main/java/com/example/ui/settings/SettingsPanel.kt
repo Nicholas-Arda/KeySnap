@@ -10,8 +10,13 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -35,6 +40,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Shape
@@ -73,6 +79,9 @@ private val OpenEasing = CubicBezierEasing(0.2f, 0.9f, 0.25f, 1f)
 private val CloseEasing = CubicBezierEasing(0.5f, 0f, 0.75f, 0f)
 
 private val GearSize = 44.dp
+
+/** How far below the status bar the caller places [SettingsSheet]; [SettingsScrim] covers that strip. */
+val SheetTopGap = 8.dp
 
 /** The panel starts as this rounded box in its gear-side top corner. */
 private val SeedSize = 58.dp
@@ -131,17 +140,24 @@ fun rememberSettingsMotion(open: Boolean): SettingsMotion {
     return motion
 }
 
-/** Dims what is behind the panel; a tap on it shuts the panel. */
+/**
+ * Dims what is behind the panel; a tap on it shuts the panel. [ground] covers the strip between the
+ * screen top and the panel, where a page scrolled under the status bar otherwise showed through as
+ * a line of half-dimmed text cut off by the panel's edge.
+ */
 @Composable
-fun SettingsScrim(motion: SettingsMotion, open: Boolean, onClose: () -> Unit) {
+fun SettingsScrim(motion: SettingsMotion, open: Boolean, onClose: () -> Unit, ground: Color) {
     val visible by remember { derivedStateOf { motion.backdrop.value > 0f } }
     if (!visible) return
     val glass = LocalGlass.current
     val closeLabel = stringResource(R.string.settings_close)
+    val statusBars = WindowInsets.statusBars
     Box(
         Modifier
             .fillMaxSize()
             .graphicsLayer { alpha = motion.backdrop.value }
+            .testTag("settings_scrim")
+            .drawBehind { drawRect(ground, size = size.copy(height = statusBars.getTop(this) + SheetTopGap.toPx())) }
             .background(glass.scrim)
             .then(
                 if (open) {
@@ -205,7 +221,12 @@ fun SettingsSheet(motion: SettingsMotion, modifier: Modifier = Modifier, content
             .semantics { paneTitle = title }
             .testTag("settings_panel"),
     ) {
-        content()
+        Column {
+            // The floating gear becomes X here. Keep the scroll viewport below its entire touch
+            // target, including the gear's opening translation, at every scroll position.
+            Spacer(Modifier.height(64.dp))
+            Box(Modifier.weight(1f)) { content() }
+        }
     }
 }
 

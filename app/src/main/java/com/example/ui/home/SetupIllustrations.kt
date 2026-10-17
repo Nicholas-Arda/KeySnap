@@ -44,7 +44,10 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.text.style.Hyphens
+import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -98,7 +101,11 @@ private fun IllustrationFrame(caption: String?, t: State<Float>, content: @Compo
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         if (caption != null) {
-            Text(caption, style = MaterialTheme.typography.labelSmall, color = colors.onSurfaceVariant)
+            Text(
+                caption,
+                style = MaterialTheme.typography.labelSmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
+                color = colors.onSurfaceVariant,
+            )
             Spacer(Modifier.height(4.dp))
         }
         content()
@@ -161,6 +168,9 @@ internal fun AccessibilityIllustration(reduced: Boolean) {
                         Modifier.weight(1f),
                         style = MaterialTheme.typography.bodyMedium,
                         color = colors.onSurface,
+                        // A facsimile label in a fixed 30 dp row: wrapped, its second line was cut to "KeySn".
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                     )
                     Box(
                         Modifier
@@ -230,13 +240,13 @@ internal fun BackgroundDialogIllustration(reduced: Boolean) {
             ) {
                 Text(
                     stringResource(R.string.home_setup_illo_battery_dialog),
-                    style = MaterialTheme.typography.labelMedium,
+                    style = MaterialTheme.typography.labelMedium.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
                     color = colors.onSurface,
                     textAlign = TextAlign.Center,
                 )
                 Text(
                     stringResource(R.string.home_setup_illo_battery_body),
-                    style = MaterialTheme.typography.labelSmall,
+                    style = MaterialTheme.typography.labelSmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
                     color = colors.onSurfaceVariant,
                     textAlign = TextAlign.Center,
                 )
@@ -290,7 +300,7 @@ internal fun NotificationIllustration(reduced: Boolean) {
                 }
                 Text(
                     stringResource(R.string.home_setup_illo_dialog),
-                    style = MaterialTheme.typography.labelMedium,
+                    style = MaterialTheme.typography.labelMedium.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
                     color = colors.onSurface,
                     textAlign = TextAlign.Center,
                 )
@@ -342,18 +352,19 @@ private fun DialogButton(label: String, fill: () -> Float) {
                 }
             }
             .border(1.dp, colors.primary.copy(alpha = .45f), CircleShape)
-            .padding(horizontal = 14.dp, vertical = 6.dp),
+            // 10 dp: at the largest text size 14 dp left "Разрешить" no room for a line of its own.
+            .padding(horizontal = 10.dp, vertical = 6.dp),
     ) {
         Text(
             label,
             Modifier.graphicsLayer { alpha = 1f - fill() },
-            style = MaterialTheme.typography.labelMedium,
+            style = MaterialTheme.typography.labelMedium.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
             color = colors.primary,
         )
         Text(
             label,
             Modifier.graphicsLayer { alpha = fill() },
-            style = MaterialTheme.typography.labelMedium,
+            style = MaterialTheme.typography.labelMedium.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
             color = colors.onPrimary,
         )
     }

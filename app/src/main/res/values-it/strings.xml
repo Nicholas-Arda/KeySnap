@@ -640,6 +640,8 @@
 
     <!-- Home -->
     <string name="home_suggested_shortcuts">Scorciatoie suggerite</string>
+    <string name="ad_slot_tag">Spazio pubblicitario</string>
+    <string name="ad_slot_title">La tua pubblicità potrebbe essere qui</string>
     <string name="home_suggestions_group_single">Un tasto, un\'azione</string>
     <string name="home_suggestions_group_multi">Un tasto, più passaggi</string>
     <string name="home_suggestions_group_automation">Si avvia da solo</string>
@@ -700,31 +702,18 @@
     <string name="home_nudge_title">Crea la tua prima scorciatoia</string>
     <string name="home_nudge_subtitle">La torcia è qui sotto, a un tocco.</string>
     <string name="home_nudge_dismiss">Chiudi</string>
-    <string name="home_reward_cooldown">Ricompensa in attesa, %1$s rimanenti. Passa a Pro.</string>
-    <string name="home_reward_available">Guarda una pubblicità per una scorciatoia in più per 4 ore</string>
-    <string name="home_reward_badge_idle">+1</string>
 
     <!-- Promozione Pro -->
     <string name="pro_card_subtitle">La versione gratuita tiene attive %1$d scorciatoie. Pro le tiene attive tutte.</string>
     <string name="pro_card_at_cap">Perché la prossima scorciatoia non resterà attiva</string>
     <string name="pro_active_shortcuts">Scorciatoie attive</string>
     <string name="pro_progress_description">%1$d di %2$d scorciatoie attive</string>
-    <string name="pro_reward_remaining">%1$s rimanenti</string>
-    <string name="pro_reward_offer">+%1$d per %2$dh</string>
     <string name="pro_unlock">Sblocca Pro</string>
     <string name="pro_unlock_with_price">Sblocca Pro · %1$s</string>
     <string name="pro_table_free">Gratis</string>
     <string name="pro_table_pro">Pro</string>
     <string name="pro_table_unlimited">Illimitate</string>
-    <string name="pro_table_free_limit_with_reward">%1$d (%2$d con ricompensa)</string>
-    <string name="pro_table_ads">Pubblicità</string>
-    <string name="pro_table_shown">Presenti</string>
-    <string name="pro_table_none">Assenti</string>
     <string name="pro_table_row_description">%1$s: Gratis %2$s, Pro %3$s</string>
-
-    <!-- Pubblicità -->
-    <string name="ad_loading">Caricamento pubblicità…</string>
-    <string name="ad_sponsored">Sponsorizzato</string>
 
     <!-- Impostazioni -->
     <string name="settings_title">Impostazioni</string>
@@ -813,8 +802,8 @@
     <string name="about_traffic_device_body">Accoppiamento tramite Debug wireless. Solo rete locale.</string>
     <string name="about_traffic_yours">Gli indirizzi che scrivi tu</string>
     <string name="about_traffic_yours_body">Un\'azione HTTP o Apri URL, o un feed RSS seguito da un\'automazione, va esattamente dove l\'hai scritta, senza modifiche.</string>
-    <string name="about_traffic_google">Annunci Google e Google Play</string>
-    <string name="about_traffic_google_body">Per mostrare l\'annuncio nella versione gratuita e per verificare se hai acquistato Pro. Nessuno dei due riceve mai la pressione di un tasto o una scorciatoia.</string>
+    <string name="about_traffic_google">Fatturazione Google Play</string>
+    <string name="about_traffic_google_body">Per elaborare l\'acquisto di Pro e verificare se lo possiedi. Non riceve mai la pressione di un tasto o una scorciatoia.</string>
     <string name="about_traffic_all">Questa è tutta la lista.</string>
     <string name="about_erase_title">Riprenditi tutto quando vuoi</string>
     <string name="about_erase_body">Elimina tutti i dati rimuove ogni scorciatoia, tasto salvato, preferenza e file del bridge, e arresta prima la Modalità avanzata così non resta nulla in esecuzione.</string>
@@ -892,9 +881,8 @@
     <string name="saved_needs_trigger">Salvata. Assegna un tasto perché possa essere eseguita.</string>
     <string name="saved_named">\"%1$s\" salvata</string>
     <string name="saved_needs_condition">Salvata. Aggiungi una condizione che cambia da sola, come In carica o Dispositivo Bluetooth connesso, perché possa essere eseguita.</string>
-    <string name="free_limit_saved_off">Piano gratuito: %1$d scorciatoie attive. Salvata disattivata — guarda una pubblicità o passa a Pro per attivarla.</string>
-    <string name="free_limit_reached">Limite del piano gratuito raggiunto. Passa a Pro per scorciatoie illimitate.</string>
-    <string name="free_limit_toggle_blocked">Piano gratuito: %1$d scorciatoie attive. Guarda una pubblicità o passa a Pro per attivare anche questa.</string>
+    <string name="free_limit_saved_off">Piano gratuito: %1$d scorciatoie attive. Salvata disattivata — passa a Pro per attivarla.</string>
+    <string name="free_limit_toggle_blocked">Piano gratuito: %1$d scorciatoie attive. Passa a Pro per attivare anche questa.</string>
 
     <!-- Cornice della finestra di dialogo dell'informativa sulla privacy. Il testo della normativa
          resta in PrivacyPolicy.kt: deve corrispondere parola per parola al documento in inglese

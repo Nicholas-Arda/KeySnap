@@ -36,6 +36,8 @@ import androidx.compose.ui.semantics.collapse
 import androidx.compose.ui.semantics.expand
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.Hyphens
+import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -125,6 +127,7 @@ fun ConsolePanel(
     headerActionDescription: String? = null,
     headerActionIcon: ImageVector? = null,
     alert: Boolean = false,
+    contentPadding: Dp = 16.dp,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val colors = MaterialTheme.colorScheme
@@ -140,7 +143,7 @@ fun ConsolePanel(
         // A clickable header needs a 48dp tap target; giving it the column's top padding instead of
         // stacking on top of it keeps its label on the same line as every plain panel's label.
         Column(
-            Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp, top = if (onHeaderClick == null) 16.dp else 0.dp),
+            Modifier.padding(start = contentPadding, end = contentPadding, bottom = 16.dp, top = if (onHeaderClick == null) 16.dp else 0.dp),
             verticalArrangement = Arrangement.spacedBy(11.dp),
         ) {
             Row(
@@ -170,7 +173,7 @@ fun ConsolePanel(
                     ),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(label, Modifier.weight(1f), style = SectionLabel, color = if (alert) colors.error else colors.onSurfaceVariant)
+                Text(label, Modifier.weight(1f), style = SectionLabel.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph), color = if (alert) colors.error else colors.onSurfaceVariant)
                 if (headerActionIcon != null) {
                     Icon(headerActionIcon, null, Modifier.size(20.dp), tint = colors.onSurfaceVariant)
                 }

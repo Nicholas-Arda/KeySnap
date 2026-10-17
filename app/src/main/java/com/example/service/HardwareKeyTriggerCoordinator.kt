@@ -458,8 +458,7 @@ object HardwareKeyTriggerCoordinator {
         val scriptsRepo = scriptRepository ?: return SurfaceRun.Missing
         val executor = actionExecutor ?: return SurfaceRun.Missing
         val defaults = repository?.config?.value ?: return SurfaceRun.Missing
-        // The free limit works by switching scripts off, and a lapsed reward window is otherwise
-        // only applied when the app opens.
+        // Enforce the current free limit even when a widget or tile starts the app cold.
         EntitlementManager.getInstance(context).enforceLimit()
         val script = scriptsRepo.scripts.value.firstOrNull { it.id == scriptId } ?: return SurfaceRun.Missing
         val evaluator = constraintEvaluator

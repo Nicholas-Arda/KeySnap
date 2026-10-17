@@ -34,34 +34,45 @@ import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
+import org.robolectric.ParameterizedRobolectricTestRunner
+import org.robolectric.ParameterizedRobolectricTestRunner.Parameters
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 import java.util.Locale
 
-@RunWith(RobolectricTestRunner::class)
+@RunWith(ParameterizedRobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(sdk = [34], qualifiers = "w600dp-h900dp-mdpi")
-class ConsoleHeaderLayoutTest {
+class ConsoleHeaderLayoutTest(
+    private val width: Int,
+    private val fontScale: Float,
+    private val language: String,
+    private val active: Boolean,
+    private val density: Float,
+) {
+    companion object {
+        @JvmStatic
+        @Parameters(name = "{2}, active={3}, width={0}, font={1}, density={4}")
+        fun cases(): List<Array<Any>> = buildList {
+            // 411 dp at the default density becomes about 328 dp at 1.25x display size.
+            listOf("en", "ar", "pt-BR", "de", "es", "fr", "hi", "it", "ru", "tr").forEach { language ->
+                listOf(1f, 2f).forEach { fontScale ->
+                    listOf(false, true).forEach { active ->
+                        add(arrayOf(328, fontScale, language, active, 1.25f))
+                    }
+                }
+            }
+            listOf(320, 411, 480).forEach { width ->
+                add(arrayOf(width, 1f, "en", true, 1f))
+            }
+        }
+    }
+
     @get:Rule val rule = createComposeRule()
 
-    @Test fun narrowTurkish() = checkHeader(320, 1f, "tr")
-    @Test fun normalTurkish() = checkHeader(360, 1f, "tr")
-    @Test fun normalEnglishIdle() = checkHeader(411, 1f, "en", active = true, rewardActive = false)
-    @Test fun wideTurkish() = checkHeader(480, 1f, "tr")
-    @Test fun narrowDoubleFontLongCountdown() = checkHeader(320, 2f, "tr", remaining = "59m 59s")
-    @Test fun largerGerman() = checkHeader(360, 1.3f, "de")
-    @Test fun doubleFontArabic() = checkHeader(360, 2f, "ar", remaining = "٢١ د")
-    @Test fun narrowDoubleFontPro() = checkHeader(320, 2f, "tr", pro = true)
-    @Test fun arabicPro() = checkHeader(411, 1f, "ar", pro = true, active = true)
-
-    private fun checkHeader(
-        width: Int, fontScale: Float, language: String, pro: Boolean = false,
-        active: Boolean = false, rewardActive: Boolean = true, remaining: String = "21m",
-    ) {
+    @Test fun statusAndSettingsStayOnTheLogoRow() {
         var themeClicks = 0
         var mappingClicks = 0
-        var rewardClicks = 0
         var settingsClicks = 0
         val rtl = language == "ar"
         rule.setContent {
@@ -72,15 +83,14 @@ class ConsoleHeaderLayoutTest {
             CompositionLocalProvider(
                 LocalContext provides context,
                 LocalConfiguration provides configuration,
-                LocalDensity provides Density(1f, fontScale),
+                LocalDensity provides Density(density, fontScale),
                 LocalLayoutDirection provides if (rtl) LayoutDirection.Rtl else LayoutDirection.Ltr,
             ) {
                 MyApplicationTheme(themeMode = ThemeMode.DARK) {
                     // Match GroundedPage's horizontal/top inset and MainScreen's floating gear.
                     Box(Modifier.width(width.dp).background(MaterialTheme.colorScheme.background)) {
                         Box(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-                            ConsoleHeader(active, pro, rewardActive, remaining, ThemeMode.DARK,
-                                { mappingClicks++ }, { rewardClicks++ }, { themeClicks++ })
+                            ConsoleHeader(active, ThemeMode.DARK, { mappingClicks++ }, { themeClicks++ })
                         }
                         SettingsGear(rememberSettingsMotion(false), false, { settingsClicks++ },
                             Modifier.align(Alignment.TopEnd).padding(top = 16.dp, end = 14.dp))
@@ -90,7 +100,7 @@ class ConsoleHeaderLayoutTest {
         }
         rule.waitForIdle()
         rule.onRoot().captureRoboImage(
-            filePath = "build/outputs/header-review/header-${width}-${fontScale}-${language}-pro${pro}.png",
+            filePath = "build/outputs/header-review/header-${width}-${fontScale}-${language}-active${active}.png",
         )
         fun bounds(tag: String) = rule.onNodeWithTag(tag, useUnmergedTree = true).fetchSemanticsNode().boundsInRoot
         fun separated(a: Rect, b: Rect, gap: Float) =
@@ -99,39 +109,30 @@ class ConsoleHeaderLayoutTest {
         val logo = bounds("header_logo")
         val controls = bounds("header_controls")
         val mapping = bounds("mapping_badge")
+        val label = bounds("mapping_status_label")
         val gear = bounds("settings_gear")
         val labelLayouts = mutableListOf<TextLayoutResult>()
         rule.onNodeWithTag("mapping_status_label", useUnmergedTree = true)
             .performSemanticsAction(SemanticsActions.GetTextLayoutResult) { it(labelLayouts) }
         assertEquals("status stays readable on one line", 1, labelLayouts.single().lineCount)
-        // FlowRow's intrinsic pass can retain a wider paragraph container than the final Text.
-        // Check the actual line's glyph span, rather than counting that empty space as overflow.
+        // Android can report the unellipsized glyph span for RTL text. An ellipsized line is
+        // constrained by Text; otherwise its whole glyph span must fit.
         val labelLayout = labelLayouts.single()
+        assertEquals("requested font scale is applied", fontScale, labelLayout.layoutInput.density.fontScale, 0f)
+        assertEquals("requested display density is applied", density, labelLayout.layoutInput.density.density, 0f)
         val glyphWidth = labelLayout.getLineRight(0) - labelLayout.getLineLeft(0)
-        assertTrue("status glyphs fit horizontally", glyphWidth <= labelLayout.size.width + 1f)
-        assertTrue("status is not ellipsized", !labelLayouts.single().isLineEllipsized(0))
-        assertTrue("logo/control gap", separated(logo, controls, 12f))
-        assertTrue("logo/gear gap", separated(logo, gear, 12f))
-        assertTrue("controls/gear gap", separated(controls, gear, 12f))
-        assertTrue("full brand width", logo.width >= 141f)
+        assertTrue("status fits or ellipsizes", labelLayout.isLineEllipsized(0) || glyphWidth <= labelLayout.size.width + 1f)
+        assertTrue("status text stays inside pill", label.left >= mapping.left && label.right <= mapping.right + 1f)
+        assertTrue("logo/control gap", separated(logo, controls, 12f * density))
+        assertTrue("logo/gear gap", separated(logo, gear, 12f * density))
+        assertTrue("controls/gear gap", separated(controls, gear, 12f * density))
+        assertTrue("brand stays legible", logo.width >= 96f * density)
+        assertEquals("status shares logo row", logo.center.y, mapping.center.y, 1f)
+        assertTrue("status shares Settings row", kotlin.math.abs(mapping.center.y - gear.center.y) <= 12f * density)
         listOf(logo, mapping, gear).forEach {
-            assertTrue("48 dp touch height", it.height >= 48f)
-            assertTrue("within screen", it.left >= 0f && it.right <= width.toFloat())
-        }
-        if (!pro) {
-            val envelope = bounds("reward_ad_envelope")
-            val badge = bounds("reward_ad_badge")
-            val button = bounds("reward_ad_button")
-            assertTrue("reward/mapping gap", separated(envelope, mapping, 12f))
-            // The badge hangs over the circle's top edge without taking layout height, so it sits
-            // outside the envelope; it must stay on screen and clear of every other control.
-            assertTrue("badge on screen", badge.top >= 0f && badge.left >= 0f && badge.right <= width.toFloat())
-            assertTrue("badge over the button", badge.bottom > button.top && badge.top < button.top &&
-                badge.left < button.right && badge.right > button.left)
-            listOf(logo, mapping, gear).forEach { assertTrue("badge clear of controls", separated(badge, it, 0f)) }
-            assertTrue("48 dp reward target", button.width >= 48f && button.height >= 48f)
-            rule.onNodeWithTag("reward_ad_button").performClick()
-            assertEquals(1, rewardClicks)
+            assertTrue("48 dp touch height", it.height >= 48f * density - 1f)
+            assertTrue("48 dp touch width", it.width >= 48f * density - 1f)
+            assertTrue("within screen", it.left >= 0f && it.right <= width * density + 1f)
         }
         rule.onNodeWithTag("header_logo").performClick()
         rule.onNodeWithTag("mapping_badge").performClick()

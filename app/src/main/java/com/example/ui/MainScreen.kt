@@ -83,11 +83,13 @@ import com.example.ui.settings.SettingsGear
 import com.example.ui.settings.SettingsScreen
 import com.example.ui.settings.SettingsSection
 import com.example.ui.settings.SettingsScrim
+import com.example.ui.settings.SheetTopGap
 import com.example.ui.settings.SettingsSheet
 import com.example.ui.settings.rememberSettingsMotion
 import com.example.ui.theme.PageFloorStop
 import com.example.ui.theme.ThemeTransitionMs
 import com.example.ui.theme.backgroundGlowAlpha
+import com.example.ui.theme.groundFor
 import com.example.ui.theme.pageFloorFor
 import com.example.ui.theme.resolveThemeMode
 import com.example.ui.wizard.SetupWizardModal
@@ -126,22 +128,11 @@ fun MainScreen(viewModel: MainViewModel) {
     val editingScript by viewModel.editingScript.collectAsState()
     val isPro by viewModel.isPro.collectAsState()
     val proPrice by viewModel.proPrice.collectAsState()
-    val rewardExpiryAt by viewModel.rewardExpiryAt.collectAsState()
     val scriptsMessage by viewModel.scriptsMessage.collectAsState()
     val nudgeDismissed by viewModel.nudgeDismissed.collectAsState()
     val runLog by viewModel.runLog.collectAsState()
     val pendingImport by viewModel.pendingImport.collectAsState()
-    var nowTick by remember { mutableStateOf(System.currentTimeMillis()) }
-    LaunchedEffect(Unit) {
-        while (true) {
-            delay(5_000)
-            nowTick = System.currentTimeMillis()
-            viewModel.onClockTick()
-        }
-    }
-    val rewardActive = rewardExpiryAt > nowTick
-    val rewardRemainingLabel = if (rewardActive) formatRemaining(rewardExpiryAt - nowTick) else ""
-    val activeScriptLimit = EntitlementManager.FREE_SCRIPT_LIMIT + if (rewardActive) EntitlementManager.REWARD_BONUS_SCRIPTS else 0
+    val activeScriptLimit = EntitlementManager.FREE_SCRIPT_LIMIT
     val activeScriptCount = scripts.count { it.enabled }
     var isEventLogExpanded by remember { mutableStateOf(false) }
     var showTriggerPicker by remember { mutableStateOf(false) }
@@ -246,8 +237,6 @@ fun MainScreen(viewModel: MainViewModel) {
                         lastSource = lastSource,
                         isPro = isPro,
                         proPrice = proPrice,
-                        rewardActive = rewardActive,
-                        rewardRemainingLabel = rewardRemainingLabel,
                         activeScriptCount = activeScriptCount,
                         activeScriptLimit = activeScriptLimit,
                         themeMode = themeMode,
@@ -257,7 +246,6 @@ fun MainScreen(viewModel: MainViewModel) {
                         onOpenWizard = { viewModel.openSetupWizard(0) },
                         onOpenAccessibility = { showAccessibilityDisclosure = true },
                         onPickSuggestion = viewModel::createSuggestedScript,
-                        onRewardButtonClick = { viewModel.onRewardButtonClick(context as Activity) },
                         onOpenProScreen = { viewModel.purchasePro(context as Activity) },
                         onCycleTheme = { viewModel.setThemeMode(themeMode.next()) },
                         nudgeDismissed = nudgeDismissed,
@@ -290,14 +278,19 @@ fun MainScreen(viewModel: MainViewModel) {
                     .align(Alignment.BottomCenter)
                     .then(if (settingsOpen) Modifier.clearAndSetSemantics {} else Modifier),
             )
-            SettingsScrim(settingsMotion, settingsOpen, onClose = { settingsOpen = false })
+            SettingsScrim(
+                settingsMotion,
+                settingsOpen,
+                onClose = { settingsOpen = false },
+                ground = groundFor(themeMode, oledMode).stops.first().color,
+            )
             SettingsSheet(
                 settingsMotion,
                 Modifier
                     .fillMaxSize()
                     .statusBarsPadding()
                     .navigationBarsPadding()
-                    .padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 144.dp),
+                    .padding(start = 12.dp, end = 12.dp, top = SheetTopGap, bottom = 144.dp),
             ) {
                 SettingsScreen(
                     config = config,
@@ -639,13 +632,6 @@ fun MainScreen(viewModel: MainViewModel) {
             onDismiss = { showAccessibilityDisclosure = false },
         )
     }
-}
-
-private fun formatRemaining(ms: Long): String {
-    val totalMinutes = ms / 60_000
-    val hours = totalMinutes / 60
-    val minutes = totalMinutes % 60
-    return if (hours > 0) "${hours}h ${minutes}m" else "${minutes}m"
 }
 
 /** The page slide, at the redesign's 1.25x pace. */

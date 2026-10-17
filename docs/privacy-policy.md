@@ -1,6 +1,6 @@
 # KeySnap — Privacy Policy
 
-Last updated 13 October 2026
+Last updated 17 October 2026
 
 This is the same text the app shows under **Settings → About → Privacy policy**. A unit test
 (`PrivacyPolicyTest`) fails if the two ever disagree, so publish this file as-is and update it from
@@ -10,7 +10,7 @@ repo; update it by hand whenever this file changes.
 
 ## What is collected
 
-KeySnap has no servers, no accounts, no analytics and no crash reporting. KeySnap does not send the developer your shortcuts, key presses or usage history. Google's advertising and billing services receive the data described under "Advertising and purchases" below. Network requests, RSS feeds, messages and sharing that you configure or initiate may also send data to the destinations or apps you choose, as described below. If you share a shortcut, the app hands its text to the app you pick in Android's share sheet and sends it nowhere itself. Names of contacts and chats, phone numbers, RSS feed addresses and calendar names are left out of that text.
+KeySnap has no servers, no accounts, no analytics and no crash reporting. KeySnap does not send the developer your shortcuts, key presses or usage history. Google Play Billing receives the purchase data described under "Purchases" below. Network requests, RSS feeds, messages and sharing that you configure or initiate may also send data to the destinations or apps you choose, as described below. If you share a shortcut, the app hands its text to the app you pick in Android's share sheet and sends it nowhere itself. Names of contacts and chats, phone numbers, RSS feed addresses and calendar names are left out of that text.
 
 ## What is stored on your device
 
@@ -30,7 +30,7 @@ Start after restart is off by default. When you enable it, KeySnap listens for t
 
 ## Network use
 
-The app makes three kinds of network connection. The first is to your own device over the local network, to pair with Wireless Debugging and start Advanced Mode; it never leaves your network. The second is any HTTP request, URL or RSS feed that you put into a shortcut yourself, sent to the address you entered, exactly as you wrote it; the app never adds, rewrites or redirects those. An RSS feed is fetched with a plain GET request, at most every 15 minutes, only while an automation that follows it is switched on, your shortcuts are not paused and the phone is online. The request carries nothing from your shortcuts, only Android's standard headers, whose user-agent names the phone's model and Android version. The feed's server may redirect the request to another https address; it is never followed to an http one. The third is to Google, to fetch ads and to ask Google Play whether you have bought Pro. The app makes no other requests of its own.
+The app makes three kinds of network connection. The first is to your own device over the local network, to pair with Wireless Debugging and start Advanced Mode; it never leaves your network. The second is any HTTP request, URL or RSS feed that you put into a shortcut yourself, sent to the address you entered, exactly as you wrote it; the app never adds, rewrites or redirects those. An RSS feed is fetched with a plain GET request, at most every 15 minutes, only while an automation that follows it is switched on, your shortcuts are not paused and the phone is online. The request carries nothing from your shortcuts, only Android's standard headers, whose user-agent names the phone's model and Android version. The feed's server may redirect the request to another https address; it is never followed to an http one. The third is to Google Play, to process the Pro purchase and check whether you have bought Pro. The app makes no other requests of its own.
 
 ## Permissions and why
 
@@ -44,9 +44,9 @@ Your shortcuts and preferences are included in Android's backup so they return i
 
 Settings > About > Erase all data removes every shortcut, preference, key and bridge file, and stops Advanced Mode first so nothing is left running. Uninstalling the app removes its storage as well; if Advanced Mode is running when you uninstall, turn it off first so the bridge can clean itself up.
 
-## Advertising and purchases
+## Purchases
 
-The free version shows ads supplied by Google AdMob. AdMob receives only what its own SDK needs to select and measure an ad, such as your device model, coarse language and region, and the advertising ID that Android gives it, which you can reset or delete in Android's own settings. It never receives your shortcuts, the keys you press, or anything else this app records. Buying Pro removes the ads and is handled entirely by Google Play Billing: the app never sees your payment details and only asks Google Play whether the purchase exists. What Google does with what those two services receive is covered by Google's privacy policy at policies.google.com/privacy. The app is not directed at children.
+Pro is a one-time purchase handled entirely by Google Play Billing. Google Play processes the purchase and supplies its purchase state to the app; the app never sees your payment details. Google Play Billing never receives your shortcuts, key presses or usage history from KeySnap. Google's handling of purchase data is covered by Google's privacy policy at policies.google.com/privacy. The app is not directed at children.
 
 ## Changes
 

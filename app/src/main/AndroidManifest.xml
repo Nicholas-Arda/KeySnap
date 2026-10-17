@@ -91,12 +91,6 @@
         android:localeConfig="@xml/locales_config"
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication">
-        <!-- AdMob app ID. Supplied by app/build.gradle.kts from local.properties or the
-             environment, so no real AdMob identifier is committed to this public repository; a
-             checkout without one falls back to Google's public test app ID. -->
-        <meta-data
-            android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="${admobAppId}" />
         <!-- Component names are fully qualified because the Kotlin sources still live in
              com.example while the namespace/applicationId is io.github.nicholasarda.keysnap. -->
         <activity

@@ -13,19 +13,20 @@ import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.PurchasesUpdatedListener
 import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.QueryPurchasesParams
-import com.example.ads.AdConfig
 import com.example.data.EntitlementManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-/** Owns the Pro one-time purchase: [AdConfig.PRO_PRODUCT_ID] must exist as an in-app product in
+/** Owns the Pro one-time purchase: [PRO_PRODUCT_ID] must exist as an in-app product in
  *  Play Console before this can complete a real purchase (it will fail to find product details
  *  until then, which is expected during development). App-scoped: one BillingClient for the
  *  process, because MainViewModel dies with every Activity and a client per view model was never
  *  ended — its auto-reconnecting service connection and threads piled up on every relaunch. */
 class PurchaseManager private constructor(context: Context, private val entitlements: EntitlementManager) {
     companion object {
+        private const val PRO_PRODUCT_ID = "pro_unlock"
+
         @Volatile private var instance: PurchaseManager? = null
 
         fun getInstance(context: Context): PurchaseManager = instance ?: synchronized(this) {
@@ -78,7 +79,7 @@ class PurchaseManager private constructor(context: Context, private val entitlem
 
     private fun queryProductDetails() {
         val product = QueryProductDetailsParams.Product.newBuilder()
-            .setProductId(AdConfig.PRO_PRODUCT_ID)
+            .setProductId(PRO_PRODUCT_ID)
             .setProductType(BillingClient.ProductType.INAPP)
             .build()
         val params = QueryProductDetailsParams.newBuilder().setProductList(listOf(product)).build()
@@ -95,7 +96,7 @@ class PurchaseManager private constructor(context: Context, private val entitlem
         billingClient.queryPurchasesAsync(params) { result, purchases ->
             purchases.forEach(::handlePurchase)
             val ownsPro = purchases.any {
-                AdConfig.PRO_PRODUCT_ID in it.products && it.purchaseState == Purchase.PurchaseState.PURCHASED
+                PRO_PRODUCT_ID in it.products && it.purchaseState == Purchase.PurchaseState.PURCHASED
             }
             proAfterQuery(result.responseCode, ownsPro)?.let(entitlements::setPro)
         }
@@ -113,7 +114,7 @@ class PurchaseManager private constructor(context: Context, private val entitlem
     }
 
     private fun handlePurchase(purchase: Purchase) {
-        if (!purchase.products.contains(AdConfig.PRO_PRODUCT_ID)) return
+        if (!purchase.products.contains(PRO_PRODUCT_ID)) return
         if (purchase.purchaseState != Purchase.PurchaseState.PURCHASED) return
         entitlements.setPro(true)
         if (!purchase.isAcknowledged) {

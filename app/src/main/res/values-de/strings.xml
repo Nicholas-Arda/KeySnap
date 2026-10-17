@@ -639,6 +639,8 @@
 
     <!-- Start -->
     <string name="home_suggested_shortcuts">Vorgeschlagene Kurzbefehle</string>
+    <string name="ad_slot_tag">Werbefläche</string>
+    <string name="ad_slot_title">Deine Werbung könnte hier stehen</string>
     <string name="home_suggestions_group_single">Eine Taste, eine Aktion</string>
     <string name="home_suggestions_group_multi">Eine Taste, mehrere Schritte</string>
     <string name="home_suggestions_group_automation">Läuft von selbst</string>
@@ -699,31 +701,18 @@
     <string name="home_nudge_title">Erstelle deinen ersten Kurzbefehl</string>
     <string name="home_nudge_subtitle">Die Taschenlampe ist gleich darunter, ein Tippen.</string>
     <string name="home_nudge_dismiss">Schließen</string>
-    <string name="home_reward_cooldown">Belohnung in Abklingzeit, noch %1$s. Hol dir Pro.</string>
-    <string name="home_reward_available">Werbung ansehen für einen zusätzlichen Kurzbefehl für 4 Stunden</string>
-    <string name="home_reward_badge_idle">+1</string>
 
     <!-- Pro-Angebot -->
     <string name="pro_card_subtitle">Gratis hält %1$d Kurzbefehle aktiv. Pro hält alle aktiv.</string>
     <string name="pro_card_at_cap">Warum der nächste Kurzbefehl nicht aktiv bleibt</string>
     <string name="pro_active_shortcuts">Aktive Kurzbefehle</string>
     <string name="pro_progress_description">%1$d von %2$d aktiven Kurzbefehlen</string>
-    <string name="pro_reward_remaining">Noch %1$s</string>
-    <string name="pro_reward_offer">+%1$d für %2$d Std</string>
     <string name="pro_unlock">Pro freischalten</string>
     <string name="pro_unlock_with_price">Pro freischalten · %1$s</string>
     <string name="pro_table_free">Kostenlos</string>
     <string name="pro_table_pro">Pro</string>
     <string name="pro_table_unlimited">Unbegrenzt</string>
-    <string name="pro_table_free_limit_with_reward">%1$d (%2$d mit Belohnung)</string>
-    <string name="pro_table_ads">Werbung</string>
-    <string name="pro_table_shown">Wird angezeigt</string>
-    <string name="pro_table_none">Keine</string>
     <string name="pro_table_row_description">%1$s: Kostenlos %2$s, Pro %3$s</string>
-
-    <!-- Werbung -->
-    <string name="ad_loading">Werbung wird geladen…</string>
-    <string name="ad_sponsored">Gesponsert</string>
 
     <!-- Einstellungen -->
     <string name="settings_title">Einstellungen</string>
@@ -812,8 +801,8 @@
     <string name="about_traffic_device_body">Kopplung per kabellosem Debugging. Nur im lokalen Netzwerk.</string>
     <string name="about_traffic_yours">Adressen, die du selbst eingetippt hast</string>
     <string name="about_traffic_yours_body">Eine HTTP- oder URL-Aktion oder ein RSS-Feed, dem eine Automatisierung folgt, geht genau dorthin, wohin du sie geschrieben hast, unverändert.</string>
-    <string name="about_traffic_google">Google-Anzeigen und Google Play</string>
-    <string name="about_traffic_google_body">Um die Anzeige in der kostenlosen Version zu zeigen und zu prüfen, ob du Pro gekauft hast. Keiner von beiden erhält je einen Tastendruck oder einen Kurzbefehl.</string>
+    <string name="about_traffic_google">Google Play-Abrechnung</string>
+    <string name="about_traffic_google_body">Um den Pro-Kauf abzuwickeln und zu prüfen, ob du Pro besitzt. Es erhält nie einen Tastendruck oder einen Kurzbefehl.</string>
     <string name="about_traffic_all">Das ist die ganze Liste.</string>
     <string name="about_erase_title">Nimm jederzeit alles zurück</string>
     <string name="about_erase_body">Alle Daten löschen entfernt jeden Kurzbefehl, jede gespeicherte Taste, jede Einstellung und jede Bridge-Datei und stoppt zuerst den Erweiterten Modus, damit nichts weiterläuft.</string>
@@ -891,9 +880,8 @@
     <string name="saved_needs_trigger">Gespeichert. Weise eine Taste zu, damit er ausgeführt werden kann.</string>
     <string name="saved_named">„%1$s“ gespeichert</string>
     <string name="saved_needs_condition">Gespeichert. Füge eine Bedingung hinzu, die sich von selbst ändert, z. B. Wird geladen oder Bluetooth-Gerät verbunden, damit es ausgeführt werden kann.</string>
-    <string name="free_limit_saved_off">Kostenloser Plan: %1$d aktive Kurzbefehle. Als deaktiviert gespeichert – sieh dir eine Werbung an oder hol dir Pro, um ihn zu aktivieren.</string>
-    <string name="free_limit_reached">Limit des kostenlosen Plans erreicht. Hol dir Pro für unbegrenzte Kurzbefehle.</string>
-    <string name="free_limit_toggle_blocked">Kostenloser Plan: %1$d aktive Kurzbefehle. Sieh dir eine Werbung an oder hol dir Pro, um auch diesen zu aktivieren.</string>
+    <string name="free_limit_saved_off">Kostenloser Plan: %1$d aktive Kurzbefehle. Als deaktiviert gespeichert – hol dir Pro, um ihn zu aktivieren.</string>
+    <string name="free_limit_toggle_blocked">Kostenloser Plan: %1$d aktive Kurzbefehle. Hol dir Pro, um auch diesen zu aktivieren.</string>
 
     <!-- Datenschutzerklärung: Dialog-Rahmen. Der eigentliche Text bleibt in PrivacyPolicy.kt: er
          muss wortgleich mit dem für Play veröffentlichten englischen Dokument übereinstimmen. -->

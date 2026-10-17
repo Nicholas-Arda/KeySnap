@@ -17,7 +17,6 @@ import android.view.KeyEvent
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.ads.RewardedAdController
 import com.example.billing.PurchaseManager
 import com.example.data.ActionEditorForms
 import com.example.data.autoSendFailure
@@ -63,7 +62,6 @@ import com.example.service.adb.AdvancedAutostart
 import com.example.service.adb.WirelessAdbManager
 import com.example.service.bridge.BridgeController
 import com.example.service.bridge.BridgeState
-import com.google.android.gms.ads.MobileAds
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import io.github.nicholasarda.keysnap.R
@@ -157,10 +155,8 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
     val runLog: StateFlow<List<RunRecord>> = runLogRepository.runs
 
     private val entitlementManager = EntitlementManager.getInstance(appContext)
-    private val rewardedAdController = RewardedAdController.getInstance(appContext)
     private val purchaseManager = PurchaseManager.getInstance(appContext)
     val isPro: StateFlow<Boolean> = entitlementManager.isPro
-    val rewardExpiryAt: StateFlow<Long> = entitlementManager.rewardExpiryAt
 
     /** Null until Play answers the product query, so the Pro button falls back to a price-less label. */
     val proPrice: StateFlow<String?> = purchaseManager.proPrice
@@ -737,9 +733,6 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
         WirelessAdbManager.initialize(appContext)
         refreshServiceStatus()
 
-        // Google documents this as a slow call that should stay off the main thread.
-        viewModelScope.launch(Dispatchers.IO) { MobileAds.initialize(appContext) }
-        rewardedAdController.preload()
         purchaseManager.start()
         viewModelScope.launch {
             scriptRepository.scripts.collect {
@@ -903,30 +896,13 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
             val activeCount = scriptRepository.scripts.value.count { it.enabled }
             if (activeCount >= entitlementManager.activeScriptLimit) {
                 _scriptsMessage.value = ScriptsMessage(
-                    if (entitlementManager.rewardActive) {
-                        res.getString(R.string.free_limit_reached)
-                    } else {
-                        res.getString(R.string.free_limit_toggle_blocked, EntitlementManager.FREE_SCRIPT_LIMIT)
-                    },
+                    res.getString(R.string.free_limit_toggle_blocked, EntitlementManager.FREE_SCRIPT_LIMIT),
                     showProAction = true,
                 )
                 return
             }
         }
         scriptRepository.setScriptEnabled(id, enabled)
-    }
-
-    /** Tapping the reward button always offers another ad, even while a reward window is already
-     *  active — [EntitlementManager.grantRewardWindow] only extends it by the smaller re-watch
-     *  bonus in that case, so watching again isn't as rewarding as the first ad. */
-    fun onRewardButtonClick(activity: Activity) {
-        rewardedAdController.show(activity) { entitlementManager.grantRewardWindow() }
-    }
-
-    /** Called by the reward-countdown clock tick so an expired reward window turns its bonus
-     *  script back off on its own, instead of waiting for the next unrelated script-list edit. */
-    fun onClockTick() {
-        entitlementManager.enforceLimit()
     }
 
     fun purchasePro(activity: Activity) {

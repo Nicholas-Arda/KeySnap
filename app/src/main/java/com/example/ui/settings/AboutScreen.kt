@@ -70,8 +70,8 @@ import io.github.nicholasarda.keysnap.R
  * reads every hardware key and runs shell commands looks like spyware to someone who has only the
  * permission list to go on. Disbelief is not answered by a longer summary line, it is answered by
  * things that can be checked — published source, a boundary Android itself enforces, a switch that
- * deletes the bridge. So each claim here comes with the check that backs it, the ads are named
- * rather than omitted, and the animated miniatures carry the claim the sentence underneath spells
+ * deletes the bridge. So each claim here comes with the check that backs it, Google Play Billing
+ * is named, and the animated miniatures carry the claim the sentence underneath spells
  * out. Full screen rather than a dialog, because it is read, not dismissed.
  *
  * Every claim restates something [PrivacyPolicy] already says. If an action, permission or stored

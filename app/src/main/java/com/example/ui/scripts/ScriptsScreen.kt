@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -41,11 +42,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.style.Hyphens
+import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.unit.dp
 import com.example.data.ScriptActionCatalog
 import com.example.data.ScriptConstraintCatalog
@@ -163,7 +167,7 @@ private fun EmptyState(onGoHome: () -> Unit) {
 }
 
 @Composable
-private fun ScriptCard(
+internal fun ScriptCard(
     script: ShortcutScript,
     globallyEnabled: Boolean,
     lastRunFailed: Boolean,
@@ -190,60 +194,72 @@ private fun ScriptCard(
         shape = ConsoleShape,
         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
     ) {
-        Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                if (firstAction != null) {
-                    IconTile(iconForScript(script), category = ScriptActionCatalog.descriptor(firstAction.type)?.category)
-                } else {
-                    Box(Modifier.size(40.dp).clip(InnerShape).background(colors.surfaceVariant))
+        BoxWithConstraints(Modifier.padding(14.dp)) {
+            val stacked = maxWidth / LocalDensity.current.fontScale < 240.dp
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    if (!stacked && firstAction != null) {
+                        IconTile(iconForScript(script), category = ScriptActionCatalog.descriptor(firstAction.type)?.category)
+                    } else if (!stacked) {
+                        Box(Modifier.size(40.dp).clip(InnerShape).background(colors.surfaceVariant))
+                    }
+                    Column(Modifier.weight(1f)) {
+                        Text(
+                            script.name.ifBlank { stringResource(R.string.scripts_unnamed) },
+                            modifier = Modifier.testTag("script_name_${script.id}"),
+                            style = MaterialTheme.typography.titleSmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
+                            color = colors.onSurface,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                        val (triggerText, triggerOk) = triggerSummary(script)
+                        Text(
+                            triggerText,
+                            modifier = Modifier.testTag("script_subtitle_${script.id}"),
+                            style = MaterialTheme.typography.bodySmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
+                            color = if (triggerOk) colors.onSurfaceVariant else colors.error,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
+                    if (!stacked) EnabledPill(
+                        name = script.name.ifBlank { stringResource(R.string.scripts_unnamed) },
+                        scriptEnabled = script.enabled,
+                        globallyEnabled = globallyEnabled,
+                        onToggle = { onToggle(script.id, !script.enabled) },
+                        modifier = Modifier.testTag("script_status_${script.id}"),
+                    )
                 }
-                Column(Modifier.weight(1f)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    if (stacked) EnabledPill(
+                        name = script.name.ifBlank { stringResource(R.string.scripts_unnamed) },
+                        scriptEnabled = script.enabled,
+                        globallyEnabled = globallyEnabled,
+                        onToggle = { onToggle(script.id, !script.enabled) },
+                        modifier = Modifier.padding(end = 8.dp).testTag("script_status_${script.id}"),
+                    )
                     Text(
-                        script.name.ifBlank { stringResource(R.string.scripts_unnamed) },
-                        style = MaterialTheme.typography.titleSmall,
-                        color = colors.onSurface,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
+                        when {
+                            script.actions.isEmpty() -> stringResource(R.string.scripts_no_actions)
+                            lastRunFailed -> stringResource(R.string.scripts_last_run_failed)
+                            else -> pluralStringResource(R.plurals.scripts_action_count, script.actions.size, script.actions.size)
+                        },
+                        Modifier.weight(1f),
+                        style = MaterialTheme.typography.bodySmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
+                        color = if (script.actions.isEmpty() || lastRunFailed) colors.error else colors.onSurfaceVariant,
+                        maxLines = 2,
                     )
-                    val (triggerText, triggerOk) = triggerSummary(script)
-                    Text(
-                        triggerText,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = if (triggerOk) colors.onSurfaceVariant else colors.error,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                }
-                EnabledPill(
-                    name = script.name.ifBlank { stringResource(R.string.scripts_unnamed) },
-                    scriptEnabled = script.enabled,
-                    globallyEnabled = globallyEnabled,
-                    onToggle = { onToggle(script.id, !script.enabled) },
-                    modifier = Modifier.testTag("script_status_${script.id}"),
-                )
-            }
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    when {
-                        script.actions.isEmpty() -> stringResource(R.string.scripts_no_actions)
-                        lastRunFailed -> stringResource(R.string.scripts_last_run_failed)
-                        else -> pluralStringResource(R.plurals.scripts_action_count, script.actions.size, script.actions.size)
-                    },
-                    Modifier.weight(1f),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = if (script.actions.isEmpty() || lastRunFailed) colors.error else colors.onSurfaceVariant,
-                    maxLines = 1,
-                )
-                IconButton(
-                    onClick = { showDeleteConfirm = true },
-                    modifier = Modifier.size(MinTouchTarget).testTag("delete_script_${script.id}"),
-                ) {
-                    Icon(
-                        Icons.Outlined.DeleteOutline,
-                        contentDescription = stringResource(R.string.scripts_delete_label, script.name.ifBlank { stringResource(R.string.scripts_unnamed) }),
-                        Modifier.size(20.dp),
-                        tint = colors.onSurfaceVariant,
-                    )
+                    IconButton(
+                        onClick = { showDeleteConfirm = true },
+                        modifier = Modifier.size(MinTouchTarget).testTag("delete_script_${script.id}"),
+                    ) {
+                        Icon(
+                            Icons.Outlined.DeleteOutline,
+                            contentDescription = stringResource(R.string.scripts_delete_label, script.name.ifBlank { stringResource(R.string.scripts_unnamed) }),
+                            Modifier.size(20.dp),
+                            tint = colors.onSurfaceVariant,
+                        )
+                    }
                 }
             }
         }

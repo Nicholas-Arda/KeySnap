@@ -639,6 +639,8 @@
 
     <!-- Главный экран -->
     <string name="home_suggested_shortcuts">Предлагаемые сценарии</string>
+    <string name="ad_slot_tag">Рекламное место</string>
+    <string name="ad_slot_title">Здесь может быть ваша реклама</string>
     <string name="home_suggestions_group_single">Одна клавиша, одно действие</string>
     <string name="home_suggestions_group_multi">Одна клавиша, несколько шагов</string>
     <string name="home_suggestions_group_automation">Работает само</string>
@@ -699,31 +701,18 @@
     <string name="home_nudge_title">Создайте свой первый сценарий</string>
     <string name="home_nudge_subtitle">Фонарик — прямо под этим, в одно касание.</string>
     <string name="home_nudge_dismiss">Закрыть</string>
-    <string name="home_reward_cooldown">Награда на перезарядке, осталось %1$s. Перейдите на Pro.</string>
-    <string name="home_reward_available">Посмотрите рекламу, чтобы получить один дополнительный сценарий на 4 часа</string>
-    <string name="home_reward_badge_idle">+1</string>
 
     <!-- Продвижение Pro -->
     <string name="pro_card_subtitle">Бесплатно — не более %1$d включённых сценариев. Pro — все сразу.</string>
     <string name="pro_card_at_cap">Почему следующий сценарий не остаётся включённым</string>
     <string name="pro_active_shortcuts">Активные сценарии</string>
     <string name="pro_progress_description">%1$d из %2$d активных сценариев</string>
-    <string name="pro_reward_remaining">Осталось %1$s</string>
-    <string name="pro_reward_offer">+%1$d на %2$d ч</string>
     <string name="pro_unlock">Открыть Pro</string>
     <string name="pro_unlock_with_price">Открыть Pro · %1$s</string>
     <string name="pro_table_free">Бесплатно</string>
     <string name="pro_table_pro">Pro</string>
     <string name="pro_table_unlimited">Без ограничений</string>
-    <string name="pro_table_free_limit_with_reward">%1$d (%2$d с наградой)</string>
-    <string name="pro_table_ads">Реклама</string>
-    <string name="pro_table_shown">Есть</string>
-    <string name="pro_table_none">Нет</string>
     <string name="pro_table_row_description">%1$s: Бесплатно %2$s, Pro %3$s</string>
-
-    <!-- Реклама -->
-    <string name="ad_loading">Загрузка рекламы…</string>
-    <string name="ad_sponsored">Реклама</string>
 
     <!-- Настройки -->
     <string name="settings_title">Настройки</string>
@@ -753,7 +742,7 @@
     <string name="settings_about_panel">О приложении</string>
     <string name="settings_about_app">О KeySnap</string>
     <string name="settings_about_app_summary">Открытый код · ничто не покидает телефон</string>
-    <string name="settings_privacy_policy">Политика конфиденциальности</string>
+    <string name="settings_privacy_policy">Политика конфиден\u00adциальности</string>
     <string name="about_contact">Связаться с поддержкой</string>
     <string name="settings_erase">Удалить все данные</string>
     <string name="settings_erase_confirm_title">Удалить все данные?</string>
@@ -812,8 +801,8 @@
     <string name="about_traffic_device_body">Сопряжение по беспроводной отладке. Только локальная сеть.</string>
     <string name="about_traffic_yours">Адреса, которые вы ввели сами</string>
     <string name="about_traffic_yours_body">Действие HTTP или «Открыть URL», а также RSS-лента, за которой следит автоматизация, обращаются ровно по адресу, который вы написали, без изменений.</string>
-    <string name="about_traffic_google">Реклама Google и Google Play</string>
-    <string name="about_traffic_google_body">Чтобы показать рекламу в бесплатной версии и узнать, куплена ли версия Pro. Ни один из них никогда не получает нажатие клавиши или сценарий.</string>
+    <string name="about_traffic_google">Платежи Google Play</string>
+    <string name="about_traffic_google_body">Для обработки покупки Pro и проверки права на неё. Нажатия клавиш и сценарии никогда не передаются.</string>
     <string name="about_traffic_all">Это весь список.</string>
     <string name="about_erase_title">Заберите всё обратно в любой момент</string>
     <string name="about_erase_body">«Удалить все данные» убирает каждый сценарий, сохранённую клавишу, настройку и файл моста, а сначала останавливает Расширенный режим, чтобы ничего не осталось работать.</string>
@@ -891,9 +880,8 @@
     <string name="saved_needs_trigger">Сохранено. Назначьте клавишу, чтобы он мог сработать.</string>
     <string name="saved_named">Сохранено: «%1$s»</string>
     <string name="saved_needs_condition">Сохранено. Добавьте условие, которое меняется само, например «Заряжается» или «Bluetooth-устройство подключено», чтобы сценарий мог сработать.</string>
-    <string name="free_limit_saved_off">Бесплатный план: %1$d активных сценариев. Сохранено выключенным — посмотрите рекламу или перейдите на Pro, чтобы включить его.</string>
-    <string name="free_limit_reached">Достигнут лимит бесплатного плана. Перейдите на Pro для неограниченного количества сценариев.</string>
-    <string name="free_limit_toggle_blocked">Бесплатный план: %1$d активных сценариев. Посмотрите рекламу или перейдите на Pro, чтобы включить и этот тоже.</string>
+    <string name="free_limit_saved_off">Бесплатный план: %1$d активных сценариев. Сохранено выключенным — перейдите на Pro, чтобы включить его.</string>
+    <string name="free_limit_toggle_blocked">Бесплатный план: %1$d активных сценариев. Перейдите на Pro, чтобы включить и этот тоже.</string>
 
     <!-- Privacy policy dialog chrome. The policy body itself stays in PrivacyPolicy.kt: it has to
          match the English document published for Play word for word. -->

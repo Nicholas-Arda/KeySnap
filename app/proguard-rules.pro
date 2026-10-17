@@ -15,8 +15,3 @@
 # registered as a java.security.Provider, so R8 sees every reference and no keep rule is needed.
 -dontwarn org.bouncycastle.**
 -dontwarn javax.naming.**
-
-# play-services-ads pulls in WorkManager with room-runtime 2.2.5, whose consumer rule keeps the
-# generated WorkDatabase_Impl class but not its no-arg constructor. R8 strips it, Room can no
-# longer instantiate the database, and every release launch dies in InitializationProvider.
--keep class * extends androidx.room.RoomDatabase { <init>(); }

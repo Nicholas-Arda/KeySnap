@@ -23,7 +23,6 @@ roborazzi = "1.59.0"
 bouncyCastle = "1.85"
 conscrypt = "2.6.3"
 libadbAndroid = "3.1.1"
-playServicesAds = "23.6.0"
 billing = "8.3.0"
 fragment = "1.8.9"
 
@@ -63,7 +62,6 @@ bcpkix = { group = "org.bouncycastle", name = "bcpkix-jdk18on", version.ref = "b
 conscrypt-android = { group = "org.conscrypt", name = "conscrypt-android", version.ref = "conscrypt" }
 conscrypt-openjdk-uber = { group = "org.conscrypt", name = "conscrypt-openjdk-uber", version.ref = "conscrypt" }
 libadb-android = { group = "com.github.MuntashirAkon", name = "libadb-android", version.ref = "libadbAndroid" }
-play-services-ads = { group = "com.google.android.gms", name = "play-services-ads", version.ref = "playServicesAds" }
 billing-ktx = { group = "com.android.billingclient", name = "billing-ktx", version.ref = "billing" }
 # Pinned: play-services-basement pulls fragment 1.1.0, which Play Console flags as outdated.
 androidx-fragment = { group = "androidx.fragment", name = "fragment", version.ref = "fragment" }

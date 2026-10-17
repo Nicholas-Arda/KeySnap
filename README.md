@@ -87,7 +87,7 @@ The full list with reasons is in the [privacy policy](https://nicholas-arda.gith
 
 ## Privacy
 
-No servers, no accounts, no analytics, no crash reporting. Your shortcuts and key presses never leave the device unless you share a shortcut yourself, and then only through the app you pick. The free version shows ads through Google AdMob and the Pro purchase goes through Google Play Billing; neither receives anything the app records. Details: [privacy policy](https://nicholas-arda.github.io/keysnap-privacy/).
+No servers, no accounts, no analytics, no automatic crash reporting. KeySnap does not automatically upload your shortcuts or key presses. Sharing a shortcut or sending an optional problem recording hands it to the app you choose. Network actions and RSS feeds use the destinations you configure. The Pro purchase goes through Google Play Billing, which never receives your shortcuts, key presses or usage history from KeySnap. Details: [privacy policy](https://nicholas-arda.github.io/keysnap-privacy/).
 
 ## Building from source
 
@@ -102,7 +102,7 @@ Android Studio with its bundled JDK is all you need. `:app` is the Kotlin and Je
 
 ## FAQ
 
-**Is it free?** The free version has two shortcuts and two home-screen widgets, and shows ads. Pro is a one-time purchase through Google Play that removes those limits and the ads; there is no subscription. The three Quick Settings tiles are free.
+**Is it free?** The free version allows three active shortcuts and two home-screen widgets. Pro is a one-time purchase through Google Play that removes those limits; there is no subscription. The three Quick Settings tiles are free.
 
 **Does it need root?** No. Everyday shortcuts use the accessibility service; Advanced Mode uses Wireless Debugging, a feature already in Android's Developer options. Nothing on the phone is modified.
 
@@ -124,7 +124,7 @@ Android Studio with its bundled JDK is all you need. `:app` is the Kotlin and Je
 
 **Can Advanced Mode return after a reboot?** Enable *Settings → Advanced Mode → Start after restart*. It starts again after your first unlock and a Wi-Fi connection, using the existing pairing. Android 11–12 can ask for network approval after each restart; some phone makers require auto-launch permission. The option is off by default. Wireless Debugging stays on while Advanced Mode runs. If KeySnap enabled it, turning the option off also stops Advanced Mode and restores Wireless Debugging. A daily local connection checks the existing pairing but does not guarantee that Android extends its expiry; an expired or removed pairing needs setup again.
 
-**Does it need internet?** No. The app never contacts a server of its own. The only network use is pairing with your own phone over your local network, the ads in the free version, and any URL or RSS feed you put into a shortcut yourself.
+**Does it need internet?** Shortcuts work offline unless they use a network action or RSS feed. The app never contacts a server of its own. Network use is limited to pairing with your own phone over your local network, processing and checking the Pro purchase through Google Play, and any HTTP request, URL or RSS feed you put into a shortcut yourself.
 
 **Can I back up my shortcuts?** They travel with Android's own backup, so they come back when you restore a phone. The Advanced Mode pairing is deliberately not backed up, because it authorises one specific device.
 
@@ -154,4 +154,4 @@ Translations live in `app/src/main/res/values-*/strings.xml`.
 
 ## Licence
 
-KeySnap is free software under the [GNU General Public License v3.0](LICENSE). Google AdMob and Google Play Billing are the only third-party services it talks to, and only for showing ads and processing the Pro purchase.
+KeySnap is free software under the [GNU General Public License v3.0](LICENSE). Google Play Billing is the only third-party SDK service, used only to process and check the Pro purchase. Network actions and RSS feeds connect only to destinations you configure.

@@ -639,6 +639,8 @@
 
     <!-- Accueil -->
     <string name="home_suggested_shortcuts">Raccourcis suggérés</string>
+    <string name="ad_slot_tag">Espace publicitaire</string>
+    <string name="ad_slot_title">Votre publicité pourrait être ici</string>
     <string name="home_suggestions_group_single">Une touche, une action</string>
     <string name="home_suggestions_group_multi">Une touche, plusieurs étapes</string>
     <string name="home_suggestions_group_automation">S\'exécute tout seul</string>
@@ -699,31 +701,18 @@
     <string name="home_nudge_title">Créez votre premier raccourci</string>
     <string name="home_nudge_subtitle">La lampe torche est juste en dessous, en un geste.</string>
     <string name="home_nudge_dismiss">Fermer</string>
-    <string name="home_reward_cooldown">Récompense en recharge, %1$s restant. Passez à Pro.</string>
-    <string name="home_reward_available">Regarder une pub pour un raccourci supplémentaire pendant 4 heures</string>
-    <string name="home_reward_badge_idle">+1</string>
 
     <!-- Offre Pro -->
     <string name="pro_card_subtitle">La version gratuite garde %1$d raccourcis activés. Pro les garde tous activés.</string>
     <string name="pro_card_at_cap">Pourquoi le prochain raccourci ne restera pas activé</string>
     <string name="pro_active_shortcuts">Raccourcis actifs</string>
     <string name="pro_progress_description">%1$d sur %2$d raccourcis actifs</string>
-    <string name="pro_reward_remaining">%1$s restant</string>
-    <string name="pro_reward_offer">+%1$d pour %2$dh</string>
     <string name="pro_unlock">Débloquer Pro</string>
     <string name="pro_unlock_with_price">Débloquer Pro · %1$s</string>
     <string name="pro_table_free">Gratuit</string>
     <string name="pro_table_pro">Pro</string>
     <string name="pro_table_unlimited">Illimité</string>
-    <string name="pro_table_free_limit_with_reward">%1$d (%2$d avec récompense)</string>
-    <string name="pro_table_ads">Publicités</string>
-    <string name="pro_table_shown">Affichées</string>
-    <string name="pro_table_none">Aucune</string>
     <string name="pro_table_row_description">%1$s : Gratuit %2$s, Pro %3$s</string>
-
-    <!-- Publicités -->
-    <string name="ad_loading">Chargement de la publicité…</string>
-    <string name="ad_sponsored">Sponsorisé</string>
 
     <!-- Paramètres -->
     <string name="settings_title">Paramètres</string>
@@ -812,8 +801,8 @@
     <string name="about_traffic_device_body">Association au débogage sans fil. Réseau local uniquement.</string>
     <string name="about_traffic_yours">Les adresses que vous avez saisies</string>
     <string name="about_traffic_yours_body">Une action HTTP ou Ouvrir une URL, ou un flux RSS suivi par une automatisation, va exactement où vous l\'avez écrite, sans modification.</string>
-    <string name="about_traffic_google">Annonces Google et Google Play</string>
-    <string name="about_traffic_google_body">Pour afficher l\'annonce dans la version gratuite et vérifier si vous avez acheté Pro. Ni l\'un ni l\'autre ne reçoit un appui de touche ou un raccourci.</string>
+    <string name="about_traffic_google">Facturation Google Play</string>
+    <string name="about_traffic_google_body">Pour traiter l\'achat de Pro et vérifier si vous le possédez. Aucun appui de touche ni raccourci ne lui est transmis.</string>
     <string name="about_traffic_all">C\'est toute la liste.</string>
     <string name="about_erase_title">Reprenez tout quand vous voulez</string>
     <string name="about_erase_body">Effacer toutes les données retire chaque raccourci, chaque touche enregistrée, chaque préférence et chaque fichier du pont, et arrête d\'abord le mode avancé pour que rien ne continue de tourner.</string>
@@ -891,9 +880,8 @@
     <string name="saved_needs_trigger">Enregistré. Attribuez une touche pour qu\'il puisse s\'exécuter.</string>
     <string name="saved_named">« %1$s » enregistré</string>
     <string name="saved_needs_condition">Enregistré. Ajoutez une condition qui change d\'elle-même, comme En charge ou Appareil Bluetooth connecté, pour qu\'il puisse s\'exécuter.</string>
-    <string name="free_limit_saved_off">Offre gratuite : %1$d raccourcis actifs. Enregistré désactivé — regardez une pub ou passez à Pro pour l\'activer.</string>
-    <string name="free_limit_reached">Limite de l\'offre gratuite atteinte. Passez à Pro pour des raccourcis illimités.</string>
-    <string name="free_limit_toggle_blocked">Offre gratuite : %1$d raccourcis actifs. Regardez une pub ou passez à Pro pour activer celui-ci aussi.</string>
+    <string name="free_limit_saved_off">Offre gratuite : %1$d raccourcis actifs. Enregistré désactivé — passez à Pro pour l\'activer.</string>
+    <string name="free_limit_toggle_blocked">Offre gratuite : %1$d raccourcis actifs. Passez à Pro pour activer celui-ci aussi.</string>
 
     <!-- Habillage de la boîte de dialogue de politique de confidentialité. Le corps de la politique
          reste dans PrivacyPolicy.kt : il doit correspondre mot pour mot au document anglais publié

@@ -640,6 +640,8 @@
 
     <!-- Início -->
     <string name="home_suggested_shortcuts">Atalhos sugeridos</string>
+    <string name="ad_slot_tag">Espaço publicitário</string>
+    <string name="ad_slot_title">Seu anúncio pode estar aqui</string>
     <string name="home_suggestions_group_single">Uma tecla, uma ação</string>
     <string name="home_suggestions_group_multi">Uma tecla, várias etapas</string>
     <string name="home_suggestions_group_automation">Roda sozinho</string>
@@ -700,31 +702,18 @@
     <string name="home_nudge_title">Crie seu primeiro atalho</string>
     <string name="home_nudge_subtitle">A lanterna está logo abaixo, a um toque.</string>
     <string name="home_nudge_dismiss">Fechar</string>
-    <string name="home_reward_cooldown">Recompensa em espera, faltam %1$s. Compre o Pro.</string>
-    <string name="home_reward_available">Assista a um anúncio para ganhar um atalho extra por 4 horas</string>
-    <string name="home_reward_badge_idle">+1</string>
 
     <!-- Oferta Pro -->
     <string name="pro_card_subtitle">O plano gratuito mantém %1$d atalhos ativos. O Pro mantém todos.</string>
     <string name="pro_card_at_cap">Por que o próximo atalho não vai ficar ativo</string>
     <string name="pro_active_shortcuts">Atalhos ativos</string>
     <string name="pro_progress_description">%1$d de %2$d atalhos ativos</string>
-    <string name="pro_reward_remaining">Faltam %1$s</string>
-    <string name="pro_reward_offer">+%1$d por %2$dh</string>
     <string name="pro_unlock">Desbloquear Pro</string>
     <string name="pro_unlock_with_price">Desbloquear Pro · %1$s</string>
     <string name="pro_table_free">Grátis</string>
     <string name="pro_table_pro">Pro</string>
     <string name="pro_table_unlimited">Ilimitado</string>
-    <string name="pro_table_free_limit_with_reward">%1$d (%2$d com recompensa)</string>
-    <string name="pro_table_ads">Anúncios</string>
-    <string name="pro_table_shown">Exibidos</string>
-    <string name="pro_table_none">Nenhum</string>
     <string name="pro_table_row_description">%1$s: Grátis %2$s, Pro %3$s</string>
-
-    <!-- Anúncios -->
-    <string name="ad_loading">Carregando anúncio…</string>
-    <string name="ad_sponsored">Patrocinado</string>
 
     <!-- Configurações -->
     <string name="settings_title">Configurações</string>
@@ -813,8 +802,8 @@
     <string name="about_traffic_device_body">Pareamento por Depuração sem Fio. Somente rede local.</string>
     <string name="about_traffic_yours">Endereços que você mesmo digitou</string>
     <string name="about_traffic_yours_body">Uma ação HTTP ou Abrir URL, ou um feed RSS que uma automação acompanha, vai exatamente para onde você escreveu, sem alterações.</string>
-    <string name="about_traffic_google">Anúncios do Google e Google Play</string>
-    <string name="about_traffic_google_body">Para exibir o anúncio na versão gratuita e verificar se você comprou o Pro. Nenhum dos dois recebe uma tecla pressionada ou um atalho.</string>
+    <string name="about_traffic_google">Faturamento do Google Play</string>
+    <string name="about_traffic_google_body">Para processar a compra do Pro e verificar se você o possui. Nunca recebe uma tecla pressionada ou um atalho.</string>
     <string name="about_traffic_all">Essa é a lista inteira.</string>
     <string name="about_erase_title">Retome tudo quando quiser</string>
     <string name="about_erase_body">Apagar todos os dados remove cada atalho, tecla salva, preferência e arquivo da ponte, e interrompe o Modo Avançado antes, para que nada continue rodando.</string>
@@ -892,9 +881,8 @@
     <string name="saved_needs_trigger">Salvo. Atribua uma tecla para que possa ser executado.</string>
     <string name="saved_named">\"%1$s\" salvo</string>
     <string name="saved_needs_condition">Salvo. Adicione uma condição que muda sozinha, como Carregando ou Dispositivo Bluetooth conectado, para que possa ser executado.</string>
-    <string name="free_limit_saved_off">Plano gratuito: %1$d atalhos ativos. Salvo como desativado — assista a um anúncio ou compre o Pro para ativá-lo.</string>
-    <string name="free_limit_reached">Limite do plano gratuito atingido. Compre o Pro para atalhos ilimitados.</string>
-    <string name="free_limit_toggle_blocked">Plano gratuito: %1$d atalhos ativos. Assista a um anúncio ou compre o Pro para ativar este também.</string>
+    <string name="free_limit_saved_off">Plano gratuito: %1$d atalhos ativos. Salvo como desativado — compre o Pro para ativá-lo.</string>
+    <string name="free_limit_toggle_blocked">Plano gratuito: %1$d atalhos ativos. Compre o Pro para ativar este também.</string>
 
     <!-- Privacy policy dialog chrome. The policy body itself stays in PrivacyPolicy.kt: it has to
          match the English document published for Play word for word. -->

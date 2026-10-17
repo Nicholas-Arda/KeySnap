@@ -666,6 +666,8 @@
 
     <!-- Home -->
     <string name="home_suggested_shortcuts">Suggested shortcuts</string>
+    <string name="ad_slot_tag">Ad space</string>
+    <string name="ad_slot_title">Your ad could be here</string>
     <string name="home_suggestions_group_single">One key, one action</string>
     <string name="home_suggestions_group_multi">One key, several steps</string>
     <string name="home_suggestions_group_automation">Runs by itself</string>
@@ -726,31 +728,18 @@
     <string name="home_nudge_title">Make your first shortcut</string>
     <string name="home_nudge_subtitle">Flashlight is one tap below.</string>
     <string name="home_nudge_dismiss">Dismiss</string>
-    <string name="home_reward_cooldown">Reward on cooldown, %1$s left. Go Pro.</string>
-    <string name="home_reward_available">Watch an ad for one extra shortcut for 4 hours</string>
-    <string name="home_reward_badge_idle">+1</string>
 
     <!-- Pro upsell -->
     <string name="pro_card_subtitle">Free keeps %1$d shortcuts on. Pro keeps all of them on.</string>
     <string name="pro_card_at_cap">Why the next shortcut won\'t stay on</string>
     <string name="pro_active_shortcuts">Active shortcuts</string>
     <string name="pro_progress_description">%1$d of %2$d active shortcuts</string>
-    <string name="pro_reward_remaining">%1$s left</string>
-    <string name="pro_reward_offer">+%1$d for %2$dh</string>
     <string name="pro_unlock">Unlock Pro</string>
     <string name="pro_unlock_with_price">Unlock Pro · %1$s</string>
     <string name="pro_table_free">Free</string>
     <string name="pro_table_pro">Pro</string>
     <string name="pro_table_unlimited">Unlimited</string>
-    <string name="pro_table_free_limit_with_reward">%1$d (%2$d with a reward)</string>
-    <string name="pro_table_ads">Ads</string>
-    <string name="pro_table_shown">Shown</string>
-    <string name="pro_table_none">None</string>
     <string name="pro_table_row_description">%1$s: Free %2$s, Pro %3$s</string>
-
-    <!-- Ads -->
-    <string name="ad_loading">Loading ad…</string>
-    <string name="ad_sponsored">Sponsored</string>
 
     <!-- Settings -->
     <string name="settings_title">Settings</string>
@@ -853,8 +842,8 @@
     <string name="about_traffic_device_body">Wireless Debugging pairing. Local network only.</string>
     <string name="about_traffic_yours">Addresses you typed yourself</string>
     <string name="about_traffic_yours_body">An HTTP or Open URL action, or an RSS feed an automation follows, goes exactly where you wrote it, unchanged.</string>
-    <string name="about_traffic_google">Google ads and Google Play</string>
-    <string name="about_traffic_google_body">To show the ad in the free version and to check whether you bought Pro. Neither ever receives a key press or a shortcut.</string>
+    <string name="about_traffic_google">Google Play Billing</string>
+    <string name="about_traffic_google_body">To process the Pro purchase and check whether you own it. It never receives a key press or a shortcut.</string>
     <string name="about_traffic_all">That is the whole list.</string>
     <string name="about_erase_title">Take it all back whenever you like</string>
     <string name="about_erase_body">Erase all data removes every shortcut, saved key, preference and bridge file, and stops Advanced Mode first so nothing is left running.</string>
@@ -936,9 +925,8 @@
     <string name="saved_needs_trigger">Saved. Assign a key so it can run.</string>
     <string name="saved_named">Saved \"%1$s\"</string>
     <string name="saved_needs_condition">Saved. Add a condition that changes on its own, like Charging or Bluetooth device connected, so it can run.</string>
-    <string name="free_limit_saved_off">Free plan: %1$d active shortcuts. Saved as off — watch an ad or go Pro to turn it on.</string>
-    <string name="free_limit_reached">Free plan limit reached. Go Pro for unlimited shortcuts.</string>
-    <string name="free_limit_toggle_blocked">Free plan: %1$d active shortcuts. Watch an ad or go Pro to turn this one on too.</string>
+    <string name="free_limit_saved_off">Free plan: %1$d active shortcuts. Saved as off — go Pro to turn it on.</string>
+    <string name="free_limit_toggle_blocked">Free plan: %1$d active shortcuts. Go Pro to turn this one on too.</string>
 
     <!-- Privacy policy dialog chrome. The policy body itself stays in PrivacyPolicy.kt: it has to
          match the English document published for Play word for word. -->
