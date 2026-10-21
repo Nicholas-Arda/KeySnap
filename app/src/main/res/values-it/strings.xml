@@ -719,6 +719,13 @@
     <string name="settings_title">Impostazioni</string>
     <string name="settings_subtitle">Impostazioni predefinite da cui parte ogni nuova scorciatoia.</string>
     <string name="settings_group_keys">Tasti</string>
+    <string name="settings_keys_summary">Tempi di pressione, comportamento dei tasti e vibrazione</string>
+    <string name="settings_personalization">Personalizzazione</string>
+    <string name="settings_key_behavior">Comportamento dei tasti</string>
+    <string name="settings_setup_tools">Strumenti di configurazione</string>
+    <string name="settings_setup_tools_summary">Accessibilità e modalità avanzata</string>
+    <string name="settings_input_monitor_summary">Eventi dei tasti fisici</string>
+    <string name="settings_experimental">Sperimentale</string>
     <string name="settings_group_advanced">Avanzate</string>
     <string name="settings_group_app">App</string>
     <string name="settings_defaults_panel">Valori predefiniti per le nuove scorciatoie</string>
@@ -742,7 +749,7 @@
     <string name="settings_run_setup_description">Riassocia il debug wireless.</string>
     <string name="settings_about_panel">Informazioni</string>
     <string name="settings_about_app">Informazioni su KeySnap</string>
-    <string name="settings_about_app_summary">Open source · niente esce dal tuo telefono</string>
+    <string name="settings_about_app_summary">Nucleo open source · niente esce dal tuo telefono</string>
     <string name="settings_privacy_policy">Informativa sulla privacy</string>
     <string name="about_contact">Contatta il supporto</string>
     <string name="settings_erase">Elimina tutti i dati</string>
@@ -785,13 +792,14 @@
 
     <!-- Procedura guidata di configurazione -->
     <string name="about_hero_title">Niente di ciò che fai qui esce dal tuo telefono.</string>
-    <string name="about_hero_body">Nessun server. Nessun account. Nessuna analisi. KeySnap non ha un posto in cui mandare le tue scorciatoie o i tasti che premi, e l\'intera app è open source: non devi crederci sulla parola.</string>
+    <string name="about_hero_body">Nessun server. Nessun account. Nessuna analisi. KeySnap non ha un posto in cui mandare le tue scorciatoie o i tasti che premi, e il suo nucleo è open source: non devi crederci sulla parola.</string>
     <string name="about_no_server_title">Non esiste alcun server</string>
     <string name="about_no_server_body">KeySnap non ha backend, account né segnalazione di arresti anomali. Ciò che assegni, ciò che premi e le app che usi restano nella memoria privata di questa app. Non c\'è codice che carichi nulla di tutto questo, perché non c\'è alcuna destinazione.</string>
     <string name="about_illo_no_server_caption">pressioni · scorciatoie · utilizzo</string>
-    <string name="about_open_source_title">Open source, così puoi verificare</string>
-    <string name="about_open_source_body">Ogni riga di KeySnap è pubblicata con licenza GPLv3. Leggi a cosa serve ogni autorizzazione, compila l\'app da solo o falla controllare a qualcuno che sa farlo.</string>
+    <string name="about_open_source_title">Nucleo open source, così puoi verificare</string>
+    <string name="about_open_source_body">Il nucleo di KeySnap (tutte le scorciatoie, le azioni e le autorizzazioni) è pubblicato con licenza GPLv3. Leggi a cosa serve ogni autorizzazione, compila l\'app da solo o falla controllare a qualcuno che sa farlo. Alcune funzioni Pro, come Key capsule, non sono open source.</string>
     <string name="about_view_source">Vedi il codice su GitHub</string>
+    <string name="about_licenses">Licenze open source</string>
     <string name="about_scope_title">Il servizio di Accessibilità vede solo le Impostazioni</string>
     <string name="about_scope_body">Android non offre alle app nessun altro modo per rilevare un tasto fisico. Il servizio di KeySnap è limitato all\'app Impostazioni di sistema e la usa per una cosa sola: leggere il codice di accoppiamento mentre configuri la Modalità avanzata. Non può leggere la tua app bancaria, i tuoi messaggi o ciò che digiti: lo impone Android, non una promessa.</string>
     <string name="about_bridge_title">La Modalità avanzata è l\'ADB del tuo telefono</string>
@@ -1064,4 +1072,7 @@
     <string name="whats_new_fix_large_text">Il testo non si spezza né si schiaccia più con dimensioni grandi di schermo e carattere</string>
     <string name="whats_new_fix_nav_bar">I pulsanti non finiscono più dietro la barra di navigazione a 3 tasti</string>
     <string name="whats_new_got_it">Capito</string>
+    <string name="capsule_intro_title">Key capsule</string>
+    <string name="pro_table_included">Incluso</string>
+    <string name="pro_table_not_included">Non incluso</string>
 </resources>

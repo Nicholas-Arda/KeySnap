@@ -74,7 +74,7 @@ internal fun readReply(nextLine: () -> String?): String? {
     }
 }
 
-private val PUSHED = setOf(BridgeProtocol.MSG_EVENT, BridgeProtocol.MSG_TRIGGER, BridgeProtocol.MSG_DEVICE)
+private val PUSHED = setOf(BridgeProtocol.MSG_EVENT, BridgeProtocol.MSG_TRIGGER, BridgeProtocol.MSG_DEVICE, BridgeProtocol.MSG_FEEDBACK)
 
 /** The bridge's identity from its HELLO answer, or null unless it is an OK carrying one. */
 internal fun parseHandshake(line: String?): BridgeStatus? {
@@ -141,6 +141,7 @@ class BridgeClient(
     interface Listener {
         fun onKeyEvent(event: BridgeKeyEvent) {}
         fun onTrigger(trigger: BridgeTrigger) {}
+        fun onFeedback(trigger: BridgeTrigger) {}
         fun onDevice(path: String, name: String) {}
     }
 
@@ -220,7 +221,7 @@ class BridgeClient(
      * Streams telemetry until the coroutine is cancelled or the bridge closes the connection.
      * Returns the handshake result so the caller can distinguish "never connected" from "dropped".
      */
-    suspend fun stream(listener: Listener): BridgeStatus? = withContext(Dispatchers.IO) {
+    suspend fun stream(listener: Listener, feedbackOnly: Boolean = false): BridgeStatus? = withContext(Dispatchers.IO) {
         val session = openSession() ?: return@withContext null
         // Cancellation cannot interrupt a blocking socket read; closing the socket is what ends it.
         // Without this every cancelled stream kept one IO thread and one bridge connection forever.
@@ -232,6 +233,7 @@ class BridgeClient(
             }
         }
         try {
+            session.writer.writeLine(if (feedbackOnly) BridgeProtocol.CMD_WATCH_FEEDBACK else BridgeProtocol.CMD_WATCH)
             while (currentCoroutineContext().isActive) {
                 val line = session.reader.readLine() ?: break
                 dispatch(line, listener)
@@ -262,17 +264,16 @@ class BridgeClient(
                     ),
                 )
             }
-            BridgeProtocol.MSG_TRIGGER -> if (fields.size >= 6) {
-                listener.onTrigger(
-                    BridgeTrigger(
-                        timestamp = fields[1].toLongOrNull() ?: System.currentTimeMillis(),
-                        keyCode = fields[2].toIntOrNull() ?: return,
-                        pressType = fields[3],
-                        scriptId = fields[4],
-                        success = fields[5] == "1",
-                        actionResults = decodeActionResults(fields.getOrNull(6)),
-                    ),
+            BridgeProtocol.MSG_TRIGGER, BridgeProtocol.MSG_FEEDBACK -> if (fields.size >= 6) {
+                val trigger = BridgeTrigger(
+                    timestamp = fields[1].toLongOrNull() ?: System.currentTimeMillis(),
+                    keyCode = fields[2].toIntOrNull() ?: return,
+                    pressType = fields[3],
+                    scriptId = fields[4],
+                    success = fields[5] == "1",
+                    actionResults = decodeActionResults(fields.getOrNull(6)),
                 )
+                if (fields[0] == BridgeProtocol.MSG_FEEDBACK) listener.onFeedback(trigger) else listener.onTrigger(trigger)
             }
             BridgeProtocol.MSG_DEVICE -> if (fields.size >= 3) {
                 listener.onDevice(fields[1], fields[2])

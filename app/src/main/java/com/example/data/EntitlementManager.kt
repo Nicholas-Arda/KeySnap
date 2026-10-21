@@ -5,6 +5,11 @@ import android.content.SharedPreferences
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import io.github.nicholasarda.keysnap.BuildConfig
+
+/** Even a misconfigured constant cannot grant test access to the production package. */
+internal fun capsuleAcceptanceProEnabled(requested: Boolean, applicationId: String): Boolean =
+    requested && applicationId == "io.github.nicholasarda.keysnap.dev"
 
 /**
  * The single place that knows the free-tier script limit and Pro
@@ -14,6 +19,7 @@ import kotlinx.coroutines.flow.asStateFlow
 class EntitlementManager internal constructor(
     private val prefs: SharedPreferences,
     private val scriptRepository: ScriptRepository,
+    private val acceptancePro: Boolean = false,
 ) {
     companion object {
         private const val KEY_IS_PRO = "is_pro"
@@ -28,18 +34,20 @@ class EntitlementManager internal constructor(
             instance ?: EntitlementManager(
                 context.applicationContext.getSharedPreferences("arda_mapper_prefs", Context.MODE_PRIVATE),
                 ScriptRepository.getInstance(context),
+                capsuleAcceptanceProEnabled(BuildConfig.CAPSULE_ACCEPTANCE_PRO, BuildConfig.APPLICATION_ID),
             ).also { instance = it }
         }
     }
 
-    private val _isPro = MutableStateFlow(prefs.getBoolean(KEY_IS_PRO, false))
+    private val _isPro = MutableStateFlow(acceptancePro || prefs.getBoolean(KEY_IS_PRO, false))
     val isPro: StateFlow<Boolean> = _isPro.asStateFlow()
 
     val activeScriptLimit: Int
         get() = if (_isPro.value) Int.MAX_VALUE else FREE_SCRIPT_LIMIT
 
     fun setPro(pro: Boolean) {
-        _isPro.value = pro
+        _isPro.value = acceptancePro || pro
+        // Persist only actual ownership, so installing a regular build removes test access.
         prefs.edit().putBoolean(KEY_IS_PRO, pro).apply()
     }
 

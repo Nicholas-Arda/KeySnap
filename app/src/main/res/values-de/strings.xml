@@ -718,6 +718,13 @@
     <string name="settings_title">Einstellungen</string>
     <string name="settings_subtitle">Standardwerte, mit denen jeder neue Kurzbefehl startet.</string>
     <string name="settings_group_keys">Tasten</string>
+    <string name="settings_keys_summary">Tastendruckdauer, Eingabeverhalten und Vibration</string>
+    <string name="settings_personalization">Personalisierung</string>
+    <string name="settings_key_behavior">Tastenverhalten</string>
+    <string name="settings_setup_tools">Einrichtung</string>
+    <string name="settings_setup_tools_summary">Bedienungshilfen und erweiterter Modus</string>
+    <string name="settings_input_monitor_summary">Physische Tastenereignisse</string>
+    <string name="settings_experimental">Experimentell</string>
     <string name="settings_group_advanced">Erweitert</string>
     <string name="settings_group_app">App</string>
     <string name="settings_defaults_panel">Standardwerte für neue Kurzbefehle</string>
@@ -741,7 +748,7 @@
     <string name="settings_run_setup_description">Kabelloses Debugging erneut koppeln.</string>
     <string name="settings_about_panel">Über</string>
     <string name="settings_about_app">Über KeySnap</string>
-    <string name="settings_about_app_summary">Open Source · nichts verlässt dein Telefon</string>
+    <string name="settings_about_app_summary">Open-Source-Kern · nichts verlässt dein Telefon</string>
     <string name="settings_privacy_policy">Datenschutzerklärung</string>
     <string name="about_contact">Support kontaktieren</string>
     <string name="settings_erase">Alle Daten löschen</string>
@@ -784,13 +791,14 @@
 
     <!-- Einrichtungsassistent -->
     <string name="about_hero_title">Nichts, was du hier tust, verlässt dein Telefon.</string>
-    <string name="about_hero_body">Keine Server. Kein Konto. Keine Analyse. KeySnap hat keinen Ort, an den es deine Kurzbefehle oder Tastendrücke senden könnte — und die ganze App ist Open Source, du musst uns also nicht glauben.</string>
+    <string name="about_hero_body">Keine Server. Kein Konto. Keine Analyse. KeySnap hat keinen Ort, an den es deine Kurzbefehle oder Tastendrücke senden könnte — und ihr Kern ist Open Source, du musst uns also nicht glauben.</string>
     <string name="about_no_server_title">Es gibt keinen Server</string>
     <string name="about_no_server_body">KeySnap hat kein Backend, kein Konto und keine Absturzberichte. Was du belegst, was du drückst und welche Apps du benutzt, bleibt im privaten Speicher dieser App. Es gibt darin keinen Code, der das hochlädt, weil es kein Ziel dafür gibt.</string>
     <string name="about_illo_no_server_caption">Tastendrücke · Kurzbefehle · Nutzung</string>
-    <string name="about_open_source_title">Open Source, damit du nachsehen kannst</string>
-    <string name="about_open_source_body">Jede Zeile von KeySnap ist unter der GPLv3 veröffentlicht. Lies nach, wofür jede Berechtigung verwendet wird, baue die App selbst, oder gib sie jemandem, der das kann.</string>
+    <string name="about_open_source_title">Open-Source-Kern, damit du nachsehen kannst</string>
+    <string name="about_open_source_body">Der Kern von KeySnap — alle Kurzbefehle, Aktionen und Berechtigungen — ist unter der GPLv3 veröffentlicht. Lies nach, wofür jede Berechtigung verwendet wird, baue die App selbst, oder gib sie jemandem, der das kann. Einige Pro-Funktionen wie die Key capsule sind nicht Open Source.</string>
     <string name="about_view_source">Quellcode auf GitHub ansehen</string>
+    <string name="about_licenses">Open-Source-Lizenzen</string>
     <string name="about_scope_title">Der Bedienungshilfen-Dienst sieht nur die Einstellungen</string>
     <string name="about_scope_body">Android gibt Apps keinen anderen Weg, eine Hardwaretaste zu erkennen. Der Dienst von KeySnap ist auf die System-Einstellungen beschränkt und nutzt sie für genau eine Sache: den Kopplungscode zu lesen, während du den Erweiterten Modus einrichtest. Er kann deine Banking-App, deine Nachrichten oder das, was du tippst, nicht lesen — das erzwingt Android, nicht ein Versprechen.</string>
     <string name="about_bridge_title">Der Erweiterte Modus ist das ADB deines eigenen Telefons</string>
@@ -1062,4 +1070,7 @@
     <string name="whats_new_fix_large_text">Bei großer Anzeige- und Schriftgröße wird Text nicht mehr zerrissen oder gequetscht</string>
     <string name="whats_new_fix_nav_bar">Schaltflächen verschwinden nicht mehr hinter der 3-Tasten-Navigationsleiste</string>
     <string name="whats_new_got_it">Verstanden</string>
+    <string name="capsule_intro_title">Key capsule</string>
+    <string name="pro_table_included">Enthalten</string>
+    <string name="pro_table_not_included">Nicht enthalten</string>
 </resources>

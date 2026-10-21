@@ -718,6 +718,13 @@
     <string name="settings_title">सेटिंग</string>
     <string name="settings_subtitle">हर नया शॉर्टकट इन्हीं डिफ़ॉल्ट से शुरू होता है।</string>
     <string name="settings_group_keys">बटन</string>
+    <string name="settings_keys_summary">दबाने का समय, बटन का व्यवहार और कंपन</string>
+    <string name="settings_personalization">निजीकरण</string>
+    <string name="settings_key_behavior">बटन का व्यवहार</string>
+    <string name="settings_setup_tools">सेटअप टूल</string>
+    <string name="settings_setup_tools_summary">सुलभता और उन्नत मोड</string>
+    <string name="settings_input_monitor_summary">भौतिक बटन की गतिविधियाँ</string>
+    <string name="settings_experimental">प्रयोगात्मक</string>
     <string name="settings_group_advanced">उन्नत</string>
     <string name="settings_group_app">ऐप</string>
     <string name="settings_defaults_panel">नए शॉर्टकट के लिए डिफ़ॉल्ट</string>
@@ -741,7 +748,7 @@
     <string name="settings_run_setup_description">वायरलेस डिबगिंग को फिर से जोड़ें।</string>
     <string name="settings_about_panel">ऐप के बारे में</string>
     <string name="settings_about_app">KeySnap के बारे में</string>
-    <string name="settings_about_app_summary">ओपन सोर्स · कुछ भी आपके फ़ोन से बाहर नहीं जाता</string>
+    <string name="settings_about_app_summary">ओपन सोर्स कोर · कुछ भी आपके फ़ोन से बाहर नहीं जाता</string>
     <string name="settings_privacy_policy">प्राइवेसी पॉलिसी</string>
     <string name="about_contact">सहायता से संपर्क करें</string>
     <string name="settings_erase">सारा डेटा मिटाएं</string>
@@ -784,13 +791,14 @@
 
     <!-- सेटअप विज़ार्ड -->
     <string name="about_hero_title">यहाँ आप जो भी करते हैं, वह आपके फ़ोन से बाहर नहीं जाता।</string>
-    <string name="about_hero_body">कोई सर्वर नहीं। कोई खाता नहीं। कोई एनालिटिक्स नहीं। KeySnap के पास आपके शॉर्टकट या की-प्रेस भेजने के लिए कोई जगह ही नहीं है — और पूरा ऐप ओपन सोर्स है, इसलिए आपको हमारी बात मानने की ज़रूरत नहीं।</string>
+    <string name="about_hero_body">कोई सर्वर नहीं। कोई खाता नहीं। कोई एनालिटिक्स नहीं। KeySnap के पास आपके शॉर्टकट या की-प्रेस भेजने के लिए कोई जगह ही नहीं है — और ऐप का कोर ओपन सोर्स है, इसलिए आपको हमारी बात मानने की ज़रूरत नहीं।</string>
     <string name="about_no_server_title">कोई सर्वर है ही नहीं</string>
     <string name="about_no_server_body">KeySnap का कोई बैकएंड, खाता या क्रैश रिपोर्टिंग नहीं है। आप क्या मैप करते हैं, क्या दबाते हैं और कौन से ऐप इस्तेमाल करते हैं, यह सब इसी ऐप के निजी स्टोरेज में रहता है। इसे अपलोड करने वाला कोई कोड नहीं है, क्योंकि भेजने के लिए कोई जगह ही नहीं है।</string>
     <string name="about_illo_no_server_caption">की-प्रेस · शॉर्टकट · उपयोग</string>
-    <string name="about_open_source_title">ओपन सोर्स, ताकि आप खुद जाँच सकें</string>
-    <string name="about_open_source_body">KeySnap की हर लाइन GPLv3 के तहत प्रकाशित है। पढ़िए कि हर अनुमति किस काम आती है, खुद बिल्ड कीजिए, या किसी जानकार को दिखाइए।</string>
+    <string name="about_open_source_title">ओपन सोर्स कोर, ताकि आप खुद जाँच सकें</string>
+    <string name="about_open_source_body">KeySnap का कोर — सभी शॉर्टकट, ऐक्शन और अनुमतियाँ — GPLv3 के तहत प्रकाशित है। पढ़िए कि हर अनुमति किस काम आती है, खुद बिल्ड कीजिए, या किसी जानकार को दिखाइए। Key capsule जैसी कुछ Pro सुविधाएँ ओपन सोर्स नहीं हैं।</string>
     <string name="about_view_source">GitHub पर सोर्स कोड देखें</string>
+    <string name="about_licenses">ओपन सोर्स लाइसेंस</string>
     <string name="about_scope_title">सुलभता सेवा सिर्फ़ सेटिंग्स देखती है</string>
     <string name="about_scope_body">हार्डवेयर की पहचानने का Android कोई और रास्ता ऐप्स को नहीं देता। KeySnap की सेवा सिस्टम सेटिंग्स ऐप तक सीमित है और उसे सिर्फ़ एक काम के लिए इस्तेमाल करती है: उन्नत मोड सेट करते समय पेयरिंग कोड पढ़ना। यह आपका बैंकिंग ऐप, आपके संदेश या आपका टाइप किया हुआ कुछ भी नहीं पढ़ सकती — यह Android खुद लागू करता है, यह कोई वादा नहीं है।</string>
     <string name="about_bridge_title">उन्नत मोड आपके अपने फ़ोन का ADB है</string>
@@ -1062,4 +1070,7 @@
     <string name="whats_new_fix_large_text">बड़े डिस्प्ले और फ़ॉन्ट साइज़ पर टेक्स्ट अब टूटता या सिकुड़ता नहीं</string>
     <string name="whats_new_fix_nav_bar">बटन अब 3-बटन नेविगेशन बार के पीछे नहीं छिपते</string>
     <string name="whats_new_got_it">समझ गया</string>
+    <string name="capsule_intro_title">Key capsule</string>
+    <string name="pro_table_included">शामिल</string>
+    <string name="pro_table_not_included">शामिल नहीं</string>
 </resources>

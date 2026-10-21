@@ -32,12 +32,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.hasClickAction
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.performScrollToIndex
+import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.text.ParagraphIntrinsics
@@ -47,6 +48,7 @@ import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import com.example.capsule.CapsuleHooks
 import com.example.data.KeyMappingConfig
 import com.example.data.ScriptAction
 import com.example.data.ScriptTrigger
@@ -219,7 +221,7 @@ class LargeScaleLayoutTest(private val language: String, private val fontScale: 
         content {
             val motion = rememberSettingsMotion(true)
             SettingsSheet(motion, Modifier.fillMaxSize().padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 80.dp)) {
-                SettingsScreen(KeyMappingConfig(), {}, {}, themeMode = ThemeMode.DARK)
+                SettingsScreen(KeyMappingConfig(), {}, {}, themeMode = ThemeMode.DARK, showTitle = false)
             }
             SettingsGear(motion, true, {}, Modifier.align(Alignment.TopEnd).padding(top = 16.dp, end = 14.dp))
         }
@@ -228,25 +230,25 @@ class LargeScaleLayoutTest(private val language: String, private val fontScale: 
             .performSemanticsAction(SemanticsActions.GetTextLayoutResult) { it(titleLayouts) }
         capture("settings-title")
         titleLayouts.forEach(::assertWholeWords)
-        for (index in listOf(2, 3, 4, 6, 7, 9, 10, 11)) {
-            rule.onNodeWithTag("settings_list").performScrollToIndex(index)
+        for (tag in listOfNotNull("key_capsule".takeIf { CapsuleHooks.AVAILABLE }, "appearance", "language", "key_behavior", "advanced_mode", "input_monitor", "about")) {
+            rule.onNodeWithTag("settings_list").performScrollToNode(hasTestTag(tag))
             val close = rule.onNodeWithTag("settings_gear").fetchSemanticsNode().boundsInRoot
             val list = rule.onNodeWithTag("settings_list").fetchSemanticsNode().boundsInRoot
             assertTrue("scroll viewport is below X", list.top >= close.bottom)
             rule.onAllNodes(hasClickAction(), useUnmergedTree = true).fetchSemanticsNodes()
                 .filter { it.config.getOrNull(androidx.compose.ui.semantics.SemanticsProperties.TestTag) != "settings_gear" }
-                .forEach { assertFalse("X overlaps interactive content at item $index", close.overlaps(it.boundsInRoot)) }
-            if (index == 9) capture("settings-appearance")
-            if (index == 10) {
+                .forEach { assertFalse("X overlaps interactive content at $tag", close.overlaps(it.boundsInRoot)) }
+            if (tag == "appearance") capture("settings-appearance")
+            if (tag == "language") {
                 val languageLayouts = mutableListOf<TextLayoutResult>()
-                rule.onNodeWithTag("settings_language_label", useUnmergedTree = true)
+                rule.onNodeWithTag("language_picker_button_summary", useUnmergedTree = true)
                     .performSemanticsAction(SemanticsActions.GetTextLayoutResult) { it(languageLayouts) }
                 languageLayouts.forEach(::assertWholeWords)
                 capture("settings-language")
             }
-            if (index == 11) {
+            if (tag == "about") {
                 capture("settings-about")
-                for (tag in listOf("about_app_button_label", "privacy_policy_button_label", "erase_all_data_button_label")) {
+                for (tag in listOf("about_app_button_label", "privacy_policy_button_label")) {
                     val aboutLayouts = mutableListOf<TextLayoutResult>()
                     rule.onNodeWithTag(tag, useUnmergedTree = true)
                         .performSemanticsAction(SemanticsActions.GetTextLayoutResult) { it(aboutLayouts) }
@@ -428,7 +430,7 @@ class LargeScaleLayoutTest(private val language: String, private val fontScale: 
             val motion = rememberSettingsMotion(true)
             SettingsScrim(motion, true, {}, ground = groundFor(ThemeMode.DARK).stops.first().color)
             SettingsSheet(motion, Modifier.fillMaxSize().padding(start = 12.dp, end = 12.dp, top = SheetTopGap, bottom = 80.dp)) {
-                SettingsScreen(KeyMappingConfig(), {}, {}, themeMode = ThemeMode.DARK)
+                SettingsScreen(KeyMappingConfig(), {}, {}, themeMode = ThemeMode.DARK, showTitle = false)
             }
         }
         val panelTop = rule.onNodeWithTag("settings_panel").fetchSemanticsNode().boundsInRoot.top.toInt()

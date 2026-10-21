@@ -11,10 +11,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.shape.CircleShape
@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
@@ -55,9 +56,12 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
+import androidx.compose.ui.text.style.Hyphens
+import androidx.compose.ui.text.style.LineBreak
 import com.example.ui.components.MinTouchTarget
 import com.example.ui.theme.LocalGlass
 import io.github.nicholasarda.keysnap.R
@@ -72,8 +76,8 @@ private const val StaggerStepMs = 48
 private const val StaggerFadeMs = 350
 private const val StaggerSlideMs = 525
 
-/** Settings has twelve rows; the last one has finished sliding in by here. */
-private const val StaggerEndMs = StaggerStartMs + StaggerStepMs * 11 + StaggerSlideMs
+/** Settings has thirteen rows; the last one has finished sliding in by here. */
+private const val StaggerEndMs = StaggerStartMs + StaggerStepMs * 12 + StaggerSlideMs
 
 private val OpenEasing = CubicBezierEasing(0.2f, 0.9f, 0.25f, 1f)
 private val CloseEasing = CubicBezierEasing(0.5f, 0f, 0.75f, 0f)
@@ -82,6 +86,9 @@ private val GearSize = 44.dp
 
 /** How far below the status bar the caller places [SettingsSheet]; [SettingsScrim] covers that strip. */
 val SheetTopGap = 8.dp
+
+/** A short landscape window needs its height for settings instead of the home bar's clearance. */
+internal fun settingsBottomClearance(availableHeight: Dp): Dp = if (availableHeight < 500.dp) 16.dp else 144.dp
 
 /** The panel starts as this rounded box in its gear-side top corner. */
 private val SeedSize = 58.dp
@@ -224,7 +231,14 @@ fun SettingsSheet(motion: SettingsMotion, modifier: Modifier = Modifier, content
         Column {
             // The floating gear becomes X here. Keep the scroll viewport below its entire touch
             // target, including the gear's opening translation, at every scroll position.
-            Spacer(Modifier.height(64.dp))
+            Box(Modifier.heightIn(min = 64.dp).padding(start = 24.dp, end = 80.dp, top = 16.dp, bottom = 16.dp)) {
+                Text(
+                    title,
+                    modifier = motion.reveal(0).testTag("settings_title"),
+                    style = MaterialTheme.typography.titleLarge.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+            }
             Box(Modifier.weight(1f)) { content() }
         }
     }

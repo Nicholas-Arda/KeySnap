@@ -29,7 +29,7 @@ import com.example.ui.theme.MonoLabel
  */
 object PrivacyPolicy {
 
-    const val LAST_UPDATED = "17 October 2026"
+    const val LAST_UPDATED = "19 October 2026"
 
     /**
      * Left blank deliberately. A published policy needs a contact address, but which address to
@@ -133,9 +133,11 @@ object PrivacyPolicy {
             "into your own shortcuts. Vibrate: for the confirmation buzz when a shortcut fires. " +
             "Set wallpaper: for the \"Set wallpaper\" action; the image comes from Android's photo " +
             "picker, so the app can read only the picture you choose, and only on this device. " +
-            "Display over other apps: only when you tap " +
-            "\"Pick on screen\" to choose tap coordinates; the manual X/Y fields work without " +
-            "it. Bluetooth: to list your paired devices and notice when one connects, for the " +
+            "Display over other apps: when you tap \"Pick on screen\" to choose tap coordinates, " +
+            "or enable the optional Key capsule to show visual feedback for physical key shortcuts. " +
+            "The capsule displays action labels and results, never shortcut contents, and stays hidden " +
+            "on the lock screen. Manual X/Y fields and in-app capsule previews work without this " +
+            "permission. Bluetooth: to list your paired devices and notice when one connects, for the " +
             "Bluetooth device conditions. Location: Android only reveals the name of the Wi-Fi " +
             "network you are on to apps holding the location permission, so the \"connected to " +
             "Wi-Fi network\" condition asks for it; the app never reads your position, and the " +
@@ -153,8 +155,11 @@ object PrivacyPolicy {
             "inexact alarms and may run late. Nothing is read or sent through this permission. Do Not " +
             "Disturb access: to switch the ringer to Silent. Modify system settings: to change " +
             "brightness and screen rotation without Advanced Mode. " +
-            "Notification access: only if you add a \"Notification received\" condition or a " +
-            "\"Reply to notification\" action. Android then tells the app about each new " +
+            "Notification access: used by a \"Notification received\" condition or a " +
+            "\"Reply to notification\" action. If already granted, this access also lets the optional " +
+            "Key capsule read the current media session's playing/paused state, on this device, " +
+            "without reading or retaining track titles or other media metadata. " +
+            "Android then tells the app about each new " +
             "notification; for one from an app none of your conditions names, the app looks " +
             "only at which app posted it, and its content is not read. A notification from the " +
             "app you chose is compared with your condition on this device, and the app keeps in " +

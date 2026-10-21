@@ -10,6 +10,7 @@ import android.os.VibratorManager
 import android.provider.Settings
 import android.util.Log
 import android.view.KeyEvent
+import com.example.capsule.CapsuleHooks
 import com.example.data.EntitlementManager
 import com.example.data.KeyMappingConfig
 import com.example.data.KeyMappingRepository
@@ -546,6 +547,10 @@ object HardwareKeyTriggerCoordinator {
         )
         RunLogRepository.getInstance(context).append(record)
         RunFailureNotifier.onRun(context, script, record)
+        // Observe the completed, merged run once. Visual feedback must never drive execution.
+        if (source == RunRecord.SOURCE_KEY && keyCode != null) {
+            runCatching { CapsuleHooks.onRun(context, record, appResults, bridgeReport) }
+        }
         Log.d(TAG, "Run recorded: script=${script.id} failed=${record.actions.filterNot { it.ok }.map { it.type }}")
         return record
     }

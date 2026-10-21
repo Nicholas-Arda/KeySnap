@@ -48,6 +48,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -87,6 +88,7 @@ fun AboutDialog(
     val reduced = rememberReducedMotion()
     val uriHandler = LocalUriHandler.current
     var showPolicy by remember { mutableStateOf(false) }
+    var showLicenses by remember { mutableStateOf(false) }
     var confirmingErase by remember { mutableStateOf(false) }
 
     Dialog(
@@ -251,6 +253,23 @@ fun AboutDialog(
                             Icon(Icons.Outlined.ChevronRight, null, tint = colors.onSurfaceVariant)
                         }
                         HorizontalDivider(color = colors.outline.copy(alpha = .45f))
+                        Row(
+                            Modifier
+                                .fillMaxWidth()
+                                .heightIn(min = MinTouchTarget)
+                                .clickable(onClick = { showLicenses = true })
+                                .testTag("about_licenses_button"),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Text(
+                                stringResource(R.string.about_licenses),
+                                Modifier.weight(1f),
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = colors.onSurface,
+                            )
+                            Icon(Icons.Outlined.ChevronRight, null, tint = colors.onSurfaceVariant)
+                        }
+                        HorizontalDivider(color = colors.outline.copy(alpha = .45f))
                         val supportEmail = stringResource(R.string.about_contact_email)
                         Row(
                             Modifier
@@ -298,6 +317,9 @@ fun AboutDialog(
     if (showPolicy) {
         PrivacyPolicyDialog(onDismiss = { showPolicy = false })
     }
+    if (showLicenses) {
+        OpenSourceLicensesDialog(onDismiss = { showLicenses = false })
+    }
     if (confirmingErase) {
         EraseAllDataDialog(
             onConfirm = {
@@ -308,6 +330,28 @@ fun AboutDialog(
             onDismiss = { confirmingErase = false },
         )
     }
+}
+
+/** Third-party notices and license texts, shipped as one plain-text resource. */
+@Composable
+private fun OpenSourceLicensesDialog(onDismiss: () -> Unit) {
+    val resources = LocalContext.current.resources
+    val text = remember(resources) {
+        resources.openRawResource(R.raw.open_source_licenses).bufferedReader().use { it.readText() }
+    }
+    AppAlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.about_licenses)) },
+        text = {
+            Text(
+                text,
+                Modifier.verticalScroll(rememberScrollState()).testTag("about_licenses_text"),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        },
+        confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.common_close)) } },
+    )
 }
 
 /** The About page's card: the wizard's bordered panel, with the claim's icon on its title. */

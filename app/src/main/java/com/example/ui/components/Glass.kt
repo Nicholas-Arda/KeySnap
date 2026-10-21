@@ -77,7 +77,7 @@ fun GroundedPage(
 
 /** [groundFor] drawn over the whole of its parent, crossfading with the colour scheme. */
 @Composable
-private fun PageGroundLayer(themeMode: ThemeMode, modifier: Modifier = Modifier) {
+internal fun PageGroundLayer(themeMode: ThemeMode, modifier: Modifier = Modifier) {
     val oled = LocalOled.current
     Crossfade(themeMode to oled, modifier, animationSpec = tween(ThemeTransitionMs), label = "pageGround") { (mode, oledOn) ->
         val ground = groundFor(mode, oledOn)

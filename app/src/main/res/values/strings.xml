@@ -729,6 +729,9 @@
     <string name="home_nudge_subtitle">Flashlight is one tap below.</string>
     <string name="home_nudge_dismiss">Dismiss</string>
 
+    <!-- Key capsule introduction. Demo only; never executes a shortcut or starts a purchase. -->
+    <string name="capsule_intro_title">Key capsule</string>
+
     <!-- Pro upsell -->
     <string name="pro_card_subtitle">Free keeps %1$d shortcuts on. Pro keeps all of them on.</string>
     <string name="pro_card_at_cap">Why the next shortcut won\'t stay on</string>
@@ -739,12 +742,21 @@
     <string name="pro_table_free">Free</string>
     <string name="pro_table_pro">Pro</string>
     <string name="pro_table_unlimited">Unlimited</string>
+    <string name="pro_table_included">Included</string>
+    <string name="pro_table_not_included">Not included</string>
     <string name="pro_table_row_description">%1$s: Free %2$s, Pro %3$s</string>
 
     <!-- Settings -->
     <string name="settings_title">Settings</string>
     <string name="settings_subtitle">Defaults every new shortcut starts from.</string>
     <string name="settings_group_keys">Keys</string>
+    <string name="settings_keys_summary">Press timing, input behavior and haptics</string>
+    <string name="settings_personalization">Personalization</string>
+    <string name="settings_key_behavior">Key behavior</string>
+    <string name="settings_setup_tools">Setup tools</string>
+    <string name="settings_setup_tools_summary">Accessibility and Advanced Mode</string>
+    <string name="settings_input_monitor_summary">Physical key events</string>
+    <string name="settings_experimental">Experimental</string>
     <string name="settings_group_advanced">Advanced</string>
     <string name="settings_group_app">App</string>
     <string name="settings_defaults_panel">Defaults for new shortcuts</string>
@@ -768,7 +780,7 @@
     <string name="settings_run_setup_description">Re-pair wireless debugging.</string>
     <string name="settings_about_panel">About</string>
     <string name="settings_about_app">About KeySnap</string>
-    <string name="settings_about_app_summary">Open source · nothing leaves your phone</string>
+    <string name="settings_about_app_summary">Open-source core · nothing leaves your phone</string>
     <string name="settings_privacy_policy">Privacy policy</string>
     <string name="about_contact">Contact support</string>
     <string name="about_contact_email" translatable="false">support@ardasenn.com</string>
@@ -823,13 +835,14 @@
 
     <!-- About page -->
     <string name="about_hero_title">Nothing you do here leaves your phone.</string>
-    <string name="about_hero_body">No servers. No account. No analytics. KeySnap has nowhere to send your shortcuts or your key presses — and the whole app is open source, so you don\'t have to take our word for it.</string>
+    <string name="about_hero_body">No servers. No account. No analytics. KeySnap has nowhere to send your shortcuts or your key presses — and its core is open source, so you don\'t have to take our word for it.</string>
     <string name="about_no_server_title">There is no server</string>
     <string name="about_no_server_body">KeySnap has no backend, no account and no crash reporting. What you map, what you press and which apps you use stay in this app\'s private storage. There is no code in it that uploads any of that, because there is nowhere for it to go.</string>
     <string name="about_illo_no_server_caption">key presses · shortcuts · usage</string>
-    <string name="about_open_source_title">Open source, so you can check</string>
-    <string name="about_open_source_body">Every line of KeySnap is published under the GPLv3. Read what each permission is used for, build it yourself, or hand it to someone who can.</string>
+    <string name="about_open_source_title">Open-source core, so you can check</string>
+    <string name="about_open_source_body">KeySnap\'s core — every shortcut, action and permission — is published under the GPLv3. Read what each permission is used for, build it yourself, or hand it to someone who can. A few Pro features, such as the Key capsule, are not open source.</string>
     <string name="about_view_source">View the source on GitHub</string>
+    <string name="about_licenses">Open-source licenses</string>
     <string name="about_source_url" translatable="false">https://github.com/Nicholas-Arda/KeySnap</string>
     <string name="about_scope_title">The accessibility service only sees Settings</string>
     <string name="about_scope_body">Android gives apps no other way to detect a hardware key. KeySnap\'s service is locked to the system Settings app and uses it for exactly one thing: reading the pairing code while you set up Advanced Mode. It cannot read your bank app, your messages, or anything you type — that is enforced by Android, not by a promise.</string>
@@ -847,7 +860,7 @@
     <string name="about_traffic_all">That is the whole list.</string>
     <string name="about_erase_title">Take it all back whenever you like</string>
     <string name="about_erase_body">Erase all data removes every shortcut, saved key, preference and bridge file, and stops Advanced Mode first so nothing is left running.</string>
-    <string name="about_footer_line" translatable="false">KeySnap %1$s (%2$d) · GPL-3.0</string>
+    <string name="about_footer_line" translatable="false">KeySnap %1$s (%2$d) · GPL-3.0 core</string>
 
     <!-- Setup wizard -->
     <string name="wizard_title">Turn on Advanced Mode</string>

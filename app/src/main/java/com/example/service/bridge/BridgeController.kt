@@ -18,6 +18,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -80,6 +81,7 @@ object BridgeController {
     private var payload: BridgePayload? = null
     private var streamJob: Job? = null
     private var watchdogJob: Job? = null
+    private var feedbackConfigJob: Job? = null
 
     /**
      * Launch-time probes run concurrently (this object's [initialize] and WirelessAdbManager's), so
@@ -115,6 +117,10 @@ object BridgeController {
             )
         }
 
+        override fun onFeedback(trigger: BridgeTrigger) {
+            appContext?.let { com.example.capsule.CapsuleHooks.onBridgeFeedback(it, trigger) }
+        }
+
         override fun onDevice(path: String, name: String) {
             _inputDevices.value = _inputDevices.value + (path to name)
         }
@@ -123,6 +129,14 @@ object BridgeController {
     fun initialize(context: Context) {
         appContext = context.applicationContext
         payload = BridgePayload(context)
+        feedbackConfigJob?.cancel()
+        feedbackConfigJob = scope.launch {
+            combine(com.example.capsule.CapsuleHooks.enabledFlow(context), com.example.data.EntitlementManager.getInstance(context).isPro) { enabled, pro ->
+                enabled to pro
+            }.collect {
+                if (_state.value == BridgeState.RUNNING) publishConfig()
+            }
+        }
         // A bridge from a previous app lifetime may still be running. Adopt it instead of
         // relaunching: a second instance would compete for the same gestures.
         scope.launch { detectExistingBridge() }
@@ -311,6 +325,7 @@ object BridgeController {
     }
 
     /** Rewrites the bridge's config from the current repositories and asks it to reload. */
+    @Synchronized
     fun publishConfig() {
         val context = appContext ?: return
         val current = payload ?: return

@@ -716,6 +716,13 @@
     <string name="settings_title">Ayarlar</string>
     <string name="settings_subtitle">Her yeni kısayolun başlangıç varsayılanları.</string>
     <string name="settings_group_keys">Tuşlar</string>
+    <string name="settings_keys_summary">Basış zamanlaması, tuş davranışı ve titreşim</string>
+    <string name="settings_personalization">Kişiselleştirme</string>
+    <string name="settings_key_behavior">Tuş davranışı</string>
+    <string name="settings_setup_tools">Kurulum araçları</string>
+    <string name="settings_setup_tools_summary">Erişilebilirlik ve Gelişmiş Mod</string>
+    <string name="settings_input_monitor_summary">Fiziksel tuş olayları</string>
+    <string name="settings_experimental">Deneysel</string>
     <string name="settings_group_advanced">Uzman</string>
     <string name="settings_group_app">Uygulama</string>
     <string name="settings_defaults_panel">Yeni kısayol varsayılanları</string>
@@ -739,7 +746,7 @@
     <string name="settings_run_setup_description">Kablosuz hata ayıklamayı yeniden eşleştirin.</string>
     <string name="settings_about_panel">Hakkında</string>
     <string name="settings_about_app">KeySnap hakkında</string>
-    <string name="settings_about_app_summary">Açık kaynak · hiçbir şey telefonunuzdan çıkmaz</string>
+    <string name="settings_about_app_summary">Açık kaynak çekirdek · hiçbir şey telefonunuzdan çıkmaz</string>
     <string name="settings_privacy_policy">Gizlilik politikası</string>
     <string name="about_contact">Destekle iletişime geç</string>
     <string name="settings_erase">Tüm verileri sil</string>
@@ -782,13 +789,14 @@
 
     <!-- Kurulum sihirbazı -->
     <string name="about_hero_title">Burada yaptığınız hiçbir şey telefonunuzdan çıkmaz.</string>
-    <string name="about_hero_body">Sunucu yok. Hesap yok. Analitik yok. KeySnap\'in kısayollarınızı veya tuş basışlarınızı gönderebileceği bir yer yok — üstelik uygulamanın tamamı açık kaynak, yani sözümüze güvenmek zorunda değilsiniz.</string>
+    <string name="about_hero_body">Sunucu yok. Hesap yok. Analitik yok. KeySnap\'in kısayollarınızı veya tuş basışlarınızı gönderebileceği bir yer yok — üstelik uygulamanın çekirdeği açık kaynak, yani sözümüze güvenmek zorunda değilsiniz.</string>
     <string name="about_no_server_title">Sunucu diye bir şey yok</string>
     <string name="about_no_server_body">KeySnap\'in arka ucu, hesabı ve çökme raporlaması yoktur. Neyi eşlediğiniz, neye bastığınız ve hangi uygulamaları kullandığınız bu uygulamanın özel deposunda kalır. Bunları yükleyen bir kod yok, çünkü gidecek bir yer de yok.</string>
     <string name="about_illo_no_server_caption">tuş basışları · kısayollar · kullanım</string>
-    <string name="about_open_source_title">Açık kaynak, isterseniz kendiniz bakın</string>
-    <string name="about_open_source_body">KeySnap\'in her satırı GPLv3 altında yayımlanıyor. Her iznin ne için kullanıldığını okuyun, kendiniz derleyin ya da bilen birine bakmasını söyleyin.</string>
+    <string name="about_open_source_title">Açık kaynak çekirdek, isterseniz kendiniz bakın</string>
+    <string name="about_open_source_body">KeySnap\'in çekirdeği — tüm kısayollar, eylemler ve izinler — GPLv3 altında yayımlanıyor. Her iznin ne için kullanıldığını okuyun, kendiniz derleyin ya da bilen birine bakmasını söyleyin. Key capsule gibi birkaç Pro özelliği açık kaynak değildir.</string>
     <string name="about_view_source">Kaynak kodu GitHub\'da aç</string>
+    <string name="about_licenses">Açık kaynak lisansları</string>
     <string name="about_scope_title">Erişilebilirlik hizmeti yalnızca Ayarlar\'ı görür</string>
     <string name="about_scope_body">Android, bir uygulamanın donanım tuşunu algılaması için başka yol vermiyor. KeySnap\'in hizmeti sistem Ayarlar uygulamasıyla sınırlıdır ve tek bir iş yapar: Uzman Modu kurulurken eşleştirme kodunu okumak. Banka uygulamanızı, mesajlarınızı veya yazdığınız hiçbir şeyi okuyamaz — bunu bir söz değil, Android\'in kendisi engeller.</string>
     <string name="about_bridge_title">Uzman Modu, kendi telefonunuzun ADB\'sidir</string>
@@ -1060,4 +1068,7 @@
     <string name="whats_new_fix_large_text">Büyük ekran ve yazı boyutlarında yazılar artık bölünmüyor ya da sıkışmıyor</string>
     <string name="whats_new_fix_nav_bar">Düğmeler artık 3 tuşlu gezinme çubuğunun arkasında kalmıyor</string>
     <string name="whats_new_got_it">Anladım</string>
+    <string name="capsule_intro_title">Key capsule</string>
+    <string name="pro_table_included">Dahil</string>
+    <string name="pro_table_not_included">Dahil değil</string>
 </resources>

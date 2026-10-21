@@ -715,6 +715,13 @@
     <string name="settings_title">الإعدادات</string>
     <string name="settings_subtitle">الإعدادات الافتراضية لكل اختصار جديد.</string>
     <string name="settings_group_keys">المفاتيح</string>
+    <string name="settings_keys_summary">توقيت الضغط وسلوك الإدخال والاهتزاز</string>
+    <string name="settings_personalization">التخصيص</string>
+    <string name="settings_key_behavior">سلوك المفاتيح</string>
+    <string name="settings_setup_tools">أدوات الإعداد</string>
+    <string name="settings_setup_tools_summary">إمكانية الوصول والوضع المتقدم</string>
+    <string name="settings_input_monitor_summary">أحداث المفاتيح الفعلية</string>
+    <string name="settings_experimental">تجريبي</string>
     <string name="settings_group_advanced">متقدم</string>
     <string name="settings_group_app">التطبيق</string>
     <string name="settings_defaults_panel">الإعدادات الافتراضية للاختصارات الجديدة</string>
@@ -738,7 +745,7 @@
     <string name="settings_run_setup_description">إعادة إقران تصحيح الأخطاء اللاسلكي.</string>
     <string name="settings_about_panel">حول التطبيق</string>
     <string name="settings_about_app">حول KeySnap</string>
-    <string name="settings_about_app_summary">مفتوح المصدر · لا شيء يغادر هاتفك</string>
+    <string name="settings_about_app_summary">نواة مفتوحة المصدر · لا شيء يغادر هاتفك</string>
     <string name="settings_privacy_policy">سياسة الخصوصية</string>
     <string name="about_contact">التواصل مع الدعم</string>
     <string name="settings_erase">مسح جميع البيانات</string>
@@ -781,13 +788,14 @@
 
     <!-- Setup wizard -->
     <string name="about_hero_title">لا شيء مما تفعله هنا يغادر هاتفك.</string>
-    <string name="about_hero_body">لا خوادم. لا حساب. لا تحليلات. ليس لدى KeySnap مكان يرسل إليه اختصاراتك أو ضغطات مفاتيحك — والتطبيق بأكمله مفتوح المصدر، فلا داعي لتصديق كلامنا.</string>
+    <string name="about_hero_body">لا خوادم. لا حساب. لا تحليلات. ليس لدى KeySnap مكان يرسل إليه اختصاراتك أو ضغطات مفاتيحك — ونواة التطبيق مفتوحة المصدر، فلا داعي لتصديق كلامنا.</string>
     <string name="about_no_server_title">لا وجود لأي خادم</string>
     <string name="about_no_server_body">ليس لدى KeySnap خلفية برمجية ولا حساب ولا تقارير أعطال. ما تربطه وما تضغطه والتطبيقات التي تستخدمها تبقى في التخزين الخاص بهذا التطبيق. لا توجد فيه شفرة ترفع أياً من ذلك، لأنه لا يوجد مكان يذهب إليه.</string>
     <string name="about_illo_no_server_caption">ضغطات · اختصارات · استخدام</string>
-    <string name="about_open_source_title">مفتوح المصدر، حتى تتحقق بنفسك</string>
-    <string name="about_open_source_body">كل سطر في KeySnap منشور بترخيص GPLv3. اقرأ فيمَ يُستخدَم كل إذن، أو ابنِ التطبيق بنفسك، أو سلّمه لمن يستطيع ذلك.</string>
+    <string name="about_open_source_title">نواة مفتوحة المصدر، حتى تتحقق بنفسك</string>
+    <string name="about_open_source_body">نواة KeySnap — كل الاختصارات والإجراءات والأذونات — منشورة بترخيص GPLv3. اقرأ فيمَ يُستخدَم كل إذن، أو ابنِ التطبيق بنفسك، أو سلّمه لمن يستطيع ذلك. بعض ميزات Pro، مثل Key capsule، ليست مفتوحة المصدر.</string>
     <string name="about_view_source">عرض الشفرة المصدرية على GitHub</string>
+    <string name="about_licenses">تراخيص البرامج مفتوحة المصدر</string>
     <string name="about_scope_title">خدمة إمكانية الوصول ترى الإعدادات فقط</string>
     <string name="about_scope_body">لا يمنح أندرويد التطبيقات أي وسيلة أخرى لاكتشاف مفتاح فيزيائي. خدمة KeySnap محصورة بتطبيق الإعدادات في النظام وتستخدمه لأمر واحد فقط: قراءة رمز الإقران أثناء إعداد الوضع المتقدم. لا تستطيع قراءة تطبيق مصرفك أو رسائلك أو ما تكتبه — وهذا يفرضه أندرويد نفسه، لا وعدٌ منّا.</string>
     <string name="about_bridge_title">الوضع المتقدم هو ADB هاتفك أنت</string>
@@ -1059,4 +1067,7 @@
     <string name="whats_new_fix_large_text">لم يعد النص يتقطع أو ينضغط مع أحجام العرض والخط الكبيرة</string>
     <string name="whats_new_fix_nav_bar">لم تعد الأزرار تختفي خلف شريط التنقل ذي الأزرار الثلاثة</string>
     <string name="whats_new_got_it">فهمت</string>
+    <string name="capsule_intro_title">Key capsule</string>
+    <string name="pro_table_included">متضمن</string>
+    <string name="pro_table_not_included">غير متضمن</string>
 </resources>

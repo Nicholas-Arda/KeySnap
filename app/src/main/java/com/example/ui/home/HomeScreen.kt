@@ -85,6 +85,7 @@ import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.constrainHeight
+import com.example.capsule.CapsuleHooks
 import com.example.data.EntitlementManager
 import com.example.data.ScriptActionCatalog
 import com.example.data.ShortcutScript
@@ -296,6 +297,18 @@ private fun FreeVsProTable(stacked: Boolean) {
                 style = MaterialTheme.typography.labelSmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
                 color = colors.onSurface,
             )
+            if (CapsuleHooks.AVAILABLE) {
+                HorizontalDivider(color = colors.outline.copy(alpha = .3f))
+                Text(stringResource(R.string.capsule_intro_title), style = MaterialTheme.typography.bodySmall, color = colors.onSurface)
+                Text(
+                    "${stringResource(R.string.pro_table_free)}: ${stringResource(R.string.pro_table_not_included)}",
+                    style = MaterialTheme.typography.labelSmall, color = colors.onSurfaceVariant,
+                )
+                Text(
+                    "${stringResource(R.string.pro_table_pro)}: ${stringResource(R.string.pro_table_included)}",
+                    style = MaterialTheme.typography.labelSmall, color = colors.onSurface,
+                )
+            }
         }
         return
     }
@@ -325,6 +338,13 @@ private fun FreeVsProTable(stacked: Boolean) {
             free = "${EntitlementManager.FREE_SCRIPT_LIMIT}",
             pro = stringResource(R.string.pro_table_unlimited),
         )
+        if (CapsuleHooks.AVAILABLE) {
+            ComparisonRow(
+                stringResource(R.string.capsule_intro_title),
+                free = stringResource(R.string.pro_table_not_included),
+                pro = stringResource(R.string.pro_table_included),
+            )
+        }
     }
 }
 

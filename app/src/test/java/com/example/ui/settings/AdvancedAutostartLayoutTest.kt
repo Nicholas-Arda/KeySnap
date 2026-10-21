@@ -71,6 +71,8 @@ class AdvancedAutostartLayoutTest {
                 }
             }
         }
+        rule.onNodeWithTag("settings_list").performScrollToNode(hasTestTag("advanced_mode_header"))
+        rule.onNodeWithTag("advanced_mode_header").performClick()
         rule.onNodeWithTag("settings_list").performScrollToNode(hasTestTag("advanced_autostart_switch"))
         rule.onNodeWithTag("advanced_autostart_switch").performScrollTo().performClick()
         assertEquals(1, clicks)

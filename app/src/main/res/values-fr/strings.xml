@@ -718,6 +718,13 @@
     <string name="settings_title">Paramètres</string>
     <string name="settings_subtitle">Valeurs par défaut de chaque nouveau raccourci.</string>
     <string name="settings_group_keys">Touches</string>
+    <string name="settings_keys_summary">Durée d’appui, comportement des touches et vibrations</string>
+    <string name="settings_personalization">Personnalisation</string>
+    <string name="settings_key_behavior">Comportement des touches</string>
+    <string name="settings_setup_tools">Outils de configuration</string>
+    <string name="settings_setup_tools_summary">Accessibilité et mode avancé</string>
+    <string name="settings_input_monitor_summary">Événements des touches physiques</string>
+    <string name="settings_experimental">Expérimental</string>
     <string name="settings_group_advanced">Avancé</string>
     <string name="settings_group_app">Application</string>
     <string name="settings_defaults_panel">Valeurs par défaut pour les nouveaux raccourcis</string>
@@ -741,7 +748,7 @@
     <string name="settings_run_setup_description">Réappairer le débogage sans fil.</string>
     <string name="settings_about_panel">À propos</string>
     <string name="settings_about_app">À propos de KeySnap</string>
-    <string name="settings_about_app_summary">Open source · rien ne quitte votre téléphone</string>
+    <string name="settings_about_app_summary">Cœur open source · rien ne quitte votre téléphone</string>
     <string name="settings_privacy_policy">Politique de confidentialité</string>
     <string name="about_contact">Contacter le support</string>
     <string name="settings_erase">Effacer toutes les données</string>
@@ -784,13 +791,14 @@
 
     <!-- Assistant de configuration -->
     <string name="about_hero_title">Rien de ce que vous faites ici ne quitte votre téléphone.</string>
-    <string name="about_hero_body">Aucun serveur. Aucun compte. Aucune analyse. KeySnap n\'a nulle part où envoyer vos raccourcis ou vos appuis de touches — et toute l\'application est open source, vous n\'avez donc pas à nous croire sur parole.</string>
+    <string name="about_hero_body">Aucun serveur. Aucun compte. Aucune analyse. KeySnap n\'a nulle part où envoyer vos raccourcis ou vos appuis de touches — et son cœur est open source, vous n\'avez donc pas à nous croire sur parole.</string>
     <string name="about_no_server_title">Il n\'y a pas de serveur</string>
     <string name="about_no_server_body">KeySnap n\'a ni backend, ni compte, ni rapport de plantage. Ce que vous associez, ce que vous appuyez et les applis que vous utilisez restent dans le stockage privé de cette application. Aucun code n\'envoie tout cela, parce qu\'il n\'y a nulle part où l\'envoyer.</string>
     <string name="about_illo_no_server_caption">appuis · raccourcis · usage</string>
-    <string name="about_open_source_title">Open source, pour que vous puissiez vérifier</string>
-    <string name="about_open_source_body">Chaque ligne de KeySnap est publiée sous licence GPLv3. Lisez à quoi sert chaque autorisation, compilez l\'application vous-même, ou confiez-la à quelqu\'un qui saura le faire.</string>
+    <string name="about_open_source_title">Cœur open source, pour que vous puissiez vérifier</string>
+    <string name="about_open_source_body">Le cœur de KeySnap — tous les raccourcis, actions et autorisations — est publié sous licence GPLv3. Lisez à quoi sert chaque autorisation, compilez l\'application vous-même, ou confiez-la à quelqu\'un qui saura le faire. Quelques fonctions Pro, comme Key capsule, ne sont pas open source.</string>
     <string name="about_view_source">Voir le code source sur GitHub</string>
+    <string name="about_licenses">Licences open source</string>
     <string name="about_scope_title">Le service d\'accessibilité ne voit que les Paramètres</string>
     <string name="about_scope_body">Android ne donne aux applis aucun autre moyen de détecter une touche physique. Le service de KeySnap est limité à l\'application Paramètres du système et s\'en sert pour une seule chose : lire le code d\'association pendant la configuration du mode avancé. Il ne peut pas lire votre appli bancaire, vos messages, ni ce que vous tapez — c\'est Android qui l\'impose, pas une promesse.</string>
     <string name="about_bridge_title">Le mode avancé, c\'est l\'ADB de votre propre téléphone</string>
@@ -1063,4 +1071,7 @@
     <string name="whats_new_fix_large_text">Le texte n\'est plus coupé ni écrasé avec de grandes tailles d\'affichage et de police</string>
     <string name="whats_new_fix_nav_bar">Les boutons ne se cachent plus derrière la barre de navigation à 3 boutons</string>
     <string name="whats_new_got_it">Compris</string>
+    <string name="capsule_intro_title">Key capsule</string>
+    <string name="pro_table_included">Inclus</string>
+    <string name="pro_table_not_included">Non inclus</string>
 </resources>

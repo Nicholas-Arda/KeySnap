@@ -36,3 +36,6 @@ TODO.md
 app/release/
 store/play-listing/video/
 skills-lock.json
+
+# KeySnap Pro sources: a separate private repository, never part of this one
+/pro/

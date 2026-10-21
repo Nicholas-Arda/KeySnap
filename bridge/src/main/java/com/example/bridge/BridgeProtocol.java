@@ -18,7 +18,7 @@ public final class BridgeProtocol {
     /** Bumped whenever the on-disk payload or the socket protocol changes incompatibly, or when
      *  :bridge behavior changes at all — an already-running detached bridge has no way to pick up
      *  a source-only fix otherwise. */
-    public static final int VERSION = 22;
+    public static final int VERSION = 24;
 
     /** Process name given to app_process, used by `pidof` for liveness checks. */
     public static final String NICE_NAME = "arda_bridge";
@@ -45,6 +45,9 @@ public final class BridgeProtocol {
 
     /** Client -> bridge. */
     public static final String CMD_HELLO = "HELLO";
+    /** Explicit streaming subscriptions; probes and RUN clients never claim trigger delivery. */
+    public static final String CMD_WATCH = "WATCH";
+    public static final String CMD_WATCH_FEEDBACK = "WATCH_FEEDBACK";
     public static final String CMD_PING = "PING";
     public static final String CMD_RELOAD = "RELOAD";
     public static final String CMD_SHUTDOWN = "SHUTDOWN";
@@ -79,6 +82,8 @@ public final class BridgeProtocol {
     public static final String MSG_EVENT = "EVENT";
     /** TRIGGER ts keyCode pressType scriptId success actionResults — see {@link #encodeActionResults}. */
     public static final String MSG_TRIGGER = "TRIGGER";
+    /** Same fields as TRIGGER, but display only: never execute actions from a retained report. */
+    public static final String MSG_FEEDBACK = "FEEDBACK";
     public static final String MSG_DEVICE = "DEVICE";
     public static final String MSG_BYE = "BYE";
 

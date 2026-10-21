@@ -60,6 +60,33 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
 
     private volatile BridgeConfig config;
     private volatile long configLastModified;
+    private final java.util.concurrent.atomic.AtomicBoolean feedbackWakePending =
+            new java.util.concurrent.atomic.AtomicBoolean();
+
+    @Override
+    public void onFeedbackWakeRequested() {
+        BridgeConfig current = config;
+        if (current == null || !current.capsuleFeedbackEnabled || !current.globallyEnabled
+                || !current.packageName.matches("[a-zA-Z0-9_]+(\\.[a-zA-Z0-9_]+)+")
+                || !feedbackWakePending.compareAndSet(false, true)) return;
+        scheduler.execute(() -> {
+            try {
+                // Fixed internal component, no payload/credentials in the intent or process log.
+                Process process = new ProcessBuilder("am", "startservice", "-a",
+                        "com.example.capsule.SHOW_FEEDBACK", "-n",
+                        current.packageName + "/com.example.capsule.CapsuleFeedbackService")
+                        .redirectOutput(new File("/dev/null"))
+                        .redirectError(new File("/dev/null")).start();
+                if (!process.waitFor(3, TimeUnit.SECONDS)) {
+                    process.destroy();
+                }
+            } catch (Exception ignored) {
+                BridgeLog.w("Capsule service wake unavailable");
+            } finally {
+                feedbackWakePending.set(false);
+            }
+        });
+    }
 
     private BridgeMain(File configFile) {
         this.configFile = configFile;
@@ -674,14 +701,10 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
             return false;
         }
         if (BridgeConfig.ACTION_LAUNCH_APP.equals(action.type)) {
-            String packageName = action.params.get("packageName");
-            if (packageName == null || packageName.isEmpty()) {
-                return false;
-            }
-            // monkey is a test tool: it fails on apps with no LAUNCHER category and spams
-            // logcat. am start resolves the launcher activity directly.
-            return ShellKeyInjector.runShell("am", "start", "-a", "android.intent.action.MAIN",
-                    "-c", "android.intent.category.LAUNCHER", "-p", packageName);
+            return AppLauncher.launch(action.params.get("packageName"), new AppLauncher.Commands() {
+                public String output(String... command) { return ShellKeyInjector.runShellForOutput(command); }
+                public boolean start(String... command) { return ShellKeyInjector.runShellUnlogged(command); }
+            });
         }
         if (BridgeConfig.ACTION_OPEN_URL.equals(action.type)) {
             String url = action.params.get("url");

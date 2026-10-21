@@ -19,7 +19,7 @@ ADVANCED MODE, NO ROOT
 Android hides the power button and many manufacturer buttons from normal apps. Advanced Mode uses your phone's own Wireless Debugging to start a small helper that sees every key and keeps running even when the app is closed in the background. No root, nothing modified, and turning it off removes it.
 
 PRIVATE BY DESIGN
-No account. No servers. No analytics. Your shortcuts and your key presses never leave your phone. The accessibility service is limited to the system Settings app and cannot read anything you type or any other app's screen. Open source under GPL-3.
+No account. No servers. No analytics. Your shortcuts and your key presses never leave your phone. The accessibility service is limited to the system Settings app and cannot read anything you type or any other app's screen. Open-source core under GPL-3.
 
 LIGHT, DARK OR SEPIA
 Three themes and ten languages.

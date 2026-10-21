@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -34,11 +35,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Terminal
 import androidx.compose.material.icons.outlined.ChevronRight
-import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Language
-import androidx.compose.material.icons.outlined.VerifiedUser
+import androidx.compose.material.icons.outlined.Palette
+import androidx.compose.material.icons.outlined.SmartButton
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -48,9 +50,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -65,9 +69,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.semantics.collapse
+import androidx.compose.ui.semantics.expand
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.style.Hyphens
 import androidx.compose.ui.text.style.LineBreak
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.text.BidiFormatter
 import androidx.core.text.TextDirectionHeuristicsCompat
@@ -75,9 +82,11 @@ import com.example.data.AppLocale
 import com.example.data.KeyMappingConfig
 import com.example.data.LiveKeyEvent
 import com.example.data.TriggerTimingSpecs
+import com.example.capsule.CapsuleHooks
 import com.example.service.adb.secureSettingsCommand
 import com.example.ui.components.AppAlertDialog
-import com.example.ui.components.ConsolePanel
+import com.example.ui.components.ConsoleShape
+import com.example.ui.components.glassCard
 import com.example.ui.components.InnerShape
 import com.example.ui.components.MillisecondSliderSetting
 import com.example.ui.components.MinTouchTarget
@@ -86,6 +95,7 @@ import com.example.ui.theme.MonoLabel
 import com.example.ui.theme.SectionLabel
 import com.example.ui.theme.ThemeMode
 import com.example.ui.theme.ThemeToggleIcon
+import com.example.ui.theme.LocalGlass
 import io.github.nicholasarda.keysnap.BuildConfig
 import io.github.nicholasarda.keysnap.R
 import java.time.Instant
@@ -103,6 +113,7 @@ enum class SettingsSection {
     ADVANCED_MODE,
     APPEARANCE,
     ABOUT,
+    KEY_CAPSULE,
 }
 
 @Composable
@@ -135,45 +146,101 @@ fun SettingsScreen(
     reveal: (index: Int) -> Modifier = { Modifier },
     targetSection: SettingsSection? = null,
     onSectionShown: () -> Unit = {},
+    onOpenKeyCapsule: () -> Unit = {},
+    isServiceActive: Boolean = false,
+    showTitle: Boolean = true,
 ) {
     val listState = rememberLazyListState()
+    var keysExpanded by rememberSaveable { mutableStateOf(false) }
+    var showAppearance by rememberSaveable { mutableStateOf(false) }
+    var advancedExpanded by rememberSaveable { mutableStateOf(false) }
+    val context = LocalContext.current
+    val capsuleEnabled by remember(context) { CapsuleHooks.enabledFlow(context) }
+        .collectAsState(initial = remember(context) { CapsuleHooks.isEnabled(context) })
+    val itemKeys = listOfNotNull(
+        "title".takeIf { showTitle }, "personalization_label", "personalization",
+        "key_behavior", "setup_tools", "input_monitor", "about_label", "about",
+    )
     LaunchedEffect(targetSection) {
-        val index = when (targetSection) {
-            SettingsSection.ADVANCED_MODE -> 6
-            SettingsSection.APPEARANCE -> 9
-            SettingsSection.ABOUT -> if (themeMode != null) 11 else 10
+        val key = when (targetSection) {
+            SettingsSection.ADVANCED_MODE -> {
+                advancedExpanded = true
+                "setup_tools"
+            }
+            SettingsSection.APPEARANCE -> {
+                showAppearance = true
+                "personalization"
+            }
+            SettingsSection.ABOUT -> "about"
+            SettingsSection.KEY_CAPSULE -> "personalization"
             null -> return@LaunchedEffect
         }
-        listState.scrollToItem(index)
+        val index = itemKeys.indexOf(key)
+        if (index >= 0) listState.scrollToItem(index)
         if (targetSection != SettingsSection.ABOUT) onSectionShown()
     }
     LazyColumn(
         state = listState,
         modifier = Modifier.fillMaxSize().testTag("settings_list"),
         verticalArrangement = Arrangement.spacedBy(12.dp),
-        contentPadding = PaddingValues(start = 12.dp, end = 12.dp, top = 18.dp, bottom = 40.dp),
+        contentPadding = PaddingValues(start = 12.dp, end = 12.dp, top = if (showTitle) 18.dp else 4.dp, bottom = 40.dp),
     ) {
-        item {
-            Column(
-                reveal(0).padding(horizontal = 8.dp).padding(bottom = 4.dp),
-                verticalArrangement = Arrangement.spacedBy(2.dp),
-            ) {
+        if (showTitle) {
+            item(key = "title") {
                 Text(
                     stringResource(R.string.settings_title),
-                    modifier = Modifier.testTag("settings_title"),
+                    modifier = reveal(0).padding(horizontal = 8.dp).padding(bottom = 4.dp).testTag("settings_title"),
                     style = MaterialTheme.typography.titleLarge.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
                     color = MaterialTheme.colorScheme.onSurface,
                 )
-                Text(
-                    stringResource(R.string.settings_subtitle),
-                    style = MaterialTheme.typography.bodyMedium.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
             }
         }
-        item { SettingsGroupLabel(R.string.settings_group_keys, reveal(1), first = true) }
-        item {
-            ConsolePanel(stringResource(R.string.settings_defaults_panel), testTag = "defaults_for_new_scripts", modifier = reveal(2)) {
+        item(key = "personalization_label") { SettingsGroupLabel(R.string.settings_personalization, reveal(1), first = true) }
+        item(key = "personalization") {
+            SettingsCard("personalization", reveal(2)) {
+                if (themeMode != null) {
+                    Box(Modifier.testTag("appearance")) {
+                        SettingsNavRow(
+                            title = stringResource(R.string.settings_appearance_panel),
+                            subtitle = stringResource(when {
+                                themeFollowSystem -> R.string.theme_system
+                                themeMode == ThemeMode.LIGHT -> R.string.theme_light
+                                themeMode == ThemeMode.DARK -> R.string.theme_dark
+                                else -> R.string.theme_sepia
+                            }),
+                            icon = Icons.Outlined.Palette,
+                            testTag = "open_appearance",
+                            onClick = { showAppearance = true },
+                        )
+                    }
+                    SettingsDivider()
+                }
+                LanguageRow()
+                if (CapsuleHooks.AVAILABLE) {
+                    SettingsDivider()
+                    Box(Modifier.testTag("key_capsule")) {
+                        SettingsNavRow(
+                            title = "Key capsule",
+                            subtitle = "${stringResource(if (capsuleEnabled) R.string.scripts_toggle_state_on else R.string.home_status_off)} · ${stringResource(R.string.settings_experimental)}",
+                            icon = Icons.Outlined.SmartButton,
+                            testTag = "open_key_capsule",
+                            badge = stringResource(R.string.pro_table_pro),
+                            onClick = onOpenKeyCapsule,
+                        )
+                    }
+                }
+            }
+        }
+        item(key = "key_behavior") {
+            SettingsExpandablePanel(
+                label = stringResource(R.string.settings_key_behavior),
+                summary = stringResource(R.string.settings_keys_summary),
+                testTag = "key_behavior",
+                modifier = reveal(3),
+                expanded = keysExpanded,
+                onToggle = { keysExpanded = !keysExpanded },
+            ) {
+                Text(stringResource(R.string.settings_defaults_panel), style = SectionLabel)
                 Text(
                     stringResource(R.string.settings_defaults_hint),
                     style = MaterialTheme.typography.bodySmall,
@@ -195,10 +262,7 @@ fun SettingsScreen(
                     testTag = "long_press_threshold_slider",
                     onValueChange = onLongPressThresholdChange,
                 )
-            }
-        }
-        item {
-            ConsolePanel(stringResource(R.string.settings_input_panel), testTag = "input_behavior", modifier = reveal(3)) {
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = .45f))
                 SettingsSwitchRow(
                     title = stringResource(R.string.script_settings_consume_input),
                     description = stringResource(R.string.script_settings_consume_input_description),
@@ -207,10 +271,7 @@ fun SettingsScreen(
                     testTag = "consume_input_switch",
                     onCheckedChange = onToggleConsume,
                 )
-            }
-        }
-        item {
-            ConsolePanel(stringResource(R.string.settings_haptics_panel), testTag = "haptics", modifier = reveal(4)) {
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = .45f))
                 SettingsSwitchRow(
                     title = stringResource(R.string.settings_haptic_feedback),
                     description = stringResource(
@@ -238,9 +299,8 @@ fun SettingsScreen(
                 )
             }
         }
-        item { SettingsGroupLabel(R.string.settings_group_advanced, reveal(5)) }
-        item {
-            Box(reveal(6)) {
+        item(key = "setup_tools") {
+            Box(reveal(4)) {
                 AdvancedModePanel(
                     isRunning = isAdvancedModeRunning,
                     onToggle = onToggleAdvancedMode,
@@ -249,14 +309,30 @@ fun SettingsScreen(
                     grantHeld = autostartPermissionHeld,
                     changing = autostartChanging,
                     onToggleAutostart = onToggleAutostart,
+                    expanded = advancedExpanded,
+                    onToggleExpanded = { advancedExpanded = !advancedExpanded },
+                    isServiceActive = isServiceActive,
                 )
             }
         }
-        item { Box(reveal(7)) { EventLogPanel(keyHistory, isEventLogExpanded, onToggleLog, onClearHistory) } }
-        item { SettingsGroupLabel(R.string.settings_group_app, reveal(8)) }
-        if (themeMode != null) {
-            item {
-                ConsolePanel(stringResource(R.string.settings_appearance_panel), testTag = "appearance", modifier = reveal(9)) {
+        item(key = "input_monitor") { Box(reveal(5)) { EventLogPanel(keyHistory, isEventLogExpanded, onToggleLog, onClearHistory) } }
+        item(key = "about_label") { SettingsGroupLabel(R.string.settings_about_panel, reveal(6)) }
+        item(key = "about") {
+            Box(reveal(7)) {
+                AboutPanel(
+                    onEraseAllData = onEraseAllData,
+                    openRequested = targetSection == SettingsSection.ABOUT,
+                    onOpenHandled = onSectionShown,
+                )
+            }
+        }
+    }
+    if (showAppearance && themeMode != null) {
+        AppAlertDialog(
+            onDismissRequest = { showAppearance = false },
+            title = { Text(stringResource(R.string.settings_appearance_panel)) },
+            text = {
+                Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     AppearanceRow(themeMode, themeFollowSystem, onSetThemeMode, onSetThemeSystem)
                     if (themeMode == ThemeMode.DARK) {
                         SettingsSwitchRow(
@@ -269,22 +345,98 @@ fun SettingsScreen(
                         )
                     }
                 }
+            },
+            confirmButton = { TextButton(onClick = { showAppearance = false }) { Text(stringResource(R.string.whats_new_got_it)) } },
+        )
+    }
+}
+
+@Composable
+private fun SettingsCard(testTag: String, modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
+    Card(
+        modifier.fillMaxWidth().glassCard(LocalGlass.current).testTag(testTag),
+        shape = ConsoleShape,
+        colors = CardDefaults.cardColors(
+            containerColor = Color.Transparent,
+            contentColor = MaterialTheme.colorScheme.onSurface,
+        ),
+    ) {
+        Column(Modifier.padding(horizontal = 12.dp), content = content)
+    }
+}
+
+@Composable
+private fun SettingsDivider() = HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = .35f))
+
+@Composable
+@OptIn(ExperimentalLayoutApi::class)
+private fun SettingsNavRow(
+    title: String,
+    subtitle: String,
+    icon: ImageVector,
+    testTag: String,
+    badge: String? = null,
+    onClick: () -> Unit,
+) {
+    val colors = MaterialTheme.colorScheme
+    BoxWithConstraints(Modifier.fillMaxWidth()) {
+        val compact = maxWidth / LocalDensity.current.fontScale < 240.dp
+        Row(
+            Modifier.fillMaxWidth().heightIn(min = 68.dp)
+                .clickable(role = Role.Button, onClick = onClick)
+                .padding(vertical = 12.dp).testTag(testTag),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            if (!compact) Icon(icon, null, Modifier.size(24.dp), tint = colors.primary)
+            Column(Modifier.weight(1f)) {
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    Text(title, Modifier.testTag("${testTag}_label"), style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium, hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph))
+                    if (badge != null) Text(
+                        badge,
+                        Modifier.clip(InnerShape).background(colors.primary.copy(alpha = .10f)).padding(horizontal = 5.dp, vertical = 1.dp),
+                        color = colors.primary,
+                        style = MaterialTheme.typography.labelSmall,
+                    )
+                }
+                Text(subtitle, Modifier.testTag("${testTag}_summary"), style = MaterialTheme.typography.bodySmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph), color = colors.onSurfaceVariant)
             }
-        }
-        item { Box(reveal(10)) { LanguagePanel() } }
-        item {
-            Box(reveal(11)) {
-                AboutPanel(
-                    onEraseAllData = onEraseAllData,
-                    openRequested = targetSection == SettingsSection.ABOUT,
-                    onOpenHandled = onSectionShown,
-                )
-            }
+            if (!compact) Icon(Icons.Outlined.ChevronRight, null, Modifier.size(18.dp), tint = colors.onSurfaceVariant)
         }
     }
 }
 
-/** Eight sibling panels do not scan; these split them into Keys, Advanced and App. */
+/** Details share one disclosure so Settings stays scannable without losing any controls. */
+@Composable
+private fun SettingsExpandablePanel(
+    label: String,
+    summary: String,
+    testTag: String,
+    expanded: Boolean,
+    onToggle: () -> Unit,
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit,
+) {
+    val colors = MaterialTheme.colorScheme
+    SettingsCard(testTag, modifier) {
+        Row(
+            Modifier.fillMaxWidth().heightIn(min = 72.dp)
+                .clickable(role = Role.Button, onClick = onToggle)
+                .semantics { if (expanded) collapse { onToggle(); true } else expand { onToggle(); true } }
+                .padding(vertical = 12.dp).testTag("${testTag}_header"),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Column(Modifier.weight(1f)) {
+                Text(label, style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold, hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph))
+                Text(summary, style = MaterialTheme.typography.bodySmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph), color = colors.onSurfaceVariant)
+            }
+            Icon(if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore, null, Modifier.size(18.dp), tint = colors.onSurfaceVariant)
+        }
+        if (expanded) Column(Modifier.padding(bottom = 16.dp), verticalArrangement = Arrangement.spacedBy(11.dp)) { content() }
+    }
+}
+
 @Composable
 private fun SettingsGroupLabel(labelRes: Int, modifier: Modifier = Modifier, first: Boolean = false) {
     Text(
@@ -309,11 +461,36 @@ private fun AdvancedModePanel(
     grantHeld: Boolean,
     changing: Boolean,
     onToggleAutostart: (Boolean) -> Unit,
+    expanded: Boolean,
+    onToggleExpanded: () -> Unit,
+    isServiceActive: Boolean,
 ) {
     val context = LocalContext.current
     val colors = MaterialTheme.colorScheme
     val runSetupLabel = stringResource(R.string.settings_run_setup)
-    ConsolePanel(stringResource(R.string.settings_expert_panel), testTag = "advanced_mode") {
+    SettingsExpandablePanel(
+        label = stringResource(R.string.settings_setup_tools),
+        summary = stringResource(R.string.settings_setup_tools_summary),
+        testTag = "advanced_mode",
+        expanded = expanded,
+        onToggle = onToggleExpanded,
+    ) {
+        BoxWithConstraints(Modifier.fillMaxWidth().heightIn(min = MinTouchTarget)) {
+            val label = stringResource(R.string.home_accessibility_service)
+            val status = stringResource(if (isServiceActive) R.string.home_status_active else R.string.home_status_offline)
+            if (maxWidth / LocalDensity.current.fontScale < 240.dp) {
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text(label, style = MaterialTheme.typography.bodyLarge.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph))
+                    Text(status, style = MaterialTheme.typography.bodySmall, color = colors.primary)
+                }
+            } else {
+                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    Text(label, Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
+                    Text(status, style = MaterialTheme.typography.bodySmall, color = colors.primary)
+                }
+            }
+        }
+        SettingsDivider()
         // The shared switch row, so at large text the switch drops under the text instead of squeezing it.
         SettingsSwitchRow(
             title = stringResource(R.string.settings_detached_bridge),
@@ -396,7 +573,6 @@ private fun AboutPanel(
     onOpenHandled: () -> Unit,
 ) {
     val colors = MaterialTheme.colorScheme
-    var confirming by remember { mutableStateOf(false) }
     var showPolicy by remember { mutableStateOf(false) }
     var showAbout by remember { mutableStateOf(false) }
     var showProblemRecording by remember { mutableStateOf(false) }
@@ -408,46 +584,33 @@ private fun AboutPanel(
         }
     }
 
-    ConsolePanel(
-        stringResource(R.string.settings_about_panel),
-        testTag = "about",
-        contentPadding = if (LocalDensity.current.fontScale > 1.15f) 8.dp else 16.dp,
-    ) {
-        AboutRow(
-            label = stringResource(R.string.settings_about_app),
-            sublabel = stringResource(R.string.settings_about_app_summary),
-            leadingIcon = Icons.Outlined.VerifiedUser,
-            icon = Icons.Outlined.ChevronRight,
-            color = colors.onSurface,
-            testTag = "about_app_button",
-            onClick = {
-                showProblemRecording = false
-                showAbout = true
-            },
-        )
-
-        HorizontalDivider(color = colors.outline.copy(alpha = .45f))
-        AboutRow(
-            label = stringResource(R.string.settings_privacy_policy),
-            icon = Icons.Outlined.ChevronRight,
-            color = colors.onSurface,
-            testTag = "privacy_policy_button",
-            onClick = { showPolicy = true },
-        )
-        HorizontalDivider(color = colors.outline.copy(alpha = .45f))
-        AboutRow(
-            label = stringResource(R.string.settings_erase),
-            icon = Icons.Outlined.Delete,
-            color = colors.error,
-            testTag = "erase_all_data_button",
-            onClick = { confirming = true },
-        )
-
+    Column {
+        SettingsCard("about") {
+            AboutRow(
+                label = stringResource(R.string.settings_about_app),
+                sublabel = stringResource(R.string.settings_about_app_summary),
+                icon = Icons.Outlined.ChevronRight,
+                color = colors.onSurface,
+                testTag = "about_app_button",
+                onClick = {
+                    showProblemRecording = false
+                    showAbout = true
+                },
+            )
+            SettingsDivider()
+            AboutRow(
+                label = stringResource(R.string.settings_privacy_policy),
+                icon = Icons.Outlined.ChevronRight,
+                color = colors.onSurface,
+                testTag = "privacy_policy_button",
+                onClick = { showPolicy = true },
+            )
+        }
         Text(
             stringResource(R.string.settings_version, BidiFormatter.getInstance().unicodeWrap(BuildConfig.VERSION_NAME, TextDirectionHeuristicsCompat.LTR), BuildConfig.VERSION_CODE),
             style = MonoLabel,
             color = colors.onSurfaceVariant,
-            modifier = Modifier.padding(top = 4.dp),
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp),
         )
     }
 
@@ -461,20 +624,9 @@ private fun AboutPanel(
     if (showPolicy) {
         PrivacyPolicyDialog(onDismiss = { showPolicy = false })
     }
-    // Same confirm dialog a single shortcut deletion gets; the old two-tap swap had no timeout and
-    // no way back once the second tap was already under the finger.
-    if (confirming) {
-        EraseAllDataDialog(
-            onConfirm = {
-                confirming = false
-                onEraseAllData()
-            },
-            onDismiss = { confirming = false },
-        )
-    }
 }
 
-/** Same tappable row as the Advanced Mode panel's, so About's three actions match the rest of Settings. */
+/** About keeps its two everyday destinations together; data erasure remains in About KeySnap. */
 @Composable
 private fun AboutRow(
     label: String,
@@ -483,7 +635,6 @@ private fun AboutRow(
     testTag: String,
     onClick: () -> Unit,
     sublabel: String? = null,
-    leadingIcon: ImageVector? = null,
 ) {
     val colors = MaterialTheme.colorScheme
     BoxWithConstraints(Modifier.fillMaxWidth()) {
@@ -491,15 +642,13 @@ private fun AboutRow(
         Row(
             Modifier
                 .fillMaxWidth()
-                .heightIn(min = MinTouchTarget)
+                .heightIn(min = 56.dp)
                 .clickable(onClickLabel = label, onClick = onClick)
+                .padding(vertical = 12.dp)
                 .testTag(testTag),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            if (!compact && leadingIcon != null) {
-                Icon(leadingIcon, null, Modifier.size(20.dp), tint = colors.primary)
-            }
             Column(Modifier.weight(1f)) {
                 Text(label, Modifier.testTag("${testTag}_label"), style = MaterialTheme.typography.bodyLarge.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph), color = color)
                 if (sublabel != null) {
@@ -590,13 +739,12 @@ private fun EventLogPanel(
 ) {
     val colors = MaterialTheme.colorScheme
     val visible = history.take(VISIBLE_EVENTS)
-    ConsolePanel(
+    SettingsExpandablePanel(
         label = stringResource(R.string.settings_input_monitor),
+        summary = stringResource(R.string.settings_input_monitor_summary),
         testTag = "input_monitor",
-        onHeaderClick = onToggle,
-        isExpanded = expanded,
-        headerActionDescription = stringResource(if (expanded) R.string.settings_hide_log_action else R.string.settings_show_log_action),
-        headerActionIcon = if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+        expanded = expanded,
+        onToggle = onToggle,
     ) {
         // The header chevron is the only toggle, so this line carries what a shut panel is worth
         // opening for: the newest event and how many are buffered, merged into one reading.
@@ -604,8 +752,6 @@ private fun EventLogPanel(
             Modifier.fillMaxWidth().semantics(mergeDescendants = true) {},
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Icon(Icons.Filled.Terminal, null, tint = colors.primary, modifier = Modifier.size(19.dp))
-            Spacer(Modifier.width(10.dp))
             Text(
                 history.firstOrNull()?.keyName ?: stringResource(R.string.settings_log_waiting),
                 Modifier.weight(1f),
@@ -738,36 +884,19 @@ private fun SettingsSwitchRow(
  * below that the recreated activity re-runs `attachBaseContext` and picks the locale up there.
  */
 @Composable
-private fun LanguagePanel() {
-    val colors = MaterialTheme.colorScheme
+private fun LanguageRow() {
     val context = LocalContext.current
     val activity = context as? Activity
     var selected by remember { mutableStateOf(AppLocale.stored(context)) }
     var showPicker by remember { mutableStateOf(false) }
-    ConsolePanel(stringResource(R.string.settings_language_panel), testTag = "language") {
-        BoxWithConstraints {
-            val compact = maxWidth / LocalDensity.current.fontScale < 240.dp
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .heightIn(min = MinTouchTarget)
-                    .clickable { showPicker = true }
-                    .testTag("language_picker_button"),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                if (!compact) {
-                    LocaleFlag(selected)
-                    Spacer(Modifier.width(10.dp))
-                }
-                Text(
-                    stringResource(AppLocale.labelFor(selected)),
-                    style = MaterialTheme.typography.bodyLarge.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
-                    color = colors.onSurface,
-                    modifier = Modifier.weight(1f).testTag("settings_language_label"),
-                )
-                if (!compact) Icon(Icons.Outlined.ChevronRight, null, tint = colors.onSurfaceVariant)
-            }
-        }
+    Box(Modifier.testTag("language")) {
+        SettingsNavRow(
+            title = stringResource(R.string.settings_language_panel),
+            subtitle = stringResource(AppLocale.labelFor(selected)),
+            icon = Icons.Outlined.Language,
+            testTag = "language_picker_button",
+            onClick = { showPicker = true },
+        )
     }
     if (showPicker) {
         LanguagePickerDialog(

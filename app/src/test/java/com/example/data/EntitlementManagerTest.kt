@@ -12,6 +12,26 @@ import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class EntitlementManagerTest {
+    @Test fun acceptanceProRequiresExplicitOptInAndTheExactDevPackage() {
+        assertTrue(capsuleAcceptanceProEnabled(true, "io.github.nicholasarda.keysnap.dev"))
+        assertFalse(capsuleAcceptanceProEnabled(false, "io.github.nicholasarda.keysnap.dev"))
+        assertFalse(capsuleAcceptanceProEnabled(true, "io.github.nicholasarda.keysnap"))
+        assertFalse(capsuleAcceptanceProEnabled(true, "other.app.dev"))
+    }
+
+    @Test fun testAccessSurvivesANegativeBillingRefreshWithoutPersistingFakeOwnership() {
+        val prefs = ApplicationProvider.getApplicationContext<Context>()
+            .getSharedPreferences("acceptance_entitlement_${System.nanoTime()}", Context.MODE_PRIVATE)
+        val repository = ScriptRepository(prefs, Moshi.Builder().build())
+        val acceptance = EntitlementManager(prefs, repository, acceptancePro = true)
+        assertTrue(acceptance.isPro.value)
+        assertFalse(prefs.getBoolean("is_pro", false))
+        acceptance.setPro(false)
+        assertTrue(acceptance.isPro.value)
+        assertFalse(prefs.getBoolean("is_pro", true))
+        assertFalse(EntitlementManager(prefs, repository).isPro.value)
+    }
+
     private fun manager(): EntitlementManager {
         val prefs = ApplicationProvider.getApplicationContext<Context>()
             .getSharedPreferences("entitlement_test_${System.nanoTime()}", Context.MODE_PRIVATE)

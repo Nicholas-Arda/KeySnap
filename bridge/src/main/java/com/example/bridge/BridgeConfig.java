@@ -224,6 +224,7 @@ public final class BridgeConfig {
     /** The app's package, used for the battery-optimisation whitelist. */
     public final String packageName;
     public final boolean globallyEnabled;
+    public final boolean capsuleFeedbackEnabled;
     public final long doublePressWindowMs;
     public final long longPressThresholdMs;
     public final List<Script> scripts;
@@ -297,7 +298,8 @@ public final class BridgeConfig {
 
     private BridgeConfig(int port, String token, String packageName, boolean globallyEnabled,
                          long doublePressWindowMs, long longPressThresholdMs, List<Script> scripts,
-                         boolean vibrateOnTrigger, long hapticDurationMs) {
+                         boolean vibrateOnTrigger, long hapticDurationMs, boolean capsuleFeedbackEnabled) {
+        this.capsuleFeedbackEnabled = capsuleFeedbackEnabled;
         this.vibrateOnTrigger = vibrateOnTrigger;
         this.hapticDurationMs = hapticDurationMs;
         this.port = port;
@@ -464,7 +466,8 @@ public final class BridgeConfig {
         }
         return new BridgeConfig(port, token, packageName, globallyEnabled, doubleWindow, longThreshold,
                 Collections.unmodifiableList(scripts),
-                root.optBoolean("vibrateOnTrigger", true), root.optLong("hapticDurationMs", 60L));
+                root.optBoolean("vibrateOnTrigger", true), root.optLong("hapticDurationMs", 60L),
+                root.optBoolean("capsuleFeedbackEnabled", false));
     }
 
     /** Actions out of a bare {"actions":[...]} object, as the control port's RUN command sends. */

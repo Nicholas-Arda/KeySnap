@@ -6,7 +6,7 @@
 
 <p align="center">
   Double-press for the flashlight. Hold for a screenshot. Make a button do more.<br>
-  An open-source Android app for button shortcuts and automations.
+  An Android app for button shortcuts and automations, with an open-source core.
 </p>
 
 <p align="center">
@@ -14,7 +14,7 @@
 </p>
 
 <p align="center">
-  <b>Android 11+</b> &nbsp; · &nbsp; <b>No ads</b> &nbsp; · &nbsp; <b>No account</b> &nbsp; · &nbsp; <a href="LICENSE">GPL-3.0</a>
+  <b>Android 11+</b> &nbsp; · &nbsp; <b>No ads</b> &nbsp; · &nbsp; <b>No account</b> &nbsp; · &nbsp; <a href="LICENSE">GPL-3.0 core</a>
 </p>
 
 <p align="center">
@@ -115,7 +115,9 @@ A reboot stops the helper. Optional **Start after restart** brings it back after
 <details>
 <summary><b>Coming soon: Key capsule</b></summary>
 
-Customizable visual feedback for physical button shortcuts, with different styles, motion and per-key positioning. In development; not included in the current Google Play release.
+Pro-only customizable visual feedback for physical button shortcuts, with different styles, motion and per-key positioning. State icons reflect readable device settings and media playback; unavailable or ambiguous readings stay Unknown. In development; not included in the current Google Play release.
+
+In Advanced Mode, the detached bridge can wake a short capsule feedback service inside KeySnap after the app process closes, without opening its screen or repeating the action.
 
 </details>
 

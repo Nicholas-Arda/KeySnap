@@ -164,6 +164,8 @@ class BridgePayload(context: Context) {
             root.put("port", controlPort)
             root.put("token", controlToken)
             root.put("globallyEnabled", globallyEnabled)
+            root.put("capsuleFeedbackEnabled", com.example.capsule.CapsuleHooks.isEnabled(appContext) &&
+                com.example.data.EntitlementManager.getInstance(appContext).isPro.value)
             root.put("doublePressWindowMs", config.doublePressWindowMs)
             root.put("longPressThresholdMs", config.longPressThresholdMs)
             root.put("vibrateOnTrigger", config.vibrateOnTrigger)

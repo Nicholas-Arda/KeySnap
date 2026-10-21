@@ -15,3 +15,7 @@
 # registered as a java.security.Provider, so R8 sees every reference and no keep rule is needed.
 -dontwarn org.bouncycastle.**
 -dontwarn javax.naming.**
+
+# spake2-android is LGPL-3.0: keep it whole and unrenamed so a user can swap in a modified build
+# of the library, which LGPL requires of a combined work that is not itself LGPL.
+-keep class io.github.muntashirakon.crypto.spake2.** { *; }

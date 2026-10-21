@@ -18,8 +18,10 @@ import com.example.data.ScriptConstraintCatalog
 import com.example.data.ScriptRepository
 
 /**
- * Notification access, used only by the "Notification received" condition and the "Reply to
- * notification" action. A notification's text is read only for an app some condition names,
+ * Notification access serves the "Notification received" condition and "Reply to notification"
+ * action. If already granted, CapsuleActionStateReader also uses it to read media playback
+ * state through MediaSessionManager, without reading media metadata. A notification's text
+ * is read only for an app some condition names,
  * matched in memory and dropped; [NotificationMatches] keeps the time and system key of a match,
  * nothing of its content.
  * Nothing here may log a title, text, sender, chat or reply.

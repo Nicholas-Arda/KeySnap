@@ -80,12 +80,15 @@ import com.example.ui.scripts.ShortcutReviewDialog
 import com.example.ui.scripts.TriggerPickerSheet
 import com.example.ui.scripts.shareShortcutText
 import com.example.ui.settings.SettingsGear
+import com.example.capsule.CapsuleHooks
+import com.example.data.keyDisplayName
 import com.example.ui.settings.SettingsScreen
 import com.example.ui.settings.SettingsSection
 import com.example.ui.settings.SettingsScrim
 import com.example.ui.settings.SheetTopGap
 import com.example.ui.settings.SettingsSheet
 import com.example.ui.settings.rememberSettingsMotion
+import com.example.ui.settings.settingsBottomClearance
 import com.example.ui.theme.PageFloorStop
 import com.example.ui.theme.ThemeTransitionMs
 import com.example.ui.theme.backgroundGlowAlpha
@@ -124,9 +127,13 @@ fun MainScreen(viewModel: MainViewModel) {
     val showSetupWizard by viewModel.showSetupWizard.collectAsState()
     val whatsNew by viewModel.whatsNew.collectAsState()
     val savedKeys by viewModel.savedKeys.collectAsState()
+    var capsuleEditorOpen by rememberSaveable { mutableStateOf(false) }
+    var capsuleIntroOpen by rememberSaveable { mutableStateOf(false) }
+    var settingsOpen by rememberSaveable { mutableStateOf(false) }
     val showNameKeyDialogForCode by viewModel.showNameKeyDialogForCode.collectAsState()
     val editingScript by viewModel.editingScript.collectAsState()
     val isPro by viewModel.isPro.collectAsState()
+    LaunchedEffect(isPro) { if (!isPro) capsuleEditorOpen = false else capsuleIntroOpen = false }
     val proPrice by viewModel.proPrice.collectAsState()
     val scriptsMessage by viewModel.scriptsMessage.collectAsState()
     val nudgeDismissed by viewModel.nudgeDismissed.collectAsState()
@@ -165,10 +172,11 @@ fun MainScreen(viewModel: MainViewModel) {
         viewModel.consumeScriptsMessage()
     }
 
-    BoxWithConstraints(Modifier.fillMaxSize()) {
+    BoxWithConstraints(Modifier.fillMaxSize().then(if (capsuleEditorOpen || capsuleIntroOpen) Modifier.clearAndSetSemantics {} else Modifier)) {
         val density = LocalDensity.current
         val widthPx = with(density) { maxWidth.toPx() }
         val heightPx = with(density) { maxHeight.toPx() }
+        val settingsClearance = settingsBottomClearance(maxHeight)
         val accent = MaterialTheme.colorScheme.primary
         // The colour scheme crossfades over ThemeTransitionMs; the ground has to move on the same
         // clock or it snaps to the new theme while the cards are still fading.
@@ -205,7 +213,6 @@ fun MainScreen(viewModel: MainViewModel) {
         val draft = editingScript
         val suggestionDraft = draft?.takeIf { it.fromSuggestion }
         if (draft == null || suggestionDraft != null) {
-            var settingsOpen by rememberSaveable { mutableStateOf(false) }
             var settingsSection by rememberSaveable { mutableStateOf<SettingsSection?>(null) }
             val settingsMotion = rememberSettingsMotion(settingsOpen)
             val goToPage: (Int) -> Unit = { page -> pagerScope.launch { pagerState.animateScrollToPage(page, animationSpec = PageSlide) } }
@@ -290,10 +297,12 @@ fun MainScreen(viewModel: MainViewModel) {
                     .fillMaxSize()
                     .statusBarsPadding()
                     .navigationBarsPadding()
-                    .padding(start = 12.dp, end = 12.dp, top = SheetTopGap, bottom = 144.dp),
+                    .padding(start = 12.dp, end = 12.dp, top = SheetTopGap, bottom = settingsClearance),
             ) {
                 SettingsScreen(
                     config = config,
+                    isServiceActive = isServiceActive,
+                    showTitle = false,
                     isVibratorAvailable = viewModel.isVibratorAvailable,
                     onToggleConsume = viewModel::toggleConsumeOriginal,
                     onToggleVibrate = viewModel::toggleVibrate,
@@ -321,6 +330,9 @@ fun MainScreen(viewModel: MainViewModel) {
                     reveal = settingsMotion::reveal,
                     targetSection = settingsSection,
                     onSectionShown = { settingsSection = null },
+                    onOpenKeyCapsule = {
+                        if (isPro) capsuleEditorOpen = true else capsuleIntroOpen = true
+                    },
                 )
             }
             if (!settingsOpen && pagerState.currentPage == 0 && suggestionDraft == null && !showSetupWizard &&
@@ -604,6 +616,27 @@ fun MainScreen(viewModel: MainViewModel) {
         }
     }
 
+    if (capsuleIntroOpen && !isPro) {
+        CapsuleHooks.Intro(
+            themeMode = themeMode,
+            onClose = { capsuleIntroOpen = false },
+            onExplorePro = {
+                capsuleIntroOpen = false
+                settingsOpen = false
+                pagerScope.launch {
+                    pagerState.animateScrollToPage(0, animationSpec = PageSlide)
+                    scrollHomeToProCard = true
+                }
+            },
+        )
+    }
+    if (capsuleEditorOpen && isPro) {
+        CapsuleHooks.Editor(
+            savedKeyLabels = savedKeys.associate { it.keyCode to keyDisplayName(context.resources, it.keyCode, savedKeys) },
+            themeMode = themeMode,
+            onClose = { capsuleEditorOpen = false },
+        )
+    }
     if (showSetupWizard) SetupWizardModal(viewModel, viewModel::closeSetupWizard)
     showNameKeyDialogForCode?.let { code ->
         NameKeyDialog(code, viewModel::dismissNameKeyDialog) { viewModel.saveUnknownKey(code, it) }

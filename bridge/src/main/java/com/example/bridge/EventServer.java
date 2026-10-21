@@ -32,6 +32,9 @@ public final class EventServer implements Runnable {
 
         /** Presses the Send button of the chat the app just opened; answers one outcome word. */
         String onPressSendRequested(String payloadJson);
+
+        /** No app trigger subscriber received a physical run; optionally wake display-only UI. */
+        default void onFeedbackWakeRequested() { }
     }
 
     private static final char SEP = '\t';
@@ -41,6 +44,8 @@ public final class EventServer implements Runnable {
     private final Listener listener;
     private final List<ClientConnection> clients = new CopyOnWriteArrayList<>();
     private final long startedAtMillis = System.currentTimeMillis();
+    private final FeedbackMailbox feedback = new FeedbackMailbox();
+    private final Object deliveryLock = new Object();
 
     private volatile boolean running = true;
     private volatile ServerSocket serverSocket;
@@ -109,9 +114,28 @@ public final class EventServer implements Runnable {
 
     public void broadcastTrigger(long timestamp, int keyCode, String pressType, String scriptId, boolean success,
             String actionResults) {
-        broadcast(BridgeProtocol.MSG_TRIGGER + SEP + timestamp + SEP + keyCode + SEP + pressType
-                + SEP + sanitize(scriptId) + SEP + (success ? 1 : 0) + SEP + sanitize(actionResults));
+        String fields = "" + SEP + timestamp + SEP + keyCode + SEP + pressType
+                + SEP + sanitize(scriptId) + SEP + (success ? 1 : 0) + SEP + sanitize(actionResults);
+        boolean delivered = false;
+        synchronized (deliveryLock) {
+            feedback.clear();
+            for (ClientConnection client : clients) {
+                if (client.watching) delivered |= client.send(BridgeProtocol.MSG_TRIGGER + fields);
+            }
+            if (!delivered) {
+                feedback.offer(BridgeProtocol.MSG_FEEDBACK + fields, monotonicMillis());
+                for (ClientConnection client : clients) {
+                    if (client.feedbackOnly && client.send(BridgeProtocol.MSG_FEEDBACK + fields)) {
+                        feedback.clear();
+                        break;
+                    }
+                }
+            }
+        }
+        if (!delivered) listener.onFeedbackWakeRequested();
     }
+
+    private static long monotonicMillis() { return System.nanoTime() / 1_000_000L; }
 
     public void broadcastDevice(String path, String name) {
         broadcast(BridgeProtocol.MSG_DEVICE + SEP + sanitize(path) + SEP + sanitize(name));
@@ -134,15 +158,17 @@ public final class EventServer implements Runnable {
         private final Socket socket;
         private volatile BufferedWriter writer;
         private volatile boolean authenticated;
+        private volatile boolean watching;
+        private volatile boolean feedbackOnly;
 
         ClientConnection(Socket socket) {
             this.socket = socket;
         }
 
-        void send(String line) {
+        boolean send(String line) {
             BufferedWriter target = writer;
             if (target == null || !authenticated) {
-                return;
+                return false;
             }
             try {
                 synchronized (this) {
@@ -150,8 +176,10 @@ public final class EventServer implements Runnable {
                     target.write('\n');
                     target.flush();
                 }
+                return true;
             } catch (Exception e) {
                 close();
+                return false;
             }
         }
 
@@ -191,7 +219,16 @@ public final class EventServer implements Runnable {
                         continue;
                     }
 
-                    if (BridgeProtocol.CMD_PING.equals(command)) {
+                    if (BridgeProtocol.CMD_WATCH.equals(command)
+                            || BridgeProtocol.CMD_WATCH_FEEDBACK.equals(command)) {
+                        synchronized (deliveryLock) {
+                            watching = BridgeProtocol.CMD_WATCH.equals(command);
+                            feedbackOnly = !watching;
+                            writeDirect(BridgeProtocol.MSG_OK + SEP + "watching");
+                            String pending = feedback.peek(monotonicMillis());
+                            if (pending != null && send(pending)) feedback.clear();
+                        }
+                    } else if (BridgeProtocol.CMD_PING.equals(command)) {
                         writeDirect(BridgeProtocol.MSG_PONG + SEP + System.currentTimeMillis()
                                 + SEP + statusLine);
                     } else if (BridgeProtocol.CMD_RELOAD.equals(command)) {

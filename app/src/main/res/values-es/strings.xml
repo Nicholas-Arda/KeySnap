@@ -719,6 +719,13 @@
     <string name="settings_title">Ajustes</string>
     <string name="settings_subtitle">Valores predeterminados con los que empieza cada acceso directo nuevo.</string>
     <string name="settings_group_keys">Teclas</string>
+    <string name="settings_keys_summary">Duración de pulsación, comportamiento de entrada y vibración</string>
+    <string name="settings_personalization">Personalización</string>
+    <string name="settings_key_behavior">Comportamiento de teclas</string>
+    <string name="settings_setup_tools">Herramientas de configuración</string>
+    <string name="settings_setup_tools_summary">Accesibilidad y Modo avanzado</string>
+    <string name="settings_input_monitor_summary">Eventos de teclas físicas</string>
+    <string name="settings_experimental">Experimental</string>
     <string name="settings_group_advanced">Avanzado</string>
     <string name="settings_group_app">Aplicación</string>
     <string name="settings_defaults_panel">Valores predeterminados para accesos directos nuevos</string>
@@ -742,7 +749,7 @@
     <string name="settings_run_setup_description">Vuelve a emparejar la depuración inalámbrica.</string>
     <string name="settings_about_panel">Acerca de</string>
     <string name="settings_about_app">Acerca de KeySnap</string>
-    <string name="settings_about_app_summary">Código abierto · nada sale de tu teléfono</string>
+    <string name="settings_about_app_summary">Núcleo de código abierto · nada sale de tu teléfono</string>
     <string name="settings_privacy_policy">Política de privacidad</string>
     <string name="about_contact">Contactar con soporte</string>
     <string name="settings_erase">Borrar todos los datos</string>
@@ -785,13 +792,14 @@
 
     <!-- Asistente de configuración -->
     <string name="about_hero_title">Nada de lo que haces aquí sale de tu teléfono.</string>
-    <string name="about_hero_body">Sin servidores. Sin cuenta. Sin analíticas. KeySnap no tiene adónde enviar tus accesos directos ni tus pulsaciones de teclas, y toda la app es de código abierto, así que no tienes que creernos.</string>
+    <string name="about_hero_body">Sin servidores. Sin cuenta. Sin analíticas. KeySnap no tiene adónde enviar tus accesos directos ni tus pulsaciones de teclas, y su núcleo es de código abierto, así que no tienes que creernos.</string>
     <string name="about_no_server_title">No hay ningún servidor</string>
     <string name="about_no_server_body">KeySnap no tiene backend, ni cuenta, ni informes de fallos. Lo que asignas, lo que pulsas y las apps que usas se quedan en el almacenamiento privado de esta app. No hay código que suba nada de eso, porque no hay ningún sitio al que enviarlo.</string>
     <string name="about_illo_no_server_caption">pulsaciones · accesos directos · uso</string>
-    <string name="about_open_source_title">Código abierto, para que puedas comprobarlo</string>
-    <string name="about_open_source_body">Cada línea de KeySnap está publicada bajo la GPLv3. Lee para qué se usa cada permiso, compílala tú mismo o dásela a alguien que sepa hacerlo.</string>
+    <string name="about_open_source_title">Núcleo de código abierto, para que puedas comprobarlo</string>
+    <string name="about_open_source_body">El núcleo de KeySnap (todos los accesos directos, acciones y permisos) está publicado bajo la GPLv3. Lee para qué se usa cada permiso, compila la app tú mismo o dásela a alguien que sepa hacerlo. Algunas funciones Pro, como Key capsule, no son de código abierto.</string>
     <string name="about_view_source">Ver el código en GitHub</string>
+    <string name="about_licenses">Licencias de código abierto</string>
     <string name="about_scope_title">El servicio de accesibilidad solo ve Ajustes</string>
     <string name="about_scope_body">Android no da a las apps ninguna otra forma de detectar una tecla física. El servicio de KeySnap está limitado a la app Ajustes del sistema y la usa para una sola cosa: leer el código de vinculación mientras configuras el Modo avanzado. No puede leer tu app del banco, tus mensajes ni lo que escribes; eso lo impone Android, no una promesa.</string>
     <string name="about_bridge_title">El Modo avanzado es el ADB de tu propio teléfono</string>
@@ -1063,4 +1071,7 @@
     <string name="whats_new_fix_large_text">El texto ya no se corta ni se aprieta con tamaños grandes de pantalla y de letra</string>
     <string name="whats_new_fix_nav_bar">Los botones ya no quedan ocultos tras la barra de navegación de 3 botones</string>
     <string name="whats_new_got_it">Entendido</string>
+    <string name="capsule_intro_title">Key capsule</string>
+    <string name="pro_table_included">Incluido</string>
+    <string name="pro_table_not_included">No incluido</string>
 </resources>

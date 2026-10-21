@@ -718,6 +718,13 @@
     <string name="settings_title">Настройки</string>
     <string name="settings_subtitle">Значения по умолчанию для каждого нового сценария.</string>
     <string name="settings_group_keys">Клавиши</string>
+    <string name="settings_keys_summary">Время нажатия, поведение клавиш и вибрация</string>
+    <string name="settings_personalization">Персонализация</string>
+    <string name="settings_key_behavior">Поведение клавиш</string>
+    <string name="settings_setup_tools">Инструменты настройки</string>
+    <string name="settings_setup_tools_summary">Специальные возможности и расширенный режим</string>
+    <string name="settings_input_monitor_summary">События физических клавиш</string>
+    <string name="settings_experimental">Экспериментально</string>
     <string name="settings_group_advanced">Расширенные</string>
     <string name="settings_group_app">Приложение</string>
     <string name="settings_defaults_panel">Значения по умолчанию для новых сценариев</string>
@@ -741,7 +748,7 @@
     <string name="settings_run_setup_description">Повторно сопрячь беспроводную отладку.</string>
     <string name="settings_about_panel">О приложении</string>
     <string name="settings_about_app">О KeySnap</string>
-    <string name="settings_about_app_summary">Открытый код · ничто не покидает телефон</string>
+    <string name="settings_about_app_summary">Открытое ядро · ничто не покидает телефон</string>
     <string name="settings_privacy_policy">Политика конфиден\u00adциальности</string>
     <string name="about_contact">Связаться с поддержкой</string>
     <string name="settings_erase">Удалить все данные</string>
@@ -784,13 +791,14 @@
 
     <!-- Мастер настройки -->
     <string name="about_hero_title">Ничто из того, что вы здесь делаете, не покидает ваш телефон.</string>
-    <string name="about_hero_body">Никаких серверов. Никакого аккаунта. Никакой аналитики. KeySnap некуда отправлять ваши сценарии или нажатия клавиш — и всё приложение открыто, так что верить нам на слово не нужно.</string>
+    <string name="about_hero_body">Никаких серверов. Никакого аккаунта. Никакой аналитики. KeySnap некуда отправлять ваши сценарии или нажатия клавиш — и ядро приложения открыто, так что верить нам на слово не нужно.</string>
     <string name="about_no_server_title">Сервера не существует</string>
     <string name="about_no_server_body">У KeySnap нет бэкенда, аккаунта и отчётов о сбоях. То, что вы назначаете, что нажимаете и какими приложениями пользуетесь, остаётся в личном хранилище этого приложения. Кода, который всё это выгружает, здесь нет — потому что выгружать некуда.</string>
     <string name="about_illo_no_server_caption">нажатия · сценарии · использование</string>
-    <string name="about_open_source_title">Открытый код, чтобы вы могли проверить</string>
-    <string name="about_open_source_body">Каждая строка KeySnap опубликована под GPLv3. Прочитайте, для чего используется каждое разрешение, соберите приложение сами или отдайте тому, кто умеет.</string>
+    <string name="about_open_source_title">Открытое ядро, чтобы вы могли проверить</string>
+    <string name="about_open_source_body">Ядро KeySnap — все сценарии, действия и разрешения — опубликовано под GPLv3. Прочитайте, для чего используется каждое разрешение, соберите приложение сами или отдайте тому, кто умеет. Некоторые функции Pro, например Key capsule, не имеют открытого кода.</string>
     <string name="about_view_source">Посмотреть исходный код на GitHub</string>
+    <string name="about_licenses">Лицензии открытого ПО</string>
     <string name="about_scope_title">Служба специальных возможностей видит только Настройки</string>
     <string name="about_scope_body">Android не даёт приложениям другого способа заметить аппаратную клавишу. Служба KeySnap ограничена системным приложением «Настройки» и используется ровно для одного: прочитать код сопряжения, пока вы настраиваете Расширенный режим. Она не может читать ваше банковское приложение, ваши сообщения или то, что вы набираете, — это обеспечивает сам Android, а не обещание.</string>
     <string name="about_bridge_title">Расширенный режим — это ADB вашего же телефона</string>
@@ -1062,4 +1070,7 @@
     <string name="whats_new_fix_large_text">Текст больше не рвётся и не сжимается при крупном масштабе экрана и шрифта</string>
     <string name="whats_new_fix_nav_bar">Кнопки больше не прячутся за панелью навигации с 3 кнопками</string>
     <string name="whats_new_got_it">Понятно</string>
+    <string name="capsule_intro_title">Key capsule</string>
+    <string name="pro_table_included">Включено</string>
+    <string name="pro_table_not_included">Не включено</string>
 </resources>

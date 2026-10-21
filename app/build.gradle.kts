@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
   alias(libs.plugins.android.application)
   alias(libs.plugins.kotlin.compose)
@@ -38,11 +40,46 @@ val packageBridgeDex = tasks.register<PackageBridgeDexTask>("packageBridgeDex") 
 
 androidComponents {
   onVariants { variant ->
+    if (proEdition) variant.sources.manifests.addStaticManifestFile(File(proSrc, "main/AndroidManifest.xml").path)
     variant.sources.assets?.addGeneratedSourceDirectory(
       packageBridgeDex,
       PackageBridgeDexTask::outputDirectory,
     )
   }
+}
+
+// Explicit, local acceptance package only. Never enable this in the Play application.
+val capsuleAcceptancePro = providers.gradleProperty("capsuleAcceptancePro").getOrElse("false").toBooleanStrict()
+require(!capsuleAcceptancePro || project.hasProperty("sideBySide")) {
+  "capsuleAcceptancePro requires -PsideBySide; it is forbidden in the Play package"
+}
+
+/**
+ * KeySnap is a GPL core plus Pro features whose source is private. That source is a separate
+ * repository checked out at pro/ (ignored by this one). The edition is an explicit choice, never
+ * inferred from the folder: keysnap.edition=pro in local.properties or -Pkeysnap.edition=pro.
+ * Without it the public core builds with the no-op stubs in src/oss.
+ */
+val edition: String = providers.gradleProperty("keysnap.edition").orNull
+  ?: rootProject.file("local.properties").takeIf { it.isFile }
+    ?.let { file -> Properties().apply { file.inputStream().use(::load) }.getProperty("keysnap.edition") }
+  ?: "oss"
+require(edition == "pro" || edition == "oss") { "keysnap.edition must be pro or oss, was '$edition'" }
+val proEdition = edition == "pro"
+val proSrc: File = rootProject.file("pro/app/src")
+if (proEdition) {
+  val locales = file("src/main/res").listFiles().orEmpty()
+    .filter { File(it, "strings.xml").isFile }
+    .map { "main/res/${it.name}/strings_capsule.xml" }
+  val missing = (listOf(
+    "main/AndroidManifest.xml",
+    "main/java/com/example/capsule/CapsuleHooks.kt",
+    "main/java/com/example/capsule/CapsuleOverlayController.kt",
+    "main/java/com/example/capsule/CapsuleFeedbackService.kt",
+    "main/java/com/example/capsule/CapsuleIntroScreen.kt",
+    "main/java/com/example/capsule/CapsuleSettingsScreen.kt",
+  ) + locales).filterNot { File(proSrc, it).isFile }
+  require(missing.isEmpty()) { "keysnap.edition=pro, but these Pro sources are missing under $proSrc: $missing" }
 }
 
 android {
@@ -59,6 +96,7 @@ android {
     targetSdk = 36
     versionCode = 13
     versionName = "1.1.3"
+    buildConfigField("boolean", "CAPSULE_ACCEPTANCE_PRO", capsuleAcceptancePro.toString())
 
     val autostartStateProbe = project.hasProperty("autostartStateProbe")
     if (autostartStateProbe) {
@@ -74,6 +112,10 @@ android {
   // Supplied by the environment so no keystore path or password is ever committed. Absent on a
   // normal dev machine, in which case release builds stay unsigned rather than failing.
   val keystore = System.getenv("ARDA_KEYSTORE")?.let(::file)?.takeIf { it.isFile }
+  // The upload key only ever signs the Play package, and that package carries the Pro features.
+  require(keystore == null || proEdition) {
+    "ARDA_KEYSTORE is set but keysnap.edition is not pro: refusing to build a Play package without the Pro sources"
+  }
   signingConfigs {
     if (keystore != null) {
       create("release") {
@@ -91,7 +133,7 @@ android {
     debug {
       if (project.hasProperty("sideBySide")) {
         applicationIdSuffix = ".dev"
-        versionNameSuffix = "-dev"
+        versionNameSuffix = if (capsuleAcceptancePro) "-dev-capsule-test" else "-dev"
       }
     }
     release {
@@ -104,7 +146,7 @@ android {
       // Reuse the dev signature so a debug .dev install can be updated without losing its data.
       if (project.hasProperty("sideBySide")) {
         applicationIdSuffix = ".dev"
-        versionNameSuffix = "-dev-release"
+        versionNameSuffix = if (capsuleAcceptancePro) "-dev-release-capsule-test" else "-dev-release"
         signingConfig = signingConfigs.getByName("debug")
       }
     }
@@ -116,6 +158,20 @@ android {
   buildFeatures {
     compose = true
     buildConfig = true
+  }
+  sourceSets {
+    getByName("main") {
+      if (proEdition) {
+        kotlin.srcDir(File(proSrc, "main/java"))
+        res.srcDir(File(proSrc, "main/res"))
+      } else {
+        kotlin.srcDir("src/oss/java")
+      }
+    }
+    if (proEdition) {
+      getByName("test").kotlin.srcDir(File(proSrc, "test/java"))
+      getByName("androidTest").kotlin.srcDir(File(proSrc, "androidTest/java"))
+    }
   }
   testOptions { unitTests { isIncludeAndroidResources = true } }
   // PrivacyPolicyTest reads the published policy from outside this module. Without declaring it,
