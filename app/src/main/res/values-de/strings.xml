@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">KeySnap</string>
-    <string name="accessibility_service_description">Erkennt physische Tastendrücke (Lautstärke, Ein/Aus und andere Hardwaretasten), damit sie deine Kurzbefehle auslösen können. Nur während der Einrichtung des Erweiterten Modus liest sie außerdem den Kopplungscode aus dem Dialog für kabelloses Debugging des Systems. Sie kann den Bildschirm keiner anderen App lesen.</string>
+    <string name="accessibility_service_description">Erkennt physische Tastendrücke (Lautstärke, Ein/Aus und andere Hardwaretasten), damit sie deine Kurzbefehle auslösen können. Nur während der Einrichtung des Erweiterten Modus öffnet sie außerdem den Kopplungscode-Dialog des Systems für dich und liest den Code daraus. Sie kann den Bildschirm keiner anderen App lesen.</string>
     <string name="accessibility_disclosure_agree">Zustimmen und Einstellungen öffnen</string>
 
     <!-- Aktionskategorien -->
@@ -226,6 +226,7 @@
     <string name="constraint_device_locked">Gerät ist gesperrt</string>
     <string name="constraint_device_unlocked">Gerät ist entsperrt</string>
     <string name="constraint_lock_screen_showing">Sperrbildschirm wird angezeigt</string>
+    <string name="constraint_no_app_open">Keine App geöffnet: Startbildschirm oder Sperrbildschirm</string>
     <string name="constraint_lock_screen_not_showing">Sperrbildschirm wird nicht angezeigt</string>
     <string name="constraint_in_phone_call">Im Telefongespräch</string>
     <string name="constraint_not_in_phone_call">Nicht im Telefongespräch</string>
@@ -465,6 +466,8 @@
     <string name="field_time_end">Bis</string>
     <string name="field_days">Tage</string>
     <string name="constraint_needs_usage_access">Benötigt Nutzungszugriff, damit die App sehen kann, welche App im Vordergrund ist.</string>
+    <string name="home_permissions_needed">Berechtigungen erforderlich</string>
+    <string name="home_usage_access">Nutzungszugriff</string>
     <string name="constraint_needs_notification_access">Benötigt Benachrichtigungszugriff. KeySnap prüft jede neue Benachrichtigung der gewählten App auf deinem Telefon gegen diese Bedingung. Es behält nur, wann eine passte und welche Benachrichtigung es war, damit eine Antwort diesen Chat findet. Kein Benachrichtigungsinhalt wird gespeichert, protokolliert oder gesendet.</string>
     <string name="field_notification_contact">Kontakt</string>
     <string name="hint_notification_contact_any">Leer: alle</string>
@@ -548,7 +551,6 @@
     <string name="nav_shortcuts">Kurzbefehle</string>
     <string name="nav_settings">Einstellungen</string>
     <string name="settings_close">Einstellungen schließen</string>
-    <string name="home_switch_theme">Design wechseln</string>
 
     <!-- Dialoge -->
     <string name="dialog_expert_connected">ERWEITERTER MODUS VERBUNDEN</string>
@@ -1049,6 +1051,7 @@
     <string name="diagnostic_send_note">Prüfe unten die vollständige Aufzeichnung. Deine E-Mail-App öffnet einen Entwurf an support@ardasenn.com. Du entscheidest, ob du ihn sendest. KeySnap löscht die Aufzeichnung, sobald sich der Entwurf öffnet.</string>
     <string name="diagnostic_no_email">Keine E-Mail-App gefunden. Die Aufzeichnung ist weiterhin verfügbar.</string>
     <string name="whats_new_title">Was ist neu?</string>
+    <string name="whats_new_hint">Neuigkeiten sind da · tippen</string>
     <string name="whats_new_version">Version %1$s</string>
     <string name="whats_new_new">Neu</string>
     <string name="whats_new_fixed">Behoben</string>
@@ -1073,4 +1076,43 @@
     <string name="capsule_intro_title">Key capsule</string>
     <string name="pro_table_included">Enthalten</string>
     <string name="pro_table_not_included">Nicht enthalten</string>
+    <string name="accessibility_status_connecting">Verbindung wird hergestellt…</string>
+    <string name="accessibility_status_reconnect">Erneut verbinden</string>
+    <string name="accessibility_reconnect_title">Bedienungshilfe neu verbinden</string>
+    <string name="accessibility_reconnect_message">Die Bedienungshilfe ist in Android aktiviert, aber KeySnap ist nicht verbunden. Schalte KeySnap in den Bedienungshilfen aus und wieder ein.</string>
+    <string name="whats_new_fix_accessibility_status">Die Bedienungshilfe wird bei getrennter Verbindung nicht mehr als aktiv angezeigt</string>
+    <string name="accessibility_reconnect_button">Neu verbinden</string>
+    <string name="accessibility_reconnecting">Wird verbunden…</string>
+    <string name="accessibility_reconnect_failed">Neu verbinden fehlgeschlagen. Schalte KeySnap hier aus und wieder ein.</string>
+    <string name="wizard_manual_title">Code selbst eingeben</string>
+    <string name="wizard_manual_body">Tippe unter „Kabelloses Debugging“ auf ‘Gerät mit Kopplungscode koppeln’ und gib den 6-stelligen Code hier ein. Schließt Android das Codefenster beim App-Wechsel, nutze den geteilten Bildschirm oder die Benachrichtigung.</string>
+    <string name="wizard_manual_code_label">6-stelliger Kopplungscode</string>
+    <string name="wizard_manual_pair">Koppeln</string>
+    <string name="notif_return_title">Der Erweiterte Modus ist an</string>
+    <string name="notif_return_body">Tippe, um zu KeySnap zurückzukehren.</string>
+    <string name="pro_sale_ends_in">Angebot endet in %1$s</string>
+    <string name="accessibility_reconnect_keep_on">Wieder verbunden. Fragt Android gleich nach der Bedienungshilfe, wähle „Aktiviert lassen“.</string>
+    <string name="whats_new_connect_title">Einfachere Einrichtung des Erweiterten Modus</string>
+    <string name="whats_new_connect_description">KeySnap tippt jetzt für dich auf „Mit Kopplungscode koppeln“ und kehrt zurück, sobald der Erweiterte Modus bereit ist. Trennt sich die Bedienungshilfe, genügt ein Tipp auf „Neu verbinden“.</string>
+    <string name="action_cycle_mode">Nächster Modus</string>
+    <string name="param_mode_count">Anzahl der Modi</string>
+    <string name="param_mode_feedback">Rückmeldung beim Moduswechsel</string>
+    <string name="param_mode_pulse">Modus-Vibration</string>
+    <string name="param_mode_gap">Pause zwischen Vibrationen</string>
+    <string name="param_mode_lead_gap">Pause vor der Modus-Vibration</string>
+    <string name="choice_mode_feedback_toast">Bildschirmmeldung</string>
+    <string name="choice_mode_feedback_vibrate">Vibration</string>
+    <string name="choice_mode_feedback_both">Meldung und Vibration</string>
+    <string name="param_mode_number">Modusnummer</string>
+    <string name="constraint_mode_is">Modus ist</string>
+    <string name="mode_current">Modus %1$d</string>
+    <string name="summary_mode_count">Zwischen %1$d Modi wechseln</string>
+    <string name="trigger_assistant_gesture">Assistentengeste</string>
+    <string name="assistant_trigger_hint">Wird einmal ausgeführt, wenn du den digitalen Assistenten aufrufst, etwa durch Gedrückthalten der Ein/Aus-Taste. Die verfügbaren Gesten hängen von deinem Smartphone ab.</string>
+    <string name="assistant_setup_title">KeySnap als digitalen Assistenten festlegen</string>
+    <string name="assistant_selected">KeySnap ist ausgewählt · Zum Ändern tippen</string>
+    <string name="assistant_not_selected">Nicht ausgewählt · Assistenteneinstellungen öffnen</string>
+    <string name="assistant_redirect_note">KeySnap ist dein Assistent. Diese Aktion öffnet daher einen anderen Assistenten auf deinem Smartphone.</string>
+    <string name="assistant_no_other_app">Auf diesem Smartphone ist kein anderer Assistent verfügbar.</string>
+    <string name="assistant_voice_wakeup_warning">Solange KeySnap dein Assistent ist, kann die Sprachaktivierung deines vorherigen Assistenten nicht mehr funktionieren.</string>
 </resources>

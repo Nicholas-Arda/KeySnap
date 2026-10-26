@@ -250,6 +250,16 @@ object ScriptActionCatalog {
         ActionDescriptor("stop_text_to_speech", R.string.action_stop_text_to_speech, ActionCategory.SOUND, ActionAvailability.AVAILABLE),
 
         // Automation
+        ActionDescriptor(
+            "cycle_mode", R.string.action_cycle_mode, ActionCategory.AUTOMATION, ActionAvailability.AVAILABLE,
+            listOf(
+                param("count", R.string.param_mode_count, ActionParameterKind.INTEGER),
+                param("feedback", R.string.param_mode_feedback, ActionParameterKind.CHOICE, choices = listOf("both", "toast", "vibrate")),
+                param("pulseMs", R.string.param_mode_pulse, ActionParameterKind.MILLISECONDS, required = false),
+                param("gapMs", R.string.param_mode_gap, ActionParameterKind.MILLISECONDS, required = false),
+                param("leadGapMs", R.string.param_mode_lead_gap, ActionParameterKind.MILLISECONDS, required = false),
+            ),
+        ),
         ActionDescriptor("delay", R.string.action_delay, ActionCategory.AUTOMATION, ActionAvailability.AVAILABLE, listOf(param("duration", R.string.param_duration_ms, ActionParameterKind.MILLISECONDS))),
         ActionDescriptor("repeat_previous", R.string.action_repeat_previous, ActionCategory.AUTOMATION, ActionAvailability.AVAILABLE, listOf(param("count", R.string.param_times, ActionParameterKind.INTEGER))),
         ActionDescriptor("toggle_mapping", R.string.action_toggle_mapping, ActionCategory.AUTOMATION, ActionAvailability.AVAILABLE),
@@ -266,6 +276,9 @@ object ScriptActionCatalog {
      * when an action moves between "app-only" and "bridge-supported".
      */
     val UNSUPPORTED_BY_BRIDGE: Set<String> = setOf(
+        // Requires role-aware discovery and the app's assistant invocation loop guard.
+        "launch_device_assistant",
+        "launch_voice_assistant",
         "pinch_screen",
         "toggle_split_screen",
         "move_cursor_to_end",

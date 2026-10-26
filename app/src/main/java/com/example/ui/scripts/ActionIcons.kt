@@ -210,6 +210,7 @@ private val perActionIcons: Map<String, ImageVector> = mapOf(
     // Automation
     "delay" to Icons.Outlined.Timer,
     "repeat_previous" to Icons.Outlined.Repeat,
+    "cycle_mode" to Icons.Outlined.Repeat,
     "toggle_mapping" to Icons.Outlined.Sync,
     "pause_mapping" to Icons.Outlined.PauseCircleOutline,
     "resume_mapping" to Icons.Outlined.PlayCircleOutline,

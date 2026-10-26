@@ -53,6 +53,41 @@ dependencies {
   testImplementation("org.json:json:20231013")
 }
 
+/**
+ * Same edition switch as :app. Pro mode sources live in the private pro/ checkout.
+ * compileJava emits every main source directory into classes/java/main, and dexBridge walks
+ * that directory, so this extra source dir needs no separate dex file list.
+ */
+val edition: String = providers.gradleProperty("keysnap.edition").orNull
+  ?: rootProject.file("local.properties").takeIf { it.isFile }
+    ?.let { file -> Properties().apply { file.inputStream().use(::load) }.getProperty("keysnap.edition") }
+  ?: "oss"
+require(edition == "pro" || edition == "oss") { "keysnap.edition must be pro or oss, was '$edition'" }
+val proEdition = edition == "pro"
+val proBridgeSrc: File = rootProject.file("pro/bridge/src")
+if (proEdition) {
+  val missing = listOf(
+    "main/java/com/example/bridge/BridgeModes.java",
+    "main/java/com/example/bridge/ModeState.java",
+    "main/java/com/example/bridge/ModeFeedback.java",
+    "main/java/com/example/bridge/ModeHaptics.java",
+  ).filterNot { File(proBridgeSrc, it).isFile }
+  require(missing.isEmpty()) {
+    "keysnap.edition=pro, but these Pro bridge sources are missing under $proBridgeSrc: $missing"
+  }
+}
+
+sourceSets {
+  named("main") {
+    java.srcDir(if (proEdition) File(proBridgeSrc, "main/java") else file("src/oss/java"))
+  }
+  if (proEdition) {
+    named("test") {
+      java.srcDir(File(proBridgeSrc, "test/java"))
+    }
+  }
+}
+
 tasks.withType<Test>().configureEach {
   useJUnit()
 }

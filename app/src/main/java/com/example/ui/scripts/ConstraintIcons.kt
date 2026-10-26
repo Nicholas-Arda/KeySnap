@@ -1,6 +1,7 @@
 package com.example.ui.scripts
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material.icons.automirrored.outlined.BluetoothSearching
 import androidx.compose.material.icons.outlined.AppBlocking
 import androidx.compose.material.icons.outlined.MobileOff
@@ -44,6 +45,7 @@ import androidx.compose.material.icons.outlined.DoNotDisturbOn
 import androidx.compose.material.icons.outlined.Event
 import androidx.compose.material.icons.outlined.Headset
 import androidx.compose.material.icons.outlined.HeadsetOff
+import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.LightMode
 import androidx.compose.material.icons.outlined.LocationOff
 import androidx.compose.material.icons.outlined.LocationOn
@@ -62,6 +64,7 @@ private val perConstraintIcons: Map<String, ImageVector> = mapOf(
     // Apps
     "app_in_foreground" to Icons.Filled.Apps,
     "app_not_in_foreground" to Icons.Outlined.AppBlocking,
+    "no_app_open" to Icons.Outlined.Home,
     "notification_received" to Icons.Outlined.NotificationsActive,
     "app_playing_media" to Icons.Outlined.MusicNote,
     "app_not_playing_media" to Icons.Outlined.MusicOff,
@@ -135,6 +138,7 @@ private val perConstraintIcons: Map<String, ImageVector> = mapOf(
     "day_of_week" to Icons.Outlined.DateRange,
     "calendar_event_active" to Icons.Outlined.Event,
     "cooldown" to Icons.Outlined.HourglassEmpty,
+    "mode_is" to Icons.Outlined.Tune,
 )
 
 private val categoryFallbackIcons: Map<ConstraintCategory, ImageVector> = mapOf(

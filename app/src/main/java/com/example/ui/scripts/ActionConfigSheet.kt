@@ -72,6 +72,8 @@ import com.example.data.NOTIFICATION_ACCESS_BADGE
 import com.example.data.NOTIFICATION_POLICY_BADGE
 import com.example.data.WRITE_SETTINGS_BADGE
 import com.example.data.ScriptActionCatalog
+import com.example.data.ShortcutScript
+import com.example.mode.ModeHooks
 import com.example.data.keyDisplayName
 import com.example.service.NotificationEventListener
 import com.example.service.PickedPoints
@@ -113,6 +115,7 @@ fun ActionConfigSheet(
     onRequestWriteSettings: () -> Unit,
     onConfirm: (Map<String, String>) -> Unit,
     onDismiss: () -> Unit,
+    scripts: List<ShortcutScript> = emptyList(),
 ) {
     val colors = MaterialTheme.colorScheme
     val context = LocalContext.current
@@ -193,7 +196,11 @@ fun ActionConfigSheet(
             visible.forEach { field ->
                 when (field) {
                     is EditorField.Text -> TextFieldRow(field, values)
-                    is EditorField.Number -> NumberFieldRow(field, values)
+                    is EditorField.Number -> if (ModeHooks.cycleCountLocked(actionType, field.key, scripts)) {
+                        ModeHooks.LockedCycleCount(scripts)
+                    } else {
+                        NumberFieldRow(field, values)
+                    }
                     is EditorField.Choice -> ChoiceFieldRow(field, values)
                     is EditorField.KeyCodePick -> KeyCodeFieldRow(field, values, isRecordingKey, onStartRecording, onCancelRecording)
                     is EditorField.AppPick -> AppFieldRow(field, values, installedApps) { showAppPickerFor = field.key }

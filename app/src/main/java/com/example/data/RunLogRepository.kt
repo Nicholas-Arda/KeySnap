@@ -20,6 +20,7 @@ class RunLogRepository internal constructor(
     companion object {
         internal const val PREFS_NAME = "keysnap_run_log"
         internal const val STORE_KEY = "runs_v1"
+        internal const val SUCCESS_COUNT_KEY = "lifetime_successful_runs"
         @Volatile private var instance: RunLogRepository? = null
 
         fun getInstance(context: Context): RunLogRepository = instance ?: synchronized(this) {
@@ -34,21 +35,35 @@ class RunLogRepository internal constructor(
     private val _runs = MutableStateFlow(load())
     val runs: StateFlow<List<RunRecord>> = _runs.asStateFlow()
 
+    // Existing history is a conservative lower bound; never infer successes from session triggers.
+    private val _successfulRuns = MutableStateFlow(
+        prefs.getLong(SUCCESS_COUNT_KEY, _runs.value.count { it.succeeded() }.toLong()),
+    )
+    val successfulRuns: StateFlow<Long> = _successfulRuns.asStateFlow()
+
+    private fun RunRecord.succeeded(): Boolean = actions.isNotEmpty() && actions.all { it.ok }
+
     private fun load(): List<RunRecord> = prefs.getString(STORE_KEY, null)
         ?.let { json -> runCatching { adapter.fromJson(json) }.getOrNull()?.runs }
         .orEmpty()
 
+    @Synchronized
     fun append(record: RunRecord) {
         _runs.update { appendRun(it, record) }
+        if (record.succeeded() && _successfulRuns.value < Long.MAX_VALUE) _successfulRuns.value += 1L
         persist()
     }
 
+    @Synchronized
     fun forget(scriptId: String) {
         _runs.update { runs -> runs.filterNot { it.scriptId == scriptId } }
         persist()
     }
 
     private fun persist() {
-        prefs.edit().putString(STORE_KEY, adapter.toJson(PersistedRunLog(_runs.value))).apply()
+        prefs.edit()
+            .putString(STORE_KEY, adapter.toJson(PersistedRunLog(_runs.value)))
+            .putLong(SUCCESS_COUNT_KEY, _successfulRuns.value)
+            .apply()
     }
 }

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_assistant_gesture_title">Deine Ein/Aus-Taste, dein Kurzbefehl</string>
+    <string name="whats_new_assistant_gesture_description">Lege KeySnap als Assistenten fest. Wenn dein Handy das Gedrückthalten der Ein/Aus-Taste an den Assistenten weiterleitet, startet dein Kurzbefehl „Assistentengeste“.</string>
+    <string name="whats_new_home_only_title">Nur Start- oder Sperrbildschirm</string>
+    <string name="whats_new_home_only_description">Füge unter „Nur wenn“ die Bedingung „Keine App geöffnet“ hinzu, damit Lautstärketasten in Apps wie gewohnt funktionieren. Benötigt Nutzungszugriff.</string>
+    <string name="whats_new_fix_coloros_dnd">„Nicht stören“-Aktionen funktionieren jetzt auf ColorOS im Erweiterten Modus</string>
+    <string name="whats_new_fix_conditional_volume">Eine Lautstärketaste wird nur übernommen, wenn die Bedingungen des Kurzbefehls erfüllt sind</string>
+    <string name="rating_prompt_title">Tut KeySnap, was es soll?</string>
+    <string name="rating_prompt_body">Eine Bewertung bei Google Play hilft sehr.</string>
+    <string name="rating_prompt_rate">Bewerten</string>
+    <string name="rating_prompt_later">Später</string>
+    <string name="rating_prompt_no_thanks">Nein, danke</string>
+</resources>

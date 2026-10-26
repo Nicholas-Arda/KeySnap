@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">KeySnap</string>
-    <string name="accessibility_service_description">Fiziksel tuş basışlarını (Ses, Güç ve diğer donanım düğmeleri) algılar; böylece kısayollarınızı tetikleyebilirler. Yalnızca Uzman Modu kurulumu sırasında, sistemin Kablosuz Hata Ayıklama penceresindeki eşleştirme kodunu da okur. Başka hiçbir uygulamanın ekranını okuyamaz.</string>
+    <string name="accessibility_service_description">Fiziksel tuş basışlarını (Ses, Güç ve diğer donanım düğmeleri) algılar; böylece kısayollarınızı tetikleyebilirler. Yalnızca Uzman Modu kurulumu sırasında, sistemin eşleştirme kodu penceresini sizin için açar ve oradaki kodu da okur. Başka hiçbir uygulamanın ekranını okuyamaz.</string>
     <string name="accessibility_disclosure_agree">Kabul et ve ayarları aç</string>
 
     <!-- Eylem kategorileri -->
@@ -226,6 +226,7 @@
     <string name="constraint_device_locked">Cihaz kilitli</string>
     <string name="constraint_device_unlocked">Cihaz kilidi açık</string>
     <string name="constraint_lock_screen_showing">Kilit ekranı görünüyor</string>
+    <string name="constraint_no_app_open">Açık uygulama yok: ana ekran veya kilit ekranı</string>
     <string name="constraint_lock_screen_not_showing">Kilit ekranı görünmüyor</string>
     <string name="constraint_in_phone_call">Görüşme sırasında</string>
     <string name="constraint_not_in_phone_call">Görüşme yokken</string>
@@ -471,6 +472,8 @@
     <string name="field_time_end">Bitiş</string>
     <string name="field_days">Günler</string>
     <string name="constraint_needs_usage_access">Hangi uygulamanın önde olduğunu görebilmesi için Kullanım erişimi gerekir.</string>
+    <string name="home_permissions_needed">Gerekli izinler</string>
+    <string name="home_usage_access">Kullanım erişimi</string>
     <string name="constraint_needs_notification_access">Bildirim erişimi gerekir. KeySnap seçtiğiniz uygulamanın her yeni bildirimini telefonunuzda bu koşulla karşılaştırır. Yalnızca eşleştiği zamanı ve hangi bildirim olduğunu tutar; böylece yanıt o sohbeti bulabilir. Bildirim içeriği kaydedilmez, günlüğe yazılmaz ya da gönderilmez.</string>
     <string name="field_notification_contact">Kişi</string>
     <string name="hint_notification_contact_any">Boş: herkes</string>
@@ -546,7 +549,6 @@
     <string name="nav_shortcuts">Kısayollar</string>
     <string name="nav_settings">Ayarlar</string>
     <string name="settings_close">Ayarları kapat</string>
-    <string name="home_switch_theme">Temayı değiştir</string>
 
     <!-- İletişim kutuları -->
     <string name="dialog_expert_connected">UZMAN MODU BAĞLANDI</string>
@@ -1047,6 +1049,7 @@
     <string name="diagnostic_send_note">Aşağıdaki kaydın tamamını inceleyin. E-posta uygulamanız support@ardasenn.com adresine bir taslak açar. Gönderme kararını siz verirsiniz. Taslak açılınca KeySnap kaydı temizler.</string>
     <string name="diagnostic_no_email">E-posta uygulaması bulunamadı. Kayıt hâlâ kullanılabilir.</string>
     <string name="whats_new_title">Yenilikler</string>
+    <string name="whats_new_hint">Yenilikler burada · dokunun</string>
     <string name="whats_new_version">Sürüm %1$s</string>
     <string name="whats_new_new">Yeni</string>
     <string name="whats_new_fixed">Düzeltmeler</string>
@@ -1071,4 +1074,43 @@
     <string name="capsule_intro_title">Key capsule</string>
     <string name="pro_table_included">Dahil</string>
     <string name="pro_table_not_included">Dahil değil</string>
+    <string name="accessibility_status_connecting">Bağlanıyor…</string>
+    <string name="accessibility_status_reconnect">Yeniden bağlanma gerekli</string>
+    <string name="accessibility_reconnect_title">Erişilebilirliği yeniden bağla</string>
+    <string name="accessibility_reconnect_message">Android’de Erişilebilirlik açık ama KeySnap bağlı değil. Erişilebilirlik ayarlarında KeySnap anahtarını kapatıp yeniden aç.</string>
+    <string name="whats_new_fix_accessibility_status">Servis bağlantısı kesildiğinde Erişilebilirlik artık aktif görünmüyor</string>
+    <string name="accessibility_reconnect_button">Yeniden bağla</string>
+    <string name="accessibility_reconnecting">Yeniden bağlanıyor…</string>
+    <string name="accessibility_reconnect_failed">Yeniden bağlanamadı. Burada KeySnap’i kapatıp yeniden açın.</string>
+    <string name="wizard_manual_title">Kodu kendiniz girin</string>
+    <string name="wizard_manual_body">Kablosuz Hata Ayıklama’da \"Cihazı eşleştirme koduyla eşleştir\" seçeneğine dokunun ve 6 haneli kodu buraya yazın. Uygulama değiştirince Android kod penceresini kapatırsa bölünmüş ekranı veya bildirimi kullanın.</string>
+    <string name="wizard_manual_code_label">6 haneli eşleştirme kodu</string>
+    <string name="wizard_manual_pair">Eşleştir</string>
+    <string name="notif_return_title">Uzman Modu açık</string>
+    <string name="notif_return_body">KeySnap’e dönmek için dokunun.</string>
+    <string name="pro_sale_ends_in">İndirimin bitmesine %1$s kaldı</string>
+    <string name="accessibility_reconnect_keep_on">Yeniden bağlandı. Android şimdi Erişilebilirlik için sorarsa “Açık tut”u seçin.</string>
+    <string name="whats_new_connect_title">Daha kolay Uzman Modu kurulumu</string>
+    <string name="whats_new_connect_description">KeySnap artık “Eşleştirme koduyla eşle”ye sizin yerinize dokunur ve Uzman Modu hazır olunca geri döner. Erişilebilirlik koparsa Yeniden bağla’ya tek dokunuş yeter.</string>
+    <string name="action_cycle_mode">Sonraki mod</string>
+    <string name="param_mode_count">Mod sayısı</string>
+    <string name="param_mode_feedback">Mod geri bildirimi</string>
+    <string name="param_mode_pulse">Mod titreşimi</string>
+    <string name="param_mode_gap">Titreşimler arası boşluk</string>
+    <string name="param_mode_lead_gap">Mod titreşiminden önceki bekleme</string>
+    <string name="choice_mode_feedback_toast">Ekran mesajı</string>
+    <string name="choice_mode_feedback_vibrate">Titreşim</string>
+    <string name="choice_mode_feedback_both">Mesaj ve titreşim</string>
+    <string name="param_mode_number">Mod numarası</string>
+    <string name="constraint_mode_is">Geçerli mod</string>
+    <string name="mode_current">Mod %1$d</string>
+    <string name="summary_mode_count">%1$d mod arasında sırayla geçiş yap</string>
+    <string name="trigger_assistant_gesture">Asistan hareketi</string>
+    <string name="assistant_trigger_hint">Dijital asistanı çağırdığınızda bir kez çalışır; örneğin güç düğmesini basılı tutarak. Kullanılabilir hareketler telefonunuza bağlıdır.</string>
+    <string name="assistant_setup_title">KeySnap’i dijital asistanınız yapın</string>
+    <string name="assistant_selected">KeySnap seçili · Değiştirmek için dokunun</string>
+    <string name="assistant_not_selected">Seçili değil · Asistan ayarlarını açın</string>
+    <string name="assistant_redirect_note">Asistanınız KeySnap olduğu için bu eylem telefonunuzdaki başka bir asistanı açar.</string>
+    <string name="assistant_no_other_app">Bu telefonda kullanılabilir başka bir asistan yok.</string>
+    <string name="assistant_voice_wakeup_warning">KeySnap asistanınız olduğu sürece, önceki asistanınızın sesle uyandırması çalışmayı durdurabilir.</string>
 </resources>

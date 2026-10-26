@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_assistant_gesture_title">Güç tuşunuz, kısayolunuz</string>
+    <string name="whats_new_assistant_gesture_description">KeySnap’i telefonunuzun asistanı yapın. Güç tuşuna uzun basışı asistana ileten telefonlarda “Asistan hareketi” kısayolunuz çalışır.</string>
+    <string name="whats_new_home_only_title">Yalnızca ana ekran veya kilit ekranı</string>
+    <string name="whats_new_home_only_description">Uygulama içinde ses tuşları normal çalışsın diye “Yalnızca şu durumda” bölümüne “Açık uygulama yok” koşulunu ekleyin. Kullanım erişimi gerekir.</string>
+    <string name="whats_new_fix_coloros_dnd">Uzman Modu’nda Rahatsız Etmeyin eylemleri artık ColorOS’ta çalışıyor</string>
+    <string name="whats_new_fix_conditional_volume">Ses tuşu yalnızca kısayolun koşulları sağlandığında devralınıyor</string>
+    <string name="rating_prompt_title">KeySnap işini yapıyor mu?</string>
+    <string name="rating_prompt_body">Google Play’de puan vermeniz çok yardımcı olur.</string>
+    <string name="rating_prompt_rate">Puan ver</string>
+    <string name="rating_prompt_later">Daha sonra</string>
+    <string name="rating_prompt_no_thanks">Hayır, teşekkürler</string>
+</resources>

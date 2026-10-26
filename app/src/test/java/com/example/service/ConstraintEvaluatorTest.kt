@@ -90,6 +90,10 @@ class ConstraintEvaluatorTest {
         assertTrue(evaluator.isSatisfied(ScriptConstraint("in_phone_call")))
         assertFalse(evaluator.isSatisfied(ScriptConstraint("not_in_phone_call")))
 
+        audioManager.mode = AudioManager.MODE_IN_COMMUNICATION
+        assertTrue(evaluator.isSatisfied(ScriptConstraint("in_phone_call")))
+        assertFalse(evaluator.isSatisfied(ScriptConstraint("not_in_phone_call")))
+
         audioManager.mode = AudioManager.MODE_NORMAL
         assertFalse(evaluator.isSatisfied(ScriptConstraint("in_phone_call")))
         assertTrue(evaluator.isSatisfied(ScriptConstraint("not_in_phone_call")))

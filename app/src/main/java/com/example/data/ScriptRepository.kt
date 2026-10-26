@@ -75,6 +75,23 @@ class ScriptRepository internal constructor(
         persistCurrent()
     }
 
+    /**
+     * Rewrites scripts by id and leaves the others where they are.
+     * [upsert] moves a script to the end, which would reshuffle a mode remap.
+     */
+    fun updateInPlace(updated: List<ShortcutScript>) {
+        if (updated.isEmpty()) return
+        updated.forEach { require(it.id.isNotBlank() && it.actions.isNotEmpty()) }
+        val byId = updated.associateBy { it.id }
+        val current = _scripts.value
+        val known = current.mapTo(HashSet()) { it.id }
+        _scripts.value = current.map { byId[it.id] ?: it } + updated.filter { it.id !in known }
+        _scripts.value.firstOrNull()?.let { primary ->
+            if (primary.id in byId) syncLegacyIfPrimary(primary)
+        }
+        persistCurrent()
+    }
+
     fun delete(id: String) {
         _scripts.value = _scripts.value.filterNot { it.id == id }
         persistCurrent()
@@ -87,8 +104,8 @@ class ScriptRepository internal constructor(
 
     fun newScriptId(): String = "script-${UUID.randomUUID()}"
 
-    fun shouldConsume(keyCode: Int): Boolean =
-        shouldConsumeKey(scripts.value, keyCode, globallyEnabled.value, prefs.getBoolean("consume_original", true))
+    fun shouldConsume(keyCode: Int, constraintsSatisfied: (ShortcutScript) -> Boolean = { it.constraints.isEmpty() }): Boolean =
+        shouldConsumeKey(scripts.value, keyCode, globallyEnabled.value, prefs.getBoolean("consume_original", true), constraintsSatisfied)
 
     private fun syncLegacyIfPrimary(script: ShortcutScript) {
         if (_scripts.value.firstOrNull()?.id != script.id) return

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_assistant_gesture_title">Seu botão de ligar, seu atalho</string>
+    <string name="whats_new_assistant_gesture_description">Escolha o KeySnap como assistente. Se o celular encaminha o toque longo no botão de ligar ao assistente, ele executa seu atalho com “Gesto do assistente”.</string>
+    <string name="whats_new_home_only_title">Só na tela inicial ou de bloqueio</string>
+    <string name="whats_new_home_only_description">Adicione “Nenhum app aberto” em “Somente se” para que as teclas de volume funcionem normalmente nos apps. Precisa do acesso de uso.</string>
+    <string name="whats_new_fix_coloros_dnd">As ações de Não Perturbe agora funcionam no ColorOS com o Modo Avançado</string>
+    <string name="whats_new_fix_conditional_volume">Uma tecla de volume só é interceptada quando as condições do atalho são atendidas</string>
+    <string name="rating_prompt_title">O KeySnap está dando conta?</string>
+    <string name="rating_prompt_body">Uma avaliação no Google Play ajuda muito.</string>
+    <string name="rating_prompt_rate">Avaliar</string>
+    <string name="rating_prompt_later">Mais tarde</string>
+    <string name="rating_prompt_no_thanks">Não, obrigado</string>
+</resources>

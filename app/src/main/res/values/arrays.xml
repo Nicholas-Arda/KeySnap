@@ -15,6 +15,7 @@
         <item>Tap \"Build Number\" 7 times in a row</item>
         <item>Go back and open \"Developer Options\"</item>
         <item>Enable \"Wireless Debugging\"</item>
+        <item>If Wireless Debugging won’t turn on or pairing never starts, turn off Auto Blocker in Settings &gt; Security and privacy</item>
     </string-array>
     <string-array name="guide_xiaomi_steps">
         <item>Open Settings</item>
@@ -63,7 +64,7 @@
     </string-array>
     <string-array name="wizard_pairing_steps">
         <item>Tap the button below to open Wireless Debugging settings.</item>
-        <item>From the menu, choose ‘Pair device with pairing code’.</item>
+        <item>KeySnap taps ‘Pair device with pairing code’ for you; if it doesn’t, tap it yourself.</item>
         <item>We’ll read the pairing code and connect automatically.</item>
     </string-array>
     <string-array name="about_source_listing" translatable="false">

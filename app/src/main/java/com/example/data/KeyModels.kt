@@ -29,6 +29,7 @@ data class PhysicalKeyOption(
 
 /** Every code Android gives a real label for. Anything else the user is asked to name. */
 private val LABELLED_KEY_NAMES: Map<Int, Int> = mapOf(
+    com.example.bridge.KeyEventMapping.ASSISTANT_GESTURE to R.string.trigger_assistant_gesture,
     KeyEvent.KEYCODE_VOLUME_DOWN to R.string.key_volume_down,
     KeyEvent.KEYCODE_VOLUME_UP to R.string.key_volume_up,
     KeyEvent.KEYCODE_POWER to R.string.key_power,

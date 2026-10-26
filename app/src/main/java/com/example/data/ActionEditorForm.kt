@@ -169,6 +169,21 @@ object ActionEditorForms {
 
     private val forms: List<ActionEditorForm> = listOf(
         ActionEditorForm(
+            type = "cycle_mode",
+            fields = listOf(
+                EditorField.Number("count", R.string.param_mode_count, min = 2, max = 9, default = 3),
+                EditorField.Choice(
+                    "feedback", R.string.param_mode_feedback,
+                    listOf(
+                        "both" to R.string.choice_mode_feedback_both,
+                        "toast" to R.string.choice_mode_feedback_toast,
+                        "vibrate" to R.string.choice_mode_feedback_vibrate,
+                    ),
+                ),
+            ),
+            summary = { res, params -> res.getString(R.string.summary_mode_count, com.example.mode.ModeHooks.modeCount(params["count"])) },
+        ),
+        ActionEditorForm(
             type = "input_key_code",
             fields = listOf(EditorField.KeyCodePick("keyCode", R.string.field_key_to_send)),
             helperRes = R.string.helper_input_key_code,

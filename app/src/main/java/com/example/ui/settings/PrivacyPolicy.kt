@@ -29,7 +29,7 @@ import com.example.ui.theme.MonoLabel
  */
 object PrivacyPolicy {
 
-    const val LAST_UPDATED = "19 October 2026"
+    const val LAST_UPDATED = "24 October 2026"
 
     /**
      * Left blank deliberately. A published policy needs a contact address, but which address to
@@ -41,7 +41,9 @@ object PrivacyPolicy {
     val sections: List<Pair<String, String>> = listOf(
         "What is collected" to
             "KeySnap has no servers, no accounts, no analytics and no crash reporting. " +
-            "KeySnap does not send the developer your shortcuts, key presses or usage history. " +
+            "KeySnap does not send the developer your shortcuts, key presses or usage history, " +
+            "unless you send a problem recording yourself, as described under \"Problem " +
+            "recordings (optional)\" below. " +
             "Google Play Billing receives the purchase data described under " +
             "\"Purchases\" below. Network requests, RSS feeds, messages and sharing " +
             "that you configure or initiate may also send data to the destinations or apps you " +
@@ -49,6 +51,26 @@ object PrivacyPolicy {
             " If you share a shortcut, the app hands its text to the app you pick in Android's share " +
             "sheet and sends it nowhere itself. Names of contacts and chats, phone numbers, RSS feed addresses " +
             "and calendar names are left out of that text.",
+
+        "Problem recordings (optional)" to
+            "If something does not work on your phone, you can start a problem recording in Settings " +
+            "→ About. It is off unless you start it, and it stops by itself after 10 minutes or 500 " +
+            "lines. While it runs, the app keeps in memory only: your phone's maker, model, Android " +
+            "version and system build number, the app version, whether the accessibility service and " +
+            "Advanced Mode are on, whether your shortcuts are paused, how many shortcuts you have, " +
+            "and for each key event its key code, timing and the technical details Android attaches " +
+            "to it, which input path saw it, whether it was passed on or blocked, whether a shortcut " +
+            "matched and with which press type, and which type of action ran and whether it worked. " +
+            "Letter, number, symbol, space and other typing keys are recorded only as \"a typing key\", " +
+            "never which one, so text typed on a hardware keyboard while recording cannot be read " +
+            "back. Shortcuts appear only as a number derived from their internal id. It never records " +
+            "what an action contains, such as a command, URL, setting or typed text, nor shortcut " +
+            "names, contact or chat names, notification content, IP addresses or pairing codes. You " +
+            "can read the whole recording on screen before anything leaves the phone. Sending it " +
+            "opens your own e-mail app addressed to support@ardasenn.com; nothing is sent unless you " +
+            "press send there. The recording is deleted from the phone when you send or discard it, " +
+            "and is never written to storage. A recording you e-mail is used only to fix the problem " +
+            "you reported, and you can ask for it to be deleted by writing to the same address.",
 
         "What is stored on your device" to
             "Your shortcuts, their triggers, which shortcut each home-screen widget and Quick " +
@@ -70,9 +92,10 @@ object PrivacyPolicy {
             "you configure. It also performs the tap, swipe and pinch gestures you configure in " +
             "your shortcuts, including when Advanced Mode is off. These gestures do not require " +
             "reading the screen content of the app where they run. It is restricted to reading screen " +
-            "content from the system Settings app only, and it uses that solely to read the " +
-            "six-digit pairing code from the Wireless Debugging dialog while you are setting up " +
-            "Advanced Mode. It cannot read any other app's screen, it does not receive the text " +
+            "content from the system Settings app only, and it uses that solely while you are " +
+            "setting up Advanced Mode: after you tap Open settings, it opens Wireless Debugging " +
+            "from Developer options if your phone cannot open it directly, taps \"Pair device " +
+            "with pairing code\" once and reads the six-digit pairing code from the dialog. It cannot read any other app's screen, it does not receive the text " +
             "you type, and the pairing code is never stored or transmitted.",
 
         "Advanced Mode and the system bridge" to
@@ -86,7 +109,11 @@ object PrivacyPolicy {
             "chat is with the person you chose and that the message field holds exactly your " +
             "text, before it taps Send and once after. That layout is not stored, except for a " +
             "moment in a private temporary file on some Android versions, deleted right away, and " +
-            "it is never logged or sent. Turning Advanced Mode off, or rebooting, stops " +
+            "it is never logged or sent. If Android reports the accessibility service as " +
+            "disconnected while it is still allowed, tapping Reconnect has the program turn " +
+            "KeySnap's own entry in Android's list of enabled accessibility services off and on " +
+            "again; other services stay as they are, and an entry that is off when you tap is " +
+            "never turned on. Turning Advanced Mode off, or rebooting, stops " +
             "it; turning it off also deletes it from the device.",
 
         "Automatic restart (optional)" to
@@ -124,6 +151,14 @@ object PrivacyPolicy {
             "The third is to Google Play, to process the Pro purchase and " +
             "check whether you have bought Pro. The app makes no other requests of its " +
             "own.",
+
+        "Digital assistant (optional)" to
+            "If you select KeySnap as your digital assistant in Android settings, assistant gestures " +
+            "run the shortcuts you assign to them. The voice interaction session has no visible " +
+            "interface and does not read screen contents or screenshots. Its required speech " +
+            "recognition service is a stub: KeySnap never records audio and requests no microphone " +
+            "permission. When an action opens another assistant, that app handles its own interface " +
+            "and privacy practices. The list of available assistants is not stored or logged.",
 
         "Permissions and why" to
             "Internet, network state, Wi-Fi state and multicast: to find and connect to your " +

@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
+import android.os.SystemClock
 import android.os.Vibrator
 import android.os.VibratorManager
 import android.provider.Settings
@@ -19,15 +20,24 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.billing.PurchaseManager
 import com.example.data.ActionEditorForms
+import com.example.data.AccessibilityStatus
+import com.example.data.AccessibilityStatusTracker
 import com.example.data.autoSendFailure
 import com.example.data.EntitlementManager
 import com.example.data.InstalledApp
 import com.example.data.InstalledAppsRepository
 import com.example.data.KeyMappingConfig
+import com.example.mode.ModeHooks
 import com.example.data.KeyMappingRepository
 import com.example.data.LiveKeyEvent
 import com.example.data.RunLogRepository
 import com.example.data.RunRecord
+import com.example.data.RatingPromptChoice
+import com.example.data.RatingPromptRepository
+import com.example.data.RatingPromptSession
+import com.example.data.afterChoice
+import com.example.data.afterShowing
+import com.example.data.ratingPromptEligible
 import com.example.data.ScriptAction
 import com.example.data.ScriptActionCatalog
 import com.example.data.ScriptConstraint
@@ -40,13 +50,20 @@ import com.example.data.ImportedShortcut
 import com.example.data.ShortcutShare
 import com.example.data.SuggestedShortcut
 import com.example.data.TriggerPressType
+import com.example.data.WhatsNewAnnounceWindowMs
 import com.example.data.WhatsNewDecision
 import com.example.data.WhatsNewRelease
+import com.example.data.shouldAnnounceWhatsNew
+import com.example.data.whatsNewAnnouncementStartedAt
 import com.example.data.whatsNewDecision
+import com.example.data.whatsNewReleaseFor
 import com.example.data.whatsNewReleases
 import com.example.data.keyDisplayName
 import com.example.data.isSurfaceOnly
+import com.example.service.AccessibilityReconnect
 import com.example.service.CalendarCondition
+import com.example.service.ReconnectResult
+import com.example.service.reconnectWarnsAfterwards
 import com.example.service.DiagnosticRecorder
 import com.example.service.FlashlightController
 import com.example.service.HardwareKeyTriggerCoordinator
@@ -64,10 +81,14 @@ import com.example.service.bridge.BridgeController
 import com.example.service.bridge.BridgeState
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import io.github.nicholasarda.keysnap.R
 import io.github.nicholasarda.keysnap.BuildConfig
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.drop
@@ -130,6 +151,10 @@ fun ScriptDraft.withReplyCooldown(before: ScriptDraft): ScriptDraft =
         copy(constraints = constraints + ScriptConstraint(ScriptConstraintCatalog.COOLDOWN, mapOf("minutes" to "10")))
     }
 
+private const val WhatsNewAnnounceVersion = "whats_new_announce_version"
+private const val WhatsNewAnnounceStartedAt = "whats_new_announce_started_at"
+private const val WhatsNewAnnounceDismissed = "whats_new_announce_dismissed_version"
+
 class MainViewModel(
     private val repository: KeyMappingRepository,
     private val appContext: Context
@@ -153,13 +178,14 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
 
     /** Every shortcut's recent runs, newest first; written by HardwareKeyTriggerCoordinator. */
     val runLog: StateFlow<List<RunRecord>> = runLogRepository.runs
+    val lifetimeSuccessfulRuns: StateFlow<Long> = runLogRepository.successfulRuns
 
     private val entitlementManager = EntitlementManager.getInstance(appContext)
     private val purchaseManager = PurchaseManager.getInstance(appContext)
     val isPro: StateFlow<Boolean> = entitlementManager.isPro
 
     /** Null until Play answers the product query, so the Pro button falls back to a price-less label. */
-    val proPrice: StateFlow<String?> = purchaseManager.proPrice
+    val proPrice: StateFlow<com.example.billing.ProPrice?> = purchaseManager.proPrice
 
     /** One-shot shell-snackbar text. [showProAction] is carried alongside because only the free-limit
      *  messages have somewhere for the snackbar's Home action to go; a plain confirmation does not. */
@@ -180,6 +206,9 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
 
     private val _isServiceActive = MutableStateFlow(false)
     val isServiceActive: StateFlow<Boolean> = _isServiceActive.asStateFlow()
+    private val accessibilityStatusTracker = AccessibilityStatusTracker()
+    private val _accessibilityStatus = MutableStateFlow(AccessibilityStatus.DISABLED)
+    val accessibilityStatus: StateFlow<AccessibilityStatus> = _accessibilityStatus.asStateFlow()
 
     private val _keyHistory = MutableStateFlow<List<LiveKeyEvent>>(emptyList())
     val keyHistory: StateFlow<List<LiveKeyEvent>> = _keyHistory.asStateFlow()
@@ -219,19 +248,29 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
         _editorMessage.value = null
     }
 
-    fun createScript() {
+    fun createScript(runsInMode: Int? = null) {
+        val mode = runsInMode?.takeIf { ModeHooks.allows(ScriptConstraintCatalog.MODE_IS, entitlementManager.isPro.value) }
         _editingScript.value = ScriptDraft(
             id = scriptRepository.newScriptId(),
             name = "",
             enabled = true,
             trigger = null,
             actions = emptyList(),
+            constraints = ModeHooks.constraintsForNewShortcut(mode),
             isNew = true,
         )
     }
 
+    fun newScriptId(): String = scriptRepository.newScriptId()
+
+    fun updateScripts(updated: List<ShortcutScript>) {
+        if (!acceptsModeFeatures(updated.flatMap { it.actions }, updated.flatMap { it.constraints })) return
+        scriptRepository.updateInPlace(updated)
+    }
+
     fun createSuggestedScript(suggestion: SuggestedShortcut) {
         if (!suggestion.available) return
+        if (!acceptsModeFeatures(suggestion.actions, suggestion.constraints)) return
         _editingScript.value = ScriptDraft(
             id = scriptRepository.newScriptId(),
             name = res.getString(suggestion.titleRes),
@@ -279,8 +318,27 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
 
     fun draftSetName(name: String) = updateDraft { it.copy(name = name) }
 
+    /**
+     * One-shot for a blocked Pro action. The ViewModel has no Activity, so the screen
+     * collects this and starts the same purchase flow as the Home Pro card.
+     */
+    private val _openProPurchase = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+    val openProPurchase: SharedFlow<Unit> = _openProPurchase.asSharedFlow()
+
+    /** Mode actions and conditions are Pro. False blocks the add and, in the Pro edition, opens purchase. */
+    fun acceptProFeature(type: String): Boolean {
+        if (ModeHooks.allows(type, entitlementManager.isPro.value)) return true
+        if (ModeHooks.AVAILABLE) _openProPurchase.tryEmit(Unit)
+        return false
+    }
+
+    private fun acceptsModeFeatures(actions: List<ScriptAction>, constraints: List<ScriptConstraint>): Boolean {
+        val types = actions.map { it.type } + constraints.map { it.type }
+        return types.all { acceptProFeature(it) }
+    }
+
     fun draftAddAction(type: String, params: Map<String, String> = emptyMap()) {
-        if (!ScriptActionCatalog.isAvailable(type)) return
+        if (!ScriptActionCatalog.isAvailable(type) || !acceptProFeature(type)) return
         updateDraft { it.copy(actions = it.actions + ScriptAction(type, params)) }
     }
 
@@ -329,7 +387,9 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
 
     fun draftSetTriggerKeys(keyCodes: List<Int>) {
         updateDraft { draft ->
-            val pressType = draft.trigger?.pressType ?: draft.pressType
+            val pressType = if (com.example.bridge.KeyEventMapping.ASSISTANT_GESTURE in keyCodes) {
+                TriggerPressType.SINGLE_PRESS
+            } else draft.trigger?.pressType ?: draft.pressType
             draft.copy(
                 trigger = ScriptTrigger(keyCodes, pressType, draft.trigger?.doublePressWindowMs, draft.trigger?.longPressThresholdMs),
                 automation = false,
@@ -356,7 +416,10 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
     }
 
     fun draftSetPressType(type: TriggerPressType) = updateDraft { draft ->
-        draft.trigger?.let { draft.copy(trigger = it.copy(pressType = type)) } ?: draft.copy(pressType = type)
+        draft.trigger?.let {
+            val effective = if (com.example.bridge.KeyEventMapping.ASSISTANT_GESTURE in it.keyCodes) TriggerPressType.SINGLE_PRESS else type
+            draft.copy(trigger = it.copy(pressType = effective))
+        } ?: draft.copy(pressType = type)
     }
 
     fun draftSetDoublePressWindow(ms: Long?) = updateDraft { draft ->
@@ -377,8 +440,12 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
 
     fun draftSetExactTiming(exact: Boolean) = updateDraft { it.copy(exactTiming = exact) }
 
+    fun draftSetRunsIn(mode: Int?) = updateDraft { draft ->
+        draft.copy(constraints = ModeHooks.withRunsIn(draft.constraints, mode))
+    }
+
     fun draftAddConstraint(type: String, params: Map<String, String> = emptyMap()) {
-        if (!ScriptConstraintCatalog.isAvailable(type)) return
+        if (!ScriptConstraintCatalog.isAvailable(type) || !acceptProFeature(type)) return
         updateDraft { draft ->
             if (draft.constraints.any { it.type == type }) draft
             else draft.copy(constraints = draft.constraints + ScriptConstraint(type, params))
@@ -501,6 +568,12 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
      */
     fun confirmImport() {
         val imported = _pendingImport.value ?: return
+        if (!acceptsModeFeatures(imported.actions, imported.constraints)) {
+            if (!ModeHooks.AVAILABLE) {
+                _scriptsMessage.value = ScriptsMessage(res.getString(R.string.import_error_unsupported))
+            }
+            return
+        }
         _pendingImport.value = null
         // Replacing an open draft would throw its unsaved edits away without asking.
         if (_editingScript.value != null) {
@@ -555,6 +628,10 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
         if (!draft.automation && automationOnly != null) {
             val title = ScriptConstraintCatalog.descriptor(automationOnly.type)?.titleRes?.let(res::getString).orEmpty()
             _editorMessage.value = res.getString(R.string.editor_condition_needs_automation, title)
+            return
+        }
+        if (!acceptsModeFeatures(draft.actions, draft.constraints)) {
+            if (!ModeHooks.AVAILABLE) _editorMessage.value = res.getString(R.string.import_error_unsupported)
             return
         }
         val fromNotification = ScriptConstraintCatalog.startsFromNotification(draft.automation, draft.constraints)
@@ -617,6 +694,7 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
     }
 
     private fun applyRecordedKey(keyCode: Int) {
+        if (ModeHooks.offerRecordedKeys(listOf(keyCode))) return
         if (_editingScript.value != null) draftSetTriggerKey(keyCode) else repository.setTargetKey(keyCode)
     }
 
@@ -667,6 +745,46 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
     private val currentVersionCode = BuildConfig.VERSION_CODE.toLong()
     private val _whatsNew = MutableStateFlow<WhatsNewRelease?>(null)
     val whatsNew: StateFlow<WhatsNewRelease?> = _whatsNew.asStateFlow()
+    private val _browsedWhatsNew = MutableStateFlow<WhatsNewRelease?>(null)
+    val browsedWhatsNew: StateFlow<WhatsNewRelease?> = _browsedWhatsNew.asStateFlow()
+    private val _whatsNewAnnouncement = MutableStateFlow(false)
+    val whatsNewAnnouncement: StateFlow<Boolean> = _whatsNewAnnouncement.asStateFlow()
+    private val _whatsNewHint = MutableStateFlow(false)
+    val whatsNewHint: StateFlow<Boolean> = _whatsNewHint.asStateFlow()
+    private var whatsNewAnnounceWatch: Job? = null
+
+    private val ratingPromptRepository = RatingPromptRepository(wizardPrefs)
+    private val ratingPromptSession = RatingPromptSession()
+    private val firstInstallTime = appContext.packageManager.getPackageInfo(appContext.packageName, 0).firstInstallTime
+    private val _showRatingPrompt = MutableStateFlow(false)
+    val showRatingPrompt: StateFlow<Boolean> = _showRatingPrompt.asStateFlow()
+
+    fun updateRatingPromptVisibility(homeReady: Boolean) {
+        val open = homeReady && !_showSetupWizard.value && _whatsNew.value == null
+        if (!open) {
+            _showRatingPrompt.value = false
+            return
+        }
+        if (ratingPromptSession.pending(homeReady = true)) {
+            _showRatingPrompt.value = true
+            return
+        }
+        val state = ratingPromptRepository.read()
+        if (ratingPromptSession.claim(
+            eligible = ratingPromptEligible(firstInstallTime, System.currentTimeMillis(), lifetimeSuccessfulRuns.value, state),
+            homeReady = true,
+        )) {
+            ratingPromptRepository.write(state.afterShowing())
+            _showRatingPrompt.value = true
+        }
+    }
+
+    fun answerRatingPrompt(choice: RatingPromptChoice) {
+        if (!_showRatingPrompt.value) return
+        ratingPromptSession.markAnswered()
+        ratingPromptRepository.write(ratingPromptRepository.read().afterChoice(choice, System.currentTimeMillis()))
+        _showRatingPrompt.value = false
+    }
 
     private fun refreshWhatsNew() {
         val lastSeen = if (wizardPrefs.contains("whats_new_last_seen_version")) {
@@ -686,15 +804,89 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
             hasContent = release != null,
         )) {
             WhatsNewDecision.MARK_SEEN -> dismissWhatsNew()
-            WhatsNewDecision.SHOW -> _whatsNew.value = release
+            WhatsNewDecision.SHOW -> {
+                ratingPromptSession.suppressForWhatsNew()
+                _showRatingPrompt.value = false
+                _whatsNew.value = release
+            }
             WhatsNewDecision.NONE -> _whatsNew.value = null
         }
+        syncWhatsNewAnnouncement(autoShowing = _whatsNew.value != null)
     }
 
     fun dismissWhatsNew() {
+        _browsedWhatsNew.value = null
         wizardPrefs.edit().putLong("whats_new_last_seen_version", currentVersionCode).apply()
         _whatsNew.value = null
     }
+
+    /** Logo and Settings → About open the same dialog. Only the logo ends the 48 h announcement. */
+    fun openWhatsNew(fromLogo: Boolean = false) {
+        if (fromLogo) endWhatsNewAnnouncement()
+        _browsedWhatsNew.value = whatsNewReleaseFor(currentVersionCode)
+    }
+
+    fun consumeWhatsNewHint() {
+        _whatsNewHint.value = false
+    }
+
+    /** Re-reads the wall clock, so time spent asleep still ends the announcement. */
+    fun refreshWhatsNewAnnouncement() {
+        syncWhatsNewAnnouncement(autoShowing = false)
+    }
+
+    private fun syncWhatsNewAnnouncement(autoShowing: Boolean) {
+        val storedVersion = prefLong(WhatsNewAnnounceVersion)
+        val storedStart = prefLong(WhatsNewAnnounceStartedAt)
+        val dismissed = prefLong(WhatsNewAnnounceDismissed)
+        val now = System.currentTimeMillis()
+        val hasContent = whatsNewReleases[currentVersionCode] != null
+        val start = whatsNewAnnouncementStartedAt(
+            versionCode = currentVersionCode,
+            storedVersionCode = storedVersion,
+            storedStartedAtMillis = storedStart,
+            nowMillis = now,
+            autoShowing = autoShowing && hasContent,
+        )
+        val firstShow = autoShowing && hasContent && start != null &&
+            (storedVersion != currentVersionCode || storedStart == null)
+        if (start != null && (storedVersion != currentVersionCode || storedStart != start)) {
+            wizardPrefs.edit()
+                .putLong(WhatsNewAnnounceVersion, currentVersionCode)
+                .putLong(WhatsNewAnnounceStartedAt, start)
+                .apply()
+        }
+        val active = hasContent && shouldAnnounceWhatsNew(currentVersionCode, start, now, dismissed)
+        _whatsNewAnnouncement.value = active
+        if (!active) _whatsNewHint.value = false else if (firstShow) _whatsNewHint.value = true
+        watchWhatsNewAnnouncement(if (active) start else null)
+    }
+
+    private fun endWhatsNewAnnouncement() {
+        wizardPrefs.edit().putLong(WhatsNewAnnounceDismissed, currentVersionCode).apply()
+        whatsNewAnnounceWatch?.cancel()
+        _whatsNewAnnouncement.value = false
+        _whatsNewHint.value = false
+    }
+
+    private fun watchWhatsNewAnnouncement(startedAt: Long?) {
+        whatsNewAnnounceWatch?.cancel()
+        if (startedAt == null) return
+        whatsNewAnnounceWatch = viewModelScope.launch {
+            while (isActive) {
+                val now = System.currentTimeMillis()
+                if (!shouldAnnounceWhatsNew(currentVersionCode, startedAt, now, prefLong(WhatsNewAnnounceDismissed))) {
+                    _whatsNewAnnouncement.value = false
+                    _whatsNewHint.value = false
+                    break
+                }
+                delay((startedAt + WhatsNewAnnounceWindowMs - now).coerceIn(1_000L, 60_000L))
+            }
+        }
+    }
+
+    private fun prefLong(key: String): Long? =
+        if (wizardPrefs.contains(key)) wizardPrefs.getLong(key, 0L) else null
 
     private val _wizardStep = MutableStateFlow(wizardPrefs.getInt("wizard_current_step", 0))
     val wizardStep: StateFlow<Int> = _wizardStep.asStateFlow()
@@ -787,12 +979,8 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
         }
 
         viewModelScope.launch {
-            KeyMapperAccessibilityService.isServiceActive.collect { active ->
-                if (active) {
-                    _isServiceActive.value = true
-                } else {
-                    refreshServiceStatus()
-                }
+            KeyMapperAccessibilityService.isServiceActive.collect {
+                refreshAccessibilityStatus()
             }
         }
 
@@ -833,6 +1021,7 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
             HardwareKeyTriggerCoordinator.recordedKey.collect { keyCodes ->
                 // A chord is not added to saved keys and does not touch the legacy single target key.
                 if (keyCodes.size != 1) {
+                    if (ModeHooks.offerRecordedKeys(keyCodes)) return@collect
                     if (_editingScript.value != null) draftSetTriggerKeys(keyCodes)
                     return@collect
                 }
@@ -855,12 +1044,21 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
 
     fun refreshServiceStatus() {
         WirelessAdbManager.refreshAutostartPermission()
-        val runningFromService = KeyMapperAccessibilityService.isServiceActive.value
-        val enabledInSettings = isAccessibilityServiceEnabled(appContext, KeyMapperAccessibilityService::class.java)
-        _isServiceActive.value = runningFromService || enabledInSettings
+        refreshAccessibilityStatus()
+        // Usage Access can change in Settings without a shortcut edit (including imported ones).
+        BridgeController.publishConfig()
         // The calendar permission may have been granted (or revoked) after a calendar condition was
         // saved; nothing else would arm or cancel its alarm until the next edit.
         CalendarCondition.sync(appContext, scriptRepository.scripts.value)
+    }
+
+    /** Foreground health checks do not restart the service or repeat unrelated permission work. */
+    fun refreshAccessibilityStatus() {
+        val enabledInSettings = isAccessibilityServiceEnabled(appContext, KeyMapperAccessibilityService::class.java)
+        val connected = KeyMapperAccessibilityService.refreshConnectionStatus()
+        val status = accessibilityStatusTracker.update(enabledInSettings, connected, SystemClock.elapsedRealtime())
+        _accessibilityStatus.value = status
+        _isServiceActive.value = status == AccessibilityStatus.ACTIVE
     }
 
     private fun addKeyEvent(event: LiveKeyEvent) {
@@ -950,6 +1148,7 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
         _wizardStep.value = step
         _showSetupWizard.value = true
         _whatsNew.value = null
+        _browsedWhatsNew.value = null
         wizardPrefs.edit()
             .putBoolean("wizard_is_open", true)
             .putInt("wizard_current_step", step)
@@ -960,6 +1159,7 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
     }
 
     fun closeSetupWizard() {
+        WirelessAdbManager.disarmPairWithCodeTap()
         _showSetupWizard.value = false
         wizardPrefs.edit().putBoolean("wizard_is_open", false).apply()
         refreshWhatsNew()
@@ -1032,12 +1232,9 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
             // spawning a second one or sending the user through the wizard again.
             if (BridgeController.detectExistingBridge()) return@launch
 
-            val savedPort = discoveredConnectPort.value
-            if (savedPort != null && savedPort > 0) {
-                WirelessAdbManager.connectShellStream(discoveredIp.value, savedPort)
-            } else {
-                openSetupWizard(0)
-            }
+            // A device paired before is tried with its current port first; pairing only when that fails.
+            val pairedBefore = (discoveredConnectPort.value ?: 0) > 0
+            if (!pairedBefore || !WirelessAdbManager.connectWithExistingPairing()) openSetupWizard(if (pairedBefore) 1 else 0)
         }
     }
 
@@ -1082,8 +1279,14 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
     }
 
     // System Intents
+    /** The wizard's in-app code entry, for when the assisted tap or the notification is unavailable. */
+    fun submitPairingCode(code: String) {
+        WirelessAdbManager.onCredentialsFromNotification(code, null)
+    }
+
     fun openDeveloperSettings(context: Context) {
         WirelessAdbManager.startSearchingMdns()
+        WirelessAdbManager.armPairWithCodeTap()
         WirelessAdbManager.showPairingNotification(context)
         try {
             val intent = Intent("android.settings.WIRELESS_DEBUGGING_SETTINGS").apply {
@@ -1092,8 +1295,10 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
             context.startActivity(intent)
         } catch (e: Exception) {
             try {
+                // Scrolls Developer options to the Wireless debugging row, where the assistant opens it.
                 val intent = Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS).apply {
                     flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                    putExtra(":settings:fragment_args_key", "toggle_adb_wireless")
                 }
                 context.startActivity(intent)
             } catch (e: Exception) {
@@ -1107,17 +1312,7 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
 
     /** The "Digital assistant app" picker, so a Launch voice/device assistant action can be pointed at one. */
     fun openAssistantSettings(context: Context) {
-        try {
-            val intent = Intent(Settings.ACTION_VOICE_INPUT_SETTINGS).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK
-            }
-            context.startActivity(intent)
-        } catch (e: Exception) {
-            val intent = Intent(Settings.ACTION_SETTINGS).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK
-            }
-            context.startActivity(intent)
-        }
+        com.example.assistant.AssistantIntegration.openSettings(context)
     }
 
     /** cycle_ringer_mode / change_ringer_mode's "Tap to grant" badge; DND access has no runtime
@@ -1131,6 +1326,31 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
             )
         } catch (e: Exception) {
             context.startActivity(Intent(Settings.ACTION_SETTINGS).apply { flags = Intent.FLAG_ACTIVITY_NEW_TASK })
+        }
+    }
+
+    private val _accessibilityReconnecting = MutableStateFlow(false)
+    val accessibilityReconnecting: StateFlow<Boolean> = _accessibilityReconnecting.asStateFlow()
+
+    /** Only from the user's Reconnect tap. A failure falls back to the manual off/on in Android. */
+    fun reconnectAccessibility(context: Context) {
+        if (_accessibilityReconnecting.value) return
+        _accessibilityReconnecting.value = true
+        viewModelScope.launch {
+            val result = try {
+                AccessibilityReconnect.run(appContext)
+            } finally {
+                _accessibilityReconnecting.value = false
+            }
+            refreshAccessibilityStatus()
+            if (result == ReconnectResult.CONNECTED && reconnectWarnsAfterwards(Build.MANUFACTURER)) {
+                // ColorOS follows the re-added entry with its own dialog whose big button turns it off.
+                Toast.makeText(appContext, R.string.accessibility_reconnect_keep_on, Toast.LENGTH_LONG).show()
+            }
+            if (result != ReconnectResult.CONNECTED) {
+                Toast.makeText(appContext, R.string.accessibility_reconnect_failed, Toast.LENGTH_LONG).show()
+                openAccessibilitySettings(context)
+            }
         }
     }
 

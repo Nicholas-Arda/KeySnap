@@ -90,6 +90,7 @@ public final class BridgeConfig {
     public static final String ACTION_SHOW_NOTIFICATION = "show_notification";
     public static final String ACTION_SET_WALLPAPER = "set_wallpaper";
     public static final String ACTION_REPEAT_PREVIOUS = "repeat_previous";
+    public static final String ACTION_CYCLE_MODE = "cycle_mode";
     public static final String ACTION_TOGGLE_MAPPING = "toggle_mapping";
     public static final String ACTION_PAUSE_MAPPING = "pause_mapping";
     public static final String ACTION_RESUME_MAPPING = "resume_mapping";
@@ -192,6 +193,7 @@ public final class BridgeConfig {
     public static final String CONSTRAINT_DEVICE_LOCKED = "device_locked";
     public static final String CONSTRAINT_DEVICE_UNLOCKED = "device_unlocked";
     public static final String CONSTRAINT_LOCK_SCREEN_SHOWING = "lock_screen_showing";
+    public static final String CONSTRAINT_NO_APP_OPEN = "no_app_open";
     public static final String CONSTRAINT_LOCK_SCREEN_NOT_SHOWING = "lock_screen_not_showing";
     public static final String CONSTRAINT_PHONE_RINGING = "phone_ringing";
     public static final String CONSTRAINT_BATTERY_SAVER_ON = "battery_saver_on";
@@ -218,12 +220,15 @@ public final class BridgeConfig {
     public static final String CONSTRAINT_NOTIFICATION_RECEIVED = "notification_received";
     /** Per-script "at most once every N minutes"; BridgeMain gates it, the evaluator never blocks on it. */
     public static final String CONSTRAINT_COOLDOWN = "cooldown";
+    public static final String CONSTRAINT_MODE_IS = "mode_is";
 
     public final int port;
     public final String token;
     /** The app's package, used for the battery-optimisation whitelist. */
     public final String packageName;
     public final boolean globallyEnabled;
+    /** Whether the app can read UsageEvents; shell privileges must not bypass this limitation. */
+    public final boolean foregroundReadable;
     public final boolean capsuleFeedbackEnabled;
     public final long doublePressWindowMs;
     public final long longPressThresholdMs;
@@ -298,7 +303,9 @@ public final class BridgeConfig {
 
     private BridgeConfig(int port, String token, String packageName, boolean globallyEnabled,
                          long doublePressWindowMs, long longPressThresholdMs, List<Script> scripts,
-                         boolean vibrateOnTrigger, long hapticDurationMs, boolean capsuleFeedbackEnabled) {
+                         boolean vibrateOnTrigger, long hapticDurationMs, boolean capsuleFeedbackEnabled,
+                         boolean foregroundReadable) {
+        this.foregroundReadable = foregroundReadable;
         this.capsuleFeedbackEnabled = capsuleFeedbackEnabled;
         this.vibrateOnTrigger = vibrateOnTrigger;
         this.hapticDurationMs = hapticDurationMs;
@@ -467,7 +474,8 @@ public final class BridgeConfig {
         return new BridgeConfig(port, token, packageName, globallyEnabled, doubleWindow, longThreshold,
                 Collections.unmodifiableList(scripts),
                 root.optBoolean("vibrateOnTrigger", true), root.optLong("hapticDurationMs", 60L),
-                root.optBoolean("capsuleFeedbackEnabled", false));
+                root.optBoolean("capsuleFeedbackEnabled", false),
+                root.optBoolean("foregroundReadable", false));
     }
 
     /** Actions out of a bare {"actions":[...]} object, as the control port's RUN command sends. */

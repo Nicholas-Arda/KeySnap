@@ -4,6 +4,7 @@ import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -248,7 +249,7 @@ class LargeScaleLayoutTest(private val language: String, private val fontScale: 
             }
             if (tag == "about") {
                 capture("settings-about")
-                for (tag in listOf("about_app_button_label", "privacy_policy_button_label")) {
+                for (tag in listOf("about_app_button_label", "privacy_policy_button_label", "whats_new_button_label")) {
                     val aboutLayouts = mutableListOf<TextLayoutResult>()
                     rule.onNodeWithTag(tag, useUnmergedTree = true)
                         .performSemanticsAction(SemanticsActions.GetTextLayoutResult) { it(aboutLayouts) }
@@ -275,6 +276,44 @@ class LargeScaleLayoutTest(private val language: String, private val fontScale: 
             }
         }
         capture("pro-price")
+        layouts().forEach(::assertWholeWords)
+    }
+
+    @Test fun saleProCardShowsStruckPriceAndTimeLeftInWholeWords() {
+        content {
+            Column(Modifier.verticalScroll(rememberScrollState()).padding(horizontal = 16.dp)) {
+                ProUpsellCard(
+                    activeCount = 3, limit = 3, proPrice = "$2.49", onOpenProScreen = {},
+                    sale = com.example.billing.ProSale("$3.99", 38, System.currentTimeMillis() + 6 * 86_400_000L + 4 * 3_600_000L + 60_000L),
+                )
+            }
+        }
+        capture("pro-sale")
+        layouts().forEach(::assertWholeWords)
+    }
+
+    /** Low-price-level markets: Play's local strings can run to 6+ digits with a currency code. */
+    @Test fun saleProCardKeepsLongLocalPricesWhole() {
+        val prices = listOf(
+            "Rp 64.900,00" to "Rp 39.900,00",
+            "COP 16.900,00" to "COP 10.500,00",
+            "UZS 50 900,00" to "UZS 31 900,00",
+            "357.000,00 LBP" to "222.000,00 LBP",
+        )
+        content {
+            Column(
+                Modifier.verticalScroll(rememberScrollState()).padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                for ((full, price) in prices) {
+                    ProUpsellCard(
+                        activeCount = 3, limit = 3, proPrice = price, onOpenProScreen = {},
+                        sale = com.example.billing.ProSale(full, 38, System.currentTimeMillis() + 6 * 86_400_000L + 4 * 3_600_000L + 60_000L),
+                    )
+                }
+            }
+        }
+        capture("pro-sale-long")
         layouts().forEach(::assertWholeWords)
     }
 

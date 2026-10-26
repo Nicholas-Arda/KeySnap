@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_assistant_gesture_title">زر التشغيل لاختصارك</string>
+    <string name="whats_new_assistant_gesture_description">اختر KeySnap مساعدًا لهاتفك. إذا كان هاتفك يوجّه الضغط المطوّل على زر التشغيل إلى المساعد، فسيشغّل اختصار «إيماءة المساعد».</string>
+    <string name="whats_new_home_only_title">على الشاشة الرئيسية أو شاشة القفل فقط</string>
+    <string name="whats_new_home_only_description">أضف «لا يوجد تطبيق مفتوح» ضمن «فقط إذا» لتعمل أزرار الصوت كالمعتاد داخل التطبيقات. يتطلب الوصول إلى بيانات الاستخدام.</string>
+    <string name="whats_new_fix_coloros_dnd">تعمل إجراءات عدم الإزعاج الآن على ColorOS في الوضع المتقدم</string>
+    <string name="whats_new_fix_conditional_volume">لا يُعترض زر الصوت إلا عند تحقق شروط الاختصار</string>
+    <string name="rating_prompt_title">هل يؤدي KeySnap مهمته؟</string>
+    <string name="rating_prompt_body">تقييمك على Google Play يساعد كثيرًا.</string>
+    <string name="rating_prompt_rate">تقييم</string>
+    <string name="rating_prompt_later">لاحقًا</string>
+    <string name="rating_prompt_no_thanks">لا شكرًا</string>
+</resources>

@@ -2,6 +2,7 @@ package com.example.service
 
 import android.app.NotificationManager
 import android.content.Context
+import android.media.AudioAttributes
 import android.os.Build
 import android.os.SystemClock
 import android.os.VibrationEffect
@@ -10,8 +11,12 @@ import android.os.VibratorManager
 import android.provider.Settings
 import android.util.Log
 import android.view.KeyEvent
+import com.example.assistant.AssistantIntegration
+import com.example.bridge.KeyEventMapping
 import com.example.capsule.CapsuleHooks
+import com.example.mode.ModeHooks
 import com.example.data.EntitlementManager
+import com.example.data.KeyConsumptionTracker
 import com.example.data.KeyMappingConfig
 import com.example.data.KeyMappingRepository
 import com.example.data.LiveKeyEvent
@@ -111,6 +116,28 @@ object HardwareKeyTriggerCoordinator {
 
     /** False until [initialize] has run in this process; nothing can fire before that. */
     val isReady: Boolean get() = constraintEvaluator != null
+
+    /**
+     * One tracker for every Accessibility instance in this process, so a rebind mid-press still
+     * consumes the matching up. The activity keeps a separate tracker: its decision also includes
+     * the recording override, and both paths can observe the same press.
+     */
+    internal val accessibilityKeyConsumption = KeyConsumptionTracker()
+
+    /** Test seam. Production installs the real evaluator in [initialize], which replaces this. */
+    internal fun setConstraintEvaluatorForTest(evaluator: ConstraintEvaluator?) {
+        constraintEvaluator = evaluator
+    }
+
+    /** Called only on the first down. The evaluator is allocated lazily after a consuming key matches. */
+    fun shouldConsumeKey(keyCode: Int): Boolean {
+        val scripts = scriptRepository ?: return false
+        val evaluator by lazy { constraintEvaluator?.forDecision() }
+        val now = SystemClock.elapsedRealtime()
+        return scripts.shouldConsume(keyCode) { script ->
+            passesCooldown(script, now) && script.constraints.all { evaluator?.isSatisfied(it) ?: false }
+        }
+    }
 
     // ponytail: in memory, so a restart of this process forgets it and one early re-run is
     // possible; persist per script id if users report it.
@@ -335,6 +362,28 @@ object HardwareKeyTriggerCoordinator {
         DiagnosticRecorder.keyEvent(path, DiagnosticRecorder.Stage.COORDINATOR, keyCode, isDown, deduplicated = deduplicated, matched = matched)
     }
 
+    /** A system assistant invocation is already a complete gesture, with no physical DOWN/UP.
+     * Deduplicate before launching work; never pass it through physical press timing/chords. */
+    fun onAssistantGesture(context: Context): Job? {
+        val now = SystemClock.elapsedRealtime()
+        if (!AssistantIntegration.invocations.accept(now)) return null
+        ensureInitialized(context)
+        if (_isRecordingKey.value) {
+            _recordedKey.tryEmit(listOf(KeyEventMapping.ASSISTANT_GESTURE))
+            cancelRecordingKey()
+            return null
+        }
+        return coordinatorScope.launch {
+            // A session can start a cold process while the detached bridge is still running.
+            withContext(Dispatchers.IO) { BridgeController.ensureAdopted(context.applicationContext) }
+            EntitlementManager.getInstance(context).enforceLimit()
+            stateMutex.withLock {
+                lastDiagnosticPath = DiagnosticRecorder.InputPath.ASSISTANT
+                handleGesture(KeyEventMapping.ASSISTANT_GESTURE, TriggerPressType.SINGLE_PRESS)
+            }
+        }
+    }
+
     private fun handleGesture(keyId: Int, pressType: TriggerPressType) {
         val scriptsRepo = scriptRepository ?: return
         val context = appContext ?: return
@@ -353,7 +402,17 @@ object HardwareKeyTriggerCoordinator {
         }.filter { passesCooldown(it, SystemClock.elapsedRealtime()) }
         // While the bridge owns execution it reports its own gesture; logging this one too would
         // read as a double run.
-        if (DiagnosticRecorder.recording && !_isAdvancedBridgeActive.value) {
+        val assistant = keyId == KeyEventMapping.ASSISTANT_GESTURE
+        if (assistant) {
+            _latestKeyEvent.tryEmit(LiveKeyEvent(
+                keyCode = keyId,
+                keyName = keyDisplayName(context.resources, keyId),
+                actionName = context.getString(R.string.trigger_assistant_gesture),
+                isTriggerMatch = matched.isNotEmpty(),
+                timestamp = SystemClock.elapsedRealtime(),
+            ))
+        }
+        if (DiagnosticRecorder.recording && (!_isAdvancedBridgeActive.value || assistant)) {
             val path = lastDiagnosticPath
             if (matched.isEmpty()) DiagnosticRecorder.gesture(null, keyId, pressType, path, matched = false)
             matched.forEach { DiagnosticRecorder.gesture(it.id.hashCode(), keyId, pressType, path, matched = true) }
@@ -370,7 +429,7 @@ object HardwareKeyTriggerCoordinator {
         // The bridge matches this same physical press on its own getevent stream and reports it
         // back through onBridgeTrigger, which runs the app's share. Executing here as well would
         // run everything twice, so while the bridge is up this path only reports.
-        if (_isAdvancedBridgeActive.value) {
+        if (_isAdvancedBridgeActive.value && !assistant) {
             Log.d(TAG, "$label detected, bridge owns execution")
             return
         }
@@ -470,7 +529,9 @@ object HardwareKeyTriggerCoordinator {
         lastRunAt[script.id] = now
 
         if (resolveVibrateForScript(script, defaults.vibrateOnTrigger)) {
-            vibratePhone(context, resolveHapticDurationForScript(script, defaults.hapticDurationMs))
+            val duration = resolveHapticDurationForScript(script, defaults.hapticDurationMs)
+            vibratePhone(context, duration)
+            delay(ModeHooks.triggerFeedbackPause(script.actions, duration))
         }
         // Nothing may have adopted a running bridge in a cold process yet; the probe does socket and
         // config-file I/O, as it does off the main thread at app start.
@@ -504,14 +565,17 @@ object HardwareKeyTriggerCoordinator {
         coordinatorScope.launch {
             scripts.forEach { script ->
                 if (resolveVibrateForScript(script, config.vibrateOnTrigger)) {
-                    vibratePhone(context, resolveHapticDurationForScript(script, config.hapticDurationMs))
+                    val duration = resolveHapticDurationForScript(script, config.hapticDurationMs)
+                    vibratePhone(context, duration)
+                    delay(ModeHooks.triggerFeedbackPause(script.actions, duration))
                 }
                 val executor = actionExecutor
                 if (executor != null) {
-                    // An automation has no press for the bridge to match, so it is handed the chain
-                    // here. A key run reaches this only while the bridge is down (handleGesture),
+                    // Automations and assistant gestures have no physical press for the bridge
+                    // to match, so they hand it the chain. A physical key reaches this only while
+                    // the bridge is down (handleGesture),
                     // and must not ask it: a bridge coming up meanwhile has matched the press itself.
-                    val run = if (keyCode == null) {
+                    val run = if (keyCode == null || keyCode == KeyEventMapping.ASSISTANT_GESTURE) {
                         runChain(script.actions, executor, triggerNotifications[script.id], diagnosticScriptId = if (DiagnosticRecorder.recording) script.id.hashCode() else 0, runOnBridge = BridgeController::runActions)
                     } else {
                         ChainResults(executor.executeEach(script.actions, diagnosticScriptId = if (DiagnosticRecorder.recording) script.id.hashCode() else 0, diagnosticPressType = pressType), bridgeReport = null)
@@ -566,6 +630,23 @@ object HardwareKeyTriggerCoordinator {
     )
 
     fun vibratePhone(context: Context, durationMs: Long = 50) {
+        vibratePhone(context, VibrationEffect.createOneShot(durationMs.coerceAtLeast(1L), VibrationEffect.DEFAULT_AMPLITUDE))
+    }
+
+    fun vibratePhone(context: Context, timings: LongArray) {
+        // Mode feedback is a notification event, including when triggered in the background
+        // with the screen off. Touch feedback is subject to background vibration suppression.
+        vibratePhone(
+            context,
+            VibrationEffect.createWaveform(timings, -1),
+            AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_NOTIFICATION_EVENT)
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .build(),
+        )
+    }
+
+    private fun vibratePhone(context: Context, effect: VibrationEffect, attributes: AudioAttributes? = null) {
         try {
             val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 val vibratorManager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as? VibratorManager
@@ -576,7 +657,7 @@ object HardwareKeyTriggerCoordinator {
             }
             if (vibrator?.hasVibrator() != true) return
 
-            vibrator.vibrate(VibrationEffect.createOneShot(durationMs.coerceAtLeast(1L), VibrationEffect.DEFAULT_AMPLITUDE))
+            if (attributes == null) vibrator.vibrate(effect) else vibrator.vibrate(effect, attributes)
         } catch (e: Exception) {
             Log.e(TAG, "Vibration execution failed", e)
         }

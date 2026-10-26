@@ -18,10 +18,11 @@ class ConstraintEditorFormTest {
     private val res = RuntimeEnvironment.getApplication().resources
 
     private val formTypes = listOf(
-        "app_in_foreground", "app_not_in_foreground", "screen_orientation",
+        "app_in_foreground", "app_not_in_foreground", "no_app_open", "screen_orientation",
         "connected_to_wifi_network", "disconnected_from_wifi_network",
         "bluetooth_device_connected", "bluetooth_device_disconnected",
         "battery_above", "battery_below", "time", "day_of_week", "cooldown",
+        "mode_is",
         "notification_received", "rss_new_item", "calendar_event_active", "at_time", "interval",
     )
 

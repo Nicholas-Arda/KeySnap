@@ -141,6 +141,13 @@ public final class EventServer implements Runnable {
         broadcast(BridgeProtocol.MSG_DEVICE + SEP + sanitize(path) + SEP + sanitize(name));
     }
 
+    /** Live display only. Do not replay on reconnect or depend on delivery for mode changes. */
+    public void broadcastMode(int mode) {
+        for (ClientConnection client : clients) {
+            if (client.watching) client.send(BridgeProtocol.MSG_MODE + SEP + mode);
+        }
+    }
+
     private void broadcast(String line) {
         for (ClientConnection client : clients) {
             client.send(line);

@@ -51,6 +51,21 @@ class BridgeFeedbackDeliveryTest {
         }
     }
 
+    @Test fun modeFeedbackIsLiveAndNeverReplayedOnReconnect() {
+        withServer { server, port, wakes ->
+            server.broadcastMode(2)
+            connect(port).use { client ->
+                client.send(BridgeProtocol.CMD_WATCH)
+                assertEquals("OK\twatching", client.read())
+                server.broadcastMode(3)
+                assertEquals("MODE\t3", client.read())
+                client.socket.soTimeout = 100
+                assertThrows(java.net.SocketTimeoutException::class.java) { client.read() }
+            }
+            assertEquals(0, wakes.get())
+        }
+    }
+
     private fun withServer(block: (EventServer, Int, AtomicInteger) -> Unit) {
         val port = ServerSocket(0).use { it.localPort }
         val wakes = AtomicInteger()

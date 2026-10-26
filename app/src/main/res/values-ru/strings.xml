@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">KeySnap</string>
-    <string name="accessibility_service_description">Обнаруживает нажатия физических клавиш (громкость, питание и другие аппаратные кнопки), чтобы они могли запускать ваши сценарии. Только во время настройки Расширенного режима приложение также считывает код сопряжения из системного диалога беспроводной отладки. Оно не может читать экран какого-либо другого приложения.</string>
+    <string name="accessibility_service_description">Обнаруживает нажатия физических клавиш (громкость, питание и другие аппаратные кнопки), чтобы они могли запускать ваши сценарии. Только во время настройки Расширенного режима приложение также само открывает системный диалог с кодом сопряжения и считывает из него код. Оно не может читать экран какого-либо другого приложения.</string>
     <string name="accessibility_disclosure_agree">Согласиться и открыть настройки</string>
 
     <!-- Категории действий -->
@@ -226,6 +226,7 @@
     <string name="constraint_device_locked">Устройство заблокировано</string>
     <string name="constraint_device_unlocked">Устройство разблокировано</string>
     <string name="constraint_lock_screen_showing">Экран блокировки показан</string>
+    <string name="constraint_no_app_open">Нет открытых приложений: главный экран или экран блокировки</string>
     <string name="constraint_lock_screen_not_showing">Экран блокировки не показан</string>
     <string name="constraint_in_phone_call">Идёт телефонный звонок</string>
     <string name="constraint_not_in_phone_call">Нет телефонного звонка</string>
@@ -465,6 +466,8 @@
     <string name="field_time_end">До</string>
     <string name="field_days">Дни</string>
     <string name="constraint_needs_usage_access">Нужен доступ к данным об использовании, чтобы приложение видело, какое приложение на переднем плане.</string>
+    <string name="home_permissions_needed">Необходимые разрешения</string>
+    <string name="home_usage_access">Доступ к данным об использовании</string>
     <string name="constraint_needs_notification_access">Нужен доступ к уведомлениям. KeySnap сверяет каждое новое уведомление выбранного приложения с этим условием прямо на телефоне. Он хранит только время совпадения и то, какое это было уведомление, чтобы ответ нашёл этот чат. Содержимое уведомлений не сохраняется, не записывается в журнал и не отправляется.</string>
     <string name="field_notification_contact">Контакт</string>
     <string name="hint_notification_contact_any">Пусто: любой</string>
@@ -548,7 +551,6 @@
     <string name="nav_shortcuts">Сценарии</string>
     <string name="nav_settings">Настройки</string>
     <string name="settings_close">Закрыть настройки</string>
-    <string name="home_switch_theme">Сменить тему</string>
 
     <!-- Диалоги -->
     <string name="dialog_expert_connected">РАСШИРЕННЫЙ РЕЖИМ ПОДКЛЮЧЁН</string>
@@ -1049,6 +1051,7 @@
     <string name="diagnostic_send_note">Просмотрите полную запись ниже. Почтовое приложение откроет черновик для support@ardasenn.com. Вы сами решаете, отправлять ли его. KeySnap очищает запись при открытии черновика.</string>
     <string name="diagnostic_no_email">Почтовое приложение не найдено. Запись по-прежнему доступна.</string>
     <string name="whats_new_title">Что нового</string>
+    <string name="whats_new_hint">Что нового уже здесь · нажмите</string>
     <string name="whats_new_version">Версия %1$s</string>
     <string name="whats_new_new">Новое</string>
     <string name="whats_new_fixed">Исправлено</string>
@@ -1073,4 +1076,43 @@
     <string name="capsule_intro_title">Key capsule</string>
     <string name="pro_table_included">Включено</string>
     <string name="pro_table_not_included">Не включено</string>
+    <string name="accessibility_status_connecting">Подключение…</string>
+    <string name="accessibility_status_reconnect">Нужно переподключение</string>
+    <string name="accessibility_reconnect_title">Переподключите службу спецвозможностей</string>
+    <string name="accessibility_reconnect_message">Служба специальных возможностей включена в Android, но KeySnap не подключён. Выключите и снова включите KeySnap в настройках специальных возможностей.</string>
+    <string name="whats_new_fix_accessibility_status">Спецвозможности больше не отображаются активными, если служба отключена от системы</string>
+    <string name="accessibility_reconnect_button">Переподключить</string>
+    <string name="accessibility_reconnecting">Переподключение…</string>
+    <string name="accessibility_reconnect_failed">Не удалось переподключить. Выключите и снова включите KeySnap здесь.</string>
+    <string name="wizard_manual_title">Введите код вручную</string>
+    <string name="wizard_manual_body">В разделе «Отладка по Wi-Fi» нажмите «Сопряжение устройства по коду» и введите здесь 6-значный код. Если Android закрывает окно с кодом при переключении приложений, используйте разделённый экран или уведомление.</string>
+    <string name="wizard_manual_code_label">6-значный код подключения</string>
+    <string name="wizard_manual_pair">Подключить</string>
+    <string name="notif_return_title">Расширенный режим включён</string>
+    <string name="notif_return_body">Нажмите, чтобы вернуться в KeySnap.</string>
+    <string name="pro_sale_ends_in">Скидка закончится через %1$s</string>
+    <string name="accessibility_reconnect_keep_on">Переподключено. Если Android спросит о специальных возможностях, выберите «Оставить включённым».</string>
+    <string name="whats_new_connect_title">Проще настроить Расширенный режим</string>
+    <string name="whats_new_connect_description">Теперь KeySnap сам нажимает «Подключить по коду» и возвращается, когда Расширенный режим готов. Если специальные возможности отключились, достаточно нажать «Переподключить».</string>
+    <string name="action_cycle_mode">Следующий режим</string>
+    <string name="param_mode_count">Количество режимов</string>
+    <string name="param_mode_feedback">Отклик при смене режима</string>
+    <string name="param_mode_pulse">Вибрация режима</string>
+    <string name="param_mode_gap">Пауза между вибрациями</string>
+    <string name="param_mode_lead_gap">Пауза перед вибрацией режима</string>
+    <string name="choice_mode_feedback_toast">Сообщение на экране</string>
+    <string name="choice_mode_feedback_vibrate">Вибрация</string>
+    <string name="choice_mode_feedback_both">Сообщение и вибрация</string>
+    <string name="param_mode_number">Номер режима</string>
+    <string name="constraint_mode_is">Текущий режим</string>
+    <string name="mode_current">Режим %1$d</string>
+    <string name="summary_mode_count">Режимы по кругу: %1$d</string>
+    <string name="trigger_assistant_gesture">Жест вызова ассистента</string>
+    <string name="assistant_trigger_hint">Запускается один раз при вызове цифрового ассистента, например удержанием кнопки питания. Доступные жесты зависят от телефона.</string>
+    <string name="assistant_setup_title">Сделать KeySnap цифровым ассистентом</string>
+    <string name="assistant_selected">Выбран KeySnap · Нажмите, чтобы изменить</string>
+    <string name="assistant_not_selected">Не выбран · Открыть настройки ассистента</string>
+    <string name="assistant_redirect_note">Ваш ассистент — KeySnap, поэтому это действие открывает другого ассистента на телефоне.</string>
+    <string name="assistant_no_other_app">На этом телефоне нет другого доступного ассистента.</string>
+    <string name="assistant_voice_wakeup_warning">Пока KeySnap — ваш ассистент, голосовое пробуждение предыдущего ассистента может перестать работать.</string>
 </resources>

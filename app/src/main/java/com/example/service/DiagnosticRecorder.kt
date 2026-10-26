@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.asStateFlow
 
 /** Memory only. Callers must check [recording] before preparing diagnostic fields. */
 object DiagnosticRecorder {
-    enum class InputPath { ACCESSIBILITY, ACTIVITY, ADVANCED_MODE_BRIDGE }
+    enum class InputPath { ACCESSIBILITY, ACTIVITY, ADVANCED_MODE_BRIDGE, ASSISTANT }
     enum class Stage { ENTRY, COORDINATOR }
     enum class ActionPath { APP, ADVANCED_MODE_BRIDGE }
     enum class Failure { ACTION_FAILED, BRIDGE_ACTION_FAILED, EXCEPTION }

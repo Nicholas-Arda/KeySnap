@@ -48,4 +48,32 @@ class RunLogRepositoryTest {
         repo.forget("a")
         assertEquals(listOf("b"), repository().runs.value.map { it.scriptId })
     }
+
+    @Test fun lifetimeSuccessesSurviveHistoryTrimmingDeletionAndRestart() {
+        val repo = repository()
+        repeat(120) { index ->
+            repo.append(run("a", index.toLong()).copy(actions = listOf(ActionResult("vibrate", ok = true))))
+        }
+        repo.append(run("a", 121L))
+        repo.append(run("a", 122L).copy(actions = emptyList()))
+        repo.append(run("a", 123L).copy(actions = listOf(ActionResult("vibrate", true), ActionResult("toggle_wifi", false))))
+        assertEquals(120L, repo.successfulRuns.value)
+        assertEquals(120L, repository().successfulRuns.value)
+        repo.forget("a")
+        assertTrue(repository().runs.value.isEmpty())
+        assertEquals(120L, repository().successfulRuns.value)
+    }
+
+    @Test fun legacyHistorySeedsOnlyKnownSuccessesOnce() {
+        val repo = repository()
+        repo.append(run("a", 1L).copy(actions = listOf(ActionResult("vibrate", ok = true))))
+        repo.append(run("b", 2L))
+        prefs.edit().remove(RunLogRepository.SUCCESS_COUNT_KEY).commit()
+        val migrated = repository()
+        assertEquals(1L, migrated.successfulRuns.value)
+        migrated.forget("a")
+        assertEquals(1L, repository().successfulRuns.value)
+        migrated.append(run("b", 3L).copy(actions = listOf(ActionResult("vibrate", ok = true))))
+        assertEquals(2L, repository().successfulRuns.value)
+    }
 }

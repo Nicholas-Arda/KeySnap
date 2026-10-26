@@ -70,6 +70,16 @@
          permission: the user sees no dialog, and QUERY_ALL_PACKAGES (which needs a Play Store
          policy declaration) is not required. -->
     <queries>
+        <!-- Assistant alternatives; no broad package visibility or microphone permission. -->
+        <intent><action android:name="android.service.voice.VoiceInteractionService" /></intent>
+        <intent><action android:name="android.intent.action.ASSIST" /></intent>
+        <intent><action android:name="android.intent.action.VOICE_ASSIST" /></intent>
+        <intent><action android:name="android.intent.action.VOICE_COMMAND" /></intent>
+        <!-- Default home resolution for the home-or-lock-screen constraint on Android 11+. -->
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.HOME" />
+        </intent>
         <intent>
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />
@@ -113,6 +123,26 @@
                 <data android:mimeType="application/json" />
             </intent-filter>
         </activity>
+
+        <!-- Only Android can bind these services. These are binding guards, not permissions
+             requested by KeySnap. The recognition stub never records audio. -->
+        <service
+            android:name="com.example.assistant.KeySnapVoiceService"
+            android:permission="android.permission.BIND_VOICE_INTERACTION"
+            android:exported="true">
+            <intent-filter><action android:name="android.service.voice.VoiceInteractionService" /></intent-filter>
+            <meta-data android:name="android.voice_interaction" android:resource="@xml/voice_interaction_service" />
+        </service>
+        <service
+            android:name="com.example.assistant.KeySnapSessionService"
+            android:permission="android.permission.BIND_VOICE_INTERACTION"
+            android:exported="true" />
+        <service
+            android:name="com.example.assistant.KeySnapRecognitionService"
+            android:permission="android.permission.BIND_SPEECH_RECOGNITION_SERVICE"
+            android:exported="true">
+            <intent-filter><action android:name="android.speech.RecognitionService" /></intent-filter>
+        </service>
 
         <service
             android:name="com.example.service.KeyMapperAccessibilityService"

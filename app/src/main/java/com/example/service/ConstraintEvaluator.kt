@@ -1,7 +1,6 @@
 package com.example.service
 
 import android.Manifest
-import android.app.AppOpsManager
 import android.app.KeyguardManager
 import android.app.NotificationManager
 import android.app.usage.UsageEvents
@@ -27,12 +26,16 @@ import android.provider.Settings
 import android.util.Log
 import com.example.data.ScriptConstraint
 import com.example.data.ScriptConstraintCatalog
+import com.example.mode.ModeHooks
 import java.time.DayOfWeek
 import java.time.LocalTime
 
 /** Answers whether a single [ScriptConstraint] currently holds, so a script only fires while every constraint is satisfied. */
 interface ConstraintEvaluator {
     fun isSatisfied(constraint: ScriptConstraint): Boolean
+
+    /** A short-lived view for one decision; never retain it across key presses. */
+    fun forDecision(): ConstraintEvaluator = this
 }
 
 /**
@@ -40,19 +43,35 @@ interface ConstraintEvaluator {
  * `com.example.bridge.ConstraintEvaluator` in `:bridge`, which answers the same
  * predicates via shell commands since the detached bridge process has no [Context].
  *
- * Unknown never blocks: whenever the state cannot be read (missing permission, no service
+ * Mode predicates fail closed on unreadable state, so an error cannot select the wrong shortcut.
+ * For other device predicates, unknown never blocks: whenever the state cannot be read (missing permission, no service
  * instance, malformed parameter, API failure) the constraint reads as satisfied, so a script
  * degrades to "always" rather than silently dying.
  *
- * The automation-only types (`ScriptConstraintCatalog.AUTOMATION_ONLY`) are the exception and read
+ * `no_app_open` requires positive evidence of home or keyguard; unknown must not eat volume keys.
+ * The automation-only types (`ScriptConstraintCatalog.AUTOMATION_ONLY`) also read
  * unknown as false: they only ever drive an automation's false -> true edge, where "always true"
  * would mean "never fires", and firing on "unknown" would be a guess.
  */
-class AndroidConstraintEvaluator(private val appContext: Context) : ConstraintEvaluator {
+class AndroidConstraintEvaluator(
+    private val appContext: Context,
+    private val decisionSnapshot: Boolean = false,
+) : ConstraintEvaluator {
+    private val decisionResults = mutableMapOf<ScriptConstraint, Boolean>()
+    private val decisionForeground by lazy { readForegroundState() }
+    private val decisionHome by lazy { defaultHomePackage() }
+
+    override fun forDecision(): ConstraintEvaluator = AndroidConstraintEvaluator(appContext, decisionSnapshot = true)
 
     override fun isSatisfied(constraint: ScriptConstraint): Boolean {
+        if (!decisionSnapshot) return evaluate(constraint)
+        return decisionResults.getOrPut(constraint) { evaluate(constraint) }
+    }
+
+    private fun evaluate(constraint: ScriptConstraint): Boolean {
         val p = constraint.params
         return when (constraint.type) {
+            ScriptConstraintCatalog.MODE_IS -> ModeHooks.matches(appContext, p["mode"])
             "screen_on" -> isScreenOn()
             "screen_off" -> !isScreenOn()
             "wifi_on" -> isWifiOn()
@@ -82,7 +101,8 @@ class AndroidConstraintEvaluator(private val appContext: Context) : ConstraintEv
             "device_unlocked" -> keyguard { !it.isDeviceLocked } ?: true
             "lock_screen_showing" -> keyguard { it.isKeyguardLocked } ?: true
             "lock_screen_not_showing" -> keyguard { !it.isKeyguardLocked } ?: true
-            "phone_ringing" -> audio { it.mode == AudioManager.MODE_RINGTONE } ?: false
+            "no_app_open" -> isNoAppOpen()
+            "phone_ringing" -> isPhoneRinging()
             "battery_saver_on" -> power { it.isPowerSaveMode } ?: false
             "battery_saver_off" -> power { !it.isPowerSaveMode } ?: true
             "charging_wired" -> pluggedKind(pluggedExtra()) == "wired"
@@ -140,7 +160,31 @@ class AndroidConstraintEvaluator(private val appContext: Context) : ConstraintEv
 
     private fun isCharging(): Boolean = read<BatteryManager>(Context.BATTERY_SERVICE, "battery") { it.isCharging } ?: false
 
-    private fun isInPhoneCall(): Boolean = audio { it.mode == AudioManager.MODE_IN_CALL } ?: false
+    private fun audioMode(): Int? = try {
+        service<AudioManager>(Context.AUDIO_SERVICE)?.mode
+    } catch (_: Exception) {
+        null
+    }
+
+    private fun isInPhoneCall(mode: Int? = audioMode()): Boolean =
+        mode == AudioManager.MODE_IN_CALL || mode == AudioManager.MODE_IN_COMMUNICATION
+
+    private fun isPhoneRinging(mode: Int? = audioMode()): Boolean = mode == AudioManager.MODE_RINGTONE
+
+    private fun isNoAppOpen(): Boolean {
+        if (!hasUsageAccess(appContext)) {
+            clearForegroundState()
+            return false
+        }
+        val mode = audioMode() ?: return false
+        if (isPhoneRinging(mode) || isInPhoneCall(mode)) return false
+        val foreground = foregroundState() ?: return false
+        return if (keyguard { it.isKeyguardLocked } == true) {
+            foreground.resumedPackage == null
+        } else {
+            isHomeInForeground(foreground.resumedPackage, if (decisionSnapshot) decisionHome else defaultHomePackage())
+        }
+    }
 
     private fun isMusicActive(): Boolean = audio { it.isMusicActive } ?: false
 
@@ -158,27 +202,61 @@ class AndroidConstraintEvaluator(private val appContext: Context) : ConstraintEv
         return foregroundPackage()?.let { it == packageName.trim() }
     }
 
-    private fun foregroundPackage(): String? = try {
-        val appOps = service<AppOpsManager>(Context.APP_OPS_SERVICE)
-        val mode = appOps?.unsafeCheckOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, android.os.Process.myUid(), appContext.packageName)
-        if (mode != AppOpsManager.MODE_ALLOWED) {
-            null
-        } else {
-            val usage = service<UsageStatsManager>(Context.USAGE_STATS_SERVICE)
-            val now = System.currentTimeMillis()
-            val events = usage?.queryEvents(now - FOREGROUND_LOOKBACK_MS, now)
-            val event = UsageEvents.Event()
-            var last: String? = null
-            while (events?.hasNextEvent() == true) {
-                events.getNextEvent(event)
-                if (event.eventType == UsageEvents.Event.ACTIVITY_RESUMED) last = event.packageName
-            }
-            last
-        }
-    } catch (e: Exception) {
-        Log.e(TAG, "Error reading foreground app state", e)
+    private fun foregroundState(): ForegroundState? = if (decisionSnapshot) decisionForeground else readForegroundState()
+
+    private fun foregroundPackage(): String? = foregroundState()?.lastPackage
+
+    private fun defaultHomePackage(): String? = try {
+        appContext.packageManager.resolveActivity(
+            Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME),
+            PackageManager.MATCH_DEFAULT_ONLY,
+        )?.activityInfo?.packageName?.takeUnless { it == "android" }
+    } catch (_: Exception) {
         null
     }
+
+    private fun readForegroundState(): ForegroundState? = try {
+        if (!hasUsageAccess(appContext)) {
+            clearForegroundState()
+            null
+        } else {
+            val usage = service<UsageStatsManager>(Context.USAGE_STATS_SERVICE) ?: return null
+            val now = System.currentTimeMillis()
+            synchronized(foregroundLock) {
+                // Catch transitions between infrequent key presses too, with the same bounded
+                // cold-start window. Ordinary repeated keys still query only the last minute.
+                if (now < foregroundReadAt || now - foregroundReadAt > FOREGROUND_FALLBACK_LOOKBACK_MS) {
+                    clearForegroundState()
+                }
+                val from = if (foregroundInitialized) minOf(now - FOREGROUND_LOOKBACK_MS, foregroundReadAt)
+                else now - FOREGROUND_FALLBACK_LOOKBACK_MS
+                val events = usage.queryEvents(from, now) ?: return null
+                val event = UsageEvents.Event()
+                while (events.hasNextEvent()) {
+                    events.getNextEvent(event)
+                    val packageName = event.packageName?.takeIf { it.isNotBlank() } ?: continue
+                    // instanceId is hidden. Package plus class name is the public identity.
+                    val activity = packageName to event.className?.takeIf { it.isNotBlank() }
+                    when (event.eventType) {
+                        UsageEvents.Event.ACTIVITY_RESUMED -> {
+                            lastKnownForegroundPackage = packageName
+                            resumedActivities[activity] = event.timeStamp
+                        }
+                        UsageEvents.Event.ACTIVITY_PAUSED, UsageEvents.Event.ACTIVITY_STOPPED -> resumedActivities.remove(activity)
+                    }
+                }
+                foregroundInitialized = true
+                foregroundReadAt = now
+                ForegroundState(lastKnownForegroundPackage, resumedActivities.maxByOrNull { it.value }?.key?.first)
+            }
+        }
+    } catch (_: Exception) {
+        // Usage events contain private package/activity names; do not log exception payloads.
+        Log.e(TAG, "Error reading foreground app state")
+        null
+    }
+
+    private data class ForegroundState(val lastPackage: String?, val resumedPackage: String?)
 
     /**
      * Null when the answer needs the SSID and it cannot be read (no location permission, or the
@@ -253,7 +331,35 @@ class AndroidConstraintEvaluator(private val appContext: Context) : ConstraintEv
 
     companion object {
         private const val TAG = "ConstraintEvaluator"
+        // The key path scans one minute. The remembered package covers a launcher resumed longer
+        // ago; only a process with no memory yet falls back, and that scan stays a few hours.
         private const val FOREGROUND_LOOKBACK_MS = 60_000L
+        private const val FOREGROUND_FALLBACK_LOOKBACK_MS = 3 * 60 * 60_000L
+
+        @Volatile
+        private var lastKnownForegroundPackage: String? = null
+        private val foregroundLock = Any()
+        private val resumedActivities = mutableMapOf<Pair<String, String?>, Long>()
+        private var foregroundInitialized = false
+        private var foregroundReadAt = 0L
+
+        private fun clearForegroundState() = synchronized(foregroundLock) {
+            lastKnownForegroundPackage = null
+            resumedActivities.clear()
+            foregroundInitialized = false
+            foregroundReadAt = 0L
+        }
+
+        internal fun rememberForegroundPackageForTest(packageName: String?) {
+            synchronized(foregroundLock) {
+                lastKnownForegroundPackage = packageName
+                resumedActivities.clear()
+                if (packageName != null) resumedActivities[packageName to null] = 0L
+                foregroundInitialized = packageName != null
+                foregroundReadAt = System.currentTimeMillis()
+            }
+        }
+
         private val HEADPHONE_TYPES = setOf(
             AudioDeviceInfo.TYPE_WIRED_HEADSET,
             AudioDeviceInfo.TYPE_WIRED_HEADPHONES,
@@ -266,6 +372,10 @@ class AndroidConstraintEvaluator(private val appContext: Context) : ConstraintEv
 
 // Pure predicate helpers, kept top-level so they are unit-testable without Robolectric shadows.
 // The bridge's ConstraintEvaluator implements the same rules; keep them in step.
+
+/** Unknown must not swallow a normal volume key; only a known default launcher counts. */
+internal fun isHomeInForeground(foreground: String?, home: String?): Boolean =
+    !home.isNullOrBlank() && foreground == home
 
 /** `[start, end)` in local time; an end at or before the start wraps past midnight. Malformed input never blocks. */
 internal fun isWithinTimeWindow(start: String?, end: String?, now: LocalTime): Boolean {

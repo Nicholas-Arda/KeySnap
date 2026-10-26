@@ -50,7 +50,7 @@
 <table>
   <tr>
     <td width="50%"><h3>🔘 Press your way</h3>Single, double or long press. Combine keys for another shortcut.</td>
-    <td width="50%"><h3>⚡ 90 actions</h3>Flashlight, camera, apps, media and more. Chain actions together.</td>
+    <td width="50%"><h3>⚡ 91 actions</h3>Flashlight, camera, apps, media and more. Chain actions together.</td>
   </tr>
   <tr>
     <td><h3>🕒 Add conditions</h3>Time, Wi-Fi, charging or apps. Automate without pressing a key.</td>
@@ -96,6 +96,8 @@ Free includes **three active shortcuts**, **two home-screen widgets** and all **
 No accounts, analytics or automatic crash uploads. Your key presses and shortcuts are not automatically uploaded. Local actions work offline; network actions and RSS feeds contact the destinations you configure. Pro purchases use Google Play Billing.
 
 The accessibility service reads screen content only from Android's Settings app for pairing setup; it cannot read other apps' screens. Other permissions are requested when a feature needs them.
+
+You can also select KeySnap as your digital assistant in Android settings and assign an **Assistant gesture** shortcut in **Set key**. Available gestures, including holding the power button, depend on the phone. The assistant services do not record audio or read screen contents, and add no microphone permission.
 
 [Permission details](docs/guide.md#permissions) · [Privacy policy](https://nicholas-arda.github.io/keysnap-privacy/)
 

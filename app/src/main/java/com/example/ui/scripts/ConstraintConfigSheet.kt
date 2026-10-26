@@ -3,7 +3,6 @@ package com.example.ui.scripts
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlarmManager
-import android.app.AppOpsManager
 import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.content.Intent
@@ -76,6 +75,7 @@ import com.example.data.ScriptConstraintCatalog
 import com.example.service.CalendarCondition
 import com.example.service.NotificationEventListener
 import com.example.service.TimeRules
+import com.example.service.hasUsageAccess
 import com.example.ui.components.InnerShape
 import com.example.ui.components.MinTouchTarget
 import com.example.ui.theme.SectionLabel
@@ -230,7 +230,7 @@ private fun PermissionHints(constraintType: String, ssid: String, context: Conte
         }
         constraintType == ScriptConstraintCatalog.AT_TIME || constraintType == ScriptConstraintCatalog.INTERVAL ->
             ExactAlarmHint(R.string.time_needs_exact_alarm, context)
-        constraintType.startsWith("app_") -> {
+        constraintType.startsWith("app_") || constraintType == "no_app_open" -> {
             var granted by remember { mutableStateOf(hasUsageAccess(context)) }
             val launcher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
                 granted = hasUsageAccess(context)
@@ -293,12 +293,6 @@ private fun PermissionHint(text: String, onGrant: () -> Unit) {
             Text(stringResource(R.string.constraint_grant_permission))
         }
     }
-}
-
-private fun hasUsageAccess(context: Context): Boolean {
-    val appOps = context.getSystemService(AppOpsManager::class.java) ?: return false
-    val mode = appOps.unsafeCheckOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, android.os.Process.myUid(), context.packageName)
-    return mode == AppOpsManager.MODE_ALLOWED
 }
 
 private fun hasFineLocation(context: Context): Boolean =

@@ -15,6 +15,7 @@
         <item>Tocca \"Numero build\" 7 volte di seguito</item>
         <item>Torna indietro e apri \"Opzioni sviluppatore\"</item>
         <item>Attiva \"Debug wireless\"</item>
+        <item>Se il Debug wireless non si attiva o l’accoppiamento non parte, disattiva il Blocco automatico in Impostazioni &gt; Sicurezza e privacy</item>
     </string-array>
     <string-array name="guide_xiaomi_steps">
         <item>Apri Impostazioni</item>
@@ -63,7 +64,7 @@
     </string-array>
     <string-array name="wizard_pairing_steps">
         <item>Tocca il pulsante qui sotto per aprire le impostazioni del Debug wireless.</item>
-        <item>Dal menu, scegli ‘Abbina dispositivo con codice di accoppiamento’.</item>
+        <item>KeySnap tocca ‘Abbina dispositivo con codice di accoppiamento’ al posto tuo; se non succede, toccalo tu.</item>
         <item>Leggeremo il codice di accoppiamento e ci connetteremo automaticamente.</item>
     </string-array>
 </resources>

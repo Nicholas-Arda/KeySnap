@@ -2,7 +2,7 @@
     <string name="app_name">KeySnap</string>
     <!-- Shown on the system's accessibility settings screen. It must describe everything the
          service actually does, including the scoped screen read, or it misrepresents the app. -->
-    <string name="accessibility_service_description">يكتشف ضغطات المفاتيح الفعلية (الصوت والطاقة وأزرار الأجهزة الأخرى) لتشغيل اختصاراتك. أثناء إعداد الوضع المتقدم فقط، يقرأ أيضًا رمز الإقران من نافذة تصحيح الأخطاء اللاسلكي في النظام. لا يمكنه قراءة شاشة أي تطبيق آخر.</string>
+    <string name="accessibility_service_description">يكتشف ضغطات المفاتيح الفعلية (الصوت والطاقة وأزرار الأجهزة الأخرى) لتشغيل اختصاراتك. أثناء إعداد الوضع المتقدم فقط، يفتح أيضًا نيابةً عنك نافذة رمز الإقران في النظام ويقرأ الرمز منها. لا يمكنه قراءة شاشة أي تطبيق آخر.</string>
     <string name="accessibility_disclosure_agree">موافق، افتح الإعدادات</string>
 
     <!-- Action categories -->
@@ -227,6 +227,7 @@
     <string name="constraint_device_locked">الجهاز مقفل</string>
     <string name="constraint_device_unlocked">الجهاز غير مقفل</string>
     <string name="constraint_lock_screen_showing">شاشة القفل ظاهرة</string>
+    <string name="constraint_no_app_open">لا يوجد تطبيق مفتوح: الشاشة الرئيسية أو شاشة القفل</string>
     <string name="constraint_lock_screen_not_showing">شاشة القفل غير ظاهرة</string>
     <string name="constraint_in_phone_call">في مكالمة هاتفية</string>
     <string name="constraint_not_in_phone_call">ليس في مكالمة هاتفية</string>
@@ -466,6 +467,8 @@
     <string name="field_time_end">إلى</string>
     <string name="field_days">الأيام</string>
     <string name="constraint_needs_usage_access">يحتاج إلى إذن الوصول إلى بيانات الاستخدام ليتمكن التطبيق من معرفة التطبيق الظاهر في المقدمة.</string>
+    <string name="home_permissions_needed">الأذونات المطلوبة</string>
+    <string name="home_usage_access">الوصول إلى بيانات الاستخدام</string>
     <string name="constraint_needs_notification_access">يحتاج إلى إذن الوصول إلى الإشعارات. يقارن KeySnap كل إشعار جديد من التطبيق الذي اخترته بهذا الشرط على هاتفك. ولا يحتفظ إلا بوقت التطابق وبأي إشعار كان، كي يجد الرد تلك الدردشة. لا يُحفظ محتوى أي إشعار ولا يُسجَّل ولا يُرسَل.</string>
     <string name="field_notification_contact">جهة الاتصال</string>
     <string name="hint_notification_contact_any">فارغ: أي شخص</string>
@@ -549,7 +552,6 @@
     <string name="nav_shortcuts">الاختصارات</string>
     <string name="nav_settings">الإعدادات</string>
     <string name="settings_close">إغلاق الإعدادات</string>
-    <string name="home_switch_theme">تبديل المظهر</string>
 
     <!-- Dialogs -->
     <string name="dialog_expert_connected">الوضع المتقدم متصل</string>
@@ -1046,6 +1048,7 @@
     <string name="diagnostic_send_note">راجع التسجيل الكامل أدناه. سيفتح تطبيق البريد مسودة إلى support@ardasenn.com. أنت تقرر إرسالها. يمسح KeySnap التسجيل عند فتح المسودة.</string>
     <string name="diagnostic_no_email">لم يُعثر على تطبيق بريد إلكتروني. ما زال التسجيل متاحًا.</string>
     <string name="whats_new_title">ما الجديد</string>
+    <string name="whats_new_hint">الجديد هنا · انقر</string>
     <string name="whats_new_version">الإصدار %1$s</string>
     <string name="whats_new_new">جديد</string>
     <string name="whats_new_fixed">إصلاحات</string>
@@ -1070,4 +1073,43 @@
     <string name="capsule_intro_title">Key capsule</string>
     <string name="pro_table_included">متضمن</string>
     <string name="pro_table_not_included">غير متضمن</string>
+    <string name="accessibility_status_connecting">جارٍ الاتصال…</string>
+    <string name="accessibility_status_reconnect">يلزم إعادة الاتصال</string>
+    <string name="accessibility_reconnect_title">أعد توصيل تسهيل الاستخدام</string>
+    <string name="accessibility_reconnect_message">تسهيل الاستخدام مفعّل في Android، لكن KeySnap غير متصل. أوقف KeySnap ثم شغّله مجددًا في إعدادات تسهيل الاستخدام.</string>
+    <string name="whats_new_fix_accessibility_status">لم يعد تسهيل الاستخدام يظهر نشطًا عند انقطاع اتصال الخدمة</string>
+    <string name="accessibility_reconnect_button">إعادة الاتصال</string>
+    <string name="accessibility_reconnecting">جارٍ إعادة الاتصال…</string>
+    <string name="accessibility_reconnect_failed">تعذّرت إعادة الاتصال. أوقف KeySnap ثم شغّله مجددًا هنا.</string>
+    <string name="wizard_manual_title">أدخل الرمز بنفسك</string>
+    <string name="wizard_manual_body">في تصحيح الأخطاء اللاسلكي، اضغط على \"إقران الجهاز برمز إقران\" واكتب الرمز المكوّن من 6 أرقام هنا. إذا أغلق Android نافذة الرمز عند تبديل التطبيقات، فاستخدم تقسيم الشاشة أو الإشعار.</string>
+    <string name="wizard_manual_code_label">رمز الإقران المكوّن من 6 أرقام</string>
+    <string name="wizard_manual_pair">إقران</string>
+    <string name="notif_return_title">الوضع المتقدم مفعّل</string>
+    <string name="notif_return_body">اضغط للعودة إلى KeySnap.</string>
+    <string name="pro_sale_ends_in">ينتهي العرض خلال %1$s</string>
+    <string name="accessibility_reconnect_keep_on">تمت إعادة الاتصال. إذا سألك Android عن إمكانية الوصول، فاختر «إبقاؤها مفعّلة».</string>
+    <string name="whats_new_connect_title">إعداد أسهل للوضع المتقدم</string>
+    <string name="whats_new_connect_description">يضغط KeySnap الآن على «الإقران باستخدام رمز» نيابةً عنك ويعود عندما يصبح الوضع المتقدم جاهزًا. وإذا انقطع اتصال إمكانية الوصول، تكفي ضغطة واحدة على إعادة الاتصال.</string>
+    <string name="action_cycle_mode">الوضع التالي</string>
+    <string name="param_mode_count">عدد الأوضاع</string>
+    <string name="param_mode_feedback">تنبيه تغيير الوضع</string>
+    <string name="param_mode_pulse">اهتزاز الوضع</string>
+    <string name="param_mode_gap">الفاصل بين الاهتزازات</string>
+    <string name="param_mode_lead_gap">التوقف قبل اهتزاز الوضع</string>
+    <string name="choice_mode_feedback_toast">رسالة على الشاشة</string>
+    <string name="choice_mode_feedback_vibrate">اهتزاز</string>
+    <string name="choice_mode_feedback_both">رسالة واهتزاز</string>
+    <string name="param_mode_number">رقم الوضع</string>
+    <string name="constraint_mode_is">الوضع هو</string>
+    <string name="mode_current">الوضع %1$d</string>
+    <string name="summary_mode_count">التنقل بين %1$d أوضاع بالتتابع</string>
+    <string name="trigger_assistant_gesture">إيماءة المساعد</string>
+    <string name="assistant_trigger_hint">يعمل مرة واحدة عند استدعاء المساعد الرقمي، مثلاً بالضغط مطولاً على زر التشغيل. تعتمد الإيماءات المتاحة على هاتفك.</string>
+    <string name="assistant_setup_title">اجعل KeySnap مساعدك الرقمي</string>
+    <string name="assistant_selected">تم اختيار KeySnap · انقر للتغيير</string>
+    <string name="assistant_not_selected">لم يتم اختياره · افتح إعدادات المساعد</string>
+    <string name="assistant_redirect_note">بما أن KeySnap هو مساعدك، يفتح هذا الإجراء مساعداً آخر على هاتفك.</string>
+    <string name="assistant_no_other_app">لا يوجد مساعد آخر متاح على هذا الهاتف.</string>
+    <string name="assistant_voice_wakeup_warning">ما دام KeySnap هو مساعدك، قد يتوقف الاستيقاظ الصوتي لمساعدك السابق عن العمل.</string>
 </resources>

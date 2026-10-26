@@ -213,7 +213,7 @@ final class SendButton {
     }
 
     private static String dumpToFile() {
-        File file = new File(BridgeProtocol.BASE_DIR, "window_dump.xml");
+        File file = new File(BridgeMain.baseDir(), "window_dump.xml");
         try {
             // Created 0600 before uiautomator opens it; writing an existing file keeps its mode.
             Files.deleteIfExists(file.toPath());

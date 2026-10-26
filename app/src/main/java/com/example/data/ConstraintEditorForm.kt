@@ -56,6 +56,14 @@ object ConstraintEditorForms {
     }
 
     private val forms: List<ConstraintEditorForm> = listOf(
+        // No parameters, but the sheet exposes the Usage Access grant needed on the home screen.
+        ConstraintEditorForm("no_app_open", emptyList(), summary = { _, _, _ -> "" }),
+        ConstraintEditorForm(
+            type = ScriptConstraintCatalog.MODE_IS,
+            fields = listOf(EditorField.Number("mode", R.string.param_mode_number, min = 1, max = 9, default = 1)),
+            valid = { it["mode"]?.toIntOrNull() in 1..9 },
+            summary = { res, params, _ -> res.getString(R.string.mode_current, params["mode"]?.toIntOrNull() ?: 1) },
+        ),
         ConstraintEditorForm("app_in_foreground", listOf(appField), summary = appSummary),
         ConstraintEditorForm("app_not_in_foreground", listOf(appField), summary = appSummary),
         ConstraintEditorForm(

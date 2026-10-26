@@ -52,6 +52,20 @@ class ScriptRepositoryTest {
         assertEquals(listOf("one", "two"), repository().scripts.value.map { it.id })
     }
 
+    @Test fun updateInPlaceRewritesAScriptWithoutMovingIt() {
+        val repository = repository()
+        repository.upsert(ShortcutScript("one", "One", true, listOf(ScriptTrigger(listOf(24), TriggerPressType.SINGLE_PRESS)), listOf(ScriptAction.ToggleFlashlight)))
+        repository.upsert(ShortcutScript("two", "Two", true, listOf(ScriptTrigger(listOf(25), TriggerPressType.DOUBLE_PRESS)), listOf(ScriptAction.ToggleFlashlight)))
+        repository.updateInPlace(listOf(
+            ShortcutScript("one", "Renamed", false, listOf(ScriptTrigger(listOf(24), TriggerPressType.SINGLE_PRESS)), listOf(ScriptAction.ToggleFlashlight)),
+        ))
+        assertEquals(listOf("one", "two"), repository.scripts.value.map { it.id })
+        assertEquals("Renamed", repository.scripts.value[0].name)
+        assertFalse(repository.scripts.value[0].enabled)
+        assertEquals("Two", repository.scripts.value[1].name)
+        assertEquals("Renamed", repository().scripts.value[0].name)
+    }
+
     @Test fun perScriptConsumeOverridesTheGlobalSettingForSingleKeysAndChords() {
         val prefs = context.getSharedPreferences("arda_mapper_prefs", Context.MODE_PRIVATE)
         val repository = repository()
@@ -74,6 +88,7 @@ class ScriptRepositoryTest {
         repository.setGloballyEnabled(false)
         assertFalse(repository.shouldConsume(24))
         assertFalse(repository.shouldConsume(26))
+        repository.setGloballyEnabled(true)
     }
 
     @Test fun aV1StoreWrittenBeforeParameterizedActionsExistedRoundTripsUnchanged() {

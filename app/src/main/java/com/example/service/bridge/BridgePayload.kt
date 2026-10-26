@@ -18,12 +18,16 @@ import java.security.SecureRandom
  * The payload lives in the app's external files directory because that is the one location both
  * UIDs can reach: the app owns it, and the shell UID is a member of `ext_data_rw`. The reverse
  * direction is not usable — a file created by the shell there is shell-owned and unreadable by
- * the app — so the bridge never writes here. It only reads, and reports back over the loopback
+ * the app — so the bridge never creates files here. The mode file is an app-created inode
+ * the bridge only opens; other results are reported back over the loopback
  * socket whose port and token are handed to it in this config.
  */
 class BridgePayload(context: Context) {
 
     private val appContext = context.applicationContext
+
+    /** This build's shell-side directory; see [BridgeProtocol.baseDirFor]. */
+    val baseDir: String = BridgeProtocol.baseDirFor(appContext.packageName)
     private val prefs = appContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
     companion object {
@@ -130,7 +134,7 @@ class BridgePayload(context: Context) {
      */
     private fun writeStartScript(dir: File, dexSource: File) {
         val configPath = File(dir, BridgeProtocol.CONFIG_NAME).absolutePath
-        val base = BridgeProtocol.BASE_DIR
+        val base = baseDir
         val script = buildString {
             append("#!/system/bin/sh\n")
             append("BASE=").append(base).append('\n')
@@ -142,7 +146,7 @@ class BridgePayload(context: Context) {
             append("export CLASSPATH=\"\$BASE/").append(BridgeProtocol.DEX_NAME).append("\"\n")
             append("exec app_process /system/bin --nice-name=").append(BridgeProtocol.NICE_NAME)
                 .append(' ').append(BridgeProtocol.MAIN_CLASS)
-                .append(" --config \"").append(configPath).append("\"\n")
+                .append(" --config \"").append(configPath).append("\" --base \"\$BASE\"\n")
         }
         File(dir, BridgeProtocol.START_SCRIPT_NAME).writeText(script)
     }
@@ -158,12 +162,14 @@ class BridgePayload(context: Context) {
     ): Boolean {
         val target = configFile() ?: return false
         return try {
+            com.example.mode.ModeHooks.ensureState(appContext)
             val root = JSONObject()
             root.put("version", BridgeProtocol.VERSION)
             root.put("packageName", appContext.packageName)
             root.put("port", controlPort)
             root.put("token", controlToken)
             root.put("globallyEnabled", globallyEnabled)
+            root.put("foregroundReadable", com.example.service.hasUsageAccess(appContext))
             root.put("capsuleFeedbackEnabled", com.example.capsule.CapsuleHooks.isEnabled(appContext) &&
                 com.example.data.EntitlementManager.getInstance(appContext).isPro.value)
             root.put("doublePressWindowMs", config.doublePressWindowMs)
@@ -175,9 +181,15 @@ class BridgePayload(context: Context) {
             // Only key shortcuts: the bridge drops a trigger-less script anyway, and an automation's
             // conditions (a feed address, a calendar name) have no business in a shell-readable file.
             // Automations and widget/tile runs reach the bridge as RUN requests carrying their actions.
-            scripts.filter { it.triggers.isNotEmpty() }.forEach { script ->
+            scripts.forEach { script ->
+                // Assistant invocations originate in the app, never in getevent. Mixed scripts
+                // retain their physical triggers; the assistant's actions arrive through RUN.
+                val physicalTriggers = script.triggers.filterNot {
+                    com.example.bridge.KeyEventMapping.ASSISTANT_GESTURE in it.keyCodes
+                }
+                if (physicalTriggers.isEmpty()) return@forEach
                 val triggers = JSONArray()
-                script.triggers.forEach { trigger ->
+                physicalTriggers.forEach { trigger ->
                     val triggerJson = JSONObject()
                         .put("keyCodes", JSONArray().apply { trigger.keyCodes.forEach(::put) })
                         .put("pressType", trigger.pressType.name)
@@ -229,7 +241,7 @@ class BridgePayload(context: Context) {
      */
     fun spawnCommand(): String? {
         val script = startScriptFile() ?: return null
-        val base = BridgeProtocol.BASE_DIR
+        val base = baseDir
         return "mkdir -p $base; " +
             "nohup setsid sh '${script.absolutePath}' </dev/null >$base/spawn.log 2>&1 & " +
             "sleep 1; " +

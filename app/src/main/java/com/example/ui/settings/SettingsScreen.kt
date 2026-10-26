@@ -1,5 +1,6 @@
 package com.example.ui.settings
 
+import androidx.annotation.StringRes
 import android.app.Activity
 import android.content.Intent
 import android.os.Build
@@ -35,9 +36,15 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.Build
 import androidx.compose.material.icons.outlined.ChevronRight
+import androidx.compose.material.icons.outlined.History
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Keyboard
 import androidx.compose.material.icons.outlined.Language
+import androidx.compose.material.icons.outlined.NewReleases
 import androidx.compose.material.icons.outlined.Palette
+import androidx.compose.material.icons.outlined.PrivacyTip
 import androidx.compose.material.icons.outlined.SmartButton
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -80,6 +87,7 @@ import androidx.core.text.BidiFormatter
 import androidx.core.text.TextDirectionHeuristicsCompat
 import com.example.data.AppLocale
 import com.example.data.KeyMappingConfig
+import com.example.data.AccessibilityStatus
 import com.example.data.LiveKeyEvent
 import com.example.data.TriggerTimingSpecs
 import com.example.capsule.CapsuleHooks
@@ -147,8 +155,12 @@ fun SettingsScreen(
     targetSection: SettingsSection? = null,
     onSectionShown: () -> Unit = {},
     onOpenKeyCapsule: () -> Unit = {},
+    onOpenWhatsNew: () -> Unit = {},
     isServiceActive: Boolean = false,
     showTitle: Boolean = true,
+    accessibilityStatus: AccessibilityStatus = if (isServiceActive) AccessibilityStatus.ACTIVE else AccessibilityStatus.DISABLED,
+    onOpenAccessibility: () -> Unit = {},
+    @StringRes accessibilityButton: Int = R.string.home_setup_open_accessibility,
 ) {
     val listState = rememberLazyListState()
     var keysExpanded by rememberSaveable { mutableStateOf(false) }
@@ -235,6 +247,7 @@ fun SettingsScreen(
             SettingsExpandablePanel(
                 label = stringResource(R.string.settings_key_behavior),
                 summary = stringResource(R.string.settings_keys_summary),
+                icon = Icons.Outlined.Keyboard,
                 testTag = "key_behavior",
                 modifier = reveal(3),
                 expanded = keysExpanded,
@@ -311,7 +324,9 @@ fun SettingsScreen(
                     onToggleAutostart = onToggleAutostart,
                     expanded = advancedExpanded,
                     onToggleExpanded = { advancedExpanded = !advancedExpanded },
-                    isServiceActive = isServiceActive,
+                    accessibilityStatus = accessibilityStatus,
+                    onOpenAccessibility = onOpenAccessibility,
+                    accessibilityButton = accessibilityButton,
                 )
             }
         }
@@ -323,6 +338,7 @@ fun SettingsScreen(
                     onEraseAllData = onEraseAllData,
                     openRequested = targetSection == SettingsSection.ABOUT,
                     onOpenHandled = onSectionShown,
+                    onOpenWhatsNew = onOpenWhatsNew,
                 )
             }
         }
@@ -411,6 +427,7 @@ private fun SettingsNavRow(
 private fun SettingsExpandablePanel(
     label: String,
     summary: String,
+    icon: ImageVector,
     testTag: String,
     expanded: Boolean,
     onToggle: () -> Unit,
@@ -419,19 +436,23 @@ private fun SettingsExpandablePanel(
 ) {
     val colors = MaterialTheme.colorScheme
     SettingsCard(testTag, modifier) {
-        Row(
-            Modifier.fillMaxWidth().heightIn(min = 72.dp)
-                .clickable(role = Role.Button, onClick = onToggle)
-                .semantics { if (expanded) collapse { onToggle(); true } else expand { onToggle(); true } }
-                .padding(vertical = 12.dp).testTag("${testTag}_header"),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            Column(Modifier.weight(1f)) {
-                Text(label, style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold, hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph))
-                Text(summary, style = MaterialTheme.typography.bodySmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph), color = colors.onSurfaceVariant)
+        BoxWithConstraints(Modifier.fillMaxWidth()) {
+            val compact = maxWidth / LocalDensity.current.fontScale < 240.dp
+            Row(
+                Modifier.fillMaxWidth().heightIn(min = 72.dp)
+                    .clickable(role = Role.Button, onClick = onToggle)
+                    .semantics { if (expanded) collapse { onToggle(); true } else expand { onToggle(); true } }
+                    .padding(vertical = 12.dp).testTag("${testTag}_header"),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+            ) {
+                if (!compact) Icon(icon, null, Modifier.size(24.dp), tint = colors.primary)
+                Column(Modifier.weight(1f)) {
+                    Text(label, style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold, hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph))
+                    Text(summary, style = MaterialTheme.typography.bodySmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph), color = colors.onSurfaceVariant)
+                }
+                Icon(if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore, null, Modifier.size(18.dp), tint = colors.onSurfaceVariant)
             }
-            Icon(if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore, null, Modifier.size(18.dp), tint = colors.onSurfaceVariant)
         }
         if (expanded) Column(Modifier.padding(bottom = 16.dp), verticalArrangement = Arrangement.spacedBy(11.dp)) { content() }
     }
@@ -463,7 +484,9 @@ private fun AdvancedModePanel(
     onToggleAutostart: (Boolean) -> Unit,
     expanded: Boolean,
     onToggleExpanded: () -> Unit,
-    isServiceActive: Boolean,
+    accessibilityStatus: AccessibilityStatus,
+    onOpenAccessibility: () -> Unit,
+    @StringRes accessibilityButton: Int,
 ) {
     val context = LocalContext.current
     val colors = MaterialTheme.colorScheme
@@ -471,13 +494,14 @@ private fun AdvancedModePanel(
     SettingsExpandablePanel(
         label = stringResource(R.string.settings_setup_tools),
         summary = stringResource(R.string.settings_setup_tools_summary),
+        icon = Icons.Outlined.Build,
         testTag = "advanced_mode",
         expanded = expanded,
         onToggle = onToggleExpanded,
     ) {
         BoxWithConstraints(Modifier.fillMaxWidth().heightIn(min = MinTouchTarget)) {
             val label = stringResource(R.string.home_accessibility_service)
-            val status = stringResource(if (isServiceActive) R.string.home_status_active else R.string.home_status_offline)
+            val status = stringResource(accessibilityStatus.label)
             if (maxWidth / LocalDensity.current.fontScale < 240.dp) {
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     Text(label, style = MaterialTheme.typography.bodyLarge.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph))
@@ -488,6 +512,16 @@ private fun AdvancedModePanel(
                     Text(label, Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
                     Text(status, style = MaterialTheme.typography.bodySmall, color = colors.primary)
                 }
+            }
+        }
+        if (accessibilityStatus == AccessibilityStatus.NEEDS_RECONNECT) {
+            Text(
+                stringResource(R.string.accessibility_reconnect_message),
+                style = MaterialTheme.typography.bodySmall,
+                color = colors.onSurfaceVariant,
+            )
+            TextButton(onClick = onOpenAccessibility, modifier = Modifier.testTag("accessibility_reconnect")) {
+                Text(stringResource(accessibilityButton))
             }
         }
         SettingsDivider()
@@ -571,6 +605,7 @@ private fun AboutPanel(
     onEraseAllData: () -> Unit,
     openRequested: Boolean,
     onOpenHandled: () -> Unit,
+    onOpenWhatsNew: () -> Unit,
 ) {
     val colors = MaterialTheme.colorScheme
     var showPolicy by remember { mutableStateOf(false) }
@@ -588,6 +623,7 @@ private fun AboutPanel(
         SettingsCard("about") {
             AboutRow(
                 label = stringResource(R.string.settings_about_app),
+                leadingIcon = Icons.Outlined.Info,
                 sublabel = stringResource(R.string.settings_about_app_summary),
                 icon = Icons.Outlined.ChevronRight,
                 color = colors.onSurface,
@@ -600,10 +636,20 @@ private fun AboutPanel(
             SettingsDivider()
             AboutRow(
                 label = stringResource(R.string.settings_privacy_policy),
+                leadingIcon = Icons.Outlined.PrivacyTip,
                 icon = Icons.Outlined.ChevronRight,
                 color = colors.onSurface,
                 testTag = "privacy_policy_button",
                 onClick = { showPolicy = true },
+            )
+            SettingsDivider()
+            AboutRow(
+                label = stringResource(R.string.whats_new_title),
+                leadingIcon = Icons.Outlined.NewReleases,
+                icon = Icons.Outlined.ChevronRight,
+                color = colors.onSurface,
+                testTag = "whats_new_button",
+                onClick = onOpenWhatsNew,
             )
         }
         Text(
@@ -630,6 +676,7 @@ private fun AboutPanel(
 @Composable
 private fun AboutRow(
     label: String,
+    leadingIcon: ImageVector,
     icon: ImageVector,
     color: Color,
     testTag: String,
@@ -649,6 +696,7 @@ private fun AboutRow(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
+            if (!compact) Icon(leadingIcon, null, Modifier.size(24.dp), tint = colors.primary)
             Column(Modifier.weight(1f)) {
                 Text(label, Modifier.testTag("${testTag}_label"), style = MaterialTheme.typography.bodyLarge.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph), color = color)
                 if (sublabel != null) {
@@ -742,6 +790,7 @@ private fun EventLogPanel(
     SettingsExpandablePanel(
         label = stringResource(R.string.settings_input_monitor),
         summary = stringResource(R.string.settings_input_monitor_summary),
+        icon = Icons.Outlined.History,
         testTag = "input_monitor",
         expanded = expanded,
         onToggle = onToggle,

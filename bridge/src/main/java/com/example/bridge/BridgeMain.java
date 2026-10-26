@@ -50,7 +50,8 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
 
     private final TorchController torch = new TorchController();
     private final RingerController ringer = new RingerController();
-    private final ConstraintEvaluator constraints = new ConstraintEvaluator(torch);
+    private final BridgeModes modes;
+    private final ConstraintEvaluator constraints;
     /** Script id -> elapsedRealtime of its last run, for the cooldown constraint. */
     private final Map<String, Long> lastRunByScript = new ConcurrentHashMap<>();
     private PressTimingMachine pressTiming;
@@ -90,10 +91,25 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
 
     private BridgeMain(File configFile) {
         this.configFile = configFile;
+        // Sibling of the disposable bridge directory, created by the app before config publication.
+        this.modes = BridgeModes.open(configFile);
+        this.constraints = new ConstraintEvaluator(torch, modes);
+    }
+
+    /** This bridge's working directory, from start.sh's --base; older scripts omit it. */
+    private static volatile String baseDir = BridgeProtocol.BASE_DIR;
+
+    static String baseDir() {
+        return baseDir;
     }
 
     public static void main(String[] args) {
-        File base = new File(BridgeProtocol.BASE_DIR);
+        for (int i = 0; i < args.length - 1; i++) {
+            if ("--base".equals(args[i]) && BridgeProtocol.isValidBaseDir(args[i + 1])) {
+                baseDir = args[i + 1];
+            }
+        }
+        File base = new File(baseDir);
         if (!base.exists() && !base.mkdirs()) {
             System.err.println("Cannot create " + base);
         }
@@ -201,7 +217,7 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
     }
 
     private void writePidFile() {
-        try (FileWriter writer = new FileWriter(new File(BridgeProtocol.BASE_DIR, "bridge.pid"), false)) {
+        try (FileWriter writer = new FileWriter(new File(baseDir, "bridge.pid"), false)) {
             writer.write(String.valueOf(android.os.Process.myPid()));
         } catch (Exception e) {
             BridgeLog.w("Could not write pid file: " + e);
@@ -289,20 +305,28 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
     @Override
     public void onGesture(int keyCode, String pressType) {
         BridgeConfig current = config;
+        // Cooldowns use the physical gesture's time, even when earlier actions delay this task.
         long now = SystemClock.elapsedRealtime();
-        for (BridgeConfig.Script script : current.scriptsFor(keyCode, pressType)) {
-            if (!constraintsSatisfied(script) || !cooldownAllows(script, now)) {
-                continue;
+        actionExecutor.execute(() -> {
+            // Evaluate after earlier gestures finish, including a queued cycle_mode. Otherwise a
+            // rapid second key could select the old mode while the first action is still queued.
+            List<BridgeConfig.Script> matched = new ArrayList<>();
+            for (BridgeConfig.Script script : current.scriptsFor(keyCode, pressType)) {
+                if (!constraintsSatisfied(script, current.foregroundReadable) || !cooldownAllows(script, now)) {
+                    continue;
+                }
+                lastRunByScript.put(script.id, now);
+                matched.add(script);
             }
-            // Marked on this thread, before the executor runs it, so a quick second press sees it.
-            lastRunByScript.put(script.id, now);
-            actionExecutor.execute(() -> runScript(script, keyCode, pressType));
-        }
+            // Select all shortcuts before running any: a mode change in this gesture must not
+            // make another mode's shortcut on the SAME gesture match as well.
+            for (BridgeConfig.Script script : matched) runScript(script, keyCode, pressType);
+        });
     }
 
-    private boolean constraintsSatisfied(BridgeConfig.Script script) {
+    private boolean constraintsSatisfied(BridgeConfig.Script script, boolean foregroundReadable) {
         for (BridgeConfig.Constraint constraint : script.constraints) {
-            if (!constraints.isSatisfied(constraint)) {
+            if (!constraints.isSatisfied(constraint, foregroundReadable)) {
                 return false;
             }
         }
@@ -334,7 +358,10 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
         // buzz on the TRIGGER broadcast. Once per press; the app no longer vibrates for these.
         BridgeConfig current = config;
         if (current != null && current.shouldVibrate(script)) {
-            vibrate(current.hapticDurationFor(script));
+            long duration = current.hapticDurationFor(script);
+            vibrate(duration);
+            long modePause = BridgeModes.triggerPause(script.actions, duration);
+            if (modePause > 0 && !sleepFor(Long.toString(modePause))) return;
         }
         boolean[] ok = new boolean[script.actions.size()];
         java.util.Arrays.fill(ok, true);
@@ -472,6 +499,9 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
     }
 
     private boolean runAction(BridgeConfig.Action action) {
+        if (BridgeConfig.ACTION_CYCLE_MODE.equals(action.type)) {
+            return modes.cycle(action.params, server::broadcastMode) >= 1;
+        }
         if (BridgeConfig.ACTION_TOGGLE_FLASHLIGHT.equals(action.type)) {
             return torch.toggle();
         }
@@ -674,15 +704,17 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
         if (BridgeConfig.ACTION_POWER_DIALOG.equals(action.type)) {
             return false;
         }
+        // Through NotificationManager: it owns zen_mode and reverts a direct `settings put`
+        // (verified on ColorOS 2026-10-23: the write "succeeded" and DND stayed off).
         if (BridgeConfig.ACTION_ENABLE_DND.equals(action.type)) {
-            return ShellKeyInjector.runShell("settings", "put", "global", "zen_mode", "1");
+            return ShellKeyInjector.runShell("cmd", "notification", "set_dnd", "priority");
         }
         if (BridgeConfig.ACTION_DISABLE_DND.equals(action.type)) {
-            return ShellKeyInjector.runShell("settings", "put", "global", "zen_mode", "0");
+            return ShellKeyInjector.runShell("cmd", "notification", "set_dnd", "off");
         }
         if (BridgeConfig.ACTION_TOGGLE_DND.equals(action.type)) {
-            return ShellKeyInjector.runShell("settings", "put", "global", "zen_mode",
-                    ConstraintEvaluator.isDndOn() ? "0" : "1");
+            return ShellKeyInjector.runShell("cmd", "notification", "set_dnd",
+                    ConstraintEvaluator.isDndOn() ? "off" : "priority");
         }
         // KEYCODE_CUT/COPY/PASTE only reach a view that handles those key codes itself, which
         // WebViews and many custom editors don't; the app's AccessibilityNodeInfo ACTION_CUT/
@@ -713,13 +745,11 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
             }
             return ShellKeyInjector.runShellUnlogged("am", "start", "-a", "android.intent.action.VIEW", "-d", url);
         }
-        if (BridgeConfig.ACTION_LAUNCH_VOICE_ASSISTANT.equals(action.type)) {
-            return AssistantLauncher.show()
-                    || ShellKeyInjector.runShell("am", "start", "-a", "android.intent.action.VOICE_COMMAND");
-        }
-        if (BridgeConfig.ACTION_LAUNCH_DEVICE_ASSISTANT.equals(action.type)) {
-            return AssistantLauncher.show()
-                    || ShellKeyInjector.runShell("am", "start", "-a", "android.intent.action.ASSIST");
+        // The app owns assistant discovery and the self-invocation guard. Shell launching the
+        // selected assistant would recurse when KeySnap holds the role. Mirror UNSUPPORTED_BY_BRIDGE.
+        if (BridgeConfig.ACTION_LAUNCH_VOICE_ASSISTANT.equals(action.type)
+                || BridgeConfig.ACTION_LAUNCH_DEVICE_ASSISTANT.equals(action.type)) {
+            return false;
         }
         if (BridgeConfig.ACTION_OPEN_CAMERA.equals(action.type)) {
             return ShellKeyInjector.runShell("am", "start", "-a", "android.media.action.STILL_IMAGE_CAMERA");
@@ -1040,7 +1070,7 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
     }
 
     private static void deleteBaseDir() {
-        File base = new File(BridgeProtocol.BASE_DIR);
+        File base = new File(baseDir);
         File[] contents = base.listFiles();
         if (contents != null) {
             for (File file : contents) {

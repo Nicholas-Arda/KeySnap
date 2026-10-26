@@ -25,6 +25,7 @@ import androidx.compose.material.icons.outlined.Celebration
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.RestartAlt
+import androidx.compose.material.icons.outlined.TouchApp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
@@ -62,6 +63,7 @@ fun WhatsNewDialog(
     themeMode: ThemeMode,
     onDismiss: () -> Unit,
     onOpenSettings: (WhatsNewDestination) -> Unit,
+    versionName: String = BuildConfig.VERSION_NAME,
 ) {
     val colors = MaterialTheme.colorScheme
     val (surface, itemSurface) = whatsNewSurfaceColors(themeMode)
@@ -102,7 +104,7 @@ fun WhatsNewDialog(
                             Column {
                                 Text(stringResource(R.string.whats_new_title), style = MaterialTheme.typography.headlineSmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph), fontWeight = FontWeight.Bold)
                                 Text(
-                                    stringResource(R.string.whats_new_version, whatsNewVersionLabel(BuildConfig.VERSION_NAME)),
+                                    stringResource(R.string.whats_new_version, whatsNewVersionLabel(versionName)),
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = colors.onSurfaceVariant,
                                 )
@@ -129,9 +131,11 @@ fun WhatsNewDialog(
                                 WhatsNewFeatureCard(feature) { onOpenSettings(feature.destination) }
                             }
                         }
-                        WhatsNewSectionLabel(stringResource(R.string.whats_new_fixed))
-                        release.fixes.forEach { fix ->
-                            WhatsNewFix(fix, compact)
+                        if (release.fixes.isNotEmpty()) {
+                            WhatsNewSectionLabel(stringResource(R.string.whats_new_fixed))
+                            release.fixes.forEach { fix ->
+                                WhatsNewFix(fix, compact)
+                            }
                         }
                     }
                     Button(
@@ -180,6 +184,8 @@ internal fun WhatsNewFeatureCard(feature: WhatsNewFeature, onClick: () -> Unit) 
         WhatsNewDestination.ADVANCED_MODE -> Icons.Outlined.RestartAlt
         WhatsNewDestination.APPEARANCE -> Icons.Outlined.Palette
         WhatsNewDestination.ABOUT -> Icons.Outlined.BugReport
+        WhatsNewDestination.KEY_CAPSULE -> Icons.Outlined.TouchApp
+        WhatsNewDestination.SHORTCUTS -> Icons.Outlined.TouchApp
     }
     BoxWithConstraints(Modifier.fillMaxWidth().padding(12.dp)) {
         // At larger text/display sizes keep the action trailing, on its own line, rather than crush text.

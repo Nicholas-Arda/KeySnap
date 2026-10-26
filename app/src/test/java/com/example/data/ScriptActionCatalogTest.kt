@@ -1,5 +1,6 @@
 package com.example.data
 
+import com.example.mode.ModeHooks
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -96,6 +97,7 @@ class ScriptActionCatalogTest {
                 "stop_text_to_speech",
                 "vibrate",
                 "repeat_previous",
+                "cycle_mode",
                 "toggle_mapping",
                 "pause_mapping",
                 "resume_mapping",
@@ -167,6 +169,18 @@ class ScriptActionCatalogTest {
         assertEquals(listOf("in", "out"), params.getValue("pinchType").choices)
     }
 
+    @Test fun cycleModeKeepsItsTimingsOptionalAndThePickerFollowsTheEdition() {
+        val params = ScriptActionCatalog.descriptor("cycle_mode")!!.parameters.associateBy { it.key }
+        assertEquals(setOf("count", "feedback", "pulseMs", "gapMs", "leadGapMs"), params.keys)
+        assertTrue(params.getValue("count").required)
+        assertTrue(!params.getValue("pulseMs").required)
+        assertTrue(!params.getValue("gapMs").required)
+        assertTrue(!params.getValue("leadGapMs").required)
+        assertEquals(ModeHooks.AVAILABLE, ModeHooks.offered("cycle_mode"))
+        assertEquals(ModeHooks.AVAILABLE, ModeHooks.offered(ScriptConstraintCatalog.MODE_IS))
+        assertTrue(ModeHooks.offered("toggle_flashlight"))
+    }
+
     @Test fun inputKeyEventIsNoLongerACatalogEntry() {
         // It duplicated input_key_code exactly; PersistedScriptAction migration aliases it.
         assertEquals(null, ScriptActionCatalog.descriptor("input_key_event"))
@@ -181,6 +195,8 @@ class ScriptActionCatalogTest {
     @Test fun unsupportedByBridgeSetIsPinned() {
         assertEquals(
             setOf(
+                "launch_device_assistant",
+                "launch_voice_assistant",
                 "pinch_screen",
                 "toggle_split_screen",
                 "move_cursor_to_end",

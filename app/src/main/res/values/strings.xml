@@ -2,7 +2,7 @@
     <string name="app_name">KeySnap</string>
     <!-- Shown on the system\'s accessibility settings screen. It must describe everything the
          service actually does, including the scoped screen read, or it misrepresents the app. -->
-    <string name="accessibility_service_description">Detects physical key presses (Volume, Power, and other hardware buttons) so they can trigger your shortcuts. During Advanced Mode setup only, it also reads the pairing code from the system Wireless Debugging dialog. It cannot read any other app\'s screen.</string>
+    <string name="accessibility_service_description">Detects physical key presses (Volume, Power, and other hardware buttons) so they can trigger your shortcuts. During Advanced Mode setup only, it also opens the system’s pairing-code dialog for you and reads the pairing code from it. It cannot read any other app\'s screen.</string>
     <string name="accessibility_disclosure_agree">Agree and open settings</string>
 
     <!-- Action categories -->
@@ -233,6 +233,7 @@
     <string name="constraint_device_locked">Device is locked</string>
     <string name="constraint_device_unlocked">Device is unlocked</string>
     <string name="constraint_lock_screen_showing">Lock screen is showing</string>
+    <string name="constraint_no_app_open">No app open: home screen or lock screen</string>
     <string name="constraint_lock_screen_not_showing">Lock screen is not showing</string>
     <string name="constraint_in_phone_call">In phone call</string>
     <string name="constraint_not_in_phone_call">Not in phone call</string>
@@ -490,6 +491,8 @@
     <string name="field_time_end">Until</string>
     <string name="field_days">Days</string>
     <string name="constraint_needs_usage_access">Needs Usage access so the app can see which app is in front.</string>
+    <string name="home_permissions_needed">Permissions needed</string>
+    <string name="home_usage_access">Usage access</string>
     <string name="constraint_needs_notification_access">Needs notification access. KeySnap checks each new notification from the app you chose against this condition, on your phone. It keeps only when one matched and which notification it was, so a reply can find that chat. No notification content is saved, logged or sent.</string>
     <string name="field_notification_contact">Contact</string>
     <string name="hint_notification_contact_any">Empty: anyone</string>
@@ -578,7 +581,6 @@
     <string name="nav_shortcuts">Shortcuts</string>
     <string name="nav_settings">Settings</string>
     <string name="settings_close">Close settings</string>
-    <string name="home_switch_theme">Switch theme</string>
 
     <!-- Dialogs -->
     <string name="dialog_expert_connected">ADVANCED MODE CONNECTED</string>
@@ -1104,6 +1106,7 @@
     <string name="diagnostic_send_note">Review the full recording below. Your e-mail app will open a draft to support@ardasenn.com. You decide whether to send it. KeySnap clears its recording when the draft opens.</string>
     <string name="diagnostic_no_email">No e-mail app found. The recording is still available.</string>
     <string name="whats_new_title">What\'s new</string>
+    <string name="whats_new_hint">What\'s new is here · tap</string>
     <string name="whats_new_version">Version %1$s</string>
     <string name="whats_new_new">New</string>
     <string name="whats_new_fixed">Fixed</string>
@@ -1125,4 +1128,43 @@
     <string name="whats_new_fix_large_text">Text no longer breaks or gets squeezed at large display and font sizes</string>
     <string name="whats_new_fix_nav_bar">Buttons no longer hide behind a 3-button navigation bar</string>
     <string name="whats_new_got_it">Got it</string>
+    <string name="accessibility_status_connecting">Connecting…</string>
+    <string name="accessibility_status_reconnect">Reconnect needed</string>
+    <string name="accessibility_reconnect_title">Reconnect Accessibility</string>
+    <string name="accessibility_reconnect_message">Android has Accessibility enabled, but KeySnap is disconnected. Turn KeySnap off, then on again in Accessibility settings.</string>
+    <string name="whats_new_fix_accessibility_status">Accessibility no longer appears active when the service is disconnected</string>
+    <string name="accessibility_reconnect_button">Reconnect</string>
+    <string name="accessibility_reconnecting">Reconnecting…</string>
+    <string name="accessibility_reconnect_failed">Couldn’t reconnect. Turn KeySnap off, then on again here.</string>
+    <string name="wizard_manual_title">Enter the code yourself</string>
+    <string name="wizard_manual_body">In Wireless debugging, tap ‘Pair device with pairing code’ and type the 6-digit code here. If Android closes the code window when you switch apps, use split screen or the notification.</string>
+    <string name="wizard_manual_code_label">6-digit pairing code</string>
+    <string name="wizard_manual_pair">Pair</string>
+    <string name="notif_return_title">Advanced Mode is on</string>
+    <string name="notif_return_body">Tap to return to KeySnap.</string>
+    <string name="pro_sale_ends_in">Sale ends in %1$s</string>
+    <string name="accessibility_reconnect_keep_on">Reconnected. If Android asks about Accessibility next, choose “Keep it on”.</string>
+    <string name="whats_new_connect_title">Easier Advanced Mode setup</string>
+    <string name="whats_new_connect_description">KeySnap now taps “Pair with code” for you and comes back when Advanced Mode is ready. If Accessibility disconnects, one tap on Reconnect fixes it.</string>
+    <string name="action_cycle_mode">Next mode</string>
+    <string name="param_mode_count">Number of modes</string>
+    <string name="param_mode_feedback">Mode feedback</string>
+    <string name="param_mode_pulse">Mode buzz</string>
+    <string name="param_mode_gap">Gap between buzzes</string>
+    <string name="param_mode_lead_gap">Pause before mode buzz</string>
+    <string name="choice_mode_feedback_toast">On-screen message</string>
+    <string name="choice_mode_feedback_vibrate">Vibration</string>
+    <string name="choice_mode_feedback_both">Message and vibration</string>
+    <string name="param_mode_number">Mode number</string>
+    <string name="constraint_mode_is">Mode is</string>
+    <string name="mode_current">Mode %1$d</string>
+    <string name="summary_mode_count">Cycle through %1$d modes</string>
+    <string name="trigger_assistant_gesture">Assistant gesture</string>
+    <string name="assistant_trigger_hint">Run once when you invoke the digital assistant, for example by holding the power button. Available gestures depend on your phone.</string>
+    <string name="assistant_setup_title">Make KeySnap your digital assistant</string>
+    <string name="assistant_selected">KeySnap is selected · Tap to change</string>
+    <string name="assistant_not_selected">Not selected · Open assistant settings</string>
+    <string name="assistant_redirect_note">KeySnap is your assistant, so this opens another assistant on your phone.</string>
+    <string name="assistant_no_other_app">No other assistant is available on this phone.</string>
+    <string name="assistant_voice_wakeup_warning">While KeySnap is your assistant, voice wake-up from your previous assistant may stop working.</string>
 </resources>

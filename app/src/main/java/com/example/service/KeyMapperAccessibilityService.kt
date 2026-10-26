@@ -3,6 +3,7 @@ package com.example.service
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.GestureDescription
 import android.content.Context
+import android.content.Intent
 import android.graphics.Path
 import android.os.Bundle
 import android.util.Log
@@ -14,7 +15,6 @@ import android.view.accessibility.AccessibilityNodeInfo
 import android.view.accessibility.AccessibilityWindowInfo
 import com.example.data.KeyMappingRepository
 import com.example.data.LiveKeyEvent
-import com.example.data.ScriptRepository
 import com.example.service.adb.WirelessAdbManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -41,6 +41,14 @@ class KeyMapperAccessibilityService : AccessibilityService() {
 
         @Volatile
         private var instance: KeyMapperAccessibilityService? = null
+
+        /** Queries the framework connection without reading windows or running an action. */
+        fun refreshConnectionStatus(): Boolean {
+            val service = instance
+            val connected = service != null && service.isConnectionAvailable()
+            _isServiceActive.value = connected
+            return connected
+        }
 
         /**
          * Navigation-category actions (back/home/recents/...) can only run through a live
@@ -138,6 +146,7 @@ class KeyMapperAccessibilityService : AccessibilityService() {
             }
         }
 
+        private const val SETTINGS_PACKAGE = "com.android.settings"
         private val SIX_DIGIT_REGEX = Regex("""\b(\d{6})\b""")
         private val IP_PORT_REGEX = Regex("""\b((?:\d{1,3}\.){3}\d{1,3}):(\d{2,5})\b""")
         private val PORT_ONLY_REGEX = Regex(""":(\d{4,5})\b""")
@@ -149,11 +158,11 @@ class KeyMapperAccessibilityService : AccessibilityService() {
     override fun onServiceConnected() {
         super.onServiceConnected()
         instance = this
-        _isServiceActive.value = true
         repository = KeyMappingRepository.getInstance(applicationContext)
         HardwareKeyTriggerCoordinator.initialize(applicationContext, repository)
         WirelessAdbManager.initialize(applicationContext)
         DeviceEventReceiver.register(this, deviceEventReceiver)
+        refreshConnectionStatus()
         Log.d(TAG, "KeyMapperAccessibilityService connected & coordinator initialized")
     }
 
@@ -178,10 +187,12 @@ class KeyMapperAccessibilityService : AccessibilityService() {
         if (roots.isEmpty()) {
             event.source?.let(roots::add)
         }
+        // Window retrieval is not limited by packageNames; only the Settings app's windows are read.
+        roots.retainAll { it.packageName?.toString() == SETTINGS_PACKAGE }
         val combinedTexts = mutableListOf<String>()
         try {
             roots.forEach { collectNodeTexts(it, combinedTexts) }
-            extractPairingInfo(combinedTexts)
+            if (!extractPairingInfo(combinedTexts)) tapPairWithCode(roots)
         } catch (e: Exception) {
             Log.w(TAG, "Error while scanning windows for pairing credentials", e)
         } finally {
@@ -189,7 +200,61 @@ class KeyMapperAccessibilityService : AccessibilityService() {
         }
     }
 
-    private fun extractPairingInfo(allTexts: List<String>) {
+    /**
+     * The wizard's one assisted tap: "Pair device with pairing code", matched by the Settings app's own
+     * localized label, only inside a Settings window, only on an enabled row. No label, no tap — the
+     * wizard's manual path takes over.
+     */
+    private fun tapPairWithCode(roots: List<AccessibilityNodeInfo>) {
+        val settingsRoots = roots.filter { it.packageName?.toString() == SETTINGS_PACKAGE }
+        pairWithCodeLabel?.let { label ->
+            val target = settingsRoots.firstNotNullOfOrNull { settingsRow(it, label, requireTitle = false) }
+            if (target != null) {
+                if (WirelessAdbManager.takePairWithCodeTap()) {
+                    Log.d(TAG, "Pair with code tap: ${target.performAction(AccessibilityNodeInfo.ACTION_CLICK)}")
+                }
+                return
+            }
+        }
+        // Not on the Wireless debugging screen yet. Some phones (ColorOS) cannot open it directly and
+        // land on Developer options: open its row once. Only a preference title counts, so the screen's
+        // own header and the row's on/off switch are never tapped.
+        val label = wirelessDebuggingLabel ?: return
+        val row = settingsRoots.firstNotNullOfOrNull { settingsRow(it, label, requireTitle = true) } ?: return
+        if (WirelessAdbManager.takeWirelessRowTap()) {
+            Log.d(TAG, "Wireless debugging row tap: ${row.performAction(AccessibilityNodeInfo.ACTION_CLICK)}")
+        }
+    }
+
+    private fun settingsRow(root: AccessibilityNodeInfo, label: String, requireTitle: Boolean): AccessibilityNodeInfo? =
+        root.findAccessibilityNodeInfosByText(label)
+            .firstOrNull { it.text?.toString() == label && (!requireTitle || it.viewIdResourceName == "android:id/title") }
+            ?.let(::clickableSelfOrAncestor)
+            ?.takeIf { it.isEnabled }
+
+    private fun clickableSelfOrAncestor(node: AccessibilityNodeInfo): AccessibilityNodeInfo? {
+        var current: AccessibilityNodeInfo? = node
+        repeat(6) {
+            val candidate = current ?: return null
+            if (candidate.isClickable) return candidate
+            current = candidate.parent
+        }
+        return null
+    }
+
+    private val pairWithCodeLabel: String? by lazy { settingsString("adb_pair_method_code_title") }
+    private val wirelessDebuggingLabel: String? by lazy { settingsString("enable_adb_wireless") }
+
+    /** The Settings app's own localized text, so matching works in every language. */
+    private fun settingsString(name: String): String? = runCatching {
+        val res = packageManager.getResourcesForApplication(SETTINGS_PACKAGE)
+        @Suppress("DiscouragedApi")
+        val id = res.getIdentifier(name, "string", SETTINGS_PACKAGE)
+        if (id != 0) res.getString(id) else null
+    }.getOrNull()
+
+    /** True when a pairing code was on screen. */
+    private fun extractPairingInfo(allTexts: List<String>): Boolean {
         var extractedCode: String? = null
         var extractedIp: String? = null
         var extractedPort: Int? = null
@@ -212,6 +277,7 @@ class KeyMapperAccessibilityService : AccessibilityService() {
             Log.d(TAG, "Pairing credentials detected from accessibility hierarchy")
             WirelessAdbManager.onCredentialsDetectedFromScreen(extractedIp, extractedPort, extractedCode)
         }
+        return extractedCode != null
     }
 
 
@@ -236,27 +302,47 @@ class KeyMapperAccessibilityService : AccessibilityService() {
     }
 
     override fun onInterrupt() {
-        instance = null
-        _isServiceActive.value = false
+        // Android asks us to stop feedback here; it does not mean the service was unbound.
+        refreshConnectionStatus()
         Log.d(TAG, "KeyMapperAccessibilityService interrupted")
+    }
+
+    override fun onUnbind(intent: Intent?): Boolean {
+        clearConnection()
+        return super.onUnbind(intent)
+    }
+
+    private fun isConnectionAvailable(): Boolean =
+        ::repository.isInitialized && runCatching { serviceInfo != null }.getOrDefault(false)
+
+    private fun clearConnection() {
+        // An older instance finishing destruction must not clear a newly connected service.
+        if (instance === this) {
+            instance = null
+            _isServiceActive.value = false
+        }
     }
 
     override fun onDestroy() {
         super.onDestroy()
         DeviceEventReceiver.unregister(this, deviceEventReceiver)
-        instance = null
-        _isServiceActive.value = false
+        clearConnection()
     }
 
     override fun onKeyEvent(event: KeyEvent): Boolean {
+        if (event.action != KeyEvent.ACTION_DOWN && event.action != KeyEvent.ACTION_UP) return super.onKeyEvent(event)
         if (!::repository.isInitialized) {
             repository = KeyMappingRepository.getInstance(applicationContext)
             HardwareKeyTriggerCoordinator.initialize(applicationContext, repository)
         }
 
-        val config = repository.config.value
         val keyCode = event.keyCode
         val isDown = event.action == KeyEvent.ACTION_DOWN
+        val shouldConsume = HardwareKeyTriggerCoordinator.accessibilityKeyConsumption.onEvent(
+            keyCode, event.deviceId, event.downTime, isDown, event.repeatCount,
+        ) {
+            HardwareKeyTriggerCoordinator.shouldConsumeKey(keyCode)
+        }
 
         val isMatched = HardwareKeyTriggerCoordinator.dispatchKeyEvent(
             keyCode = keyCode,
@@ -265,7 +351,6 @@ class KeyMapperAccessibilityService : AccessibilityService() {
             diagnosticPath = DiagnosticRecorder.InputPath.ACCESSIBILITY,
         )
 
-        val shouldConsume = ScriptRepository.getInstance(applicationContext).shouldConsume(keyCode)
         val consumed = if (shouldConsume) true else super.onKeyEvent(event)
         if (DiagnosticRecorder.recording) {
             DiagnosticRecorder.keyEvent(

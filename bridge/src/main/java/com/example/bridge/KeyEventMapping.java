@@ -27,6 +27,10 @@ public final class KeyEventMapping {
     private static final int SYNTHETIC_KEY_BASE = 0x40000000;
     private static final int SYNTHETIC_KEY_MASK = 0x3fffffff;
 
+    // App-originated gestures occupy a separate positive range: Android codes are small,
+    // OEM hashes start at 0x40000000 and chord ids are negative. Never decoded from getevent.
+    public static final int ASSISTANT_GESTURE = 0x20000001;
+
     // Android KeyEvent constants, inlined so this class stays framework-free.
     private static final int KEYCODE_HOME = 3;
     private static final int KEYCODE_BACK = 4;

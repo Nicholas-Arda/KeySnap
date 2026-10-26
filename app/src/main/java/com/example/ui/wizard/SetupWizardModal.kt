@@ -294,7 +294,8 @@ fun SetupWizardModal(
                         pairingStatus = pairingStatus,
                         settingsOpened = isDevSettingsOpened,
                         onOpenSettings = { viewModel.openDeveloperSettings(context) },
-                        onSettingsOpened = { isDevSettingsOpened = true }
+                        onSettingsOpened = { isDevSettingsOpened = true },
+                        onSubmitCode = viewModel::submitPairingCode,
                     )
                     2 -> WizardSuccessStep(
                         isRunning = isRunning,
@@ -696,7 +697,8 @@ fun WizardDeveloperOptionsStep(
     pairingStatus: PairingStatus,
     settingsOpened: Boolean,
     onOpenSettings: () -> Unit,
-    onSettingsOpened: () -> Unit
+    onSettingsOpened: () -> Unit,
+    onSubmitCode: (String) -> Unit = {},
 ) {
     val colors = MaterialTheme.colorScheme
     val context = LocalContext.current
@@ -765,11 +767,61 @@ fun WizardDeveloperOptionsStep(
 
     PairingStatusRow(pairingStatus, started = settingsOpened)
 
+    // No code within a few seconds of opening Settings: the assisted tap found nothing to tap, or
+    // Android needs the user first. The manual path works without the notification too.
+    var showManual by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
+    LaunchedEffect(settingsOpened, pairingStatus) {
+        if (settingsOpened && pairingStatus == PairingStatus.SEARCHING_MDNS_AND_SCREEN) {
+            kotlinx.coroutines.delay(MANUAL_FALLBACK_MS)
+            showManual = true
+        } else if (pairingStatus == PairingStatus.ERROR) {
+            showManual = true
+        }
+    }
+    if (showManual && pairingStatus != PairingStatus.PAIRED_SUCCESS && pairingStatus != PairingStatus.ADVANCED_MODE_RUNNING) {
+        Spacer(modifier = Modifier.height(16.dp))
+        ManualPairingCard(onSubmitCode)
+    }
+
     Spacer(modifier = Modifier.height(16.dp))
 
     // Moved here from the intro: it is a walkthrough of the screen the button above opens, so this
     // is the first point at which it is worth reading.
     DeveloperOptionsGuideCard()
+}
+
+/** How long after opening Settings the pairing step offers the manual path. */
+internal const val MANUAL_FALLBACK_MS = 10_000L
+
+@Composable
+private fun ManualPairingCard(onSubmitCode: (String) -> Unit) {
+    val colors = MaterialTheme.colorScheme
+    // Not saveable: a one-time pairing code has no business in the saved-instance bundle.
+    var code by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf("") }
+    WizardCard(icon = Icons.Default.Terminal, title = stringResource(R.string.wizard_manual_title)) {
+        Text(stringResource(R.string.wizard_manual_body), style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant)
+        Spacer(modifier = Modifier.height(12.dp))
+        androidx.compose.material3.OutlinedTextField(
+            value = code,
+            onValueChange = { code = it.filter(Char::isDigit).take(6) },
+            label = { Text(stringResource(R.string.wizard_manual_code_label)) },
+            singleLine = true,
+            keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                keyboardType = androidx.compose.ui.text.input.KeyboardType.NumberPassword,
+            ),
+            modifier = Modifier.fillMaxWidth().testTag("manual_pairing_code"),
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+        Button(
+            onClick = { onSubmitCode(code) },
+            enabled = code.length == 6,
+            modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp).testTag("manual_pairing_submit"),
+            colors = ButtonDefaults.buttonColors(containerColor = colors.primary),
+            shape = ConsoleShape,
+        ) {
+            Text(stringResource(R.string.wizard_manual_pair), color = colors.background, style = MaterialTheme.typography.labelLarge)
+        }
+    }
 }
 
 /** How long the last step waits for the bridge before it calls the attempt failed. */

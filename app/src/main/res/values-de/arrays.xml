@@ -15,6 +15,7 @@
         <item>Tippe 7-mal hintereinander auf „Build-Nummer“</item>
         <item>Gehe zurück und öffne „Entwickleroptionen“</item>
         <item>Aktiviere „Kabelloses Debugging“</item>
+        <item>Lässt sich „Kabelloses Debugging“ nicht einschalten oder startet die Kopplung nicht, schalte die Automatische Sperre unter Einstellungen &gt; Sicherheit und Datenschutz aus</item>
     </string-array>
     <string-array name="guide_xiaomi_steps">
         <item>Öffne die Einstellungen</item>
@@ -63,7 +64,7 @@
     </string-array>
     <string-array name="wizard_pairing_steps">
         <item>Tippe unten auf die Schaltfläche, um die Einstellungen für kabelloses Debugging zu öffnen.</item>
-        <item>Wähle im Menü ‘Gerät mit Kopplungscode koppeln’.</item>
+        <item>KeySnap tippt für dich auf ‘Gerät mit Kopplungscode koppeln’; klappt das nicht, tippe selbst darauf.</item>
         <item>Wir lesen den Kopplungscode und verbinden automatisch.</item>
     </string-array>
 </resources>

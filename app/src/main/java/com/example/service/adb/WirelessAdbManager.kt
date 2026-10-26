@@ -10,6 +10,7 @@ import androidx.core.app.RemoteInput
 import android.content.Intent
 import androidx.core.app.NotificationCompat
 import android.util.Log
+import com.example.MainActivity
 import com.example.bridge.BridgeProtocol
 import com.example.service.bridge.BridgeController
 import com.example.service.bridge.BridgeState
@@ -114,6 +115,8 @@ object WirelessAdbManager {
 
     /** Extra spawn attempts after a fresh mDNS re-browse when the resolved connect port refuses. */
     private const val MAX_CONNECT_RETRIES = 2
+    private const val PAIR_TAP_WINDOW_MS = 120_000L
+    private const val RETURN_NOTIFICATION_ID = 4568
 
     private val managerScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private val transportLock = Mutex()
@@ -414,6 +417,43 @@ object WirelessAdbManager {
         return _pairingStatus.value == PairingStatus.SEARCHING_MDNS_AND_SCREEN
     }
 
+    /** Set by the user's "Open settings and start pairing" tap; one tap of each kind per start. */
+    @Volatile
+    private var pairTapArmedUntil = 0L
+    @Volatile
+    private var wirelessRowTapArmedUntil = 0L
+    @Volatile
+    private var setupArmedUntil = 0L
+
+    fun armPairWithCodeTap() {
+        val until = android.os.SystemClock.elapsedRealtime() + PAIR_TAP_WINDOW_MS
+        pairTapArmedUntil = until
+        wirelessRowTapArmedUntil = until
+        setupArmedUntil = until
+    }
+    fun disarmPairWithCodeTap() {
+        pairTapArmedUntil = 0L
+        wirelessRowTapArmedUntil = 0L
+        setupArmedUntil = 0L
+    }
+
+    private fun setupInProgress() = android.os.SystemClock.elapsedRealtime() < setupArmedUntil
+
+    /** One tap on the "Wireless debugging" row in Developer options, opening its screen. */
+    fun takeWirelessRowTap(): Boolean = synchronized(flowLock) {
+        val now = android.os.SystemClock.elapsedRealtime()
+        (isSearchingMdnsAndScreen() && now < wirelessRowTapArmedUntil).also { if (it) wirelessRowTapArmedUntil = 0L }
+    }
+
+    /** Consumes the single tap: a later screen change, a Back, or a reopened dialog never taps again. */
+    fun takePairWithCodeTap(): Boolean = synchronized(flowLock) {
+        val now = android.os.SystemClock.elapsedRealtime()
+        (isSearchingMdnsAndScreen() && now < pairTapArmedUntil).also { if (it) pairTapArmedUntil = 0L }
+    }
+
+    /** Uses an existing pairing first; false means wireless debugging is off or the pairing is gone. */
+    suspend fun connectWithExistingPairing(): Boolean = restartBridge("Connecting with the existing pairing…", true)
+
     fun startSearchingMdns() {
         _pairingStatus.value = PairingStatus.SEARCHING_MDNS_AND_SCREEN
         _statusMessage.value = "Scanning for pairing code and port... (open Developer Options)"
@@ -661,6 +701,13 @@ object WirelessAdbManager {
                 if (pairingGeneration != null && pairingCode != null) {
                     finishPairingFlow(pairingGeneration, pairingCode)
                 }
+                if (started && setupInProgress()) {
+                    // The user started this from the wizard and is in Settings: the "enter the code"
+                    // notification is now stale, and they should land back on the wizard's result.
+                    context.getSystemService(NotificationManager::class.java).cancel(PairingNotificationReceiver.NOTIFICATION_ID)
+                    disarmPairWithCodeTap()
+                    returnToApp(context)
+                }
                 if (started) {
                     activeStreamEndpoint = currentIp to currentPort
                     _pairingStatus.value = PairingStatus.ADVANCED_MODE_RUNNING
@@ -808,6 +855,32 @@ object WirelessAdbManager {
             pairingCode = code,
         )
         Log.d(TAG, "Started pairing flow $generation using fresh mDNS port $pairingPort")
+    }
+
+    /**
+     * Android lets an app with a bound Accessibility service start its activity from the background.
+     * Where that is blocked anyway, a tap on a notification brings the user back.
+     */
+    private fun returnToApp(context: Context) {
+        runCatching {
+            context.startActivity(Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+        }
+        managerScope.launch {
+            // ColorOS can take a few seconds to bring the task forward; only a real miss gets a notification.
+            repeat(10) {
+                delay(500)
+                if (MainActivity.isResumed) return@launch
+            }
+            val open = PendingIntent.getActivity(context, RETURN_NOTIFICATION_ID, Intent(context, MainActivity::class.java),
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+            val notification = NotificationCompat.Builder(context, PAIRING_CHANNEL_ID)
+                .setSmallIcon(android.R.drawable.ic_dialog_info)
+                .setContentTitle(context.getString(R.string.notif_return_title))
+                .setContentText(context.getString(R.string.notif_return_body))
+                .setContentIntent(open).setAutoCancel(true).build()
+            try { context.getSystemService(NotificationManager::class.java).notify(RETURN_NOTIFICATION_ID, notification) }
+            catch (_: SecurityException) { /* Notifications denied; the user returns by hand. */ }
+        }
     }
 
     fun ensurePairingNotificationChannel(context: Context) {

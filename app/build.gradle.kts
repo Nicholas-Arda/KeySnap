@@ -70,7 +70,12 @@ val proSrc: File = rootProject.file("pro/app/src")
 if (proEdition) {
   val locales = file("src/main/res").listFiles().orEmpty()
     .filter { File(it, "strings.xml").isFile }
-    .map { "main/res/${it.name}/strings_capsule.xml" }
+    .flatMap {
+      listOf(
+        "main/res/${it.name}/strings_capsule.xml",
+        "main/res/${it.name}/strings_modes.xml",
+      )
+    }
   val missing = (listOf(
     "main/AndroidManifest.xml",
     "main/java/com/example/capsule/CapsuleHooks.kt",
@@ -78,6 +83,13 @@ if (proEdition) {
     "main/java/com/example/capsule/CapsuleFeedbackService.kt",
     "main/java/com/example/capsule/CapsuleIntroScreen.kt",
     "main/java/com/example/capsule/CapsuleSettingsScreen.kt",
+    "main/java/com/example/mode/ModeHooks.kt",
+    "main/java/com/example/mode/ModeLogic.kt",
+    "main/java/com/example/mode/ModeNames.kt",
+    "main/java/com/example/mode/ModeRunsIn.kt",
+    "main/java/com/example/mode/ModeShortcuts.kt",
+    "main/java/com/example/mode/ModeSwitchSheet.kt",
+    "main/java/com/example/service/ShortcutMode.kt",
   ) + locales).filterNot { File(proSrc, it).isFile }
   require(missing.isEmpty()) { "keysnap.edition=pro, but these Pro sources are missing under $proSrc: $missing" }
 }
@@ -94,18 +106,22 @@ android {
     // Mode — is an Android 11 feature anyway, so nothing below 30 could use the app's core.
     minSdk = 30
     targetSdk = 36
-    versionCode = 13
-    versionName = "1.1.3"
+    versionCode = 16
+    versionName = "1.1.6"
     buildConfigField("boolean", "CAPSULE_ACCEPTANCE_PRO", capsuleAcceptancePro.toString())
 
     val autostartStateProbe = project.hasProperty("autostartStateProbe")
     if (autostartStateProbe) {
       require(project.hasProperty("sideBySide")) { "The autostart state probe is for the .dev phone install only" }
     }
-    testInstrumentationRunner = if (autostartStateProbe) {
-      "com.example.service.adb.AdvancedAutostartStateInstrumentation"
-    } else {
-      "androidx.test.runner.AndroidJUnitRunner"
+    val accessibilityPhoneBackup = project.hasProperty("accessibilityPhoneBackup")
+    require(!accessibilityPhoneBackup || project.hasProperty("sideBySide")) {
+      "The private phone backup helper is for the .dev install only"
+    }
+    testInstrumentationRunner = when {
+      accessibilityPhoneBackup -> "com.example.service.AccessibilityPhoneBackupInstrumentation"
+      autostartStateProbe -> "com.example.service.adb.AdvancedAutostartStateInstrumentation"
+      else -> "androidx.test.runner.AndroidJUnitRunner"
     }
   }
 
@@ -129,7 +145,7 @@ android {
 
   buildTypes {
     // Phone tests next to the Play install, without wiping its data: -PsideBySide
-    // Advanced Mode on in only one of the two installs at a time; the bridges share a name and folder.
+    // Each install's bridge has its own folder (BridgeProtocol.baseDirFor), so both can run Advanced Mode.
     debug {
       if (project.hasProperty("sideBySide")) {
         applicationIdSuffix = ".dev"

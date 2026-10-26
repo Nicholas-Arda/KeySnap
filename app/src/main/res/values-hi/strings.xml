@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">KeySnap</string>
-    <string name="accessibility_service_description">भौतिक बटन दबाने (वॉल्यूम, पावर और अन्य हार्डवेयर बटन) का पता लगाता है, ताकि वे आपके शॉर्टकट को ट्रिगर कर सकें। केवल उन्नत मोड सेटअप के दौरान, यह सिस्टम की वायरलेस डिबगिंग विंडो से पेयरिंग कोड भी पढ़ता है। यह किसी अन्य ऐप की स्क्रीन नहीं पढ़ सकता।</string>
+    <string name="accessibility_service_description">भौतिक बटन दबाने (वॉल्यूम, पावर और अन्य हार्डवेयर बटन) का पता लगाता है, ताकि वे आपके शॉर्टकट को ट्रिगर कर सकें। केवल उन्नत मोड सेटअप के दौरान, यह आपके लिए सिस्टम की पेयरिंग कोड विंडो भी खोलता है और उससे कोड पढ़ता है। यह किसी अन्य ऐप की स्क्रीन नहीं पढ़ सकता।</string>
     <string name="accessibility_disclosure_agree">सहमत हूँ, सेटिंग्स खोलें</string>
 
     <!-- क्रिया श्रेणियां -->
@@ -226,6 +226,7 @@
     <string name="constraint_device_locked">डिवाइस लॉक है</string>
     <string name="constraint_device_unlocked">डिवाइस अनलॉक है</string>
     <string name="constraint_lock_screen_showing">लॉक स्क्रीन दिख रही है</string>
+    <string name="constraint_no_app_open">कोई ऐप खुला नहीं है: होम स्क्रीन या लॉक स्क्रीन</string>
     <string name="constraint_lock_screen_not_showing">लॉक स्क्रीन नहीं दिख रही है</string>
     <string name="constraint_in_phone_call">फ़ोन कॉल में</string>
     <string name="constraint_not_in_phone_call">फ़ोन कॉल में नहीं</string>
@@ -465,6 +466,8 @@
     <string name="field_time_end">तक</string>
     <string name="field_days">दिन</string>
     <string name="constraint_needs_usage_access">यह देखने के लिए कि कौन सा ऐप सामने है, उपयोग एक्सेस चाहिए।</string>
+    <string name="home_permissions_needed">अनुमतियाँ चाहिए</string>
+    <string name="home_usage_access">उपयोग एक्सेस</string>
     <string name="constraint_needs_notification_access">सूचना एक्सेस चाहिए। KeySnap आपके चुने ऐप की हर नई सूचना को आपके फ़ोन पर ही इस शर्त से मिलाता है। वह सिर्फ़ मिलान का समय और यह रखता है कि वह कौन-सी सूचना थी, ताकि जवाब उस चैट तक पहुँच सके। सूचना की सामग्री कभी सेव, लॉग या भेजी नहीं जाती।</string>
     <string name="field_notification_contact">संपर्क</string>
     <string name="hint_notification_contact_any">खाली: कोई भी</string>
@@ -548,7 +551,6 @@
     <string name="nav_shortcuts">शॉर्टकट</string>
     <string name="nav_settings">सेटिंग</string>
     <string name="settings_close">सेटिंग बंद करें</string>
-    <string name="home_switch_theme">थीम बदलें</string>
 
     <!-- डायलॉग -->
     <string name="dialog_expert_connected">उन्नत मोड कनेक्ट हो गया</string>
@@ -1049,6 +1051,7 @@
     <string name="diagnostic_send_note">नीचे पूरी रिकॉर्डिंग देखें। आपका ई-मेल ऐप support@ardasenn.com के लिए ड्राफ़्ट खोलेगा। भेजना है या नहीं, यह आप तय करते हैं। ड्राफ़्ट खुलने पर KeySnap रिकॉर्डिंग मिटा देता है।</string>
     <string name="diagnostic_no_email">कोई ई-मेल ऐप नहीं मिला। रिकॉर्डिंग अभी भी उपलब्ध है।</string>
     <string name="whats_new_title">नया क्या है</string>
+    <string name="whats_new_hint">नया यहाँ है · टैप करें</string>
     <string name="whats_new_version">संस्करण %1$s</string>
     <string name="whats_new_new">नया</string>
     <string name="whats_new_fixed">सुधार</string>
@@ -1073,4 +1076,43 @@
     <string name="capsule_intro_title">Key capsule</string>
     <string name="pro_table_included">शामिल</string>
     <string name="pro_table_not_included">शामिल नहीं</string>
+    <string name="accessibility_status_connecting">कनेक्ट हो रहा है…</string>
+    <string name="accessibility_status_reconnect">फिर से कनेक्ट करें</string>
+    <string name="accessibility_reconnect_title">सुलभता फिर से कनेक्ट करें</string>
+    <string name="accessibility_reconnect_message">Android में सुलभता चालू है, लेकिन KeySnap कनेक्ट नहीं है। सुलभता सेटिंग में KeySnap को बंद करके फिर से चालू करें।</string>
+    <string name="whats_new_fix_accessibility_status">सेवा का कनेक्शन टूटने पर सुलभता अब सक्रिय नहीं दिखाई देती</string>
+    <string name="accessibility_reconnect_button">फिर से कनेक्ट करें</string>
+    <string name="accessibility_reconnecting">फिर से कनेक्ट हो रहा है…</string>
+    <string name="accessibility_reconnect_failed">फिर से कनेक्ट नहीं हो सका। यहाँ KeySnap को बंद करके फिर चालू करें।</string>
+    <string name="wizard_manual_title">कोड खुद डालें</string>
+    <string name="wizard_manual_body">वायरलेस डिबगिंग में ‘पेयरिंग कोड से डिवाइस जोड़ें’ पर टैप करें और 6 अंकों का कोड यहाँ लिखें। अगर ऐप बदलने पर Android कोड वाली विंडो बंद कर दे, तो स्प्लिट स्क्रीन या नोटिफ़िकेशन का इस्तेमाल करें।</string>
+    <string name="wizard_manual_code_label">6 अंकों का पेयरिंग कोड</string>
+    <string name="wizard_manual_pair">पेयर करें</string>
+    <string name="notif_return_title">उन्नत मोड चालू है</string>
+    <string name="notif_return_body">KeySnap पर लौटने के लिए टैप करें।</string>
+    <string name="pro_sale_ends_in">छूट %1$s में खत्म होगी</string>
+    <string name="accessibility_reconnect_keep_on">फिर से कनेक्ट हो गया। अगर Android एक्सेसिबिलिटी के बारे में पूछे, तो “चालू रखें” चुनें।</string>
+    <string name="whats_new_connect_title">उन्नत मोड सेटअप अब आसान</string>
+    <string name="whats_new_connect_description">KeySnap अब आपके लिए “कोड से पेयर करें” पर टैप करता है और उन्नत मोड तैयार होते ही वापस आ जाता है। एक्सेसिबिलिटी डिस्कनेक्ट हो जाए, तो फिर से कनेक्ट करें पर एक टैप काफ़ी है।</string>
+    <string name="action_cycle_mode">अगला मोड</string>
+    <string name="param_mode_count">मोड की संख्या</string>
+    <string name="param_mode_feedback">मोड बदलने का फ़ीडबैक</string>
+    <string name="param_mode_pulse">मोड का वाइब्रेशन</string>
+    <string name="param_mode_gap">वाइब्रेशन के बीच का अंतर</string>
+    <string name="param_mode_lead_gap">मोड वाइब्रेशन से पहले का विराम</string>
+    <string name="choice_mode_feedback_toast">स्क्रीन पर संदेश</string>
+    <string name="choice_mode_feedback_vibrate">वाइब्रेशन</string>
+    <string name="choice_mode_feedback_both">संदेश और वाइब्रेशन</string>
+    <string name="param_mode_number">मोड नंबर</string>
+    <string name="constraint_mode_is">मोड है</string>
+    <string name="mode_current">मोड %1$d</string>
+    <string name="summary_mode_count">%1$d मोड में बारी-बारी से बदलें</string>
+    <string name="trigger_assistant_gesture">असिस्टेंट जेस्चर</string>
+    <string name="assistant_trigger_hint">डिजिटल असिस्टेंट बुलाने पर एक बार चलता है, जैसे पावर बटन दबाकर रखने पर। उपलब्ध जेस्चर आपके फ़ोन पर निर्भर करते हैं।</string>
+    <string name="assistant_setup_title">KeySnap को अपना डिजिटल असिस्टेंट बनाएँ</string>
+    <string name="assistant_selected">KeySnap चुना गया है · बदलने के लिए टैप करें</string>
+    <string name="assistant_not_selected">चुना नहीं गया · असिस्टेंट सेटिंग खोलें</string>
+    <string name="assistant_redirect_note">KeySnap आपका असिस्टेंट है, इसलिए यह कार्रवाई आपके फ़ोन पर कोई दूसरा असिस्टेंट खोलती है।</string>
+    <string name="assistant_no_other_app">इस फ़ोन पर कोई दूसरा असिस्टेंट उपलब्ध नहीं है।</string>
+    <string name="assistant_voice_wakeup_warning">जब तक KeySnap आपका असिस्टेंट है, पिछले असिस्टेंट का वॉइस वेक-अप काम करना बंद कर सकता है।</string>
 </resources>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_assistant_gesture_title">Tu botón de encendido, tu acceso directo</string>
+    <string name="whats_new_assistant_gesture_description">Elige KeySnap como asistente. Si tu teléfono envía la pulsación larga del botón de encendido al asistente, ejecutará tu acceso directo con “Gesto del asistente”.</string>
+    <string name="whats_new_home_only_title">Solo en inicio o pantalla de bloqueo</string>
+    <string name="whats_new_home_only_description">Añade “Ninguna app abierta” en “Solo si” para que las teclas de volumen funcionen normalmente dentro de las apps. Necesita acceso de uso.</string>
+    <string name="whats_new_fix_coloros_dnd">Las acciones de No molestar ya funcionan en ColorOS con el Modo avanzado</string>
+    <string name="whats_new_fix_conditional_volume">Una tecla de volumen solo se intercepta cuando se cumplen las condiciones del acceso directo</string>
+    <string name="rating_prompt_title">¿KeySnap hace lo que necesitas?</string>
+    <string name="rating_prompt_body">Una valoración en Google Play ayuda mucho.</string>
+    <string name="rating_prompt_rate">Valorar</string>
+    <string name="rating_prompt_later">Más tarde</string>
+    <string name="rating_prompt_no_thanks">No, gracias</string>
+</resources>

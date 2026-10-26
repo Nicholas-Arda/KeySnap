@@ -44,6 +44,7 @@ class ScriptConstraintCatalogTest {
                 "keyboard_showing", "keyboard_not_showing",
                 "device_locked", "device_unlocked",
                 "lock_screen_showing", "lock_screen_not_showing",
+                "no_app_open",
                 "in_phone_call", "not_in_phone_call",
                 "phone_ringing",
                 "ringer_normal", "ringer_vibrate", "ringer_silent",
@@ -55,6 +56,7 @@ class ScriptConstraintCatalogTest {
                 "battery_above", "battery_below",
                 "location_on", "location_off",
                 "time", "day_of_week", "cooldown",
+                "mode_is",
             ),
             available.toSet() - (ScriptConstraintCatalog.AUTOMATION_ONLY - ScriptConstraintCatalog.NOTIFICATION_RECEIVED),
         )
@@ -79,7 +81,7 @@ class ScriptConstraintCatalogTest {
             assertTrue(ScriptConstraintCatalog.isAutomation(type))
         }
         // No wake-up source: foreground app, media, keyboard, mobile data, day of week and cooldown only gate.
-        listOf("app_in_foreground", "media_is_playing", "keyboard_showing", "mobile_data_on", "day_of_week", "cooldown").forEach {
+        listOf("app_in_foreground", "no_app_open", "media_is_playing", "keyboard_showing", "mobile_data_on", "day_of_week", "cooldown").forEach {
             assertFalse("$it must not be an automation trigger", ScriptConstraintCatalog.isAutomation(it))
         }
     }

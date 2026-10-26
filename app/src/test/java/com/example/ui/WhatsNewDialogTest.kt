@@ -3,6 +3,7 @@ package com.example.ui
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
@@ -30,6 +31,26 @@ import org.robolectric.annotation.GraphicsMode
 @Config(sdk = [34], qualifiers = "en-w411dp-h891dp-mdpi")
 class WhatsNewDialogTest {
     @get:Rule val rule = createComposeRule()
+
+    @Test
+    @Config(qualifiers = "en-w320dp-h640dp-mdpi")
+    fun release116OpensShortcutsForEveryFeature() {
+        val release = whatsNewReleases.getValue(16L)
+        val destinations = mutableListOf<WhatsNewDestination>()
+        rule.setContent {
+            MyApplicationTheme(themeMode = ThemeMode.DARK) {
+                WhatsNewDialog(release, ThemeMode.DARK, {}, { destinations += it })
+            }
+        }
+        rule.onNodeWithTag("whats_new_dialog").captureRoboImage("build/outputs/whats-new-review/116-head.png")
+        release.features.indices.forEach { index ->
+            rule.onAllNodesWithTag("whats_new_shortcuts")[index].performScrollTo().assertIsDisplayed().performClick()
+        }
+        assertEquals(List(release.features.size) { WhatsNewDestination.SHORTCUTS }, destinations)
+        rule.onNodeWithTag("whats_new_fix_${release.fixes.last()}").performScrollTo().assertIsDisplayed()
+        rule.onNodeWithTag("whats_new_dialog").captureRoboImage("build/outputs/whats-new-review/116-fixes.png")
+        rule.onNodeWithTag("whats_new_got_it").assertIsDisplayed()
+    }
 
     @Test fun lightScreenshot() = checkDialog(ThemeMode.LIGHT, "light")
     @Test fun darkScreenshot() = checkDialog(ThemeMode.DARK, "dark")
@@ -68,10 +89,11 @@ class WhatsNewDialogTest {
             .performSemanticsAction(SemanticsActions.GetTextLayoutResult) { it(titleLayouts) }
         assertTrue("The dialog uses the system font scale", titleLayouts.single().getLineBottom(0) >= 24f * fontScale)
         rule.onNodeWithTag("whats_new_dialog").captureRoboImage("build/outputs/whats-new-review/$name.png")
-        WhatsNewDestination.entries.forEach { destination ->
+        val expectedDestinations = whatsNewReleases.getValue(12L).features.map { it.destination }
+        expectedDestinations.forEach { destination ->
             rule.onNodeWithTag("whats_new_${destination.name.lowercase()}").performScrollTo().assertIsDisplayed().performClick()
         }
-        assertEquals(WhatsNewDestination.entries, destinations)
+        assertEquals(expectedDestinations, destinations)
         rule.onNodeWithText("Tapping anywhere in a search box opens the keyboard").performScrollTo().assertIsDisplayed()
         rule.onNodeWithTag("whats_new_dialog").captureRoboImage("build/outputs/whats-new-review/$name-scrolled.png")
         rule.onNodeWithTag("whats_new_got_it").assertIsDisplayed().performClick()

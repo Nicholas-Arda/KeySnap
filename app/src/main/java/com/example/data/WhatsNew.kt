@@ -1,6 +1,8 @@
 package com.example.data
 
 import androidx.annotation.StringRes
+import com.example.capsule.CapsuleHooks
+import com.example.mode.ModeHooks
 import io.github.nicholasarda.keysnap.R
 
 enum class WhatsNewDecision {
@@ -28,6 +30,8 @@ enum class WhatsNewDestination {
     ADVANCED_MODE,
     APPEARANCE,
     ABOUT,
+    KEY_CAPSULE,
+    SHORTCUTS,
 }
 
 data class WhatsNewFeature(
@@ -83,6 +87,67 @@ val whatsNewReleases = mapOf(
         highlightTitle = R.string.whats_new_no_ads_title,
         highlightDescription = R.string.whats_new_no_ads_description,
     ),
-)
+    16L to WhatsNewRelease(
+        features = listOf(
+            WhatsNewFeature(
+                R.string.whats_new_assistant_gesture_title,
+                R.string.whats_new_assistant_gesture_description,
+                R.string.whats_new_try,
+                WhatsNewDestination.SHORTCUTS,
+            ),
+            WhatsNewFeature(
+                R.string.whats_new_home_only_title,
+                R.string.whats_new_home_only_description,
+                R.string.whats_new_try,
+                WhatsNewDestination.SHORTCUTS,
+            ),
+        ) + ModeHooks.whatsNewFeatures(16L),
+        fixes = listOf(R.string.whats_new_fix_coloros_dnd, R.string.whats_new_fix_conditional_volume),
+    ),
+) + listOf(14L, 15L).mapNotNull { code -> CapsuleHooks.whatsNewRelease(code)?.let { code to it } }.toMap()
 
 fun whatsNewVersionLabel(versionName: String): String = versionName.substringBefore("-dev")
+
+/** Wall-clock length of the header announcement that follows an update. */
+const val WhatsNewAnnounceWindowMs = 48L * 60L * 60L * 1000L
+
+/**
+ * Whether the header should still announce [versionCode].
+ *
+ * [startedAtMillis] is the first launch that auto-showed this version's dialog, or null when that
+ * launch has not happened. [dismissedVersionCode] is the version whose logo tap ended the announcement.
+ * A missing start, a dismissal of this version, or a closed 48 h window all stay quiet.
+ */
+fun shouldAnnounceWhatsNew(
+    versionCode: Long,
+    startedAtMillis: Long?,
+    nowMillis: Long,
+    dismissedVersionCode: Long?,
+): Boolean {
+    if (dismissedVersionCode == versionCode) return false
+    val started = startedAtMillis ?: return false
+    if (nowMillis < started) return false
+    return nowMillis - started < WhatsNewAnnounceWindowMs
+}
+
+/**
+ * Start time to keep for [versionCode]. The window opens on the launch that auto-shows the dialog
+ * and stays put after that; a newer version does not inherit the previous window.
+ */
+fun whatsNewAnnouncementStartedAt(
+    versionCode: Long,
+    storedVersionCode: Long?,
+    storedStartedAtMillis: Long?,
+    nowMillis: Long,
+    autoShowing: Boolean,
+): Long? = when {
+    storedVersionCode == versionCode && storedStartedAtMillis != null -> storedStartedAtMillis
+    autoShowing -> nowMillis
+    else -> null
+}
+
+/** This version's notes, or the newest release that is not newer than it. */
+fun whatsNewReleaseFor(versionCode: Long): WhatsNewRelease? =
+    whatsNewReleases[versionCode]
+        ?: whatsNewReleases.filterKeys { it <= versionCode }.maxByOrNull { it.key }?.value
+        ?: whatsNewReleases.maxByOrNull { it.key }?.value

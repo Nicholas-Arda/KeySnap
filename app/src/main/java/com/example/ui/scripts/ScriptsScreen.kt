@@ -51,11 +51,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.style.Hyphens
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.unit.dp
+import com.example.data.PhysicalKeyOption
 import com.example.data.ScriptActionCatalog
 import com.example.data.ScriptConstraintCatalog
 import com.example.data.ShortcutScript
 import com.example.data.keyDisplayName
 import com.example.data.isSurfaceOnly
+import com.example.mode.ModeHooks
 import com.example.ui.components.AppAlertDialog
 import com.example.ui.components.ConsoleShape
 import com.example.ui.components.GroundedPage
@@ -84,6 +86,16 @@ fun ScriptsScreen(
     onImportText: (String) -> Unit,
     onImportUri: (Uri) -> Unit,
     failedScriptIds: Set<String> = emptySet(),
+    isPro: Boolean = false,
+    onUpsell: () -> Unit = {},
+    onUpdateScripts: (List<ShortcutScript>) -> Unit = {},
+    onNewScriptId: () -> String = { "" },
+    savedKeys: List<PhysicalKeyOption> = emptyList(),
+    isRecordingKey: Boolean = false,
+    onStartRecording: () -> Unit = {},
+    onCancelRecording: () -> Unit = {},
+    hapticDurationMs: Long = 60L,
+    vibrateOnTrigger: Boolean = true,
 ) {
     var showImport by rememberSaveable { mutableStateOf(false) }
     GroundedPage(themeMode, rememberScrollState()) {
@@ -120,8 +132,21 @@ fun ScriptsScreen(
                 )
             }
         }
+        val shown = ModeHooks.shortcutList(
+            scripts = scripts,
+            isPro = isPro,
+            onUpsell = onUpsell,
+            onUpdateScripts = onUpdateScripts,
+            onNewScriptId = onNewScriptId,
+            savedKeys = savedKeys,
+            isRecordingKey = isRecordingKey,
+            onStartRecording = onStartRecording,
+            onCancelRecording = onCancelRecording,
+            hapticDurationMs = hapticDurationMs,
+            vibrateOnTrigger = vibrateOnTrigger,
+        )
         if (scripts.isEmpty()) EmptyState(onGoHome)
-        scripts.forEach { script ->
+        shown.forEach { script ->
             key(script.id) { ScriptCard(script, globallyEnabled, script.id in failedScriptIds, onToggleScriptEnabled, onOpenScript, onDeleteScript) }
         }
     }

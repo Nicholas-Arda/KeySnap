@@ -1,5 +1,6 @@
 package com.example.ui.home
 
+import androidx.annotation.StringRes
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -100,6 +101,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.example.ui.components.ConsoleShape
 import com.example.ui.components.InnerShape
 import com.example.service.adb.WirelessAdbManager
+import com.example.data.AccessibilityStatus
 import com.example.ui.components.MinTouchTarget
 import com.example.ui.components.glassCard
 import com.example.ui.theme.LocalGlass
@@ -136,6 +138,8 @@ fun SetupCard(
     isServiceActive: Boolean,
     onOpenAccessibility: () -> Unit,
     onRetired: () -> Unit = {},
+    accessibilityStatus: AccessibilityStatus = if (isServiceActive) AccessibilityStatus.ACTIVE else AccessibilityStatus.DISABLED,
+    @StringRes accessibilityButton: Int = R.string.home_setup_open_accessibility,
 ) {
     val context = LocalContext.current
     val colors = MaterialTheme.colorScheme
@@ -144,13 +148,14 @@ fun SetupCard(
     val done = listOf(isServiceActive, gaps.battery, gaps.notifications)
     val states = setupStepStates(done)
     val allDone = done.all { it }
+    val needsReconnect = accessibilityStatus == AccessibilityStatus.NEEDS_RECONNECT
     val steps = listOf(
         SetupStep(
             title = stringResource(R.string.home_setup_step_accessibility),
-            why = stringResource(R.string.home_setup_why_accessibility),
+            why = stringResource(if (needsReconnect) R.string.accessibility_reconnect_message else R.string.home_setup_why_accessibility),
             whyText = stringResource(R.string.home_setup_whytext_accessibility),
             doneNote = stringResource(R.string.scripts_toggle_state_on),
-            button = stringResource(R.string.home_setup_open_accessibility),
+            button = stringResource(accessibilityButton),
             illustration = { AccessibilityIllustration(reduced) },
             onClick = onOpenAccessibility,
         ),
@@ -216,7 +221,11 @@ fun SetupCard(
                         val subtitle = @Composable {
                             Text(
                                 stringResource(
-                                    if (isServiceActive) R.string.home_setup_subtitle_at_risk else R.string.home_setup_subtitle_off,
+                                    when (accessibilityStatus) {
+                                        AccessibilityStatus.NEEDS_RECONNECT -> R.string.accessibility_status_reconnect
+                                        AccessibilityStatus.CONNECTING -> R.string.accessibility_status_connecting
+                                        else -> if (isServiceActive) R.string.home_setup_subtitle_at_risk else R.string.home_setup_subtitle_off
+                                    },
                                 ),
                                 style = MaterialTheme.typography.labelSmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
                                 color = colors.onSurfaceVariant,
@@ -228,7 +237,8 @@ fun SetupCard(
                                 // title; with it on, the two remaining steps only risk a later kill.
                                 Text(
                                     stringResource(
-                                        if (isServiceActive) R.string.home_setup_title_at_risk else R.string.home_setup_title_off,
+                                        if (needsReconnect) R.string.accessibility_reconnect_title
+                                        else if (isServiceActive) R.string.home_setup_title_at_risk else R.string.home_setup_title_off,
                                     ),
                                     style = MaterialTheme.typography.titleSmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
                                     color = colors.onSurface,
@@ -591,12 +601,14 @@ internal fun dur(reduced: Boolean, millis: Int) = if (reduced) 0 else millis
 data class PermissionGaps(
     val notifications: Boolean,
     val battery: Boolean,
+    val usageAccess: Boolean = true,
 ) {
+    /** Initial setup only; Usage Access is required conditionally by enabled key shortcuts. */
     val any: Boolean get() = !notifications || !battery
 }
 
 /**
- * Both values are cheap system reads that only ever change in Settings — i.e. on the resume
+ * These values are cheap system reads that only ever change in Settings — i.e. on the resume
  * this watches for — so they are read here instead of being threaded through the view model.
  * [com.example.ui.MainScreen] does the same for `Settings.canDrawOverlays`.
  */
@@ -618,7 +630,30 @@ fun rememberPermissionGaps(): PermissionGaps {
 private fun readPermissionGaps(context: Context) = PermissionGaps(
     notifications = canPostNotifications(context),
     battery = isIgnoringBatteryOptimizations(context),
+    usageAccess = com.example.service.hasUsageAccess(context),
 )
+
+/** Conditional permissions stay visible even after the initial three-step setup is complete. */
+@Composable
+internal fun UsageAccessAlert() {
+    val context = LocalContext.current
+    com.example.ui.components.ConsolePanel(
+        label = stringResource(R.string.home_permissions_needed),
+        testTag = "usage_access_alert",
+        alert = true,
+    ) {
+        Text(stringResource(R.string.home_usage_access), style = MaterialTheme.typography.titleSmall)
+        Text(
+            stringResource(R.string.constraint_needs_usage_access),
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        TextButton(onClick = {
+            context.startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+        }) {
+            Text(stringResource(R.string.action_open_settings))
+        }
+    }
+}
 
 private fun isIgnoringBatteryOptimizations(context: Context): Boolean =
     context.getSystemService<PowerManager>()?.isIgnoringBatteryOptimizations(context.packageName) ?: true

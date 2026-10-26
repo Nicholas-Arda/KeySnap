@@ -71,7 +71,7 @@ class ConsoleHeaderLayoutTest(
     @get:Rule val rule = createComposeRule()
 
     @Test fun statusAndSettingsStayOnTheLogoRow() {
-        var themeClicks = 0
+        var whatsNewClicks = 0
         var mappingClicks = 0
         var settingsClicks = 0
         val rtl = language == "ar"
@@ -90,7 +90,7 @@ class ConsoleHeaderLayoutTest(
                     // Match GroundedPage's horizontal/top inset and MainScreen's floating gear.
                     Box(Modifier.width(width.dp).background(MaterialTheme.colorScheme.background)) {
                         Box(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-                            ConsoleHeader(active, ThemeMode.DARK, { mappingClicks++ }, { themeClicks++ })
+                            ConsoleHeader(active, ThemeMode.DARK, { mappingClicks++ }, { whatsNewClicks++ })
                         }
                         SettingsGear(rememberSettingsMotion(false), false, { settingsClicks++ },
                             Modifier.align(Alignment.TopEnd).padding(top = 16.dp, end = 14.dp))
@@ -137,7 +137,7 @@ class ConsoleHeaderLayoutTest(
         rule.onNodeWithTag("header_logo").performClick()
         rule.onNodeWithTag("mapping_badge").performClick()
         rule.onNodeWithTag("settings_gear").performClick()
-        assertEquals(1, themeClicks)
+        assertEquals(1, whatsNewClicks)
         assertEquals(1, mappingClicks)
         assertEquals(1, settingsClicks)
     }

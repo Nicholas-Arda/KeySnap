@@ -16,6 +16,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.activity.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -24,9 +29,10 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.IntentCompat
 import com.example.data.AppLocale
 import com.example.data.KeyMappingRepository
-import com.example.data.shouldConsumeKey
+import com.example.data.KeyConsumptionTracker
 import com.example.service.RunFailureNotifier
 import com.example.service.DiagnosticRecorder
+import com.example.service.HardwareKeyTriggerCoordinator
 import com.example.ui.MainScreen
 import com.example.ui.components.BottomBarClearance
 import com.example.ui.settings.RecordingIndicator
@@ -54,6 +60,14 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         requestFastestRefreshRate()
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                while (true) {
+                    viewModel.refreshAccessibilityStatus()
+                    delay(1_000L)
+                }
+            }
+        }
         setContent {
             val storedMode by viewModel.themeMode.collectAsState()
             val followSystem by viewModel.themeFollowSystem.collectAsState()
@@ -115,9 +129,22 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
+        isResumed = true
         if (DiagnosticRecorder.recording) DiagnosticRecorder.checkTimeout()
         viewModel.refreshServiceStatus()
         viewModel.refreshPurchases()
+        viewModel.refreshWhatsNewAnnouncement()
+    }
+
+    override fun onPause() {
+        isResumed = false
+        super.onPause()
+    }
+
+    companion object {
+        /** Lets the pairing flow tell whether its bring-to-front worked before offering a notification. */
+        @Volatile var isResumed = false
+            private set
     }
 
     // Foreground key events are intercepted for real-time monitoring and recording. Down and up
@@ -128,13 +155,20 @@ class MainActivity : ComponentActivity() {
     override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean =
         consumes(keyCode, KeyEvent.ACTION_UP, event) || super.onKeyUp(keyCode, event)
 
+    // Separate from the accessibility tracker: recording can consume here, and both paths can see one press.
+    private val keyConsumption = KeyConsumptionTracker()
+
     private fun consumes(keyCode: Int, action: Int, event: KeyEvent?): Boolean {
         // Read before dispatch: the release that ends a recording clears the flag.
         val recording = viewModel.isRecordingKey.value
-        val isMatched = viewModel.onDirectActivityKeyEvent(keyCode, action)
         val config = viewModel.config.value
-        val consumed = shouldConsumeKey(viewModel.scripts.value, keyCode, viewModel.isMappingEnabled.value, config.consumeOriginalEvent) ||
-            (recording && config.consumeOriginalEvent)
+        val consumed = keyConsumption.onEvent(
+            keyCode, event?.deviceId ?: 0, event?.downTime ?: 0L,
+            action == KeyEvent.ACTION_DOWN, event?.repeatCount ?: 0,
+        ) {
+            (recording && config.consumeOriginalEvent) || HardwareKeyTriggerCoordinator.shouldConsumeKey(keyCode)
+        }
+        val isMatched = viewModel.onDirectActivityKeyEvent(keyCode, action)
         if (DiagnosticRecorder.recording) {
             DiagnosticRecorder.keyEvent(
                 path = DiagnosticRecorder.InputPath.ACTIVITY,

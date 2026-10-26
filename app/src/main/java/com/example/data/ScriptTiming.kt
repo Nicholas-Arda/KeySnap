@@ -42,11 +42,19 @@ fun resolveConsumeForScript(script: ShortcutScript, globalDefault: Boolean): Boo
 
 /**
  * Whether a key's own job is swallowed: some enabled script uses it (alone or as a chord member)
- * and resolves to consume. Accessibility and Activity both decide through this.
+ * and resolves to consume while its constraints hold. Accessibility and Activity both decide
+ * through this; the injected check runs only after the cheap key/enabled/consume gates.
  */
-fun shouldConsumeKey(scripts: List<ShortcutScript>, keyCode: Int, globallyEnabled: Boolean, globalDefault: Boolean): Boolean =
+fun shouldConsumeKey(
+    scripts: List<ShortcutScript>,
+    keyCode: Int,
+    globallyEnabled: Boolean,
+    globalDefault: Boolean,
+    constraintsSatisfied: (ShortcutScript) -> Boolean = { it.constraints.isEmpty() },
+): Boolean =
     globallyEnabled && scripts.any { script ->
-        script.enabled && script.triggers.any { keyCode in it.keyCodes } && resolveConsumeForScript(script, globalDefault)
+        script.enabled && script.triggers.any { keyCode in it.keyCodes } &&
+            resolveConsumeForScript(script, globalDefault) && constraintsSatisfied(script)
     }
 
 fun resolveVibrateForScript(script: ShortcutScript, globalDefault: Boolean): Boolean =

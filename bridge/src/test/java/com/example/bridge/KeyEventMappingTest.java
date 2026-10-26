@@ -98,4 +98,15 @@ public class KeyEventMappingTest {
         assertFalse(KeyEventMapping.isSynthetic(-1));
         assertFalse(KeyEventMapping.isSynthetic(0));
     }
+
+    @Test
+    public void assistantGestureCannotCollideWithPhysicalOemOrChordCodes() {
+        assertEquals(0x20000001, KeyEventMapping.ASSISTANT_GESTURE);
+        assertTrue(KeyEventMapping.ASSISTANT_GESTURE > 1000);
+        assertFalse(KeyEventMapping.isSynthetic(KeyEventMapping.ASSISTANT_GESTURE));
+        for (int code = 0; code <= 0xffff; code++) {
+            assertNotEquals(KeyEventMapping.ASSISTANT_GESTURE,
+                    KeyEventMapping.parse("EV_KEY " + Integer.toHexString(code) + " DOWN").androidKeyCode);
+        }
+    }
 }

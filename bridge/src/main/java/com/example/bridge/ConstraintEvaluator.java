@@ -20,21 +20,50 @@ import java.util.regex.Pattern;
  * .AndroidConstraintEvaluator} in the app module — both answer the same predicates about real
  * device state, just through different mechanisms.
  *
- * <p>Every predicate that cannot read or parse its state answers {@code true}: a constraint the
- * bridge cannot evaluate never blocks a script. The {@code parseX} helpers are package-private so
+ * <p>Mode predicates fail closed on unreadable state. Other predicates that cannot read or parse
+ * their state answer {@code true}: a constraint the
+ * bridge cannot evaluate never blocks a script. {@code no_app_open} is an exception: it needs
+ * positive evidence of home or keyguard. The {@code parseX} helpers are package-private so
  * the tests can feed them canned command output.
  */
 final class ConstraintEvaluator {
 
     private final TorchController torch;
+    private String homePackage;
+    private long homeResolvedAtNanos;
+    private boolean homeResolved;
+    private static final long HOME_CACHE_NANOS = 30_000_000_000L;
+    /** A failed resolve must not stick for the success interval. */
+    private static final long HOME_FAILURE_CACHE_NANOS = 1_000_000_000L;
+    /** One gesture checks several scripts; reuse the two dumps instead of running them per script. */
+    private static final long DUMP_CACHE_NANOS = 300_000_000L;
+    private String activitiesCache;
+    private long activitiesCacheAtNanos;
+    private String policyCache;
+    private long policyCacheAtNanos;
+    private String audioCache;
+    private long audioCacheAtNanos;
+    private final BridgeModes modes;
 
     ConstraintEvaluator(TorchController torch) {
+        this(torch, null);
+    }
+
+    ConstraintEvaluator(TorchController torch, BridgeModes modes) {
         this.torch = torch;
+        this.modes = modes;
     }
 
     boolean isSatisfied(BridgeConfig.Constraint constraint) {
+        return isSatisfied(constraint, false);
+    }
+
+    boolean isSatisfied(BridgeConfig.Constraint constraint, boolean foregroundReadable) {
         Map<String, String> p = constraint.params;
         switch (constraint.type) {
+            case BridgeConfig.CONSTRAINT_MODE_IS:
+                // Never fall through to unknown=true: that would select every mode's shortcut.
+                return modes != null && modes.matches(p);
             case BridgeConfig.CONSTRAINT_SCREEN_ON:
                 return isScreenOn();
             case BridgeConfig.CONSTRAINT_SCREEN_OFF:
@@ -60,9 +89,9 @@ final class ConstraintEvaluator {
             case BridgeConfig.CONSTRAINT_FLASHLIGHT_OFF:
                 return !torch.isOn();
             case BridgeConfig.CONSTRAINT_APP_IN_FOREGROUND:
-                return isAppInForeground(p.get("packageName"));
+                return !foregroundReadable || parseAppInForeground(activitiesDump(), p.get("packageName"));
             case BridgeConfig.CONSTRAINT_APP_NOT_IN_FOREGROUND:
-                return !isAppInForeground(p.get("packageName"));
+                return !foregroundReadable || !parseAppInForeground(activitiesDump(), p.get("packageName"));
             case BridgeConfig.CONSTRAINT_MEDIA_IS_PLAYING:
                 return isMediaPlaying();
             case BridgeConfig.CONSTRAINT_NO_MEDIA_PLAYING:
@@ -90,11 +119,22 @@ final class ConstraintEvaluator {
             case BridgeConfig.CONSTRAINT_DEVICE_UNLOCKED:
                 return !isDeviceLocked();
             case BridgeConfig.CONSTRAINT_LOCK_SCREEN_SHOWING:
-                return isLockScreenShowing();
+                return parseLockScreenShowing(policyDump());
+            case BridgeConfig.CONSTRAINT_NO_APP_OPEN: {
+                if (!foregroundReadable) return false;
+                String audio = cachedAudio(System.nanoTime(), true, "");
+                if (parseAudioMode(audio) == null || parsePhoneRinging(audio) || parseInPhoneCall(audio)) return false;
+                String activities = activitiesDump();
+                String policy = policyDump();
+                if (Boolean.TRUE.equals(keyguardLockedForNoAppOpen(policy, activities))) {
+                    return Boolean.FALSE.equals(parseKeyguardOccluded(policy, activities));
+                }
+                return isHomeInForeground(parseResumedPackage(activities), defaultHomePackage());
+            }
             case BridgeConfig.CONSTRAINT_LOCK_SCREEN_NOT_SHOWING:
-                return !isLockScreenShowing();
+                return !parseLockScreenShowing(policyDump());
             case BridgeConfig.CONSTRAINT_PHONE_RINGING:
-                return parsePhoneRinging(shell("dumpsys", "telephony.registry"));
+                return parsePhoneRinging(cachedAudio(System.nanoTime(), true, ""));
             case BridgeConfig.CONSTRAINT_BATTERY_SAVER_ON:
                 return parseSettingOn(shell("settings", "get", "global", "low_power"));
             case BridgeConfig.CONSTRAINT_BATTERY_SAVER_OFF:
@@ -209,12 +249,8 @@ final class ConstraintEvaluator {
         return parseCharging(shell("dumpsys", "battery"));
     }
 
-    private static boolean isInPhoneCall() {
-        return parseInPhoneCall(shell("dumpsys", "telephony.registry"));
-    }
-
-    private static boolean isAppInForeground(String packageName) {
-        return parseAppInForeground(shell("dumpsys", "activity", "activities"), packageName);
+    private boolean isInPhoneCall() {
+        return parseInPhoneCall(cachedAudio(System.nanoTime(), true, ""));
     }
 
     private static boolean isMediaPlaying() {
@@ -245,8 +281,137 @@ final class ConstraintEvaluator {
         return parseDeviceLocked(shell("dumpsys", "trust"));
     }
 
-    private static boolean isLockScreenShowing() {
-        return parseLockScreenShowing(shell("dumpsys", "window", "policy"));
+    /** Re-resolve periodically so changing the default launcher does not require a bridge restart. */
+    private synchronized String defaultHomePackage() {
+        return resolveHome(System.nanoTime(), true, "");
+    }
+
+    /** Success stays for 30s. A failed resolve is kept for about a second, then tried again. */
+    synchronized String resolveHome(long nowNanos, boolean runShell, String cannedOutput) {
+        if (homeResolved && homeCacheFresh(homePackage, nowNanos - homeResolvedAtNanos)) {
+            return homePackage;
+        }
+        String output = runShell
+                ? shell("cmd", "package", "resolve-activity", "--brief", "--user", "current",
+                "-a", "android.intent.action.MAIN", "-c", "android.intent.category.HOME")
+                : cannedOutput;
+        homePackage = parseHomePackage(output);
+        homeResolved = true;
+        homeResolvedAtNanos = nowNanos;
+        return homePackage;
+    }
+
+    static boolean homeCacheFresh(String cachedPackage, long ageNanos) {
+        long ttl = cachedPackage == null ? HOME_FAILURE_CACHE_NANOS : HOME_CACHE_NANOS;
+        return ageNanos >= 0 && ageNanos < ttl;
+    }
+
+    static boolean dumpCacheFresh(long ageNanos) {
+        return ageNanos >= 0 && ageNanos < DUMP_CACHE_NANOS;
+    }
+
+    private synchronized String activitiesDump() {
+        return cachedActivities(System.nanoTime(), true, "");
+    }
+
+    private synchronized String policyDump() {
+        return cachedPolicy(System.nanoTime(), true, "");
+    }
+
+    synchronized String cachedActivities(long nowNanos, boolean runShell, String canned) {
+        if (activitiesCache != null && dumpCacheFresh(nowNanos - activitiesCacheAtNanos)) return activitiesCache;
+        activitiesCache = runShell ? shell("dumpsys", "activity", "activities") : canned;
+        activitiesCacheAtNanos = nowNanos;
+        return activitiesCache;
+    }
+
+    synchronized String cachedPolicy(long nowNanos, boolean runShell, String canned) {
+        if (policyCache != null && dumpCacheFresh(nowNanos - policyCacheAtNanos)) return policyCache;
+        policyCache = runShell ? shell("dumpsys", "window", "policy") : canned;
+        policyCacheAtNanos = nowNanos;
+        return policyCache;
+    }
+
+    synchronized String cachedAudio(long nowNanos, boolean runShell, String canned) {
+        if (audioCache != null && dumpCacheFresh(nowNanos - audioCacheAtNanos)) return audioCache;
+        audioCache = runShell ? shell("dumpsys", "audio") : canned;
+        audioCacheAtNanos = nowNanos;
+        return audioCache;
+    }
+
+    static String parseHomePackage(String output) {
+        // --brief may precede the flattened component with priority/match metadata.
+        Matcher m = Pattern.compile("(?m)^\\s*([a-zA-Z][\\w]*(?:\\.[\\w]+)+)/[\\w.$]+\\s*$").matcher(output);
+        return m.find() ? m.group(1) : null;
+    }
+
+    static boolean isHomeInForeground(String foreground, String home) {
+        return home != null && !home.isEmpty() && home.equals(foreground);
+    }
+
+    static boolean parseNoAppOpen(String policy, String activities, String resolvedHome) {
+        return parseNoAppOpen(policy, activities, resolvedHome, true);
+    }
+
+    static boolean parseNoAppOpen(String policy, String activities, String resolvedHome, boolean foregroundReadable) {
+        return parseNoAppOpen(policy, activities, resolvedHome, foregroundReadable, "mMode=0");
+    }
+
+    static boolean parseNoAppOpen(String policy, String activities, String resolvedHome, boolean foregroundReadable, String audio) {
+        if (!foregroundReadable || parseAudioMode(audio) == null || parsePhoneRinging(audio) || parseInPhoneCall(audio)) return false;
+        if (Boolean.TRUE.equals(keyguardLockedForNoAppOpen(policy, activities))) {
+            return Boolean.FALSE.equals(parseKeyguardOccluded(policy, activities));
+        }
+        return isHomeInForeground(parseResumedPackage(activities), parseHomePackage(resolvedHome));
+    }
+
+    /** Prefer the default display's KeyguardController state; never match Changed/Pending fields. */
+    static Boolean parseKeyguardOccluded(String policy, String activities) {
+        for (String line : activities.split("\\r?\\n")) {
+            if (!line.contains("KeyguardShowing=")) continue;
+            Matcher display = Pattern.compile("\\bat display=(\\d+)\\b").matcher(line);
+            if (display.find() && !"0".equals(display.group(1))) continue;
+            Matcher occluded = Pattern.compile("\\bOccluded=(true|false)\\b").matcher(line);
+            if (occluded.find()) return Boolean.valueOf(occluded.group(1));
+        }
+        Matcher policyState = Pattern.compile("\\bmKeyguardOccluded=(true|false)\\b").matcher(policy);
+        if (policyState.find()) return Boolean.valueOf(policyState.group(1));
+        Matcher delegate = Pattern.compile("(?m)^\\s*occluded=(true|false)\\b").matcher(policy);
+        return delegate.find() ? Boolean.valueOf(delegate.group(1)) : null;
+    }
+
+    /**
+     * Same meaning as {@code KeyguardManager.isKeyguardLocked}: true while the lock screen is
+     * showing, including when a camera or call occludes it. {@code mKeyguardShowing} on
+     * KeyguardController stays true in that case; the delegate's {@code showing} flag does not.
+     * Unknown stays null so {@code no_app_open} does not treat it as locked.
+     * {@link #parseLockScreenShowing} is unchanged and still follows the delegate flag.
+     */
+    static Boolean keyguardLockedForNoAppOpen(String policy, String activities) {
+        Boolean controller = parseKeyguardControllerLocked(activities);
+        if (controller != null) return controller;
+        return lockScreenShowing(policy);
+    }
+
+    /** {@code mKeyguardShowing && !mKeyguardGoingAway} for the default display, or null if absent. */
+    static Boolean parseKeyguardControllerLocked(String activities) {
+        if (activities == null || activities.isEmpty()) return null;
+        for (String line : activities.split("\\r?\\n")) {
+            Matcher showing = Pattern.compile("\\bKeyguardShowing=(true|false)\\b").matcher(line);
+            if (!showing.find()) continue;
+            Matcher display = Pattern.compile("\\bat display=(\\d+)\\b").matcher(line);
+            if (display.find() && !"0".equals(display.group(1))) continue;
+            return "true".equals(showing.group(1)) && !line.contains("KeyguardGoingAway=true");
+        }
+        int at = activities.indexOf("KeyguardController");
+        if (at < 0) return null;
+        String section = activities.substring(at);
+        Matcher showing = Pattern.compile("mKeyguardShowing=(true|false)").matcher(section);
+        if (!showing.find()) return null;
+        boolean locked = "true".equals(showing.group(1));
+        Matcher away = Pattern.compile("mKeyguardGoingAway=(true|false)").matcher(section);
+        if (away.find() && "true".equals(away.group(1))) locked = false;
+        return locked;
     }
 
     private static boolean isBatteryAbove(String percent, boolean above) {
@@ -285,6 +450,8 @@ final class ConstraintEvaluator {
     }
 
     static boolean parseInPhoneCall(String dumpsysTelephonyRegistryOutput) {
+        Integer audioMode = parseAudioMode(dumpsysTelephonyRegistryOutput);
+        if (audioMode != null) return audioMode == 2 || audioMode == 3;
         // mCallState=2 is CALL_STATE_OFFHOOK.
         Matcher m = Pattern.compile("mCallState=(\\d+)").matcher(dumpsysTelephonyRegistryOutput);
         if (m.find()) {
@@ -294,14 +461,36 @@ final class ConstraintEvaluator {
     }
 
     static boolean parsePhoneRinging(String dumpsysTelephonyRegistryOutput) {
+        Integer audioMode = parseAudioMode(dumpsysTelephonyRegistryOutput);
+        if (audioMode != null) return audioMode == 1;
         // mCallState=1 is CALL_STATE_RINGING.
         Matcher m = Pattern.compile("mCallState=(\\d+)").matcher(dumpsysTelephonyRegistryOutput);
         return m.find() ? "1".equals(m.group(1)) : true;
     }
 
+    /** AudioService uses named actual modes on recent Android; older/OEM dumps use mMode. */
+    static Integer parseAudioMode(String audio) {
+        Matcher mode = Pattern.compile("(?m)^\\s*(?:-\\s*)?Actual mode\\s*=\\s*(MODE_[A-Z_]+|[0-9]+)\\b").matcher(audio);
+        if (!mode.find()) {
+            mode = Pattern.compile("(?m)^\\s*mMode\\s*=\\s*(MODE_[A-Z_]+|[0-9]+)\\b").matcher(audio);
+            if (!mode.find()) return null;
+        }
+        switch (mode.group(1)) {
+            case "MODE_NORMAL": case "0": return 0;
+            case "MODE_RINGTONE": case "1": return 1;
+            case "MODE_IN_CALL": case "2": return 2;
+            case "MODE_IN_COMMUNICATION": case "3": return 3;
+            case "MODE_CALL_SCREENING": case "4": return 4;
+            case "MODE_CALL_REDIRECT": case "5": return 5;
+            case "MODE_COMMUNICATION_REDIRECT": case "6": return 6;
+            default: return null;
+        }
+    }
+
     /**
      * Newer builds print "topResumedActivity=ActivityRecord{... u0 pkg/.Activity t2}"; some OEM
-     * builds only print "ResumedActivity: ActivityRecord{...}". Both end in "ResumedActivity".
+     * builds only print "mResumedActivity:" or "ResumedActivity:". {@code mLastResumedActivity}
+     * contains the same token and is not the current one.
      */
     static boolean parseAppInForeground(String dumpsysActivitiesOutput, String packageName) {
         if (packageName == null || packageName.trim().isEmpty()) {
@@ -311,11 +500,29 @@ final class ConstraintEvaluator {
         return resumed == null || resumed.equals(packageName.trim());
     }
 
-    /** The resumed activity's package, or null when the output has none in a known format. */
+    /** The current resumed activity's package, or null when the output has none in a known format. */
     static String parseResumedPackage(String dumpsysActivitiesOutput) {
-        Matcher m = Pattern.compile("ResumedActivity[=:]\\s*ActivityRecord\\{\\S+ u\\d+ ([^/\\s]+)/")
+        if (dumpsysActivitiesOutput == null) return null;
+        Matcher m = Pattern.compile(
+                "(?m)^[ \\t]*((?:top|m)?ResumedActivity)[=:][ \\t]*ActivityRecord\\{\\S+[ \\t]+u\\d+[ \\t]+([^/\\s]+)/")
                 .matcher(dumpsysActivitiesOutput);
-        return m.find() ? m.group(1) : null;
+        String top = null;
+        String current = null;
+        String legacy = null;
+        while (m.find()) {
+            String kind = m.group(1);
+            String pkg = m.group(2);
+            if ("topResumedActivity".equals(kind)) {
+                if (top == null) top = pkg;
+            } else if ("mResumedActivity".equals(kind)) {
+                if (current == null) current = pkg;
+            } else if ("ResumedActivity".equals(kind) && legacy == null) {
+                legacy = pkg;
+            }
+        }
+        if (top != null) return top;
+        if (current != null) return current;
+        return legacy;
     }
 
     /** Playback state 3 is PLAYING; printed as "state=PlaybackState {state=PLAYING(3)," or "{state=3,". */
@@ -407,8 +614,13 @@ final class ConstraintEvaluator {
 
     /** The keyguard's "showing=true" is the first field under "KeyguardServiceDelegate". */
     static boolean parseLockScreenShowing(String dumpsysWindowPolicyOutput) {
+        Boolean showing = lockScreenShowing(dumpsysWindowPolicyOutput);
+        return showing == null || showing;
+    }
+
+    private static Boolean lockScreenShowing(String dumpsysWindowPolicyOutput) {
         Matcher m = Pattern.compile("KeyguardServiceDelegate\\s+showing=(\\w+)").matcher(dumpsysWindowPolicyOutput);
-        return m.find() ? "true".equals(m.group(1)) : true;
+        return m.find() ? "true".equals(m.group(1)) : null;
     }
 
     static boolean parseChargingWired(String dumpsysBatteryOutput) {

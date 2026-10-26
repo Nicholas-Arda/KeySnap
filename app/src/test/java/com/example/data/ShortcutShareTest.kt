@@ -1,5 +1,6 @@
 package com.example.data
 
+import com.example.mode.ModeHooks
 import io.github.nicholasarda.keysnap.R
 import java.io.ByteArrayInputStream
 import org.junit.Assert.assertEquals
@@ -37,6 +38,26 @@ class ShortcutShareTest {
         assertEquals(TriggerPressType.DOUBLE_PRESS, back.pressType)
         assertEquals(listOf(torch, hook), back.actions)
         assertEquals(constraints, back.constraints)
+    }
+
+    @Test fun modeNumbersArePortableButNoCurrentStateIsShared() {
+        val actions = listOf(ScriptAction("cycle_mode", mapOf("count" to "4")))
+        val constraints = listOf(ScriptConstraint("mode_is", mapOf("mode" to "3")))
+        val text = encode(actions = actions, constraints = constraints)
+        assertTrue(text.contains("\"count\":\"4\""))
+        assertTrue(text.contains("\"mode\":\"3\""))
+        assertFalse(text.contains("shortcut_mode"))
+        val mixed = encode(actions = listOf(torch), constraints = constraints)
+        if (ModeHooks.AVAILABLE) {
+            val back = ok(text)
+            assertEquals(actions, back.actions)
+            assertEquals(constraints, back.constraints)
+            assertEquals(listOf(torch), ok(mixed).actions)
+            assertEquals(constraints, ok(mixed).constraints)
+        } else {
+            assertEquals(R.string.import_error_unsupported, error(text))
+            assertEquals(R.string.import_error_unsupported, error(mixed))
+        }
     }
 
     /** Plan 3's key-less "Widget or tile" shortcut stays one; its widget and tile bindings never travel. */

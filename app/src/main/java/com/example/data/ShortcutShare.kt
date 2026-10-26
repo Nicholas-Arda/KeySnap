@@ -1,6 +1,7 @@
 package com.example.data
 
 import androidx.annotation.StringRes
+import com.example.mode.ModeHooks
 import com.squareup.moshi.JsonClass
 import com.squareup.moshi.Moshi
 import io.github.nicholasarda.keysnap.R
@@ -152,6 +153,13 @@ object ShortcutShare {
             ScriptConstraint(it.type, portableConstraintParams(it.type, it.params))
         }
         val name = shared.name.filterNot { it.isISOControl() }.trim().take(MAX_NAME_LENGTH)
+        // The public build cannot run mode actions or conditions. Reject the share, as with any
+        // unavailable action, instead of dropping the step and saving a different shortcut.
+        if (!ModeHooks.AVAILABLE &&
+            (actions.any { ModeHooks.requiresPro(it.type) } || constraints.any { ModeHooks.requiresPro(it.type) })
+        ) {
+            return unsupported
+        }
         return ImportResult.Ok(ImportedShortcut(name, shared.automation, pressType, actions, constraints, shared.surfaceOnly))
     }
 

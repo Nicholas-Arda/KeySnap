@@ -20,4 +20,17 @@ class PurchaseManagerTest {
             BillingResponseCode.ERROR,
         ).forEach { code -> assertNull("code $code", proAfterQuery(code, ownsPro = false)) }
     }
+
+    @Test fun liveDiscountIsSoldOverTheBaseOffer() {
+        val base = OfferInfo(3_990_000, discounted = false, endsAtMillis = null)
+        val sale = OfferInfo(2_490_000, discounted = true, endsAtMillis = 2_000)
+        assertEquals(1, pickProOffer(listOf(base, sale), nowMillis = 1_000))
+    }
+
+    @Test fun endedDiscountFallsBackToFullPrice() {
+        val base = OfferInfo(3_990_000, discounted = false, endsAtMillis = null)
+        val sale = OfferInfo(2_490_000, discounted = true, endsAtMillis = 2_000)
+        assertEquals(1, pickProOffer(listOf(sale, base), nowMillis = 2_000))
+        assertNull(pickProOffer(emptyList(), nowMillis = 0))
+    }
 }

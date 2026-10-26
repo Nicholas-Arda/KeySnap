@@ -43,4 +43,18 @@ public class BridgeProtocolTest {
     @Test public void noActionsIsAnEmptyListNotNull() {
         assertEquals(0, BridgeProtocol.decodeActionResults("").size());
     }
+
+    @Test public void eachBuildGetsItsOwnDirectoryAndPlayKeepsTheOldOne() {
+        assertEquals("/data/local/tmp/ardamapper", BridgeProtocol.baseDirFor("io.github.nicholasarda.keysnap"));
+        assertEquals("/data/local/tmp/ardamapper-dev", BridgeProtocol.baseDirFor("io.github.nicholasarda.keysnap.dev"));
+        assertTrue(BridgeProtocol.isValidBaseDir(BridgeProtocol.baseDirFor("io.github.nicholasarda.keysnap.dev")));
+    }
+
+    @Test public void onlyItsOwnKindOfDirectoryIsAccepted() {
+        // The bridge deletes this directory on exit, so nothing else may get through.
+        assertFalse(BridgeProtocol.isValidBaseDir("/data/local/tmp"));
+        assertFalse(BridgeProtocol.isValidBaseDir("/data/local/tmp/ardamapper/../../"));
+        assertFalse(BridgeProtocol.isValidBaseDir("/sdcard"));
+        assertFalse(BridgeProtocol.isValidBaseDir(null));
+    }
 }

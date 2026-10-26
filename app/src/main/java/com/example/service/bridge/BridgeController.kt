@@ -121,6 +121,10 @@ object BridgeController {
             appContext?.let { com.example.capsule.CapsuleHooks.onBridgeFeedback(it, trigger) }
         }
 
+        override fun onModeChanged(mode: Int) {
+            appContext?.let { com.example.mode.ModeHooks.showToast(it, mode) }
+        }
+
         override fun onDevice(path: String, name: String) {
             _inputDevices.value = _inputDevices.value + (path to name)
         }
@@ -278,7 +282,7 @@ object BridgeController {
             }
             delay(500)
         }
-        setError("Bridge started but the control port didn't respond. Log: ${com.example.bridge.BridgeProtocol.BASE_DIR}/bridge.log")
+        setError("Bridge started but the control port didn't respond. Log: ${payload?.baseDir}/bridge.log")
         return false
     }
 

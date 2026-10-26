@@ -117,7 +117,9 @@ import com.example.data.InstalledApp
 import com.example.data.RunRecord
 import com.example.data.ScriptConstraint
 import com.example.data.ScriptConstraintCatalog
+import com.example.data.ShortcutScript
 import com.example.data.keyDisplayName
+import com.example.mode.ModeHooks
 import com.example.ui.components.AppAlertDialog
 import com.example.ui.components.ConsoleShape
 import com.example.ui.components.IconTile
@@ -169,6 +171,9 @@ fun ScriptEditorScreen(
     onDone: () -> Unit,
     onClose: () -> Unit,
     onShare: () -> Unit = {},
+    scripts: List<com.example.data.ShortcutScript> = emptyList(),
+    isPro: Boolean = false,
+    onSetRunsIn: (Int?) -> Unit = {},
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     LaunchedEffect(message) {
@@ -240,6 +245,9 @@ fun ScriptEditorScreen(
             )
             EditorPane.ADD_CONSTRAINT -> ConstraintPickerScreen(
                 automation = draft.automation,
+                scriptId = draft.id,
+                scripts = scripts,
+                isPro = isPro,
                 onClose = { pane = EditorPane.CHAIN },
                 onPickConstraint = { type ->
                     pane = EditorPane.CHAIN
@@ -263,6 +271,9 @@ fun ScriptEditorScreen(
                     Column(Modifier.fillMaxSize()) {
                         ChainArea(
                             draft = draft,
+                            scripts = scripts,
+                            isPro = isPro,
+                            onSetRunsIn = onSetRunsIn,
                             onOpenTriggerPicker = onOpenTriggerPicker,
                             onToggleAutomation = onToggleAutomation,
                             onClearSurfaceOnly = onClearSurfaceOnly,
@@ -396,6 +407,9 @@ private fun ScriptNameField(name: String, placeholder: String, onSetName: (Strin
 @Composable
 private fun ChainArea(
     draft: ScriptDraft,
+    scripts: List<com.example.data.ShortcutScript>,
+    isPro: Boolean,
+    onSetRunsIn: (Int?) -> Unit,
     onOpenTriggerPicker: () -> Unit,
     onToggleAutomation: () -> Unit,
     onClearSurfaceOnly: () -> Unit,
@@ -423,12 +437,35 @@ private fun ChainArea(
         draft.noteRes?.let { note -> item { ChainHint(stringResource(note)) } }
         item { ChainLabel(stringResource(R.string.editor_chain_when)) }
         item { TriggerCard(draft, onOpenTriggerPicker, onToggleAutomation, onClearSurfaceOnly) }
+        // An empty item still takes the column's gap, so this is omitted entirely unless it draws.
+        if (ModeHooks.showsRunsIn(draft.id, scripts, isPro)) {
+            item {
+                ModeHooks.RunsInField(
+                    scriptId = draft.id,
+                    constraints = draft.constraints,
+                    scripts = scripts,
+                    isPro = isPro,
+                    onChange = onSetRunsIn,
+                )
+            }
+        }
         // Done is disabled until both of these are filled in; say which one is missing.
         if (!draft.hasTrigger()) {
             item { ChainHint(stringResource(R.string.editor_needs_trigger)) }
         }
         item { ChainLabel(stringResource(R.string.editor_chain_only_if), topPadding = 6.dp) }
-        item { ConstraintsCard(draft.constraints, onOpenConstraintPicker, onRemoveConstraint, onConfigureConstraint, installedApps) }
+        item {
+            ConstraintsCard(
+                scriptId = draft.id,
+                scripts = scripts,
+                isPro = isPro,
+                constraints = draft.constraints,
+                onOpenPicker = onOpenConstraintPicker,
+                onRemove = onRemoveConstraint,
+                onConfigure = onConfigureConstraint,
+                installedApps = installedApps,
+            )
+        }
         item { ChainLabel(stringResource(R.string.editor_chain_do), topPadding = 6.dp) }
         val everyChatIndex = ActionEditorForms.everyChatReplyIndex(draft.automation, draft.constraints, draft.actions)
         // Keyed on instance identity, which survives a reorder: draftMoveAction moves the same
@@ -687,6 +724,9 @@ private fun TriggerKindOption(icon: ImageVector, label: String, modifier: Modifi
 
 @Composable
 private fun ConstraintsCard(
+    scriptId: String,
+    scripts: List<ShortcutScript>,
+    isPro: Boolean,
     constraints: List<ScriptConstraint>,
     onOpenPicker: () -> Unit,
     onRemove: (Int) -> Unit,
@@ -702,7 +742,10 @@ private fun ConstraintsCard(
             .border(1.dp, colors.outline.copy(alpha = .6f), InnerShape)
             .testTag("constraints_card"),
     ) {
-        if (constraints.isEmpty()) {
+        val visible = constraints.mapIndexedNotNull { index, constraint ->
+            if (ModeHooks.hidesFromEditor(constraint.type, scriptId, scripts, isPro)) null else index to constraint
+        }
+        if (visible.isEmpty()) {
             Text(
                 stringResource(R.string.editor_always_runs),
                 Modifier.padding(16.dp),
@@ -710,7 +753,7 @@ private fun ConstraintsCard(
                 style = MaterialTheme.typography.bodyMedium,
             )
         } else {
-            constraints.forEachIndexed { index, constraint ->
+            visible.forEach { (index, constraint) ->
                 val descriptor = ScriptConstraintCatalog.descriptor(constraint.type)
                 val title = descriptor?.let { stringResource(it.titleRes) } ?: constraint.type
                 val configurable = ConstraintEditorForms.form(constraint.type) != null
@@ -796,6 +839,7 @@ private fun ActionChainCard(
     val descriptor = ScriptActionCatalog.descriptor(action.type)
     val title = descriptor?.let { stringResource(it.titleRes) } ?: action.type
     val configurable = ActionEditorForms.isConfigurable(action.type) || action.type in ASSISTANT_SETTINGS_ACTION_TYPES
+    val redirectsAssistant = action.type in ASSISTANT_SETTINGS_ACTION_TYPES && rememberAssistantSelected().value
     // Scripts saved before configuration existed can be missing required params; surface that
     // rather than letting the action fail silently at run time.
     val incomplete = ActionEditorForms.missingRequired(action, startsFromNotification).isNotEmpty()
@@ -860,6 +904,13 @@ private fun ActionChainCard(
                             )
                         }
                         if (ActionEditorForms.needsAdvancedMode(action.type)) AdvancedModeChip(advancedModeActive)
+                    }
+                    if (redirectsAssistant) {
+                        Text(
+                            stringResource(R.string.assistant_redirect_note),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = colors.onSurfaceVariant,
+                        )
                     }
                 }
                 Box {
@@ -1067,7 +1118,8 @@ private fun AddActionScreen(
         Spacer(Modifier.height(8.dp))
 
         val searching = query.isNotBlank()
-        val offered = if (searching) ScriptActionCatalog.search(query, LocalContext.current.resources) else ScriptActionCatalog.all
+        val offered = (if (searching) ScriptActionCatalog.search(query, LocalContext.current.resources) else ScriptActionCatalog.all)
+            .filter { ModeHooks.offered(it.type) }
         val filtered = selectedCategory?.let { cat -> offered.filter { it.category == cat } } ?: offered
         val grouped = ActionCategory.entries.mapNotNull { category ->
             val entries = filtered.filter { it.category == category }

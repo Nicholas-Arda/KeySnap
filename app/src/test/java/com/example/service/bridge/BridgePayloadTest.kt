@@ -1,6 +1,8 @@
 package com.example.service.bridge
 
+import android.app.AppOpsManager
 import android.content.Context
+import android.os.Process
 import androidx.test.core.app.ApplicationProvider
 import com.example.bridge.BridgeConfig
 import com.example.bridge.BridgeProtocol
@@ -16,6 +18,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.Shadows.shadowOf
 
 /**
  * Pins the app-to-bridge contract.
@@ -29,6 +32,16 @@ import org.robolectric.RobolectricTestRunner
 class BridgePayloadTest {
 
     private val context: Context get() = ApplicationProvider.getApplicationContext()
+
+    @Test fun usageAccessGrantAndRevocationReachTheBridgeConfig() {
+        val payload = BridgePayload(context)
+        val appOps = shadowOf(context.getSystemService(AppOpsManager::class.java))
+        for (mode in listOf(AppOpsManager.MODE_DEFAULT, AppOpsManager.MODE_ALLOWED, AppOpsManager.MODE_IGNORED)) {
+            appOps.setMode(AppOpsManager.OPSTR_GET_USAGE_STATS, Process.myUid(), context.packageName, mode)
+            assertTrue(payload.writeConfig(listOf(flashlightScript()), true, KeyMappingConfig()))
+            assertEquals(mode == AppOpsManager.MODE_ALLOWED, BridgeConfig.read(payload.configFile()!!).foregroundReadable)
+        }
+    }
 
     private fun flashlightScript(
         keyCode: Int = 25,

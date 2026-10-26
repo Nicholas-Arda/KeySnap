@@ -18,13 +18,30 @@ public final class BridgeProtocol {
     /** Bumped whenever the on-disk payload or the socket protocol changes incompatibly, or when
      *  :bridge behavior changes at all — an already-running detached bridge has no way to pick up
      *  a source-only fix otherwise. */
-    public static final int VERSION = 24;
+    public static final int VERSION = 30;
 
     /** Process name given to app_process, used by `pidof` for liveness checks. */
     public static final String NICE_NAME = "arda_bridge";
 
     /** Shell-owned working directory. The app UID cannot read this; it is for the bridge only. */
     public static final String BASE_DIR = "/data/local/tmp/ardamapper";
+
+    /** The Play build's package; it keeps [BASE_DIR] so bridges already running there are found. */
+    public static final String PLAY_PACKAGE = "io.github.nicholasarda.keysnap";
+
+    /**
+     * One working directory per installed build. Side-by-side builds (".dev") sharing one directory
+     * overwrote each other's running bridge.dex and killed that bridge.
+     */
+    public static String baseDirFor(String packageName) {
+        if (PLAY_PACKAGE.equals(packageName)) return BASE_DIR;
+        return BASE_DIR + "-" + packageName.substring(packageName.lastIndexOf('.') + 1);
+    }
+
+    /** Only a directory [baseDirFor] can produce is accepted: the bridge deletes it on exit. */
+    public static boolean isValidBaseDir(String dir) {
+        return dir != null && dir.matches("/data/local/tmp/ardamapper(-[A-Za-z0-9_]+)?");
+    }
 
     public static final String DEX_NAME = "bridge.dex";
     public static final String START_SCRIPT_NAME = "start.sh";
@@ -85,6 +102,8 @@ public final class BridgeProtocol {
     /** Same fields as TRIGGER, but display only: never execute actions from a retained report. */
     public static final String MSG_FEEDBACK = "FEEDBACK";
     public static final String MSG_DEVICE = "DEVICE";
+    /** Display-only mode feedback. The durable value stays in the app-created mode file, never in telemetry. */
+    public static final String MSG_MODE = "MODE";
     public static final String MSG_BYE = "BYE";
 
     /**

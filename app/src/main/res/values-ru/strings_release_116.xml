@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_assistant_gesture_title">Кнопка питания для вашего сценария</string>
+    <string name="whats_new_assistant_gesture_description">Выберите KeySnap помощником телефона. Если долгое нажатие кнопки питания вызывает помощника, оно запустит сценарий с триггером «Жест вызова ассистента».</string>
+    <string name="whats_new_home_only_title">Только главный экран или экран блокировки</string>
+    <string name="whats_new_home_only_description">Добавьте «Нет открытых приложений» в «Только если», чтобы в приложениях кнопки громкости работали как обычно. Нужен доступ к данным об использовании.</string>
+    <string name="whats_new_fix_coloros_dnd">Действия «Не беспокоить» теперь работают в ColorOS в Расширенном режиме</string>
+    <string name="whats_new_fix_conditional_volume">Кнопка громкости перехватывается только при выполнении условий сценария</string>
+    <string name="rating_prompt_title">KeySnap справляется со своей задачей?</string>
+    <string name="rating_prompt_body">Оценка в Google Play очень поможет.</string>
+    <string name="rating_prompt_rate">Оценить</string>
+    <string name="rating_prompt_later">Позже</string>
+    <string name="rating_prompt_no_thanks">Нет, спасибо</string>
+</resources>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_assistant_gesture_title">Your power key, your shortcut</string>
+    <string name="whats_new_assistant_gesture_description">Set KeySnap as your phone’s assistant. On phones that send a power-key hold to the assistant, it runs your “Assistant gesture” shortcut.</string>
+    <string name="whats_new_home_only_title">Home or lock screen only</string>
+    <string name="whats_new_home_only_description">Add “No app open” under “Only if” so volume keys work normally inside apps. Needs Usage access.</string>
+    <string name="whats_new_fix_coloros_dnd">Do Not Disturb actions now work on ColorOS in Advanced Mode</string>
+    <string name="whats_new_fix_conditional_volume">A volume key is only taken over when the shortcut’s conditions are met</string>
+    <string name="rating_prompt_title">Is KeySnap doing its job?</string>
+    <string name="rating_prompt_body">A rating on Google Play helps a lot.</string>
+    <string name="rating_prompt_rate">Rate</string>
+    <string name="rating_prompt_later">Later</string>
+    <string name="rating_prompt_no_thanks">No thanks</string>
+</resources>

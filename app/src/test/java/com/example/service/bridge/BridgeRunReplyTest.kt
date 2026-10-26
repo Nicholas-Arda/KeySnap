@@ -28,6 +28,7 @@ class BridgeRunReplyTest {
                 "EVENT\t1\t24\tdown\t1\tAdvanced Mode",
                 "TRIGGER\t1\t24\tSINGLE_PRESS\ts1\t1\ttoggle_wifi=1",
                 "DEVICE\t/dev/input/event3\tgpio-keys",
+                "MODE\t2",
                 "OK\t1\t1\ttoggle_wifi=1",
             ),
         )

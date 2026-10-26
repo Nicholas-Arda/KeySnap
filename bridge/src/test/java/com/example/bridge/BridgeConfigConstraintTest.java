@@ -21,6 +21,14 @@ public class BridgeConfigConstraintTest {
 
     @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
 
+    @Test public void foregroundReadabilityDefaultsClosedAndReadsBothPermissionStates() throws Exception {
+        File file = tempFolder.newFile();
+        for (String json : new String[] {"{}", "{\"foregroundReadable\":false}", "{\"foregroundReadable\":true}"}) {
+            try (FileWriter writer = new FileWriter(file)) { writer.write(json); }
+            assertEquals(json.contains(":true"), BridgeConfig.read(file).foregroundReadable);
+        }
+    }
+
     private JSONObject constraint(String type) throws Exception {
         return new JSONObject().put("type", type).put("params", new JSONObject());
     }

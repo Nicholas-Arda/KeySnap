@@ -30,6 +30,7 @@ import com.example.data.ScriptActionCatalog
 import com.example.data.TriggerPressType
 import com.example.bridge.BridgeProtocol
 import com.example.data.ScriptRepository
+import com.example.mode.ModeHooks
 import com.example.service.bridge.BridgeController
 import io.github.nicholasarda.keysnap.R
 import kotlinx.coroutines.CancellationException
@@ -370,6 +371,7 @@ class ScriptActionExecutor(private val handler: ScriptActionHandler) {
         fun android(context: Context) = ScriptActionExecutor { action ->
             val ctx = context.applicationContext
             when (action.type) {
+                "cycle_mode" -> ModeHooks.cycle(ctx, action.params)
                 "toggle_flashlight" -> FlashlightController.toggle(ctx)
                 "enable_flashlight" -> FlashlightController.setTorchMode(ctx, true)
                 "disable_flashlight" -> FlashlightController.setTorchMode(ctx, false)
@@ -439,8 +441,8 @@ class ScriptActionExecutor(private val handler: ScriptActionHandler) {
                 "switch_keyboard" -> false
                 "launch_app" -> launchApp(ctx, action.params["packageName"])
                 "open_url" -> openUrl(ctx, action.params["url"])
-                "launch_voice_assistant" -> startActivitySafely(ctx, Intent(Intent.ACTION_VOICE_COMMAND))
-                "launch_device_assistant" -> startActivitySafely(ctx, Intent(Intent.ACTION_ASSIST))
+                "launch_voice_assistant" -> com.example.assistant.AssistantIntegration.launch(ctx, Intent.ACTION_VOICE_COMMAND)
+                "launch_device_assistant" -> com.example.assistant.AssistantIntegration.launch(ctx)
                 "open_camera" -> startActivitySafely(ctx, Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA))
                 "open_settings" -> startActivitySafely(ctx, Intent(Settings.ACTION_SETTINGS))
                 "send_intent" -> sendIntent(ctx, action.params)

@@ -17,6 +17,8 @@ import com.example.data.EntitlementManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import java.text.NumberFormat
+import java.util.Currency
 
 /** Owns the Pro one-time purchase: [PRO_PRODUCT_ID] must exist as an in-app product in
  *  Play Console before this can complete a real purchase (it will fail to find product details
@@ -36,12 +38,14 @@ class PurchaseManager private constructor(context: Context, private val entitlem
 
     private var started = false
     private var proProductDetails: ProductDetails? = null
+    private var proOfferToken: String? = null
 
-    private val _proPrice = MutableStateFlow<String?>(null)
+    private val _proPrice = MutableStateFlow<ProPrice?>(null)
 
     /** Play's own localized, currency-formatted price, or null until the product query answers -
-     *  which it never does when Billing is unavailable or the product is not published yet. */
-    val proPrice: StateFlow<String?> = _proPrice.asStateFlow()
+     *  which it never does when Billing is unavailable or the product is not published yet. While a
+     *  discount offer set up in Play Console is live, it also carries the full price and end time. */
+    val proPrice: StateFlow<ProPrice?> = _proPrice.asStateFlow()
 
     private val purchasesListener = PurchasesUpdatedListener { result, purchases ->
         if (result.responseCode == BillingClient.BillingResponseCode.OK) {
@@ -71,9 +75,10 @@ class PurchaseManager private constructor(context: Context, private val entitlem
     }
 
     /** Re-reads Play on every return to the app, so a promo code redeemed in the Play Store or a
-     *  refund takes effect without a restart, and a price that failed to load gets another try. */
+     *  refund takes effect without a restart, a price that failed to load gets another try, and a
+     *  discount that started or ended in Play Console shows up or disappears. */
     fun refresh() {
-        if (proProductDetails == null) queryProductDetails()
+        queryProductDetails()
         restorePurchases()
     }
 
@@ -84,8 +89,15 @@ class PurchaseManager private constructor(context: Context, private val entitlem
             .build()
         val params = QueryProductDetailsParams.newBuilder().setProductList(listOf(product)).build()
         billingClient.queryProductDetailsAsync(params) { _, result ->
-            proProductDetails = result.productDetailsList.firstOrNull()
-            _proPrice.value = proProductDetails?.oneTimePurchaseOfferDetails?.formattedPrice
+            val details = result.productDetailsList.firstOrNull()
+            proProductDetails = details
+            val offers = details?.oneTimePurchaseOfferDetailsList.orEmpty()
+            val chosen = pickProOffer(offers.map { it.toOfferInfo() }, System.currentTimeMillis())
+                ?.let { index -> offers[index] } ?: details?.oneTimePurchaseOfferDetails
+            proOfferToken = chosen?.offerToken
+            _proPrice.value = chosen?.let { offer ->
+                ProPrice(offer.formattedPrice, offer.sale(offers))
+            }
         }
     }
 
@@ -104,8 +116,10 @@ class PurchaseManager private constructor(context: Context, private val entitlem
 
     fun purchasePro(activity: Activity) {
         val details = proProductDetails ?: return
+        // The offer token is what applies a Play Console discount; without it Play charges full price.
         val productParams = BillingFlowParams.ProductDetailsParams.newBuilder()
             .setProductDetails(details)
+            .apply { proOfferToken?.let(::setOfferToken) }
             .build()
         val flowParams = BillingFlowParams.newBuilder()
             .setProductDetailsParamsList(listOf(productParams))
@@ -122,6 +136,34 @@ class PurchaseManager private constructor(context: Context, private val entitlem
             billingClient.acknowledgePurchase(ackParams) {}
         }
     }
+}
+
+/** Pro's price as Play reports it. [sale] is set only while a discount offer is live. */
+data class ProPrice(val price: String, val sale: ProSale? = null)
+
+/** A Play Console discount: the struck-out full price, its percentage and when Play ends it. */
+data class ProSale(val fullPrice: String, val percentOff: Int?, val endsAtMillis: Long?)
+
+internal data class OfferInfo(val priceMicros: Long, val discounted: Boolean, val endsAtMillis: Long?)
+
+/** The offer to sell: the cheapest live discount, else the first (base) offer; null with no offers. */
+internal fun pickProOffer(offers: List<OfferInfo>, nowMillis: Long): Int? {
+    if (offers.isEmpty()) return null
+    val live = offers.indices.filter { i -> offers[i].discounted && offers[i].endsAtMillis.let { it == null || it > nowMillis } }
+    return live.minByOrNull { offers[it].priceMicros } ?: offers.indices.firstOrNull { !offers[it].discounted } ?: 0
+}
+
+private fun ProductDetails.OneTimePurchaseOfferDetails.toOfferInfo() =
+    OfferInfo(priceAmountMicros, discountDisplayInfo != null, validTimeWindow?.endTimeMillis)
+
+private fun ProductDetails.OneTimePurchaseOfferDetails.sale(all: List<ProductDetails.OneTimePurchaseOfferDetails>): ProSale? {
+    val discount = discountDisplayInfo ?: return null
+    val fullMicros = fullPriceMicros ?: return null
+    // Play's own string for the undiscounted offer when it is listed; otherwise format the micros.
+    val full = all.firstOrNull { it.discountDisplayInfo == null && it.priceAmountMicros == fullMicros }?.formattedPrice
+        ?: NumberFormat.getCurrencyInstance().apply { currency = Currency.getInstance(priceCurrencyCode) }
+            .format(fullMicros / 1_000_000.0)
+    return ProSale(full, discount.percentageDiscount, validTimeWindow?.endTimeMillis)
 }
 
 /** What Pro should become after a purchases query; null keeps the stored value. Only an OK answer

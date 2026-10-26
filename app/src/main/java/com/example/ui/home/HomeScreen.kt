@@ -1,5 +1,6 @@
 package com.example.ui.home
 
+import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.SizeTransform
@@ -31,6 +32,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -49,7 +51,21 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import android.icu.text.MeasureFormat
+import android.icu.util.Measure
+import android.icu.util.MeasureUnit
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withStyle
+import com.example.billing.ProPrice
+import com.example.billing.ProSale
+import java.text.NumberFormat
+import java.util.Locale
+import kotlinx.coroutines.delay
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -85,8 +101,10 @@ import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.constrainHeight
+import androidx.compose.ui.zIndex
 import com.example.capsule.CapsuleHooks
 import com.example.data.EntitlementManager
+import com.example.data.RatingPromptChoice
 import com.example.data.ScriptActionCatalog
 import com.example.data.ShortcutScript
 import com.example.data.SuggestedShortcut
@@ -98,6 +116,7 @@ import com.example.ui.components.InnerShape
 import com.example.ui.components.MinTouchTarget
 import com.example.ui.scripts.triggerSummary
 import com.example.ui.theme.ThemeMode
+import com.example.data.AccessibilityStatus
 import io.github.nicholasarda.keysnap.R
 
 @Composable
@@ -108,7 +127,7 @@ fun HomeScreen(
     triggerCount: Int,
     lastSource: String,
     isPro: Boolean,
-    proPrice: String?,
+    proPrice: ProPrice?,
     activeScriptCount: Int,
     activeScriptLimit: Int,
     themeMode: ThemeMode,
@@ -119,12 +138,19 @@ fun HomeScreen(
     onOpenAccessibility: () -> Unit,
     onPickSuggestion: (SuggestedShortcut) -> Unit,
     onOpenProScreen: () -> Unit,
-    onCycleTheme: () -> Unit = {},
+    onOpenWhatsNew: () -> Unit = {},
+    announceWhatsNew: Boolean = false,
+    showWhatsNewHint: Boolean = false,
+    onWhatsNewHintFinished: () -> Unit = {},
     nudgeDismissed: Boolean = true,
     onDismissNudge: () -> Unit = {},
     scrollState: ScrollState = rememberScrollState(),
     scrollToProCard: Boolean = false,
     onScrolledToProCard: () -> Unit = {},
+    accessibilityStatus: AccessibilityStatus = if (isServiceActive) AccessibilityStatus.ACTIVE else AccessibilityStatus.DISABLED,
+    @StringRes accessibilityButton: Int = R.string.home_setup_open_accessibility,
+    showRatingPrompt: Boolean = false,
+    onRatingChoice: (RatingPromptChoice) -> Unit = {},
 ) {
     val permissionGaps = rememberPermissionGaps()
     val setupIncomplete = !isServiceActive || permissionGaps.any
@@ -145,7 +171,10 @@ fun HomeScreen(
             isMappingEnabled = isMappingEnabled,
             themeMode = themeMode,
             onToggleMapping = onToggleMapping,
-            onCycleTheme = onCycleTheme,
+            onOpenWhatsNew = onOpenWhatsNew,
+            announceWhatsNew = announceWhatsNew,
+            showWhatsNewHint = showWhatsNewHint,
+            onWhatsNewHintFinished = onWhatsNewHintFinished,
         )
         if (!setupCardRetired) {
             SetupCard(
@@ -153,7 +182,12 @@ fun HomeScreen(
                 isServiceActive = isServiceActive,
                 onOpenAccessibility = onOpenAccessibility,
                 onRetired = { setupCardRetired = true },
+                accessibilityStatus = accessibilityStatus,
+                accessibilityButton = accessibilityButton,
             )
+        }
+        if (!permissionGaps.usageAccess && com.example.service.needsUsageAccess(scripts)) {
+            UsageAccessAlert()
         }
         LiveStatusPanel(
             isServiceActive = isServiceActive,
@@ -162,15 +196,18 @@ fun HomeScreen(
             lastSource = lastSource,
             onOpenWizard = onOpenWizard,
             onOpenAccessibility = onOpenAccessibility,
+            accessibilityStatus = accessibilityStatus,
         )
         if (scripts.isNotEmpty()) YourShortcutsPanel(scripts, onOpenScript)
+        if (showRatingPrompt) RatingPromptCard(onRatingChoice)
         if (showNudge) FirstShortcutNudge(onDismiss = onDismissNudge)
         SuggestedShortcutsPanel(isPro = isPro, scripts = scripts, onPick = onPickSuggestion)
         if (!isPro) {
             ProUpsellCard(
                 activeCount = activeScriptCount,
                 limit = activeScriptLimit,
-                proPrice = proPrice,
+                proPrice = proPrice?.price,
+                sale = proPrice?.sale,
                 onOpenProScreen = onOpenProScreen,
             )
         }
@@ -187,6 +224,7 @@ internal fun ProUpsellCard(
     limit: Int,
     proPrice: String?,
     onOpenProScreen: () -> Unit,
+    sale: ProSale? = null,
 ) {
     val colors = MaterialTheme.colorScheme
     val atCap = activeCount >= limit
@@ -254,6 +292,8 @@ internal fun ProUpsellCard(
 
             FreeVsProTable(stacked)
 
+            if (sale != null && proPrice != null) ProSaleLine(sale, proPrice)
+
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Button(
                     onClick = onOpenProScreen,
@@ -266,7 +306,7 @@ internal fun ProUpsellCard(
                     // cap: in a long language the price must wrap, not be cut to "…".
                     Text(
                         if (proPrice != null) {
-                            stringResource(R.string.pro_unlock_with_price, proPrice)
+                            stringResource(R.string.pro_unlock_with_price, proPrice.unbroken())
                         } else {
                             stringResource(R.string.pro_unlock)
                         },
@@ -276,6 +316,68 @@ internal fun ProUpsellCard(
                 }
             }
         }
+    }
+}
+
+/**
+ * A Play Console discount: old price struck out, the new one, and the time left. Price, percentage and
+ * end all come from Play, so ending the offer there removes this line; it also hides itself at the end.
+ */
+@Composable
+private fun ProSaleLine(sale: ProSale, price: String) {
+    val colors = MaterialTheme.colorScheme
+    var now by remember { mutableLongStateOf(System.currentTimeMillis()) }
+    LaunchedEffect(sale.endsAtMillis) {
+        while (true) {
+            delay(30_000)
+            now = System.currentTimeMillis()
+        }
+    }
+    val parts = sale.endsAtMillis?.let { saleTimeLeft(it, now) ?: return }
+    Column(Modifier.testTag("pro_sale_line"), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        Text(
+            buildAnnotatedString {
+                withStyle(SpanStyle(textDecoration = TextDecoration.LineThrough, color = colors.onSurfaceVariant)) { append(sale.fullPrice.unbroken()) }
+                append("  ")
+                withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = colors.primary)) { append(price.unbroken()) }
+                sale.percentOff?.let { append("  " + ("−" + NumberFormat.getPercentInstance().format(it / 100.0)).unbroken()) }
+            },
+            style = MaterialTheme.typography.titleSmall,
+            color = colors.onSurface,
+        )
+        if (parts != null) {
+            Text(
+                stringResource(R.string.pro_sale_ends_in, formatTimeLeft(parts)),
+                style = MaterialTheme.typography.labelSmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
+                color = colors.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+/**
+ * Keeps one price or percentage on one line: low-price-level markets format to strings like
+ * "COP 16.900,00", and "−%38" otherwise breaks after the minus. Lines break only between the items.
+ */
+internal fun String.unbroken(): String =
+    replace(' ', '\u00A0').replace("−", "−\u2060").replace("%", "%\u2060").trimEnd('\u2060')
+
+/** Localized "6 days, 4 hours" from Android's own unit names, so no unit strings need translating. */
+private fun formatTimeLeft(parts: List<Pair<Int, MeasureUnit>>): String =
+    MeasureFormat.getInstance(Locale.getDefault(), MeasureFormat.FormatWidth.WIDE)
+        .formatMeasures(*parts.map { (value, unit) -> Measure(value, unit) }.toTypedArray())
+
+/** The two largest units left until [endsAtMillis] (days+hours, or hours+minutes); null once it has ended. */
+internal fun saleTimeLeft(endsAtMillis: Long, nowMillis: Long): List<Pair<Int, MeasureUnit>>? {
+    val minutes = (endsAtMillis - nowMillis) / 60_000
+    if (endsAtMillis <= nowMillis) return null
+    val days = (minutes / (24 * 60)).toInt()
+    val hours = (minutes / 60 % 24).toInt()
+    val mins = (minutes % 60).toInt()
+    return when {
+        days > 0 -> listOf(days to MeasureUnit.DAY, hours to MeasureUnit.HOUR)
+        hours > 0 -> listOf(hours to MeasureUnit.HOUR, mins to MeasureUnit.MINUTE)
+        else -> listOf(maxOf(mins, 1) to MeasureUnit.MINUTE)
     }
 }
 
@@ -382,21 +484,48 @@ internal fun ConsoleHeader(
     isMappingEnabled: Boolean,
     themeMode: ThemeMode,
     onToggleMapping: () -> Unit,
-    onCycleTheme: () -> Unit,
+    onOpenWhatsNew: () -> Unit,
+    announceWhatsNew: Boolean = false,
+    showWhatsNewHint: Boolean = false,
+    onWhatsNewHintFinished: () -> Unit = {},
 ) {
+    val reducedMotion = rememberReducedMotion()
+    val animateAnnouncement = announceWhatsNew && !reducedMotion
+    val cycle = rememberAnnouncementCycle(animateAnnouncement)
     Layout(
-        modifier = Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 8.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp, bottom = 8.dp)
+            .zIndex(if (showWhatsNewHint) 1f else 0f),
         content = {
-            // The logo doubles as the theme switch: Light, Dark, Sepia in turn.
+            // The logo opens What's New. Theme stays in Settings → Appearance.
             Box(
                 Modifier
                     .heightIn(min = MinTouchTarget)
                     .testTag("header_logo")
-                    .clip(InnerShape)
-                    .clickable(onClickLabel = stringResource(R.string.home_switch_theme), onClick = onCycleTheme),
+                    .clickable(onClickLabel = stringResource(R.string.whats_new_title), onClick = onOpenWhatsNew),
                 contentAlignment = Alignment.Center,
             ) {
-                KeySnapLockup(themeMode)
+                Box {
+                    KeySnapLockup(
+                        themeMode,
+                        if (animateAnnouncement) Modifier.logoShine(cycle) else Modifier,
+                    )
+                    if (announceWhatsNew) {
+                        AnnouncementDot(
+                            progress = cycle,
+                            animate = animateAnnouncement,
+                            modifier = Modifier.align(Alignment.TopEnd).offset(x = 4.dp, y = (-4).dp),
+                        )
+                    }
+                    if (showWhatsNewHint) {
+                        WhatsNewHintBubble(
+                            reducedMotion = reducedMotion,
+                            onFinished = onWhatsNewHintFinished,
+                            modifier = Modifier.align(Alignment.BottomStart),
+                        )
+                    }
+                }
             }
             Box(Modifier.testTag("header_controls")) {
                 MappingBadge(isMappingEnabled, onToggleMapping)
@@ -511,6 +640,7 @@ private fun LiveStatusPanel(
     lastSource: String,
     onOpenWizard: () -> Unit,
     onOpenAccessibility: () -> Unit,
+    accessibilityStatus: AccessibilityStatus,
 ) {
     // Anything that needs fixing is the setup card's job now, so this panel only ever reports:
     // it never paints an alarm and never opens itself.
@@ -527,7 +657,7 @@ private fun LiveStatusPanel(
             Column {
                 StatusLine(
                     label = stringResource(R.string.home_accessibility_service),
-                    status = stringResource(if (isServiceActive) R.string.home_status_active else R.string.home_status_offline),
+                    status = stringResource(accessibilityStatus.label),
                     active = isServiceActive,
                     onClick = onOpenAccessibility,
                 )

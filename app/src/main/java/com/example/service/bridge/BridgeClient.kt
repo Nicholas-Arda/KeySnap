@@ -74,7 +74,7 @@ internal fun readReply(nextLine: () -> String?): String? {
     }
 }
 
-private val PUSHED = setOf(BridgeProtocol.MSG_EVENT, BridgeProtocol.MSG_TRIGGER, BridgeProtocol.MSG_DEVICE, BridgeProtocol.MSG_FEEDBACK)
+private val PUSHED = setOf(BridgeProtocol.MSG_EVENT, BridgeProtocol.MSG_TRIGGER, BridgeProtocol.MSG_DEVICE, BridgeProtocol.MSG_FEEDBACK, BridgeProtocol.MSG_MODE)
 
 /** The bridge's identity from its HELLO answer, or null unless it is an OK carrying one. */
 internal fun parseHandshake(line: String?): BridgeStatus? {
@@ -142,6 +142,7 @@ class BridgeClient(
         fun onKeyEvent(event: BridgeKeyEvent) {}
         fun onTrigger(trigger: BridgeTrigger) {}
         fun onFeedback(trigger: BridgeTrigger) {}
+        fun onModeChanged(mode: Int) {}
         fun onDevice(path: String, name: String) {}
     }
 
@@ -253,6 +254,7 @@ class BridgeClient(
     private fun dispatch(line: String, listener: Listener) {
         val fields = line.split(SEP)
         when (fields.firstOrNull()) {
+            BridgeProtocol.MSG_MODE -> fields.getOrNull(1)?.toIntOrNull()?.let(listener::onModeChanged)
             BridgeProtocol.MSG_EVENT -> if (fields.size >= 6) {
                 listener.onKeyEvent(
                     BridgeKeyEvent(

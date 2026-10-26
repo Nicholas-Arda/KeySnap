@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_assistant_gesture_title">आपका पावर बटन, आपका शॉर्टकट</string>
+    <string name="whats_new_assistant_gesture_description">KeySnap को फ़ोन का असिस्टेंट चुनें। जिन फ़ोन पर पावर बटन देर तक दबाने से असिस्टेंट खुलता है, वहाँ आपका “असिस्टेंट जेस्चर” शॉर्टकट चलेगा।</string>
+    <string name="whats_new_home_only_title">सिर्फ़ होम या लॉक स्क्रीन पर</string>
+    <string name="whats_new_home_only_description">“केवल अगर” में “कोई ऐप खुला नहीं है” जोड़ें, ताकि ऐप के अंदर वॉल्यूम बटन सामान्य काम करें। उपयोग एक्सेस चाहिए।</string>
+    <string name="whats_new_fix_coloros_dnd">उन्नत मोड में डू नॉट डिस्टर्ब की कार्रवाइयाँ अब ColorOS पर काम करती हैं</string>
+    <string name="whats_new_fix_conditional_volume">वॉल्यूम बटन तभी शॉर्टकट के लिए इस्तेमाल होता है जब उसकी शर्तें पूरी हों</string>
+    <string name="rating_prompt_title">क्या KeySnap आपके काम आ रहा है?</string>
+    <string name="rating_prompt_body">Google Play पर आपकी रेटिंग से बहुत मदद मिलती है।</string>
+    <string name="rating_prompt_rate">रेटिंग दें</string>
+    <string name="rating_prompt_later">बाद में</string>
+    <string name="rating_prompt_no_thanks">नहीं, धन्यवाद</string>
+</resources>

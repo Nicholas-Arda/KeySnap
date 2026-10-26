@@ -47,6 +47,8 @@ import com.example.data.ConstraintAvailability
 import com.example.data.ConstraintCategory
 import com.example.data.ConstraintDescriptor
 import com.example.data.ScriptConstraintCatalog
+import com.example.data.ShortcutScript
+import com.example.mode.ModeHooks
 import com.example.ui.components.IconTile
 import com.example.ui.components.MinTouchTarget
 import com.example.ui.components.trailingEdgeFade
@@ -59,7 +61,15 @@ import io.github.nicholasarda.keysnap.R
  * or closing the picker outright. Layout mirrors AddActionScreen.
  */
 @Composable
-fun ConstraintPickerScreen(automation: Boolean, onClose: () -> Unit, onPickConstraint: (String) -> Unit) {
+fun ConstraintPickerScreen(
+    automation: Boolean,
+    onClose: () -> Unit,
+    onPickConstraint: (String) -> Unit,
+    scriptId: String = "",
+    scripts: List<ShortcutScript> = emptyList(),
+    isPro: Boolean = false,
+    hideModeCondition: Boolean = false,
+) {
     val colors = MaterialTheme.colorScheme
     var query by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf<ConstraintCategory?>(null) }
@@ -124,6 +134,8 @@ fun ConstraintPickerScreen(automation: Boolean, onClose: () -> Unit, onPickConst
         // Automation-only conditions are hidden from key shortcuts altogether.
         val offered = (if (searching) base else base.filter { it.availability == ConstraintAvailability.AVAILABLE })
             .filter { automation || it.type !in ScriptConstraintCatalog.AUTOMATION_ONLY }
+            .filter { ModeHooks.offered(it.type) && !ModeHooks.hidesFromEditor(it.type, scriptId, scripts, isPro) }
+            .filter { !hideModeCondition || it.type != ScriptConstraintCatalog.MODE_IS }
         val filtered = selectedCategory?.let { cat -> offered.filter { it.category == cat } } ?: offered
         val grouped = ConstraintCategory.entries.mapNotNull { category ->
             val entries = filtered.filter { it.category == category }

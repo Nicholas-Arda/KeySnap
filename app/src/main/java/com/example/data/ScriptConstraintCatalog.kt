@@ -40,6 +40,8 @@ data class ConstraintDescriptor(
  */
 object ScriptConstraintCatalog {
 
+    const val MODE_IS = "mode_is"
+
     /** Per-script "at most once every N minutes"; param `minutes`. Gated by the coordinator, not the evaluator. */
     const val COOLDOWN = "cooldown"
 
@@ -59,9 +61,11 @@ object ScriptConstraintCatalog {
     const val INTERVAL = "interval"
 
     val all: List<ConstraintDescriptor> = listOf(
+        ConstraintDescriptor(MODE_IS, R.string.constraint_mode_is, ConstraintCategory.DEVICE, ConstraintAvailability.AVAILABLE),
         // Apps
         ConstraintDescriptor("app_in_foreground", R.string.constraint_app_in_foreground, ConstraintCategory.APPS, ConstraintAvailability.AVAILABLE),
         ConstraintDescriptor("app_not_in_foreground", R.string.constraint_app_not_in_foreground, ConstraintCategory.APPS, ConstraintAvailability.AVAILABLE),
+        ConstraintDescriptor("no_app_open", R.string.constraint_no_app_open, ConstraintCategory.APPS, ConstraintAvailability.AVAILABLE),
         ConstraintDescriptor(NOTIFICATION_RECEIVED, R.string.constraint_notification_received, ConstraintCategory.APPS, ConstraintAvailability.AVAILABLE),
         ConstraintDescriptor("app_playing_media", R.string.constraint_app_playing_media, ConstraintCategory.APPS),
         ConstraintDescriptor("app_not_playing_media", R.string.constraint_app_not_playing_media, ConstraintCategory.APPS),

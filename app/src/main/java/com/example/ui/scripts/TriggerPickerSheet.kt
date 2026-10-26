@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -24,6 +25,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -44,9 +46,11 @@ import com.example.data.keyDisplayName
 import com.example.ui.components.InnerShape
 import com.example.ui.components.MinTouchTarget
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import io.github.nicholasarda.keysnap.R
 import com.example.ui.theme.SectionLabel
+import com.example.bridge.KeyEventMapping
 
 /**
  * Assigns the shortcut's trigger: a press type, then a key, in one sheet — replacing what used to
@@ -76,6 +80,8 @@ fun TriggerPickerSheet(
 ) {
     val colors = MaterialTheme.colorScheme
     val res = LocalContext.current.resources
+    val assistant = KeyEventMapping.ASSISTANT_GESTURE in keyCodes
+    val maxHeight = (LocalConfiguration.current.screenHeightDp * 0.8f).dp
     val useAutomationLabel = stringResource(R.string.trigger_picker_use_automation)
     // Recording is global coordinator state, so every way out of this sheet — Back, tapping
     // outside, the X, Save, or the whole editor closing — has to disarm it, not just the stop
@@ -83,7 +89,8 @@ fun TriggerPickerSheet(
     DisposableEffect(Unit) { onDispose { onCancelRecording() } }
     ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
         Column(
-            Modifier.fillMaxWidth().navigationBarsPadding().padding(horizontal = 20.dp, vertical = 8.dp),
+            Modifier.fillMaxWidth().heightIn(max = maxHeight).verticalScroll(rememberScrollState())
+                .navigationBarsPadding().padding(horizontal = 20.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Row(verticalAlignment = Alignment.Top) {
@@ -107,7 +114,29 @@ fun TriggerPickerSheet(
                 }
             }
 
-            PressTypeSegmented(pressType, onSetPressType)
+            if (!assistant) PressTypeSegmented(pressType, onSetPressType)
+
+            Column {
+                FilterChip(
+                    selected = assistant,
+                    onClick = {
+                        onCancelRecording()
+                        onSetPressType(TriggerPressType.SINGLE_PRESS)
+                        onSelectKey(KeyEventMapping.ASSISTANT_GESTURE)
+                    },
+                    label = { Text(stringResource(R.string.trigger_assistant_gesture)) },
+                    modifier = Modifier.testTag("assistant_trigger_option"),
+                )
+                if (assistant) {
+                    Text(stringResource(R.string.assistant_trigger_hint), style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant)
+                    AssistantSettingsRow()
+                    Text(
+                        stringResource(R.string.assistant_voice_wakeup_warning),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = colors.error,
+                    )
+                }
+            }
 
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 if (keyCodes.isEmpty()) {

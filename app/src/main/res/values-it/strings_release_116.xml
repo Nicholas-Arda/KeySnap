@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_assistant_gesture_title">Il tuo tasto di accensione, la tua scorciatoia</string>
+    <string name="whats_new_assistant_gesture_description">Scegli KeySnap come assistente. Se il telefono inoltra la pressione prolungata del tasto di accensione all’assistente, avvia la scorciatoia con “Gesto dell’assistente”.</string>
+    <string name="whats_new_home_only_title">Solo sulla Home o sul blocco schermo</string>
+    <string name="whats_new_home_only_description">Aggiungi “Nessuna app aperta” in “Solo se” per usare normalmente i tasti del volume nelle app. Richiede l’accesso ai dati di utilizzo.</string>
+    <string name="whats_new_fix_coloros_dnd">Le azioni Non disturbare ora funzionano su ColorOS in Modalità avanzata</string>
+    <string name="whats_new_fix_conditional_volume">Un tasto del volume viene intercettato solo quando le condizioni della scorciatoia sono soddisfatte</string>
+    <string name="rating_prompt_title">KeySnap fa quello che ti serve?</string>
+    <string name="rating_prompt_body">Una valutazione su Google Play aiuta molto.</string>
+    <string name="rating_prompt_rate">Valuta</string>
+    <string name="rating_prompt_later">Più tardi</string>
+    <string name="rating_prompt_no_thanks">No, grazie</string>
+</resources>

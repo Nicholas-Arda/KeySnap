@@ -2,6 +2,7 @@ package com.example.data
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Headphones
+import com.example.mode.ModeHooks
 import com.example.ui.home.iconForScript
 import com.example.ui.home.matches
 import com.example.ui.scripts.actionIconFor
@@ -57,6 +58,13 @@ class SuggestedShortcutsTest {
         SuggestedShortcuts.all.filterNot { it.automation }.flatMap { r -> r.constraints.map { r.id to it.type } }.forEach { (id, type) ->
             assertNotNull("$id: unknown constraint $type", ScriptConstraintCatalog.descriptor(type))
             assertFalse("$id: $type needs an automation", type in ScriptConstraintCatalog.AUTOMATION_ONLY)
+        }
+    }
+
+    @Test fun recipesDoNotCarryModeFeatures() {
+        SuggestedShortcuts.all.forEach { suggestion ->
+            suggestion.actions.forEach { assertFalse(suggestion.id + " " + it.type, ModeHooks.requiresPro(it.type)) }
+            suggestion.constraints.forEach { assertFalse(suggestion.id + " " + it.type, ModeHooks.requiresPro(it.type)) }
         }
     }
 

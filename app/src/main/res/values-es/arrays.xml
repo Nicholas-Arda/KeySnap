@@ -15,6 +15,7 @@
         <item>Toca \"Número de compilación\" 7 veces seguidas</item>
         <item>Vuelve atrás y abre \"Opciones de desarrollador\"</item>
         <item>Activa \"Depuración inalámbrica\"</item>
+        <item>Si la Depuración inalámbrica no se activa o la vinculación no empieza, desactiva el Bloqueador automático en Ajustes &gt; Seguridad y privacidad</item>
     </string-array>
     <string-array name="guide_xiaomi_steps">
         <item>Abre Ajustes</item>
@@ -63,7 +64,7 @@
     </string-array>
     <string-array name="wizard_pairing_steps">
         <item>Toca el botón de abajo para abrir los ajustes de Depuración inalámbrica.</item>
-        <item>En el menú, elige ‘Vincular dispositivo con código de vinculación’.</item>
+        <item>KeySnap toca ‘Vincular dispositivo con código de vinculación’ por ti; si no lo hace, tócalo tú.</item>
         <item>Leeremos el código de emparejamiento y nos conectaremos automáticamente.</item>
     </string-array>
 </resources>

@@ -15,6 +15,7 @@
         <item>\"Yapı Numarası\" üzerine arka arkaya 7 kez dokunun</item>
         <item>Geri dönüp \"Geliştirici Seçenekleri\"ni açın</item>
         <item>\"Kablosuz Hata Ayıklama\"yı etkinleştirin</item>
+        <item>Kablosuz Hata Ayıklama açılmıyor ya da eşleştirme başlamıyorsa Ayarlar &gt; Güvenlik ve gizlilik bölümünden Otomatik Engelleyici’yi kapatın</item>
     </string-array>
     <string-array name="guide_xiaomi_steps">
         <item>Ayarlar\'ı açın</item>
@@ -63,7 +64,7 @@
     </string-array>
     <string-array name="wizard_pairing_steps">
         <item>Kablosuz Hata Ayıklama ayarlarını açmak için aşağıdaki düğmeye dokunun.</item>
-        <item>Menüden \"Cihazı eşleştirme koduyla eşleştir\" seçeneğini seçin.</item>
+        <item>KeySnap \"Cihazı eşleştirme koduyla eşleştir\" seçeneğine sizin yerinize dokunur; dokunmazsa kendiniz seçin.</item>
         <item>Eşleştirme kodunu okuyup otomatik olarak bağlanacağız.</item>
     </string-array>
 </resources>

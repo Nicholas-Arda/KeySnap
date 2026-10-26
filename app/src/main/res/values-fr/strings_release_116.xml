@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_assistant_gesture_title">Votre bouton Marche/Arrêt, votre raccourci</string>
+    <string name="whats_new_assistant_gesture_description">Choisissez KeySnap comme assistant. Si votre téléphone transmet l’appui long sur Marche/Arrêt à l’assistant, il lance votre raccourci « Geste de l’assistant ».</string>
+    <string name="whats_new_home_only_title">Accueil ou écran verrouillé uniquement</string>
+    <string name="whats_new_home_only_description">Ajoutez « Aucune appli ouverte » dans « Seulement si » pour que les touches de volume fonctionnent normalement dans les applis. Nécessite l’accès aux données d’utilisation.</string>
+    <string name="whats_new_fix_coloros_dnd">Les actions Ne pas déranger fonctionnent désormais sur ColorOS en Mode avancé</string>
+    <string name="whats_new_fix_conditional_volume">Une touche de volume n’est interceptée que si les conditions du raccourci sont remplies</string>
+    <string name="rating_prompt_title">KeySnap fait-il le travail ?</string>
+    <string name="rating_prompt_body">Une note sur Google Play aide beaucoup.</string>
+    <string name="rating_prompt_rate">Noter</string>
+    <string name="rating_prompt_later">Plus tard</string>
+    <string name="rating_prompt_no_thanks">Non merci</string>
+</resources>
