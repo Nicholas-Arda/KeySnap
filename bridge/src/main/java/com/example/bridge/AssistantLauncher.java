@@ -18,6 +18,10 @@ final class AssistantLauncher {
 
     static boolean show() {
         try {
+            // Read the current role at execution time, including while the app is dead. Never
+            // invoke either KeySnap install's session: its assistant gesture would run a script.
+            String active = ConstraintEvaluator.shell("settings", "get", "secure", "voice_interaction_service").trim();
+            if (!canShow(active)) return false;
             IBinder binder = (IBinder) Class.forName("android.os.ServiceManager")
                     .getMethod("getService", String.class).invoke(null, "voiceinteraction");
             Object service = Class.forName("com.android.internal.app.IVoiceInteractionManagerService$Stub")
@@ -36,5 +40,12 @@ final class AssistantLauncher {
             BridgeLog.w("Assistant session unavailable: " + t.getClass().getName());
         }
         return false;
+    }
+
+    static boolean canShow(String component) {
+        if (component == null) return false;
+        int slash = component.indexOf('/');
+        return slash > 0 && slash < component.length() - 1
+                && !component.substring(slash + 1).equals("com.example.assistant.KeySnapVoiceService");
     }
 }

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_test_editors_title_120">Editores que puedes probar</string>
+    <string name="whats_new_test_editors_description_120">Prueba cualquier paso con ▶ antes de guardar.</string>
+    <string name="whats_new_reorder_shortcuts_title_120">Ordena y edita accesos directos</string>
+    <string name="whats_new_reorder_shortcuts_description_120">Toca ✎ o mantén pulsado un acceso directo; arrástralo para ordenar.</string>
+    <string name="whats_new_input_devices_title_120">Teclados, ratones y mandos</string>
+    <string name="whats_new_input_devices_description_120">Modo avanzado: nombres reales, atajos con Ctrl.</string>
+    <string name="whats_new_fix_setup_120">Configuración en dos pasos, notificaciones opcionales</string>
+    <string name="whats_new_fix_conditions_120">Invierte cualquier condición con NO</string>
+    <string name="whats_new_fix_app_names_120">Las apps aparecen por su nombre</string>
+    <string name="whats_new_fix_side_power_keys_120">Botones laterales y encendido: indicación clara</string>
+    <string name="whats_new_fix_idle_battery_120">Menos batería en reposo</string>
+    <string name="whats_new_fix_advanced_setup_120">Modo avanzado: configuración en una página</string>
+    <string name="whats_new_fix_saved_keys_120">Renombra teclas guardadas o añádelas antes</string>
+    <string name="whats_new_fix_shortcuts_page_120">Accesos directos ordenados, listas más cortas</string>
+    <string name="whats_new_fix_modes_120">Modos: desactívalos o elimínalos cuando quieras</string>
+</resources>

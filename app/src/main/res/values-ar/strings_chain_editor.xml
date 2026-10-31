@@ -1,0 +1,17 @@
+<resources>
+    <string name="chain_is">هو</string>
+    <string name="chain_not">ليس</string>
+    <string name="chain_action_empty">لا يمكن ترك الإجراء فارغًا</string>
+    <string name="chain_condition_empty">تحقق من إعدادات الشرط</string>
+    <string name="chain_shell_limited">Shell يعمل بقيود هنا</string>
+    <string name="chain_set_up">إعداد</string>
+    <string name="chain_test_running">جارٍ اختبار الإجراء</string>
+    <string name="chain_test_success">نجح الاختبار</string>
+    <string name="chain_test_failure">فشل الاختبار</string>
+    <string name="chain_test_action">اختبار الإجراء</string>
+    <string name="chain_test_timeout">انتهت المهلة</string>
+    <string name="chain_http_status">HTTP %1$d</string>
+    <string name="chain_exit_code">خروج %1$d</string>
+    <string name="chain_test_result">%1$s %2$s · %3$s · %4$s ث</string>
+    <string name="chain_needs_condition">أضف شرطًا أولًا</string>
+</resources>

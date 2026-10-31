@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="key_code_single_key_hint">Envia uma única tecla (ex.: 66 = Enter). Para digitar números ou texto, use “%1$s”.</string>
+    <string name="key_code_switch_to_input_text">Mudar para “%1$s”</string>
+</resources>

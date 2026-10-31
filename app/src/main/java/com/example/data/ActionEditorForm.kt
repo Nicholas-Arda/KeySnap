@@ -1,5 +1,6 @@
 package com.example.data
 
+import android.content.Context
 import android.content.res.Resources
 import androidx.annotation.StringRes
 import io.github.nicholasarda.keysnap.R
@@ -263,6 +264,17 @@ object ActionEditorForms {
                     ),
                 ),
                 EditorField.Text("url", R.string.param_url, hintRes = R.string.hint_webhook_url),
+                EditorField.Text("headers", R.string.param_headers),
+                EditorField.Choice(
+                    "content_type",
+                    R.string.param_content_type,
+                    listOf(
+                        "none" to R.string.editor_body_none,
+                        "json" to R.string.editor_body_json,
+                        "form" to R.string.editor_body_form,
+                        "text" to R.string.editor_body_text,
+                    ),
+                ),
                 EditorField.Text(
                     "body",
                     R.string.param_body,
@@ -287,12 +299,21 @@ object ActionEditorForms {
         ActionEditorForm(
             type = "send_intent",
             fields = listOf(
+                EditorField.Choice(
+                    "target",
+                    R.string.param_intent_target,
+                    listOf(
+                        "broadcast" to R.string.editor_target_broadcast,
+                        "activity" to R.string.editor_target_activity,
+                    ),
+                ),
+                EditorField.AppPick("package", R.string.editor_to_app),
                 EditorField.Text("action", R.string.param_action, hintRes = R.string.hint_intent_action),
                 EditorField.Text("uri", R.string.param_uri, hintRes = R.string.hint_optional),
                 EditorField.Text("extras", R.string.field_extras, hintRes = R.string.hint_extras, helperRes = R.string.helper_extras),
             ),
             helperRes = R.string.helper_send_intent,
-            summary = { _, params -> params.value("action") },
+            summary = { _, params -> joinSummary(params.value("package"), params.value("action")) },
         ),
         ActionEditorForm(
             type = "reply_to_notification",
@@ -414,6 +435,7 @@ object ActionEditorForms {
         ),
         ActionEditorForm(
             type = "change_brightness",
+            // Persisted legacy setting units, not percent; execution scales to the device maximum.
             fields = listOf(EditorField.Number("value", R.string.field_brightness, min = 0, max = 255, default = 128)),
             requirementRes = WRITE_SETTINGS_BADGE,
             summary = { _, params -> params.value("value") },
@@ -621,6 +643,16 @@ object ActionEditorForms {
     /** The chain row's second line, or null when the action takes no configuration at all. */
     fun summarize(action: ScriptAction, resources: Resources): String? =
         byType[action.type]?.summary?.invoke(resources, action.params)?.takeIf { it.isNotBlank() }
+
+    /** Resolve only package fields in a temporary display copy; literal payload fields stay intact. */
+    fun summarize(action: ScriptAction, context: Context): String? {
+        val packageKeys = ScriptActionCatalog.descriptor(action.type)?.parameters
+            ?.filter { it.kind == ActionParameterKind.PACKAGE }?.map { it.key }.orEmpty()
+        val displayParams = action.params.mapValues { (key, value) ->
+            if (key in packageKeys) AppLabelResolver.get(context).displayName(value, context.resources) else value
+        }
+        return summarize(action.copy(params = displayParams), context.resources)
+    }
 
     private const val REPLY = "reply_to_notification"
     private const val REPLY_CHAT = "chat"

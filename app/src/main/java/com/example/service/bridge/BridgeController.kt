@@ -114,11 +114,16 @@ object BridgeController {
                 scriptId = trigger.scriptId,
                 success = trigger.success,
                 actionResults = trigger.actionResults,
+                capsuleRunId = trigger.capsuleRunId,
             )
         }
 
         override fun onFeedback(trigger: BridgeTrigger) {
-            appContext?.let { com.example.capsule.CapsuleHooks.onBridgeFeedback(it, trigger) }
+            appContext?.let { context ->
+                if (ScriptRepository.getInstance(context).scripts.value.firstOrNull { it.id == trigger.scriptId }?.showCapsule == true) {
+                    com.example.capsule.CapsuleHooks.onBridgeFeedback(context, trigger)
+                }
+            }
         }
 
         override fun onModeChanged(mode: Int) {
@@ -362,6 +367,19 @@ object BridgeController {
             },
         )
         return client()?.requestRun(payload.toString())
+    }
+
+    /** No script telemetry or persistent output for an editor's single-action test. */
+    suspend fun runSingleActionForTest(action: ScriptAction): com.example.bridge.ActionTestResult? {
+        if (_state.value != BridgeState.RUNNING) return null
+        val payload = JSONObject().put("actions", JSONArray().put(action.toBridgeJson()))
+        return client()?.requestTestAction(payload.toString())
+    }
+
+    /** Called only after the app has ruled out KeySnap holding the assistant role. */
+    suspend fun showAssistant(): Boolean {
+        if (_state.value != BridgeState.RUNNING) return false
+        return client()?.requestShowAssistant() == true
     }
 
     /**

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_test_editors_title_120">Editors die je kunt testen</string>
+    <string name="whats_new_test_editors_description_120">Probeer elke stap met ▶ voordat je opslaat.</string>
+    <string name="whats_new_reorder_shortcuts_title_120">Snelkoppelingen ordenen en bewerken</string>
+    <string name="whats_new_reorder_shortcuts_description_120">Tik op ✎ of houd een snelkoppeling ingedrukt; sleep om te ordenen.</string>
+    <string name="whats_new_input_devices_title_120">Toetsenborden, muizen en gamepads</string>
+    <string name="whats_new_input_devices_description_120">Geavanceerde modus: echte toetsnamen, Ctrl-sneltoetsen.</string>
+    <string name="whats_new_fix_setup_120">Instellen in twee stappen, meldingen optioneel</string>
+    <string name="whats_new_fix_conditions_120">Keer elke voorwaarde om met NIET</string>
+    <string name="whats_new_fix_app_names_120">Apps verschijnen met hun naam</string>
+    <string name="whats_new_fix_side_power_keys_120">Zij- en aan-uittoetsen: duidelijke uitleg</string>
+    <string name="whats_new_fix_idle_battery_120">Minder batterijverbruik in rust</string>
+    <string name="whats_new_fix_advanced_setup_120">Geavanceerde modus instellen op één pagina</string>
+    <string name="whats_new_fix_saved_keys_120">Opgeslagen toetsen hernoemen of vooraf toevoegen</string>
+    <string name="whats_new_fix_shortcuts_page_120">Overzichtelijkere Snelkoppelingen-pagina, kortere lijsten</string>
+    <string name="whats_new_fix_modes_120">Modi: altijd uitschakelen of verwijderen</string>
+</resources>

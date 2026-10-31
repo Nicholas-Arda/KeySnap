@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="inline_key_choose">Escolha uma tecla</string>
+    <string name="inline_key_record">Gravar uma tecla</string>
+    <string name="inline_key_listening">Pressione uma tecla agora</string>
+    <string name="inline_key_release">Segure as teclas juntas. Solte para concluir.</string>
+    <string name="inline_key_edit">Toque na tecla para gravar novamente.</string>
+    <string name="inline_key_placeholder">uma tecla</string>
+    <string name="inline_key_advanced_hint">Os botões Liga/Desliga, Snap Key, Essential Key, Bixby e similares precisam do Modo Avançado.</string>
+    <string name="inline_key_set_up">Configurar</string>
+</resources>

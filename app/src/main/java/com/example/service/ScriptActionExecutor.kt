@@ -29,6 +29,11 @@ import com.example.data.ScriptAction
 import com.example.data.ScriptActionCatalog
 import com.example.data.TriggerPressType
 import com.example.bridge.BridgeProtocol
+import com.example.bridge.BrightnessSettings
+import com.example.bridge.ActionPayloads
+import com.example.bridge.ActionTestResult
+import com.example.bridge.HttpAction
+import com.example.bridge.ShellKeyInjector
 import com.example.data.ScriptRepository
 import com.example.mode.ModeHooks
 import com.example.service.bridge.BridgeController
@@ -37,8 +42,6 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
-import java.net.HttpURLConnection
-import java.net.URL
 import java.net.URLEncoder
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -120,10 +123,6 @@ internal fun nextRingerMode(current: Int): Int = when (current) {
     else -> AudioManager.RINGER_MODE_NORMAL
 }
 
-/** The `screen_brightness` range the bridge writes, and the step its +/- actions move by. */
-internal const val MAX_BRIGHTNESS = 255
-internal const val BRIGHTNESS_STEP = 26
-
 /**
  * Kept apart from the setup, pairing and run-failure channels so the user can mute shortcut
  * notifications alone.
@@ -144,13 +143,6 @@ private const val SHORTCUT_NOTIFICATION_TAG = "shortcut_notification"
 internal fun shortcutNotificationsAllowed(manager: NotificationManager): Boolean =
     manager.areNotificationsEnabled() &&
         manager.getNotificationChannel(SHORTCUT_NOTIFICATION_CHANNEL_ID)?.importance != NotificationManager.IMPORTANCE_NONE
-
-/**
- * The `screen_brightness` value a brightness action should land on, mirroring the bridge's
- * `setBrightness` clamp so a script lands identically in both modes. Pure so it can be unit-tested
- * without a live ContentResolver.
- */
-internal fun brightnessLevelFor(current: Int, delta: Int): Int = (current + delta).coerceIn(0, MAX_BRIGHTNESS)
 
 /**
  * Portrait -> landscape -> reverse portrait -> reverse landscape -> portrait, matching the bridge's
@@ -274,7 +266,22 @@ internal fun wordBoundsAtCursor(text: String, cursor: Int): IntRange? {
     return start..end
 }
 
-class ScriptActionExecutor(private val handler: ScriptActionHandler) {
+class ScriptActionExecutor(
+    private val singleActionTest: (suspend (ScriptAction) -> ActionTestResult)? = null,
+    private val handler: ScriptActionHandler,
+) {
+
+    /** A real execution, without chain expansion, counters, haptics, run logs or diagnostics. */
+    suspend fun runSingleActionForTest(action: ScriptAction): ActionTestResult {
+        val start = System.nanoTime()
+        return try {
+            singleActionTest?.invoke(action) ?: ActionTestResult.outcome(handler.execute(action), start)
+        } catch (cancelled: CancellationException) {
+            throw cancelled
+        } catch (_: Exception) {
+            ActionTestResult.outcome(false, start)
+        }
+    }
 
     /**
      * "repeat_previous" has no meaning as a standalone action; it replays whichever real action
@@ -291,7 +298,7 @@ class ScriptActionExecutor(private val handler: ScriptActionHandler) {
         diagnosticScriptId: Int = 0,
         diagnosticPressType: TriggerPressType? = null,
         shouldRun: (ScriptAction) -> Boolean = { true },
-    ): List<Boolean> = runEach(actions, notificationKey, shouldRun, diagnosticScriptId, diagnosticPressType).flatMap { it ?: listOf(false) }
+    ): List<Boolean> = runEach(actions, notificationKey, { _, action -> shouldRun(action) }, diagnosticScriptId, diagnosticPressType).flatMap { it ?: listOf(false) }
 
     /**
      * One entry per action in [actions], for the run log: true when it (every repetition, for a
@@ -299,26 +306,29 @@ class ScriptActionExecutor(private val handler: ScriptActionHandler) {
      *
      * [notificationKey] is the notification whose "Notification received" condition started this
      * run, if one did; a reply with no chat named answers that one and nothing else.
+     * [shouldRun] receives the configured chain index, also when an entry repeats a previous action.
      */
     suspend fun executeEach(
         actions: List<ScriptAction>,
         notificationKey: String? = null,
         diagnosticScriptId: Int = 0,
         diagnosticPressType: TriggerPressType? = null,
-        shouldRun: (ScriptAction) -> Boolean = { true },
+        shouldRun: (Int, ScriptAction) -> Boolean = { _, _ -> true },
     ): List<Boolean?> = runEach(actions, notificationKey, shouldRun, diagnosticScriptId, diagnosticPressType).map { runs -> runs?.all { it } }
 
     /** Each configured action's repetition results, or null when [shouldRun] skipped it. */
     private suspend fun runEach(
         actions: List<ScriptAction>,
         notificationKey: String?,
-        shouldRun: (ScriptAction) -> Boolean,
+        shouldRun: (Int, ScriptAction) -> Boolean,
         diagnosticScriptId: Int = 0,
         diagnosticPressType: TriggerPressType? = null,
     ): List<List<Boolean>?> {
         val out = mutableListOf<List<Boolean>?>()
         var previous: ScriptAction? = null
-        for (action in actions) {
+        for ((index, action) in actions.withIndex()) {
+            // A cycle_mode returns before its pulses finish. The next action, including a repeat, waits.
+            ModeHooks.awaitPulseReservation()
             if (action.type == REPEAT_PREVIOUS_TYPE) {
                 val target = previous
                 val count = action.params["count"]?.toIntOrNull()?.coerceIn(0, MAX_REPEAT_COUNT) ?: 0
@@ -330,12 +340,12 @@ class ScriptActionExecutor(private val handler: ScriptActionHandler) {
                             }
                             listOf(false)
                         }
-                        !shouldRun(target) -> null
+                        !shouldRun(index, target) -> null
                         else -> List(count) { executeObserved(target.withTriggerNotification(notificationKey), diagnosticScriptId, diagnosticPressType) }
                     },
                 )
             } else {
-                out.add(if (shouldRun(action)) listOf(executeObserved(action.withTriggerNotification(notificationKey), diagnosticScriptId, diagnosticPressType)) else null)
+                out.add(if (shouldRun(index, action)) listOf(executeObserved(action.withTriggerNotification(notificationKey), diagnosticScriptId, diagnosticPressType)) else null)
                 previous = action
             }
         }
@@ -368,7 +378,26 @@ class ScriptActionExecutor(private val handler: ScriptActionHandler) {
          * Every catalog entry that is not AVAILABLE is deliberately inert here rather than
          * throwing, so an old persisted script referencing a not-yet-implemented action fails safe.
          */
-        fun android(context: Context) = ScriptActionExecutor { action ->
+        fun android(context: Context): ScriptActionExecutor {
+            val handler = androidHandler(context)
+            return ScriptActionExecutor(singleActionTest = { action ->
+                val start = System.nanoTime()
+                // Once sent to the bridge, a lost reply must never run the action a second time.
+                if (BridgeController.state.value == com.example.service.bridge.BridgeState.RUNNING &&
+                    action.type !in ScriptActionCatalog.UNSUPPORTED_BY_BRIDGE
+                ) {
+                    BridgeController.runSingleActionForTest(action) ?: ActionTestResult.outcome(false, start)
+                } else {
+                    when (action.type) {
+                        "shell_command" -> withContext(Dispatchers.IO) { ShellKeyInjector.shellCommand(action.params, true) }
+                        "http_request" -> withContext(Dispatchers.IO) { HttpAction.execute(action.params) }
+                        else -> ActionTestResult.outcome(handler.execute(action), start)
+                    }
+                }
+            }, handler = handler)
+        }
+
+        private fun androidHandler(context: Context) = ScriptActionHandler { action ->
             val ctx = context.applicationContext
             when (action.type) {
                 "cycle_mode" -> ModeHooks.cycle(ctx, action.params)
@@ -450,8 +479,8 @@ class ScriptActionExecutor(private val handler: ScriptActionHandler) {
                 // The chat opens with the text typed in; the user taps Send, or the bridge does.
                 // Number and text are user data: never log them.
                 "send_message" -> sendMessage(ctx, action.params)
-                "http_request" -> httpRequest(action.params["method"], action.params["url"], action.params["body"])
-                "shell_command" -> runShellCommand(action.params["command"])
+                "http_request" -> withContext(Dispatchers.IO) { HttpAction.execute(action.params).ok }
+                "shell_command" -> withContext(Dispatchers.IO) { ShellKeyInjector.shellCommand(action.params, false).ok }
                 // Neither killing another app's process nor writing system/secure/global settings
                 // has an app-UID API since Android 10+ (FORCE_STOP_PACKAGES and WRITE_SECURE_SETTINGS
                 // are signature permissions); only reachable through Advanced Mode/the bridge's shell
@@ -467,8 +496,8 @@ class ScriptActionExecutor(private val handler: ScriptActionHandler) {
                 "cycle_rotations" -> lockRotation(ctx, nextUserRotation(systemInt(ctx, Settings.System.USER_ROTATION, 0)))
                 "change_brightness" -> setBrightness(ctx, action.params["value"]?.trim()?.toIntOrNull())
                 "toggle_auto_brightness" -> toggleSystemFlag(ctx, Settings.System.SCREEN_BRIGHTNESS_MODE)
-                "increase_brightness" -> adjustBrightness(ctx, BRIGHTNESS_STEP)
-                "decrease_brightness" -> adjustBrightness(ctx, -BRIGHTNESS_STEP)
+                "increase_brightness" -> adjustBrightness(ctx, 1)
+                "decrease_brightness" -> adjustBrightness(ctx, -1)
                 "set_wallpaper" -> setWallpaper(ctx, action.params)
                 "play_sound" -> playSound(ctx, action.params["uri"])
                 "text_to_speech" -> TextToSpeechController.speak(ctx, action.params["text"])
@@ -645,17 +674,26 @@ class ScriptActionExecutor(private val handler: ScriptActionHandler) {
         /** A manual level implies leaving auto-brightness, or the system overwrites it right back. */
         private fun setBrightness(context: Context, value: Int?): Boolean {
             if (value == null || !canWriteSettings(context)) return false
+            return writeBrightness(context, BrightnessSettings.scale(context).fromLegacy(value))
+        }
+
+        private fun writeBrightness(context: Context, raw: Int): Boolean {
+            val scale = BrightnessSettings.scale(context)
+            if (!scale.contains(systemInt(context, Settings.System.SCREEN_BRIGHTNESS, -1))) return false
             val resolver = context.contentResolver
             return Settings.System.putInt(
                 resolver,
                 Settings.System.SCREEN_BRIGHTNESS_MODE,
                 Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL,
-            ) and Settings.System.putInt(resolver, Settings.System.SCREEN_BRIGHTNESS, brightnessLevelFor(value, 0))
+            ) && Settings.System.putInt(resolver, Settings.System.SCREEN_BRIGHTNESS, raw)
         }
 
-        /** The bridge falls back to mid-scale when the current level is unreadable; match that. */
-        private fun adjustBrightness(context: Context, delta: Int): Boolean =
-            setBrightness(context, brightnessLevelFor(systemInt(context, Settings.System.SCREEN_BRIGHTNESS, 128), delta))
+        private fun adjustBrightness(context: Context, direction: Int): Boolean {
+            if (!canWriteSettings(context)) return false
+            val scale = BrightnessSettings.scale(context)
+            val current = systemInt(context, Settings.System.SCREEN_BRIGHTNESS, -1)
+            return scale.contains(current) && writeBrightness(context, scale.step(current, direction))
+        }
 
         private fun showInputMethodPicker(context: Context): Boolean {
             val imm = context.getSystemService(android.view.inputmethod.InputMethodManager::class.java) ?: return false
@@ -784,61 +822,15 @@ class ScriptActionExecutor(private val handler: ScriptActionHandler) {
             return startActivitySafely(context, Intent(Intent.ACTION_VIEW, Uri.parse(url)))
         }
 
-        /** "key=value" pairs separated by ';', each added as a String extra. */
-        private fun parseExtras(raw: String): Map<String, String> = raw.split(';')
-            .mapNotNull { pair ->
-                val index = pair.indexOf('=')
-                if (index <= 0) return@mapNotNull null
-                pair.substring(0, index).trim() to pair.substring(index + 1).trim()
-            }
-            .toMap()
-
         private fun sendIntent(context: Context, params: Map<String, String>): Boolean {
-            val action = params["action"]
-            if (action.isNullOrBlank()) return false
             return try {
-                val intent = Intent(action)
-                params["uri"]?.takeIf { it.isNotBlank() }?.let { intent.data = Uri.parse(it) }
-                params["extras"]?.takeIf { it.isNotBlank() }?.let { raw ->
-                    parseExtras(raw).forEach { (key, value) -> intent.putExtra(key, value) }
+                val intent = userIntent(params)
+                if (ActionPayloads.isActivity(params)) startActivitySafely(context, intent) else {
+                    context.sendBroadcast(intent)
+                    true
                 }
-                context.sendBroadcast(intent)
-                true
             } catch (e: Exception) {
                 false
-            }
-        }
-
-        private suspend fun httpRequest(method: String?, url: String?, body: String?): Boolean {
-            if (method.isNullOrBlank() || url.isNullOrBlank()) return false
-            return withContext(Dispatchers.IO) {
-                try {
-                    val connection = URL(url).openConnection() as HttpURLConnection
-                    connection.requestMethod = method.uppercase()
-                    connection.connectTimeout = 10_000
-                    connection.readTimeout = 10_000
-                    if (!body.isNullOrEmpty() && method.uppercase() in setOf("POST", "PUT")) {
-                        connection.doOutput = true
-                        connection.outputStream.use { it.write(body.toByteArray()) }
-                    }
-                    val code = connection.responseCode
-                    connection.disconnect()
-                    code in 200..399
-                } catch (e: Exception) {
-                    false
-                }
-            }
-        }
-
-        private suspend fun runShellCommand(command: String?): Boolean {
-            if (command.isNullOrBlank()) return false
-            return withContext(Dispatchers.IO) {
-                try {
-                    val process = ProcessBuilder("sh", "-c", command).redirectErrorStream(true).start()
-                    process.waitFor() == 0
-                } catch (e: Exception) {
-                    false
-                }
             }
         }
 

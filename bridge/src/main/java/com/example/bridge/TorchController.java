@@ -21,6 +21,7 @@ public final class TorchController {
     private final Set<String> torchCameraIds = new LinkedHashSet<>();
     private CameraManager cameraManager;
     private volatile boolean torchOn;
+    private volatile Boolean knownState;
     private String preferredId;
 
     /** Must be called on a thread with a prepared, running Looper so callbacks are delivered. */
@@ -46,6 +47,7 @@ public final class TorchController {
                         }
                         if (cameraId.equals(preferredId)) {
                             torchOn = enabled;
+                            knownState = enabled;
                         }
                     }
                 }
@@ -55,6 +57,7 @@ public final class TorchController {
                     synchronized (lock) {
                         torchCameraIds.remove(cameraId);
                         if (cameraId.equals(preferredId)) {
+                            knownState = null;
                             preferredId = torchCameraIds.isEmpty() ? null : torchCameraIds.iterator().next();
                         }
                     }
@@ -70,6 +73,8 @@ public final class TorchController {
         }
         BridgeLog.i("Torch ready, cameraId=" + preferredId + " known=" + torchCameraIds);
     }
+
+    Boolean knownState() { return knownState; }
 
     public boolean isOn() {
         return torchOn;
@@ -111,6 +116,7 @@ public final class TorchController {
         try {
             manager.setTorchMode(cameraId, enabled);
             torchOn = enabled;
+            knownState = enabled;
             return true;
         } catch (Throwable t) {
             BridgeLog.w("Torch: setTorchMode(" + cameraId + ", " + enabled + ") failed: " + t);

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_editor_title">Un éditeur de raccourcis plus simple</string>
+    <string name="whats_new_editor_description">Un éditeur plus clair avec enregistrement des touches sur place et des transitions plus fluides à l’ouverture et à la fermeture.</string>
+    <string name="whats_new_fix_update_startup">Correction d’un plantage à l’ouverture de KeySnap après une mise à jour</string>
+    <string name="whats_new_dutch_title">Maintenant en néerlandais</string>
+    <string name="whats_new_dutch_description">Utilisez KeySnap en néerlandais. Choisissez Nederlands dans Paramètres → Langue.</string>
+</resources>

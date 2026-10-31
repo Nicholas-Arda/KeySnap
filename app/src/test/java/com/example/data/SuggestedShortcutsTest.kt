@@ -138,7 +138,10 @@ class SuggestedShortcutsTest {
             action.params.filterKeys { it != "method" }.values.filter { it.isNotBlank() }.forEach { payload ->
                 assertTrue("${recipe.id} pre-fills an unlisted payload: $payload", payload in SuggestedShortcuts.PREFILLED_PAYLOADS)
             }
-            if (action.type == "http_request") assertTrue("${recipe.id} ships a URL", action.params["url"].isNullOrBlank())
+            if (action.type == "http_request") {
+                assertTrue("${recipe.id} ships a URL", action.params["url"].isNullOrBlank())
+                assertTrue("${recipe.id} ships headers", action.params["headers"].isNullOrEmpty())
+            }
             if (action.type == "open_url") {
                 val url = action.params["url"].orEmpty()
                 assertTrue("${recipe.id} links to $url", url.isBlank() || listOf("geo:", "mailto:", "tel:", "content:").any(url::startsWith))

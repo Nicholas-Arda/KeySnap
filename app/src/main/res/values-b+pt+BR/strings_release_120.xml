@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_test_editors_title_120">Editores que você pode testar</string>
+    <string name="whats_new_test_editors_description_120">Teste qualquer etapa com ▶ antes de salvar.</string>
+    <string name="whats_new_reorder_shortcuts_title_120">Reordene e edite atalhos</string>
+    <string name="whats_new_reorder_shortcuts_description_120">Toque em ✎ ou segure um atalho; arraste para reordenar.</string>
+    <string name="whats_new_input_devices_title_120">Teclados, mouses e controles</string>
+    <string name="whats_new_input_devices_description_120">Modo Avançado: nomes reais, atalhos com Ctrl.</string>
+    <string name="whats_new_fix_setup_120">Configuração em duas etapas, notificações opcionais</string>
+    <string name="whats_new_fix_conditions_120">Inverta qualquer condição com NÃO</string>
+    <string name="whats_new_fix_app_names_120">Apps aparecem pelo nome</string>
+    <string name="whats_new_fix_side_power_keys_120">Teclas laterais e liga/desliga: dica clara</string>
+    <string name="whats_new_fix_idle_battery_120">Menos bateria em repouso</string>
+    <string name="whats_new_fix_advanced_setup_120">Modo Avançado: configuração em uma página</string>
+    <string name="whats_new_fix_saved_keys_120">Renomeie teclas salvas ou adicione antes</string>
+    <string name="whats_new_fix_shortcuts_page_120">Página de atalhos organizada, listas menores</string>
+    <string name="whats_new_fix_modes_120">Modos: desative ou exclua quando quiser</string>
+</resources>

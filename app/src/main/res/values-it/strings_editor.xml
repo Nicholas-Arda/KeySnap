@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="editor_chain_if">Se</string>
+    <string name="editor_fine_tune">Regolazioni</string>
+    <string name="editor_fine_tune_summary">Nome · Modalità · Vibrazione</string>
+    <string name="editor_highlight_hint">Tocca una parola evidenziata per modificarla.</string>
+    <string name="editor_press">Premi</string>
+    <string name="editor_save_shortcut">Salva scorciatoia</string>
+    <string name="editor_test">Prova</string>
+</resources>

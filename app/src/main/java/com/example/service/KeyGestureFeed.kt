@@ -22,8 +22,9 @@ internal class KeyGestureFeed(
     // Lock order: this feed, then the scheduler's lock. handleGesture never calls back into the feed.
     @Synchronized
     fun onEvent(keyCode: Int, isDown: Boolean, eventTime: Long, scripts: List<ShortcutScript>, defaults: KeyMappingConfig) {
-        val chords = ChordTracker.chordsOf(scripts.filter { it.enabled }.flatMap { s -> s.triggers.map { it.keyCodes } })
-        for (command in tracker.onEvent(keyCode, isDown, eventTime, chords)) {
+        val keyLists = scripts.filter { it.enabled }.flatMap { s -> s.triggers.map { it.keyCodes } }
+        val chords = ChordTracker.chordsOf(keyLists)
+        for (command in tracker.onEvent(keyCode, isDown, eventTime, chords, ChordTracker.soloKeysOf(keyLists))) {
             if (command.kind == ChordTracker.CANCEL) {
                 scheduler.cancel(command.keyCode)
             } else {

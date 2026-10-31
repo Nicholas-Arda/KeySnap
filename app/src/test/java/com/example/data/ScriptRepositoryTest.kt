@@ -24,6 +24,53 @@ class ScriptRepositoryTest {
         context.getSharedPreferences("arda_mapper_prefs", Context.MODE_PRIVATE).edit().clear().commit()
     }
 
+    @Test fun filteredOrderPersistsAndUpdatesLegacyPrimary() {
+        val repo = repository()
+        val first = ShortcutScript("a", "A", true, listOf(ScriptTrigger(listOf(24), TriggerPressType.SINGLE_PRESS)), listOf(ScriptAction.ToggleFlashlight))
+        val hidden = first.copy(id = "hidden", name = "Hidden")
+        val last = first.copy(id = "b", name = "B", triggers = listOf(ScriptTrigger(listOf(25), TriggerPressType.LONG_PRESS)))
+        listOf(first, hidden, last).forEach(repo::upsert)
+        repo.reorder(listOf("b", "a"))
+        assertEquals(listOf(last, hidden, first), repository().scripts.value)
+        val prefs = context.getSharedPreferences("arda_mapper_prefs", Context.MODE_PRIVATE)
+        assertEquals(25, prefs.getInt("target_key_code", -1))
+        assertEquals("LONG_PRESS", prefs.getString("press_type", null))
+    }
+
+    @Test fun editingAnExistingShortcutPreservesCustomOrderAndLegacyPrimary() {
+        val repo = repository()
+        val first = ShortcutScript("a", "A", true, listOf(ScriptTrigger(listOf(24), TriggerPressType.SINGLE_PRESS)), listOf(ScriptAction.ToggleFlashlight))
+        val second = first.copy(id = "b", name = "B")
+        listOf(first, second).forEach(repo::upsert)
+        repo.reorder(listOf("b", "a"))
+        val edited = second.copy(name = "Renamed", triggers = listOf(ScriptTrigger(listOf(25), TriggerPressType.LONG_PRESS)))
+        repo.upsert(edited)
+        assertEquals(listOf(edited, first), repository().scripts.value)
+        val prefs = context.getSharedPreferences("arda_mapper_prefs", Context.MODE_PRIVATE)
+        assertEquals(25, prefs.getInt("target_key_code", -1))
+        assertEquals("LONG_PRESS", prefs.getString("press_type", null))
+    }
+
+    @Test fun renameChangesOnlyNameAndRejectsBlank() {
+        val repo = repository()
+        val original = ShortcutScript("a", "Original", false, listOf(ScriptTrigger(listOf(24), TriggerPressType.SINGLE_PRESS)), listOf(ScriptAction.ToggleFlashlight))
+        repo.upsert(original)
+        repo.rename("a", "  New name  ")
+        assertEquals(original.copy(name = "New name"), repository().scripts.value.single())
+        repo.rename("a", "   ")
+        repo.rename("missing", "Other")
+        assertEquals(original.copy(name = "New name"), repository().scripts.value.single())
+    }
+
+    @Test fun capsuleDefaultsOnForOldStoresAndFalseSurvivesReload() {
+        val prefs = context.getSharedPreferences("arda_mapper_prefs", Context.MODE_PRIVATE)
+        prefs.edit().putString("shortcut_scripts_v1", """{"version":1,"globallyEnabled":true,"scripts":[{"id":"old","name":"Old","enabled":true,"triggers":[{"keyCodes":[24],"pressType":"SINGLE_PRESS"}],"actions":[{"type":"toggle_flashlight"}]}]}""").commit()
+        val repo = repository()
+        assertTrue(repo.scripts.value.single().showCapsule)
+        repo.upsert(repo.scripts.value.single().copy(showCapsule = false))
+        assertFalse(repository().scripts.value.single().showCapsule)
+    }
+
     @Test fun migratesLegacyMappingExactlyOnceAndPreservesSettings() {
         val prefs = context.getSharedPreferences("arda_mapper_prefs", Context.MODE_PRIVATE)
         prefs.edit().putInt("target_key_code", 24).putString("press_type", "LONG_PRESS")

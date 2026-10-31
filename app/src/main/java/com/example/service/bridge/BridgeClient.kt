@@ -2,6 +2,7 @@ package com.example.service.bridge
 
 import android.util.Log
 import com.example.bridge.BridgeProtocol
+import com.example.bridge.ActionTestResult
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.awaitCancellation
@@ -25,7 +26,7 @@ data class BridgeKeyEvent(
     val source: String,
 )
 
-/** A script the bridge matched and executed. */
+/** A display-only match or a completed script report from the bridge. */
 data class BridgeTrigger(
     val timestamp: Long,
     val keyCode: Int,
@@ -34,6 +35,9 @@ data class BridgeTrigger(
     val success: Boolean,
     /** The bridge's per-action results in script order; null from a bridge older than protocol v11. */
     val actionResults: List<Pair<String, Boolean>>? = null,
+    val capsuleRunId: Long? = null,
+    /** Only FEEDBACK carries pending=true; it must never drive app-side execution. */
+    val pending: Boolean = false,
 )
 
 /** The bridge's answer to a RUN: [ran] of [total] actions succeeded. */
@@ -188,6 +192,17 @@ class BridgeClient(
         }
     }
 
+    /** Private result channel: never print payload, output or parse exceptions. */
+    suspend fun requestTestAction(payloadJson: String): ActionTestResult? = withContext(Dispatchers.IO) {
+        openSession()?.use { session ->
+            runCatching {
+                session.socket.soTimeout = 75_000
+                session.writer.writeLine("${BridgeProtocol.CMD_TEST_ACTION}$SEP$payloadJson")
+                parseTestActionReply(readReply(session.reader::readLine))
+            }.getOrNull()
+        }
+    }
+
     /**
      * Asks the bridge to tap Send in the chat just opened. Its outcome word (see
      * [BridgeProtocol.PRESS_SEND_OK]), or null when no answer came. The payload carries the message
@@ -202,6 +217,17 @@ class BridgeClient(
                 parsePressSendReply(readReply(session.reader::readLine))
             }.getOrNull()
         }
+    }
+
+    /** Requests the active voice-interaction session; carries no user payload. */
+    suspend fun requestShowAssistant(): Boolean = withContext(Dispatchers.IO) {
+        openSession()?.use { session ->
+            runCatching {
+                session.socket.soTimeout = 3_000
+                session.writer.writeLine(BridgeProtocol.CMD_SHOW_ASSISTANT)
+                readReply(session.reader::readLine) == "${BridgeProtocol.MSG_OK}${SEP}1"
+            }.getOrDefault(false)
+        } ?: false
     }
 
     /**
@@ -274,6 +300,8 @@ class BridgeClient(
                     scriptId = fields[4],
                     success = fields[5] == "1",
                     actionResults = decodeActionResults(fields.getOrNull(6)),
+                    capsuleRunId = fields.getOrNull(7)?.toLongOrNull()?.takeIf { it > 0 },
+                    pending = fields.getOrNull(8) == "1",
                 )
                 if (fields[0] == BridgeProtocol.MSG_FEEDBACK) listener.onFeedback(trigger) else listener.onTrigger(trigger)
             }

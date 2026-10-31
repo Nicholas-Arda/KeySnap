@@ -59,6 +59,19 @@ class ReplyEveryChatTest {
     }
 
     @Test
+    fun dismissingTheChipRemovesOnlyTheTenMinuteCooldown() {
+        val five = ScriptConstraint("cooldown", mapOf("minutes" to "5"))
+        val dropped = draft(listOf(anyChat, cooldown), listOf(reply)).dismissReplyCooldown()
+        assertEquals(listOf(anyChat), dropped.constraints)
+        assertTrue(dropped.cooldownRemoved)
+        val kept = draft(listOf(anyChat, five), listOf(reply)).dismissReplyCooldown()
+        assertEquals(listOf(anyChat, five), kept.constraints)
+        assertTrue(kept.cooldownRemoved)
+        val before = draft(listOf(mom), listOf(reply))
+        assertEquals(listOf(anyChat, five), kept.withReplyCooldown(before).constraints)
+    }
+
+    @Test
     fun aDraftThatAlreadyRepliedToEveryoneIsLeftAlone() {
         // A saved shortcut opened as it is: no edge, so nothing is added behind the user's back.
         val saved = draft(listOf(anyChat), listOf(reply))

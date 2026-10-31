@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="shortcuts_edit">Snelkoppelingen bewerken</string>
+    <string name="shortcuts_edit_done">Bewerken voltooien</string>
+    <string name="shortcuts_edit_hint">Tik een snelkoppeling aan voor bewerking</string>
+    <string name="shortcuts_drag">Sleep om %1$s te verplaatsen</string>
+    <string name="shortcuts_name_required">Voer een naam in</string>
+    <string name="shortcuts_delete">Snelkoppeling verwijderen</string>
+    <string name="shortcuts_move_to_mode">Verplaatsen naar modus</string>
+    <string name="shortcuts_rename_cancel">Hernoemen annuleren</string>
+    <string name="shortcuts_name_apply">Naam toepassen</string>
+    <string name="shortcuts_rename">Snelkoppeling hernoemen</string>
+</resources>

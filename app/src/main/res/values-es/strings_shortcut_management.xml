@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="shortcuts_edit">Editar accesos directos</string>
+    <string name="shortcuts_edit_done">Terminar de editar accesos directos</string>
+    <string name="shortcuts_edit_hint">Toca un acceso directo para editarlo</string>
+    <string name="shortcuts_drag">Arrastra para reordenar %1$s</string>
+    <string name="shortcuts_name_required">Introduce un nombre</string>
+    <string name="shortcuts_delete">Eliminar acceso directo</string>
+    <string name="shortcuts_move_to_mode">Mover a modo</string>
+    <string name="shortcuts_rename_cancel">Cancelar cambio de nombre</string>
+    <string name="shortcuts_name_apply">Aplicar nombre</string>
+    <string name="shortcuts_rename">Cambiar nombre del acceso directo</string>
+</resources>

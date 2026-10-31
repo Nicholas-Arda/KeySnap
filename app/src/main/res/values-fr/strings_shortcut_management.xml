@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="shortcuts_edit">Modifier les raccourcis</string>
+    <string name="shortcuts_edit_done">Terminer la modification</string>
+    <string name="shortcuts_edit_hint">Touchez un raccourci pour le modifier</string>
+    <string name="shortcuts_drag">Faites glisser pour réorganiser %1$s</string>
+    <string name="shortcuts_name_required">Saisissez un nom</string>
+    <string name="shortcuts_delete">Supprimer le raccourci</string>
+    <string name="shortcuts_move_to_mode">Déplacer vers un mode</string>
+    <string name="shortcuts_rename_cancel">Annuler le renommage</string>
+    <string name="shortcuts_name_apply">Appliquer le nom</string>
+    <string name="shortcuts_rename">Renommer le raccourci</string>
+</resources>

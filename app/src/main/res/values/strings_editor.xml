@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="editor_chain_if">If</string>
+    <string name="editor_fine_tune">Fine-tune</string>
+    <string name="editor_fine_tune_summary">Name · Modes · Vibration</string>
+    <string name="editor_highlight_hint">Tap a highlighted word to change it.</string>
+    <string name="editor_press">Press</string>
+    <string name="editor_save_shortcut">Save shortcut</string>
+    <string name="editor_test">Test</string>
+</resources>

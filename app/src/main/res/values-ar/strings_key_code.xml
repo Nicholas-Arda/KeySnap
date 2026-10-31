@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="key_code_single_key_hint">يرسل مفتاحًا واحدًا (مثلًا 66 = Enter). لكتابة أرقام أو نص، استخدم «%1$s».</string>
+    <string name="key_code_switch_to_input_text">التبديل إلى «%1$s»</string>
+</resources>

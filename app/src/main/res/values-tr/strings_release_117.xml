@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_editor_title">Daha sade kısayol düzenleyicisi</string>
+    <string name="whats_new_editor_description">Daha anlaşılır düzenleyici, editör içinden tuş kaydı ve daha akıcı açılış-kapanış geçişleri.</string>
+    <string name="whats_new_fix_update_startup">Güncellemeden sonra KeySnap açılırken oluşan çökme düzeltildi</string>
+    <string name="whats_new_dutch_title">Artık Hollandaca da var</string>
+    <string name="whats_new_dutch_description">KeySnap’i Hollandaca kullan. Ayarlar → Dil bölümünden Nederlands’ı seç.</string>
+</resources>

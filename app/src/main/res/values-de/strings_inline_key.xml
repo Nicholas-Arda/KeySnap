@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="inline_key_choose">Taste auswählen</string>
+    <string name="inline_key_record">Taste aufnehmen</string>
+    <string name="inline_key_listening">Jetzt eine Taste drücken</string>
+    <string name="inline_key_release">Tasten gemeinsam halten. Zum Beenden loslassen.</string>
+    <string name="inline_key_edit">Zum erneuten Aufnehmen auf die Taste tippen.</string>
+    <string name="inline_key_placeholder">eine Taste</string>
+    <string name="inline_key_advanced_hint">Für Power, Snap Key, Essential Key, Bixby und ähnliche Tasten ist „Erweiterter Modus“ erforderlich.</string>
+    <string name="inline_key_set_up">Einrichten</string>
+</resources>

@@ -2,6 +2,11 @@ package com.example.mode
 
 import android.content.Context
 import androidx.compose.runtime.Composable
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.SwapHoriz
+import androidx.compose.ui.res.stringResource
+import com.example.ui.scripts.ShortcutSettingsAction
+import io.github.nicholasarda.keysnap.R
 import com.example.data.PhysicalKeyOption
 import com.example.data.ScriptAction
 import com.example.data.ScriptConstraint
@@ -62,6 +67,8 @@ object ModeHooks {
 
     suspend fun cycle(context: Context, params: Map<String, String>): Boolean = false
 
+    suspend fun awaitPulseReservation() = Unit
+
     fun triggerFeedbackPause(actions: List<ScriptAction>, durationMs: Long): Long = 0L
 
     fun showToast(context: Context, mode: Int) = Unit
@@ -72,6 +79,7 @@ object ModeHooks {
         isPro: Boolean,
         onUpsell: () -> Unit,
         onUpdateScripts: (List<ShortcutScript>) -> Unit,
+        onDeleteScript: (String) -> Unit,
         onNewScriptId: () -> String,
         savedKeys: List<PhysicalKeyOption>,
         isRecordingKey: Boolean,
@@ -82,7 +90,29 @@ object ModeHooks {
     ): List<ShortcutScript> = scripts
 
     @Composable
+    fun ModesExplainer(onUnlock: () -> Unit, onDismiss: () -> Unit) = Unit
+
+    @Composable
     fun LockedCycleCount(scripts: List<ShortcutScript>) = Unit
+
+    @Composable
+    fun MoveToMode(
+        script: ShortcutScript,
+        scripts: List<ShortcutScript>,
+        isPro: Boolean,
+        onChange: (Int?) -> Unit,
+        onUpsell: () -> Unit,
+        onOpen: () -> Unit,
+        onUpdateScripts: (List<ShortcutScript>) -> Unit,
+        onNewScriptId: () -> String,
+    ) {
+        ShortcutSettingsAction(
+            label = stringResource(R.string.shortcuts_move_to_mode),
+            icon = Icons.Outlined.SwapHoriz,
+            proBadge = stringResource(R.string.pro_table_pro).uppercase(java.util.Locale.ROOT),
+            onClick = { onOpen(); onUpsell() },
+        )
+    }
 
     @Composable
     fun RunsInField(

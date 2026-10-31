@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="shortcuts_edit">تعديل الاختصارات</string>
+    <string name="shortcuts_edit_done">إنهاء تعديل الاختصارات</string>
+    <string name="shortcuts_edit_hint">اضغط على اختصار لتعديله</string>
+    <string name="shortcuts_drag">اسحب لإعادة ترتيب %1$s</string>
+    <string name="shortcuts_name_required">أدخل اسمًا</string>
+    <string name="shortcuts_delete">حذف الاختصار</string>
+    <string name="shortcuts_move_to_mode">نقل إلى وضع</string>
+    <string name="shortcuts_rename_cancel">إلغاء إعادة التسمية</string>
+    <string name="shortcuts_name_apply">تطبيق الاسم</string>
+    <string name="shortcuts_rename">إعادة تسمية الاختصار</string>
+</resources>

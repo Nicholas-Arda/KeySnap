@@ -21,6 +21,7 @@ data class ShortcutScript(
     val hapticDurationMs: Long? = null,
     /** A time automation's wake-up is an alarm clock (status-bar icon) that OEMs don't defer; see TimeSchedule.plan. */
     val exactTiming: Boolean = true,
+    val showCapsule: Boolean = true,
 )
 
 /** No key and not an automation: it runs only from a home-screen widget or a Quick Settings tile. */
@@ -68,6 +69,7 @@ internal data class PersistedShortcutScript(
     val hapticDurationMs: Long? = null,
     /** Absent in stores written before it existed: on, like a new shortcut. */
     val exactTiming: Boolean = true,
+    val showCapsule: Boolean = true,
 )
 
 @JsonClass(generateAdapter = true)
@@ -97,6 +99,7 @@ internal fun ShortcutScript.toPersisted() = PersistedShortcutScript(
     vibrateOnTrigger = vibrateOnTrigger,
     hapticDurationMs = hapticDurationMs,
     exactTiming = exactTiming,
+    showCapsule = showCapsule,
 )
 
 /** Dropped from the catalog because it ran the identical `input keyevent` the bridge runs for
@@ -145,7 +148,7 @@ internal fun PersistedShortcutScript.toDomain(): ShortcutScript? {
         id, name.ifBlank { "Unnamed script" }, enabled, validTriggers, validActions,
         validConstraints + migratedEventTriggers,
         automation || eventTriggers.isNotEmpty(),
-        consumeOriginalEvent, vibrateOnTrigger, hapticDurationMs, exactTiming,
+        consumeOriginalEvent, vibrateOnTrigger, hapticDurationMs, exactTiming, showCapsule,
     )
 }
 

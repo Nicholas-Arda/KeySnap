@@ -3,7 +3,6 @@
     <!-- Shown on the system's accessibility settings screen. It must describe everything the
          service actually does, including the scoped screen read, or it misrepresents the app. -->
     <string name="accessibility_service_description">Detecta pressionamentos de teclas físicas (Volume, Liga/desliga e outros botões de hardware) para que possam acionar seus atalhos. Somente durante a configuração do Modo Avançado, também abre para você a caixa de diálogo do código de pareamento do sistema e lê o código nela. Não é capaz de ler a tela de nenhum outro aplicativo.</string>
-    <string name="accessibility_disclosure_agree">Concordar e abrir as configurações</string>
 
     <!-- Categorias de ação -->
     <string name="action_category_input">Entrada</string>
@@ -269,6 +268,7 @@
 
     <!-- Editor de ações: emblemas de requisito -->
     <string name="badge_expert_mode">Requer o Modo Avançado</string>
+    <string name="badge_advanced_full_access">Acesso total requer o Modo Avançado</string>
     <string name="badge_accessibility">Requer o serviço de Acessibilidade</string>
     <string name="badge_notification_policy">Requer acesso a Não Perturbe</string>
     <string name="badge_notification_access">Requer acesso a notificações</string>
@@ -554,7 +554,6 @@
     <string name="settings_close">Fechar configurações</string>
 
     <!-- Diálogos -->
-    <string name="dialog_expert_connected">MODO AVANÇADO CONECTADO</string>
     <string name="dialog_new_input_title">Nova entrada detectada</string>
     <string name="dialog_new_input_body">Dê um nome curto a esta entrada.</string>
     <string name="dialog_new_input_hint">ex.: Tecla de atalho</string>
@@ -578,8 +577,6 @@
     <string name="trigger_picker_listening">Ouvindo… toque para parar</string>
     <string name="trigger_picker_tap_to_record">Toque e depois pressione uma tecla, ou segure várias juntas</string>
     <string name="trigger_picker_save_combo">Salvar tecla</string>
-    <string name="trigger_picker_use_automation">Usar uma automação em vez disso</string>
-    <string name="trigger_picker_use_key">Usar %1$s</string>
 
     <!-- Configurações por atalho -->
     <string name="script_settings_name">Nome</string>
@@ -668,33 +665,12 @@
     <string name="home_triggers_session">Execuções nesta sessão</string>
     <string name="home_last_from">Último de %1$s</string>
     <string name="home_open_label_settings">Abrir configurações de %1$s</string>
-    <string name="home_setup_title_off">Seus atalhos ainda não estão funcionando</string>
-    <string name="home_setup_subtitle_off">Três etapas, todas nas configurações do próprio Android. Veja no que tocar em cada uma.</string>
-    <string name="home_setup_title_at_risk">Seus atalhos podem parar de funcionar</string>
-    <string name="home_setup_subtitle_at_risk">O Android pode fechar o app em segundo plano enquanto isto não estiver ativado.</string>
-    <string name="home_setup_progress">%1$d/3</string>
-    <string name="home_setup_step_accessibility">Ative o Serviço de Acessibilidade</string>
-    <string name="home_setup_why_accessibility">É por ele que o KeySnap lê os toques nos seus botões. Nada funciona enquanto ele estiver desligado.</string>
     <string name="home_setup_open_accessibility">Abrir configurações de Acessibilidade</string>
-    <string name="home_setup_step_background">Deixe o KeySnap rodar em segundo plano</string>
-    <string name="home_setup_why_background">O Android encerra apps que considera adormecidos. Toque em Permitir quando ele perguntar — Negar deixa o KeySnap sujeito a ser encerrado.</string>
     <string name="home_setup_allow_background">Permitir uso em segundo plano</string>
-    <string name="home_setup_done_background">Permitido</string>
-    <string name="home_setup_step_notifications">Permita as notificações</string>
-    <string name="home_setup_why_notifications">Para a configuração, para avisar quando um atalho não puder ser executado e para as notificações que seus próprios atalhos mostram. Toque em Permitir quando o Android perguntar — Não permitir interrompe a configuração aqui.</string>
-    <string name="home_setup_ask_now">Perguntar agora</string>
-    <string name="home_setup_done_notifications">Permitidas</string>
-    <string name="home_setup_all_done">Os três estão ativos. Seus botões já funcionam.</string>
     <string name="home_setup_state_done">Concluída</string>
     <string name="home_setup_state_current">Etapa atual</string>
     <string name="home_setup_state_upcoming">Ainda não iniciada</string>
     <string name="home_setup_illo_downloaded_apps">Apps baixados</string>
-    <string name="home_setup_why">Por quê?</string>
-    <string name="home_setup_why_expanded">Expandido</string>
-    <string name="home_setup_why_collapsed">Recolhido</string>
-    <string name="home_setup_whytext_accessibility">O Android mostra os botões físicos apenas a um serviço de acessibilidade, então o KeySnap usa um exatamente para isso: perceber um toque e executar o seu atalho. Ele não lê a tela de outros apps. Só durante a configuração do Modo Avançado ele também lê o código de pareamento na página de Depuração sem Fio, e nada além disso.</string>
-    <string name="home_setup_whytext_background">O Android encerra apps que considera inativos, e um app encerrado não consegue executar seus atalhos. Isso mantém o KeySnap vivo enquanto o celular dorme. Em segundo plano ele não faz nada além de esperar um botão.</string>
-    <string name="home_setup_whytext_notifications">Durante a configuração do Modo Avançado: o código de pareamento e se o serviço está em execução. Depois disso, só quando um atalho não puder ser executado, e por quê, e as notificações que você coloca nos seus atalhos. Sem lembretes nossos, sem promoções, nada além disso, nunca.</string>
     <string name="home_setup_illo_battery_dialog">Permitir que o KeySnap fique sempre em execução em segundo plano?</string>
     <string name="home_setup_illo_battery_body">Isso pode reduzir a duração da bateria.</string>
     <string name="home_setup_illo_battery_deny">Negar</string>
@@ -704,6 +680,8 @@
     <string name="home_nudge_title">Crie seu primeiro atalho</string>
     <string name="home_nudge_subtitle">A lanterna está logo abaixo, a um toque.</string>
     <string name="home_nudge_dismiss">Fechar</string>
+    <string name="home_coloros_recents_title">Bloqueie o KeySnap nos recentes</string>
+    <string name="home_coloros_recents_body">Neste telefone, deslizar o KeySnap para fechá-lo desliga a Acessibilidade, e as teclas de atalho também fazem o trabalho normal. Abra os recentes e puxe o cartão do KeySnap para baixo para bloqueá-lo.</string>
 
     <!-- Oferta Pro -->
     <string name="pro_card_subtitle">O plano gratuito mantém %1$d atalhos ativos. O Pro mantém todos.</string>
@@ -821,9 +799,6 @@
     <string name="wizard_title">Ativar o Modo Avançado</string>
     <string name="wizard_subtitle">Assistente de configuração</string>
     <string name="wizard_continue">Continuar</string>
-    <string name="wizard_finish_pairing">Concluir pareamento</string>
-    <string name="wizard_step_intro">Introdução</string>
-    <string name="wizard_step_pairing">Pareamento</string>
     <string name="wizard_step_done">Concluído</string>
     <string name="wizard_what_is_expert">O que é o Modo Avançado?</string>
     <string name="wizard_expert_explainer">O KeySnap pareia com a Depuração sem Fio do seu próprio telefone e lê as teclas direto do kernel — Liga/desliga, assistente, câmera, os botões que o Android esconde dos apps.</string>
@@ -835,7 +810,10 @@
     <string name="wizard_illo_action">↳ Lanterna ligada</string>
     <string name="wizard_how_to_dev_options">Como ativar as Opções do desenvolvedor?</string>
     <string name="wizard_auto_pairing">Pareamento automático via ADB</string>
-    <string name="wizard_auto_pairing_explainer">Não é preciso digitar o código de pareamento manualmente — nós o lemos em segundo plano e conectamos automaticamente. Se falhar, você pode inseri-lo pela notificação.</string>
+    <string-array name="wizard_auto_pairing_points">
+        <item>Não é preciso digitar o código de pareamento manualmente — nós o lemos em segundo plano e conectamos automaticamente.</item>
+        <item>Se falhar, você pode inseri-lo pela notificação.</item>
+    </string-array>
     <string name="wizard_open_settings">Abrir configurações e iniciar pareamento</string>
     <string name="wizard_expert_running">O Modo Avançado está em execução</string>
     <string name="wizard_expert_running_body">Todas as teclas de hardware do Android (Liga/desliga, assistente, Volume, Câmera etc.) estão sendo monitoradas no nível do kernel Linux.</string>
@@ -844,7 +822,6 @@
     <string name="wizard_connecting">Conectando…</string>
     <string name="wizard_connecting_body">O Modo Avançado está iniciando. Isso leva alguns segundos — mantenha esta tela aberta.</string>
     <string name="wizard_kernel_stream">Fluxo de eventos do kernel ao vivo</string>
-    <string name="wizard_test_flash">Testar acionamento da lanterna</string>
 
     <!-- Status do pareamento -->
     <string name="pairing_idle">Aguardando pareamento…</string>
@@ -929,7 +906,6 @@
     <string name="widget_description">Execute um dos seus atalhos com um toque</string>
     <string name="trigger_kind_surface">Widget ou bloco</string>
     <string name="surface_card_subtitle">Executa quando você toca no widget da tela inicial ou no bloco das configurações rápidas</string>
-    <string name="trigger_picker_use_surface">Sem tecla livre? Use um widget ou bloco</string>
     <string name="run_source_widget">Widget</string>
     <string name="run_source_tile">Bloco das configurações rápidas</string>
     <string name="widget_limit_reached">Plano gratuito: %1$d widgets na tela inicial. Compre o Pro para widgets ilimitados.</string>
@@ -1101,9 +1077,9 @@
     <string name="param_mode_pulse">Vibração do modo</string>
     <string name="param_mode_gap">Intervalo entre vibrações</string>
     <string name="param_mode_lead_gap">Pausa antes da vibração do modo</string>
-    <string name="choice_mode_feedback_toast">Mensagem na tela</string>
+    <string name="choice_mode_feedback_toast">Mensagem</string>
     <string name="choice_mode_feedback_vibrate">Vibração</string>
-    <string name="choice_mode_feedback_both">Mensagem e vibração</string>
+    <string name="choice_mode_feedback_both">Ambos</string>
     <string name="param_mode_number">Número do modo</string>
     <string name="constraint_mode_is">O modo é</string>
     <string name="mode_current">Modo %1$d</string>
@@ -1116,4 +1092,16 @@
     <string name="assistant_redirect_note">O KeySnap é seu assistente, então esta ação abre outro assistente no seu celular.</string>
     <string name="assistant_no_other_app">Não há outro assistente disponível neste celular.</string>
     <string name="assistant_voice_wakeup_warning">Enquanto o KeySnap for seu assistente, o despertar por voz do seu assistente anterior pode parar de funcionar.</string>
+    <string name="script_settings_show_capsule">Mostrar cápsula de teclas</string>
+    <string name="script_settings_show_capsule_description">Mostrar uma resposta quando este atalho for executado.</string>
+    <plurals name="home_recipes_show_more">
+        <item quantity="one">Mostrar mais %d</item>
+        <item quantity="many">Mostrar mais %d</item>
+        <item quantity="other">Mostrar mais %d</item>
+    </plurals>
+    <string name="home_recipes_show_less">Mostrar menos</string>
+    <string name="settings_saved_keys">Teclas salvas</string>
+    <string name="settings_saved_keys_summary">Renomeie teclas ou adicione uma antes de usá-la</string>
+    <string name="settings_saved_keys_add">Adicionar tecla</string>
+    <string name="settings_saved_keys_rename">Renomear tecla</string>
 </resources>

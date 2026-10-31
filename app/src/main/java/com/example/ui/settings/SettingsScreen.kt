@@ -5,6 +5,14 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.provider.Settings
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -33,10 +41,27 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Build
+import androidx.compose.material.icons.outlined.DeveloperMode
+import androidx.compose.material.icons.outlined.Key
+import androidx.compose.material.icons.outlined.Link
+import androidx.compose.material.icons.outlined.Wifi
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
+import com.example.ui.components.PointBox
+import androidx.compose.material.icons.automirrored.outlined.Label
+import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.IconButton
+import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.Edit
+import com.example.data.keyDisplayName
+import com.example.data.PhysicalKeyOption
+import com.example.ui.components.PointLine
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.Info
@@ -66,6 +91,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -82,6 +108,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.style.Hyphens
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.core.text.BidiFormatter
 import androidx.core.text.TextDirectionHeuristicsCompat
@@ -161,9 +188,15 @@ fun SettingsScreen(
     accessibilityStatus: AccessibilityStatus = if (isServiceActive) AccessibilityStatus.ACTIVE else AccessibilityStatus.DISABLED,
     onOpenAccessibility: () -> Unit = {},
     @StringRes accessibilityButton: Int = R.string.home_setup_open_accessibility,
+    savedKeys: List<PhysicalKeyOption> = emptyList(),
+    isRecordingKey: Boolean = false,
+    onAddKey: () -> Unit = {},
+    onCancelAddKey: () -> Unit = {},
+    onRenameKey: (Int, String) -> Unit = { _, _ -> },
 ) {
     val listState = rememberLazyListState()
     var keysExpanded by rememberSaveable { mutableStateOf(false) }
+    var savedKeysExpanded by rememberSaveable { mutableStateOf(false) }
     var showAppearance by rememberSaveable { mutableStateOf(false) }
     var advancedExpanded by rememberSaveable { mutableStateOf(false) }
     val context = LocalContext.current
@@ -171,7 +204,7 @@ fun SettingsScreen(
         .collectAsState(initial = remember(context) { CapsuleHooks.isEnabled(context) })
     val itemKeys = listOfNotNull(
         "title".takeIf { showTitle }, "personalization_label", "personalization",
-        "key_behavior", "setup_tools", "input_monitor", "about_label", "about",
+        "key_behavior", "saved_keys", "setup_tools", "advanced_label", "input_monitor", "about_label", "about",
     )
     LaunchedEffect(targetSection) {
         val key = when (targetSection) {
@@ -222,8 +255,24 @@ fun SettingsScreen(
                             }),
                             icon = Icons.Outlined.Palette,
                             testTag = "open_appearance",
-                            onClick = { showAppearance = true },
+                            expanded = showAppearance,
+                            onClick = { showAppearance = !showAppearance },
                         )
+                    }
+                    SettingsDisclosure(showAppearance) {
+                        Column(Modifier.padding(bottom = 14.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                            AppearanceRow(themeMode, themeFollowSystem, onSetThemeMode, onSetThemeSystem)
+                            AnimatedVisibility(themeMode == ThemeMode.DARK, enter = expandVertically() + fadeIn(), exit = shrinkVertically() + fadeOut()) {
+                                SettingsSwitchRow(
+                                    title = stringResource(R.string.theme_oled),
+                                    description = stringResource(R.string.theme_oled_subtitle),
+                                    checked = oledMode,
+                                    enabled = true,
+                                    testTag = "oled_mode_switch",
+                                    onCheckedChange = onSetOledMode,
+                                )
+                            }
+                        }
                     }
                     SettingsDivider()
                 }
@@ -232,7 +281,7 @@ fun SettingsScreen(
                     SettingsDivider()
                     Box(Modifier.testTag("key_capsule")) {
                         SettingsNavRow(
-                            title = "Key capsule",
+                            title = stringResource(R.string.capsule_intro_title),
                             subtitle = "${stringResource(if (capsuleEnabled) R.string.scripts_toggle_state_on else R.string.home_status_off)} · ${stringResource(R.string.settings_experimental)}",
                             icon = Icons.Outlined.SmartButton,
                             testTag = "open_key_capsule",
@@ -312,6 +361,19 @@ fun SettingsScreen(
                 )
             }
         }
+        item(key = "saved_keys") {
+            Box(reveal(3)) {
+                SavedKeysPanel(
+                    keys = savedKeys,
+                    isRecordingKey = isRecordingKey,
+                    expanded = savedKeysExpanded,
+                    onToggleExpanded = { savedKeysExpanded = !savedKeysExpanded },
+                    onAddKey = onAddKey,
+                    onCancelAddKey = onCancelAddKey,
+                    onRenameKey = onRenameKey,
+                )
+            }
+        }
         item(key = "setup_tools") {
             Box(reveal(4)) {
                 AdvancedModePanel(
@@ -330,6 +392,8 @@ fun SettingsScreen(
                 )
             }
         }
+        // A developer's view of raw key events, so it sits apart under Advanced.
+        item(key = "advanced_label") { SettingsGroupLabel(R.string.settings_group_advanced, reveal(5)) }
         item(key = "input_monitor") { Box(reveal(5)) { EventLogPanel(keyHistory, isEventLogExpanded, onToggleLog, onClearHistory) } }
         item(key = "about_label") { SettingsGroupLabel(R.string.settings_about_panel, reveal(6)) }
         item(key = "about") {
@@ -342,28 +406,6 @@ fun SettingsScreen(
                 )
             }
         }
-    }
-    if (showAppearance && themeMode != null) {
-        AppAlertDialog(
-            onDismissRequest = { showAppearance = false },
-            title = { Text(stringResource(R.string.settings_appearance_panel)) },
-            text = {
-                Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    AppearanceRow(themeMode, themeFollowSystem, onSetThemeMode, onSetThemeSystem)
-                    if (themeMode == ThemeMode.DARK) {
-                        SettingsSwitchRow(
-                            title = stringResource(R.string.theme_oled),
-                            description = stringResource(R.string.theme_oled_subtitle),
-                            checked = oledMode,
-                            enabled = true,
-                            testTag = "oled_mode_switch",
-                            onCheckedChange = onSetOledMode,
-                        )
-                    }
-                }
-            },
-            confirmButton = { TextButton(onClick = { showAppearance = false }) { Text(stringResource(R.string.whats_new_got_it)) } },
-        )
     }
 }
 
@@ -392,6 +434,8 @@ private fun SettingsNavRow(
     icon: ImageVector,
     testTag: String,
     badge: String? = null,
+    /** Non-null when the row opens in place rather than navigating. */
+    expanded: Boolean? = null,
     onClick: () -> Unit,
 ) {
     val colors = MaterialTheme.colorScheme
@@ -400,6 +444,9 @@ private fun SettingsNavRow(
         Row(
             Modifier.fillMaxWidth().heightIn(min = 68.dp)
                 .clickable(role = Role.Button, onClick = onClick)
+                .then(if (expanded == null) Modifier else Modifier.semantics {
+                    if (expanded) collapse { onClick(); true } else expand { onClick(); true }
+                })
                 .padding(vertical = 12.dp).testTag(testTag),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -417,7 +464,8 @@ private fun SettingsNavRow(
                 }
                 Text(subtitle, Modifier.testTag("${testTag}_summary"), style = MaterialTheme.typography.bodySmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph), color = colors.onSurfaceVariant)
             }
-            if (!compact) Icon(Icons.Outlined.ChevronRight, null, Modifier.size(18.dp), tint = colors.onSurfaceVariant)
+            if (expanded != null) DisclosureChevron(expanded)
+            else if (!compact) Icon(Icons.Outlined.ChevronRight, null, Modifier.size(18.dp), tint = colors.onSurfaceVariant)
         }
     }
 }
@@ -451,11 +499,31 @@ private fun SettingsExpandablePanel(
                     Text(label, style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold, hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph))
                     Text(summary, style = MaterialTheme.typography.bodySmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph), color = colors.onSurfaceVariant)
                 }
-                Icon(if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore, null, Modifier.size(18.dp), tint = colors.onSurfaceVariant)
+                DisclosureChevron(expanded)
             }
         }
-        if (expanded) Column(Modifier.padding(bottom = 16.dp), verticalArrangement = Arrangement.spacedBy(11.dp)) { content() }
+        SettingsDisclosure(expanded) {
+            Column(Modifier.padding(bottom = 16.dp), verticalArrangement = Arrangement.spacedBy(11.dp)) { content() }
+        }
     }
+}
+
+/** Settings never cut in: a section grows open and shuts the same way. */
+@Composable
+private fun SettingsDisclosure(expanded: Boolean, content: @Composable () -> Unit) {
+    AnimatedVisibility(
+        visible = expanded,
+        enter = expandVertically(tween(280, easing = FastOutSlowInEasing), expandFrom = Alignment.Top) +
+            fadeIn(tween(200, delayMillis = 60)),
+        exit = shrinkVertically(tween(220, easing = FastOutSlowInEasing), shrinkTowards = Alignment.Top) +
+            fadeOut(tween(120)),
+    ) { content() }
+}
+
+@Composable
+private fun DisclosureChevron(expanded: Boolean) {
+    val turn by animateFloatAsState(if (expanded) 180f else 0f, tween(280, easing = FastOutSlowInEasing), label = "chevron")
+    Icon(Icons.Default.ExpandMore, null, Modifier.size(18.dp).rotate(turn), tint = MaterialTheme.colorScheme.onSurfaceVariant)
 }
 
 @Composable
@@ -499,7 +567,14 @@ private fun AdvancedModePanel(
         expanded = expanded,
         onToggle = onToggleExpanded,
     ) {
-        BoxWithConstraints(Modifier.fillMaxWidth().heightIn(min = MinTouchTarget)) {
+        // Centred in its 48dp row, the label and its status sharing one baseline.
+        // Off: the whole row leads to the same disclosure sheet as Home's Fix.
+        val rowModifier = if (accessibilityStatus == AccessibilityStatus.DISABLED) {
+            Modifier.clickable(onClick = onOpenAccessibility)
+        } else {
+            Modifier
+        }
+        BoxWithConstraints(Modifier.fillMaxWidth().heightIn(min = MinTouchTarget).then(rowModifier), contentAlignment = Alignment.CenterStart) {
             val label = stringResource(R.string.home_accessibility_service)
             val status = stringResource(accessibilityStatus.label)
             if (maxWidth / LocalDensity.current.fontScale < 240.dp) {
@@ -508,9 +583,9 @@ private fun AdvancedModePanel(
                     Text(status, style = MaterialTheme.typography.bodySmall, color = colors.primary)
                 }
             } else {
-                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                    Text(label, Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
-                    Text(status, style = MaterialTheme.typography.bodySmall, color = colors.primary)
+                Row(Modifier.fillMaxWidth()) {
+                    Text(label, Modifier.weight(1f).alignByBaseline(), style = MaterialTheme.typography.bodyLarge)
+                    Text(status, Modifier.alignByBaseline(), style = MaterialTheme.typography.bodySmall, color = colors.primary)
                 }
             }
         }
@@ -545,31 +620,33 @@ private fun AdvancedModePanel(
             testTag = "advanced_autostart_switch",
             onCheckedChange = onToggleAutostart,
         )
-        // The fixed permission command must be visible before the user enables the option.
-        Text(
-            stringResource(R.string.settings_autostart_permission_description,
-                BidiFormatter.getInstance().unicodeWrap(secureSettingsCommand(context.packageName, true), TextDirectionHeuristicsCompat.LTR)),
-            style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant,
+        // The fixed permission command must be visible before the user enables the option, so it is
+        // never folded away; it is set in the code face so it reads as what will run.
+        val command = secureSettingsCommand(context.packageName, true)
+        val description = stringResource(
+            R.string.settings_autostart_permission_description,
+            BidiFormatter.getInstance().unicodeWrap(command, TextDirectionHeuristicsCompat.LTR),
         )
-        if (autostart) {
-            Text(
-                stringResource(R.string.settings_autostart_hint_pairing),
-                style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant,
-            )
-            if (!grantHeld) {
-                Text(
-                    stringResource(R.string.settings_autostart_hint_permission),
-                    Modifier.clickable {
-                        runCatching { context.startActivity(Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)) }
-                    },
-                    style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant,
-                )
+        PointBox(colors.primary) {
+            PointLine(Icons.Outlined.Key, colors.primary, highlightCommand(description, command, colors.primary))
+            if (autostart) {
+                PointLine(Icons.Outlined.Link, colors.tertiary, AnnotatedString(stringResource(R.string.settings_autostart_hint_pairing)))
+                if (!grantHeld) {
+                    PointLine(
+                        Icons.Outlined.DeveloperMode,
+                        colors.tertiary,
+                        AnnotatedString(stringResource(R.string.settings_autostart_hint_permission)),
+                        Modifier.clickable {
+                            runCatching { context.startActivity(Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)) }
+                        },
+                    )
+                }
+                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
+                    PointLine(Icons.Outlined.Wifi, colors.tertiary, AnnotatedString(stringResource(R.string.settings_autostart_hint_prompt)))
+                }
             }
-            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
-                Text(stringResource(R.string.settings_autostart_hint_prompt),
-                    style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant)
-            }
-        } else if (grantHeld) {
+        }
+        if (!autostart && grantHeld) {
             Text(stringResource(R.string.settings_autostart_cleanup_failed),
                 style = MaterialTheme.typography.bodySmall, color = colors.error)
         }
@@ -589,6 +666,118 @@ private fun AdvancedModePanel(
             Icon(Icons.Outlined.ChevronRight, null, tint = colors.onSurfaceVariant)
         }
     }
+}
+
+/**
+ * Every key the app has recorded, each renamable, plus Add key for one not met yet — a keyboard,
+ * mouse or gamepad button can be named before any shortcut uses it.
+ */
+@Composable
+private fun SavedKeysPanel(
+    keys: List<PhysicalKeyOption>,
+    isRecordingKey: Boolean,
+    expanded: Boolean,
+    onToggleExpanded: () -> Unit,
+    onAddKey: () -> Unit,
+    onCancelAddKey: () -> Unit,
+    onRenameKey: (Int, String) -> Unit,
+) {
+    val colors = MaterialTheme.colorScheme
+    val res = LocalContext.current.resources
+    var adding by remember { mutableStateOf(false) }
+    LaunchedEffect(isRecordingKey) { if (!isRecordingKey) adding = false }
+    var renaming by remember { mutableStateOf<PhysicalKeyOption?>(null) }
+    SettingsExpandablePanel(
+        label = stringResource(R.string.settings_saved_keys),
+        summary = stringResource(R.string.settings_saved_keys_summary),
+        icon = Icons.AutoMirrored.Outlined.Label,
+        testTag = "saved_keys",
+        expanded = expanded,
+        onToggle = onToggleExpanded,
+    ) {
+        keys.forEach { key ->
+            Row(
+                Modifier.fillMaxWidth().heightIn(min = MinTouchTarget).testTag("saved_key_${key.keyCode}"),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    keyDisplayName(res, key.keyCode, keys),
+                    Modifier.weight(1f),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = colors.onSurface,
+                )
+                IconButton(onClick = { renaming = key }, modifier = Modifier.testTag("rename_key_${key.keyCode}")) {
+                    Icon(Icons.Outlined.Edit, stringResource(R.string.settings_saved_keys_rename), tint = colors.primary)
+                }
+            }
+            SettingsDivider()
+        }
+        val listening = adding && isRecordingKey
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .heightIn(min = MinTouchTarget)
+                .clip(InnerShape)
+                .background(colors.primary.copy(alpha = if (listening) .14f else .08f))
+                .clickable(role = Role.Button) {
+                    if (listening) {
+                        onCancelAddKey()
+                    } else {
+                        adding = true
+                        onAddKey()
+                    }
+                }
+                .padding(horizontal = 12.dp)
+                .testTag("add_saved_key"),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Icon(if (listening) Icons.Outlined.Keyboard else Icons.Outlined.Add, null, Modifier.size(20.dp), tint = colors.primary)
+            Text(
+                stringResource(if (listening) R.string.trigger_picker_listening else R.string.settings_saved_keys_add),
+                style = MaterialTheme.typography.labelLarge,
+                color = colors.primary,
+            )
+        }
+    }
+    renaming?.let { key ->
+        var name by remember(key) { mutableStateOf(keyDisplayName(res, key.keyCode, keys)) }
+        AppAlertDialog(
+            onDismissRequest = { renaming = null },
+            title = { Text(stringResource(R.string.settings_saved_keys_rename)) },
+            text = {
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = { name = it.take(40) },
+                    singleLine = true,
+                    placeholder = { Text(stringResource(R.string.dialog_new_input_hint)) },
+                    modifier = Modifier.fillMaxWidth().testTag("rename_key_field"),
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        onRenameKey(key.keyCode, name)
+                        renaming = null
+                    },
+                    enabled = name.isNotBlank(),
+                ) { Text(stringResource(R.string.common_save)) }
+            },
+            dismissButton = { TextButton(onClick = { renaming = null }) { Text(stringResource(R.string.common_cancel)) } },
+        )
+    }
+}
+
+/** [text] with the literal [command] in it set apart in the code face and [tint]. */
+private fun highlightCommand(text: String, command: String, tint: Color): AnnotatedString = buildAnnotatedString {
+    val at = text.indexOf(command)
+    if (at < 0) {
+        append(text)
+        return@buildAnnotatedString
+    }
+    append(text.substring(0, at))
+    withStyle(SpanStyle(fontFamily = FontFamily.Monospace, color = tint)) { append(command) }
+    append(text.substring(at + command.length))
 }
 
 /**
@@ -811,7 +1000,7 @@ private fun EventLogPanel(
             )
             Spacer(Modifier.width(8.dp))
             Text(
-                if (expanded && history.size > visible.size) {
+                if (history.size > visible.size) {
                     stringResource(R.string.settings_log_count, visible.size, history.size)
                 } else {
                     pluralStringResource(R.plurals.settings_log_event_count, history.size, history.size)
@@ -820,7 +1009,7 @@ private fun EventLogPanel(
                 color = colors.onSurfaceVariant,
             )
         }
-        if (expanded && history.isNotEmpty()) {
+        if (history.isNotEmpty()) {
             visible.forEach { event -> EventRow(event) }
             TextButton(
                 onClick = onClear,

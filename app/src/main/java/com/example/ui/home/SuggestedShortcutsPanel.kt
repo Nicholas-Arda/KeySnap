@@ -2,6 +2,9 @@ package com.example.ui.home
 
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.spring
+import androidx.compose.foundation.border
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -12,6 +15,8 @@ import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.unit.Dp
 import androidx.compose.material.icons.outlined.Campaign
 import androidx.compose.material.icons.outlined.ChevronRight
+import androidx.compose.material.icons.outlined.ExpandLess
+import androidx.compose.material.icons.outlined.ExpandMore
 import androidx.compose.material3.Icon
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
@@ -70,6 +75,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import io.github.nicholasarda.keysnap.R
@@ -106,15 +113,17 @@ fun SuggestedShortcutsPanel(isPro: Boolean, scripts: List<ShortcutScript>, onPic
         .filter { it.second.isNotEmpty() }
     // Null shows every shelf. Saved, so the choice survives paging to Shortcuts and back.
     var selected by rememberSaveable { mutableStateOf<RecipeCategory?>(null) }
+    var expandedShelves by rememberSaveable { mutableStateOf(arrayListOf<String>()) }
     // A shelf empties once its last recipe is built; fall back to all rather than show nothing.
     val active = selected?.takeIf { chosen -> groups.any { it.first == chosen } }
-    val shown = groups.filter { active == null || it.first == active }
+    val shown = groups.filter { active == null || it.first == active }.map { (category, items) ->
+        category to if (active == null && category.name !in expandedShelves) items.take(3) else items
+    }
     val shownCount = shown.sumOf { it.second.size }
     ConsolePanel(label = stringResource(R.string.home_suggested_shortcuts), testTag = "suggested_shortcuts") {
-        Column {
+        Column(Modifier.animateContentSize(spring(dampingRatio = 0.9f))) {
             RecipeCategoryChips(groups.map { it.first }, active) { selected = it }
-            // Counted over the whole panel, not per group: the first group alone is a dozen rows, so a
-            // group-boundary slot would sit far below the fold.
+            // Count only visible recipes across shelves; expansion controls do not consume ad slots.
             var row = 0
             shown.forEachIndexed { groupIndex, (category, items) ->
                 Text(
@@ -130,8 +139,50 @@ fun SuggestedShortcutsPanel(isPro: Boolean, scripts: List<ShortcutScript>, onPic
                     // Where the AdMob cards used to be: the panel's 2nd and 9th row, never its last item.
                     if (!isPro && (row == 1 || row == 8) && row < shownCount) AdSlotRow()
                 }
+                val shelfSize = groups.first { it.first == category }.second.size
+                if (active == null && shelfSize > 3) {
+                    val expanded = category.name in expandedShelves
+                    RecipeShelfToggle(category, expanded, shelfSize - 3) {
+                        expandedShelves = ArrayList(
+                            if (expanded) expandedShelves - category.name else expandedShelves + category.name,
+                        )
+                    }
+                }
             }
         }
+    }
+}
+
+@Composable
+private fun RecipeShelfToggle(category: RecipeCategory, expanded: Boolean, hiddenCount: Int, onClick: () -> Unit) {
+    val colors = MaterialTheme.colorScheme
+    val shape = RoundedCornerShape(14.dp)
+    val label = if (expanded) stringResource(R.string.home_recipes_show_less) else
+        pluralStringResource(R.plurals.home_recipes_show_more, hiddenCount, hiddenCount)
+    Row(
+        Modifier
+            .padding(top = 6.dp)
+            .fillMaxWidth()
+            .heightIn(min = MinTouchTarget)
+            .clip(shape)
+            .then(
+                if (expanded) Modifier.border(1.dp, colors.outline, shape) else
+                    Modifier.background(colors.primary.copy(alpha = .08f)),
+            )
+            .testTag("recipe_show_${if (expanded) "less" else "more"}_${category.name.lowercase()}")
+            .clickable(role = Role.Button, onClickLabel = "$label: ${stringResource(category.titleRes)}", onClick = onClick)
+            .padding(horizontal = 12.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterHorizontally),
+    ) {
+        Text(
+            label,
+            Modifier.weight(1f, fill = false),
+            style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold),
+            textAlign = TextAlign.Center,
+            color = colors.primary,
+        )
+        Icon(if (expanded) Icons.Outlined.ExpandLess else Icons.Outlined.ExpandMore, null, tint = colors.primary)
     }
 }
 
@@ -149,7 +200,7 @@ private fun RecipeCategoryChips(
         containerColor = colors.surfaceVariant,
         labelColor = colors.onSurfaceVariant,
     )
-    LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+    LazyRow(Modifier.testTag("recipe_category_chips"), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         item {
             FilterChip(
                 selected = selected == null,

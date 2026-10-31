@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="inline_key_choose">Choisir une touche</string>
+    <string name="inline_key_record">Enregistrer une touche</string>
+    <string name="inline_key_listening">Appuyez sur une touche</string>
+    <string name="inline_key_release">Maintenez les touches ensemble. Relâchez pour terminer.</string>
+    <string name="inline_key_edit">Touchez la touche pour la réenregistrer.</string>
+    <string name="inline_key_placeholder">une touche</string>
+    <string name="inline_key_advanced_hint">Les touches Marche/Arrêt, Snap Key, Essential Key, Bixby et autres touches similaires nécessitent le Mode avancé.</string>
+    <string name="inline_key_set_up">Configurer</string>
+</resources>

@@ -3,7 +3,6 @@
     <!-- Shown on the system's accessibility settings screen. It must describe everything the
          service actually does, including the scoped screen read, or it misrepresents the app. -->
     <string name="accessibility_service_description">يكتشف ضغطات المفاتيح الفعلية (الصوت والطاقة وأزرار الأجهزة الأخرى) لتشغيل اختصاراتك. أثناء إعداد الوضع المتقدم فقط، يفتح أيضًا نيابةً عنك نافذة رمز الإقران في النظام ويقرأ الرمز منها. لا يمكنه قراءة شاشة أي تطبيق آخر.</string>
-    <string name="accessibility_disclosure_agree">موافق، افتح الإعدادات</string>
 
     <!-- Action categories -->
     <string name="action_category_input">الإدخال</string>
@@ -269,6 +268,7 @@
 
     <!-- Action editor: requirement badges -->
     <string name="badge_expert_mode">يتطلب الوضع المتقدم</string>
+    <string name="badge_advanced_full_access">الوصول الكامل يتطلب الوضع المتقدم</string>
     <string name="badge_accessibility">يتطلب خدمة إمكانية الوصول</string>
     <string name="badge_notification_policy">يتطلب إذن الوصول إلى عدم الإزعاج</string>
     <string name="badge_notification_access">يتطلب إذن الوصول إلى الإشعارات</string>
@@ -554,7 +554,6 @@
     <string name="settings_close">إغلاق الإعدادات</string>
 
     <!-- Dialogs -->
-    <string name="dialog_expert_connected">الوضع المتقدم متصل</string>
     <string name="dialog_new_input_title">تم اكتشاف إدخال جديد</string>
     <string name="dialog_new_input_body">أعطِ هذا الإدخال اسمًا مختصرًا.</string>
     <string name="dialog_new_input_hint">مثال: مفتاح الاختصار</string>
@@ -574,8 +573,6 @@
     <string name="trigger_picker_listening">جارٍ الاستماع… اضغط للإيقاف</string>
     <string name="trigger_picker_tap_to_record">اضغط، ثم اضغط على مفتاح، أو امسك عدة مفاتيح معًا</string>
     <string name="trigger_picker_save_combo">حفظ المفتاح</string>
-    <string name="trigger_picker_use_automation">استخدم أتمتة بدلًا من ذلك</string>
-    <string name="trigger_picker_use_key">استخدام %1$s</string>
 
     <!-- Per-shortcut settings -->
     <string name="script_settings_name">الاسم</string>
@@ -664,33 +661,12 @@
     <string name="home_triggers_session">عمليات التشغيل في هذه الجلسة</string>
     <string name="home_last_from">آخر مشغّل من %1$s</string>
     <string name="home_open_label_settings">فتح إعدادات %1$s</string>
-    <string name="home_setup_title_off">اختصاراتك لا تعمل بعد</string>
-    <string name="home_setup_subtitle_off">ثلاث خطوات، كلها في إعدادات Android نفسها. إليك ما تضغط عليه في كل خطوة.</string>
-    <string name="home_setup_title_at_risk">قد تتوقف اختصاراتك عن العمل</string>
-    <string name="home_setup_subtitle_at_risk">قد يغلق Android التطبيق في الخلفية ما لم تفعّل هذه الخطوات.</string>
-    <string name="home_setup_progress">%1$d/3</string>
-    <string name="home_setup_step_accessibility">شغّل خدمة إمكانية الوصول</string>
-    <string name="home_setup_why_accessibility">من خلالها يقرأ KeySnap ضغطات أزرارك. لا يعمل شيء قبل تشغيلها.</string>
     <string name="home_setup_open_accessibility">فتح إعدادات إمكانية الوصول</string>
-    <string name="home_setup_step_background">اسمح لـ KeySnap بالعمل في الخلفية</string>
-    <string name="home_setup_why_background">يغلق Android التطبيقات التي يظنها نائمة. اضغط «سماح» عندما يسأل — «رفض» يترك KeySnap عرضة للإغلاق.</string>
     <string name="home_setup_allow_background">السماح بالعمل في الخلفية</string>
-    <string name="home_setup_done_background">مسموح</string>
-    <string name="home_setup_step_notifications">اسمح بالإشعارات</string>
-    <string name="home_setup_why_notifications">للإعداد، ولإخبارك عندما يتعذّر تشغيل اختصار، وللإشعارات التي تعرضها اختصاراتك. اضغط «سماح» عندما يسأل Android — «عدم السماح» يوقف الإعداد هنا.</string>
-    <string name="home_setup_ask_now">اسألني الآن</string>
-    <string name="home_setup_done_notifications">مسموح</string>
-    <string name="home_setup_all_done">الثلاثة مفعّلة. أزرارك تعمل الآن.</string>
     <string name="home_setup_state_done">مكتملة</string>
     <string name="home_setup_state_current">الخطوة الحالية</string>
     <string name="home_setup_state_upcoming">لم تبدأ بعد</string>
     <string name="home_setup_illo_downloaded_apps">التطبيقات المُنزّلة</string>
-    <string name="home_setup_why">لماذا؟</string>
-    <string name="home_setup_why_expanded">موسَّع</string>
-    <string name="home_setup_why_collapsed">مطوي</string>
-    <string name="home_setup_whytext_accessibility">لا يُظهر Android أزرار الجهاز إلا لخدمة إمكانية وصول، ولهذا يستخدم KeySnap واحدة لهذا الغرض تحديدًا: ملاحظة الضغطة وتشغيل اختصارك. وهو لا يقرأ شاشات التطبيقات الأخرى. وأثناء إعداد الوضع المتقدم فقط يقرأ أيضًا رمز الإقران في صفحة تصحيح الأخطاء اللاسلكي، ولا شيء غير ذلك.</string>
-    <string name="home_setup_whytext_background">يغلق Android التطبيقات التي يظنها خاملة، والتطبيق المغلق لا يستطيع تشغيل اختصاراتك. هذا يُبقي KeySnap حيًا بينما ينام هاتفك. وفي الخلفية لا يفعل شيئًا سوى انتظار ضغطة زر.</string>
-    <string name="home_setup_whytext_notifications">أثناء إعداد الوضع المتقدم: رمز الإقران وما إذا كانت الخدمة تعمل. بعد ذلك، فقط عندما يتعذّر تشغيل اختصار، والسبب، والإشعارات التي تضيفها إلى اختصاراتك. لا تذكيرات منّا ولا عروض ولا أي شيء آخر، أبدًا.</string>
     <string name="home_setup_illo_battery_dialog">السماح لـ KeySnap بالعمل دائمًا في الخلفية؟</string>
     <string name="home_setup_illo_battery_body">قد يقلل هذا من عمر البطارية.</string>
     <string name="home_setup_illo_battery_deny">رفض</string>
@@ -700,6 +676,8 @@
     <string name="home_nudge_title">أنشئ اختصارك الأول</string>
     <string name="home_nudge_subtitle">المصباح أسفل هذا مباشرة، بضغطة واحدة.</string>
     <string name="home_nudge_dismiss">إغلاق</string>
+    <string name="home_coloros_recents_title">اقفل KeySnap في التطبيقات الأخيرة</string>
+    <string name="home_coloros_recents_body">على هذا الهاتف، سحب KeySnap لإغلاقه يوقف إمكانية الوصول، فتقوم مفاتيح الاختصار بعملها العادي أيضًا. افتح التطبيقات الأخيرة واسحب بطاقة KeySnap للأسفل لقفلها.</string>
 
     <!-- Pro upsell -->
     <string name="pro_card_subtitle">الحد المجاني: %1$d اختصارات مفعّلة. Pro يبقيها كلها مفعّلة.</string>
@@ -817,9 +795,6 @@
     <string name="wizard_title">تشغيل الوضع المتقدم</string>
     <string name="wizard_subtitle">معالج الإعداد</string>
     <string name="wizard_continue">متابعة</string>
-    <string name="wizard_finish_pairing">إنهاء الإقران</string>
-    <string name="wizard_step_intro">مقدمة</string>
-    <string name="wizard_step_pairing">الإقران</string>
     <string name="wizard_step_done">تم</string>
     <string name="wizard_what_is_expert">ما هو الوضع المتقدم؟</string>
     <string name="wizard_expert_explainer">يقترن KeySnap بتصحيح الأخطاء اللاسلكي في هاتفك، ثم يقرأ المفاتيح مباشرة من النواة — الطاقة والمساعد والكاميرا؛ الأزرار التي يخفيها أندرويد عن التطبيقات.</string>
@@ -831,7 +806,10 @@
     <string name="wizard_illo_action">← تشغيل المصباح</string>
     <string name="wizard_how_to_dev_options">كيف تفعّل خيارات المطورين؟</string>
     <string name="wizard_auto_pairing">إقران ADB تلقائي</string>
-    <string name="wizard_auto_pairing_explainer">لا حاجة لكتابة رمز الإقران يدويًا — نقرأه في الخلفية ونتصل تلقائيًا. إذا فشل ذلك، يمكنك إدخاله من الإشعار.</string>
+    <string-array name="wizard_auto_pairing_points">
+        <item>لا حاجة لكتابة رمز الإقران يدويًا — نقرأه في الخلفية ونتصل تلقائيًا.</item>
+        <item>إذا فشل ذلك، يمكنك إدخاله من الإشعار.</item>
+    </string-array>
     <string name="wizard_open_settings">فتح الإعدادات وبدء الإقران</string>
     <string name="wizard_expert_running">الوضع المتقدم قيد التشغيل</string>
     <string name="wizard_expert_running_body">يتم الاستماع إلى جميع مفاتيح أجهزة أندرويد (الطاقة، المساعد، الصوت، الكاميرا، وغيرها) على مستوى نواة لينكس.</string>
@@ -840,7 +818,6 @@
     <string name="wizard_connecting">جارٍ الاتصال…</string>
     <string name="wizard_connecting_body">يجري بدء الوضع المتقدم. تستغرق هذه الخطوة بضع ثوانٍ — أبقِ هذه الشاشة مفتوحة.</string>
     <string name="wizard_kernel_stream">تدفق أحداث النواة المباشر</string>
-    <string name="wizard_test_flash">اختبار مشغّل الفلاش</string>
 
     <!-- Pairing status -->
     <string name="pairing_idle">في انتظار الإقران…</string>
@@ -925,7 +902,6 @@
     <string name="widget_description">شغّل أحد اختصاراتك بلمسة واحدة</string>
     <string name="trigger_kind_surface">أداة أو مربع</string>
     <string name="surface_card_subtitle">يعمل عند النقر على أداته في الشاشة الرئيسية أو مربعه في الإعدادات السريعة</string>
-    <string name="trigger_picker_use_surface">لا يوجد مفتاح متاح؟ استخدم أداة أو مربعًا</string>
     <string name="run_source_widget">أداة</string>
     <string name="run_source_tile">مربع الإعدادات السريعة</string>
     <string name="widget_limit_reached">الخطة المجانية: %1$d أداة على الشاشة الرئيسية. احصل على Pro لعدد غير محدود من الأدوات.</string>
@@ -1097,9 +1073,9 @@
     <string name="param_mode_pulse">اهتزاز الوضع</string>
     <string name="param_mode_gap">الفاصل بين الاهتزازات</string>
     <string name="param_mode_lead_gap">التوقف قبل اهتزاز الوضع</string>
-    <string name="choice_mode_feedback_toast">رسالة على الشاشة</string>
+    <string name="choice_mode_feedback_toast">رسالة</string>
     <string name="choice_mode_feedback_vibrate">اهتزاز</string>
-    <string name="choice_mode_feedback_both">رسالة واهتزاز</string>
+    <string name="choice_mode_feedback_both">كلاهما</string>
     <string name="param_mode_number">رقم الوضع</string>
     <string name="constraint_mode_is">الوضع هو</string>
     <string name="mode_current">الوضع %1$d</string>
@@ -1112,4 +1088,19 @@
     <string name="assistant_redirect_note">بما أن KeySnap هو مساعدك، يفتح هذا الإجراء مساعداً آخر على هاتفك.</string>
     <string name="assistant_no_other_app">لا يوجد مساعد آخر متاح على هذا الهاتف.</string>
     <string name="assistant_voice_wakeup_warning">ما دام KeySnap هو مساعدك، قد يتوقف الاستيقاظ الصوتي لمساعدك السابق عن العمل.</string>
+    <string name="script_settings_show_capsule">إظهار كبسولة الأزرار</string>
+    <string name="script_settings_show_capsule_description">إظهار نتيجة عند تشغيل هذا الاختصار.</string>
+    <plurals name="home_recipes_show_more">
+        <item quantity="zero">عرض %d اختصار إضافي</item>
+        <item quantity="one">عرض اختصار إضافي واحد (%d)</item>
+        <item quantity="two">عرض اختصارين إضافيين (%d)</item>
+        <item quantity="few">عرض %d اختصارات إضافية</item>
+        <item quantity="many">عرض %d اختصارًا إضافيًا</item>
+        <item quantity="other">عرض %d اختصار إضافي</item>
+    </plurals>
+    <string name="home_recipes_show_less">عرض أقل</string>
+    <string name="settings_saved_keys">الأزرار المحفوظة</string>
+    <string name="settings_saved_keys_summary">أعد تسمية الأزرار أو أضف زرًا قبل استخدامه</string>
+    <string name="settings_saved_keys_add">إضافة زر</string>
+    <string name="settings_saved_keys_rename">إعادة تسمية الزر</string>
 </resources>

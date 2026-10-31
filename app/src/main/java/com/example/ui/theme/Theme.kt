@@ -101,7 +101,7 @@ private val SepiaSurface = Color(0xFFFFF8EA)
 private val SepiaSurfaceVariant = Color(0xFFE8D7B8)
 private val SepiaOutline = Color(0xFFC8AE80)
 private val LightTextPrimary = Color(0xFF1C1C1E)
-private val LightTextSecondary = Color(0xFF6D6D72)
+private val LightTextSecondary = Color(0xFF65686F)
 private val SepiaTextPrimary = Color(0xFF3D2A18)
 private val SepiaTextSecondary = Color(0xFF725A3E)
 
@@ -505,3 +505,15 @@ private fun typographyFor(locale: Locale): androidx.compose.material3.Typography
         titleSmall = Typography.titleSmall.copy(letterSpacing = 0.sp),
     )
 }
+
+/** Release-note icon colours: mid-tone hues that read on light, sepia, dark and OLED surfaces alike. */
+val WhatsNewAccents = listOf(
+    Color(0xFF2F7CF6), // blue
+    Color(0xFF1FA66A), // green
+    Color(0xFFF08A1C), // orange
+    Color(0xFFE5486B), // pink
+    Color(0xFF9B5DE5), // purple
+    Color(0xFF1AA3B8), // teal
+    Color(0xFFD9822B), // amber
+    Color(0xFF6366F1), // indigo
+)

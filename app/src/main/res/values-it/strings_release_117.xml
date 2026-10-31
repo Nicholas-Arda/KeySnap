@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_editor_title">Un editor di scorciatoie più semplice</string>
+    <string name="whats_new_editor_description">Un editor più chiaro con registrazione dei tasti senza uscire e transizioni più fluide in apertura e chiusura.</string>
+    <string name="whats_new_fix_update_startup">Risolto un arresto anomalo all’apertura di KeySnap dopo un aggiornamento</string>
+    <string name="whats_new_dutch_title">Ora in olandese</string>
+    <string name="whats_new_dutch_description">Usa KeySnap in olandese. Scegli Nederlands in Impostazioni → Lingua.</string>
+</resources>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="shortcuts_edit">Editar atalhos</string>
+    <string name="shortcuts_edit_done">Concluir edição dos atalhos</string>
+    <string name="shortcuts_edit_hint">Toque em um atalho para editá-lo</string>
+    <string name="shortcuts_drag">Arraste para reordenar %1$s</string>
+    <string name="shortcuts_name_required">Digite um nome</string>
+    <string name="shortcuts_delete">Excluir atalho</string>
+    <string name="shortcuts_move_to_mode">Mover para modo</string>
+    <string name="shortcuts_rename_cancel">Cancelar renomeação</string>
+    <string name="shortcuts_name_apply">Aplicar nome</string>
+    <string name="shortcuts_rename">Renomear atalho</string>
+</resources>

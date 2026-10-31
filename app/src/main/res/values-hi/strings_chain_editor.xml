@@ -1,0 +1,17 @@
+<resources>
+    <string name="chain_is">है</string>
+    <string name="chain_not">नहीं</string>
+    <string name="chain_action_empty">कार्रवाई खाली नहीं हो सकती</string>
+    <string name="chain_condition_empty">शर्त की सेटिंग जाँचें</string>
+    <string name="chain_shell_limited">Shell यहाँ सीमित चलता है</string>
+    <string name="chain_set_up">सेट अप</string>
+    <string name="chain_test_running">कार्रवाई जाँची जा रही है</string>
+    <string name="chain_test_success">जाँच सफल</string>
+    <string name="chain_test_failure">जाँच असफल</string>
+    <string name="chain_test_action">कार्रवाई जाँचें</string>
+    <string name="chain_test_timeout">समय समाप्त</string>
+    <string name="chain_http_status">HTTP %1$d</string>
+    <string name="chain_exit_code">निकास %1$d</string>
+    <string name="chain_test_result">%1$s %2$s · %3$s · %4$s से</string>
+    <string name="chain_needs_condition">पहले एक शर्त जोड़ें</string>
+</resources>

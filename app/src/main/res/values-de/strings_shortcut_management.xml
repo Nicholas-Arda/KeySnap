@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="shortcuts_edit">Kurzbefehle bearbeiten</string>
+    <string name="shortcuts_edit_done">Bearbeitung abschließen</string>
+    <string name="shortcuts_edit_hint">Zum Bearbeiten auf einen Kurzbefehl tippen</string>
+    <string name="shortcuts_drag">Ziehen, um %1$s neu anzuordnen</string>
+    <string name="shortcuts_name_required">Gib einen Namen ein</string>
+    <string name="shortcuts_delete">Kurzbefehl löschen</string>
+    <string name="shortcuts_move_to_mode">In Modus verschieben</string>
+    <string name="shortcuts_rename_cancel">Umbenennen abbrechen</string>
+    <string name="shortcuts_name_apply">Namen übernehmen</string>
+    <string name="shortcuts_rename">Kurzbefehl umbenennen</string>
+</resources>

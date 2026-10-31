@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="shortcuts_edit">Изменить сценарии</string>
+    <string name="shortcuts_edit_done">Завершить редактирование</string>
+    <string name="shortcuts_edit_hint">Нажмите на сценарий, чтобы изменить его</string>
+    <string name="shortcuts_drag">Перетащите, чтобы изменить порядок %1$s</string>
+    <string name="shortcuts_name_required">Введите имя</string>
+    <string name="shortcuts_delete">Удалить сценарий</string>
+    <string name="shortcuts_move_to_mode">Переместить в режим</string>
+    <string name="shortcuts_rename_cancel">Отменить переименование</string>
+    <string name="shortcuts_name_apply">Применить имя</string>
+    <string name="shortcuts_rename">Переименовать сценарий</string>
+</resources>

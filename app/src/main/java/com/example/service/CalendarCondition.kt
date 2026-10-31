@@ -82,9 +82,18 @@ object CalendarCondition {
 
     /** False without READ_CALENDAR or a readable provider: this condition only drives an automation edge. */
     fun isActive(context: Context, calendarFilter: String?, titleFilter: String?): Boolean {
+        return readActive(context, calendarFilter, titleFilter) ?: false
+    }
+
+    /** Null when permission or the provider prevents reading: negation must not turn that into true. */
+    internal fun knownActive(context: Context, calendarFilter: String?, titleFilter: String?): Boolean? {
+        if (context.checkSelfPermission(android.Manifest.permission.READ_CALENDAR) != android.content.pm.PackageManager.PERMISSION_GRANTED) return null
+        return readActive(context, calendarFilter, titleFilter)
+    }
+
+    private fun readActive(context: Context, calendarFilter: String?, titleFilter: String?): Boolean? {
         val now = asOfMs ?: System.currentTimeMillis()
-        // ponytail: one provider query per evaluation; cache if a large calendar ever shows up in a profile.
-        return instances(context, now, now + 1)?.let { isEventActive(it, now, calendarFilter, titleFilter) } ?: false
+        return instances(context, now, now + 1)?.let { isEventActive(it, now, calendarFilter, titleFilter) }
     }
 
     /**

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="inline_key_choose">Scegli un tasto</string>
+    <string name="inline_key_record">Registra un tasto</string>
+    <string name="inline_key_listening">Premi un tasto ora</string>
+    <string name="inline_key_release">Tieni premuti i tasti insieme. Rilascia per terminare.</string>
+    <string name="inline_key_edit">Tocca il tasto per registrarlo di nuovo.</string>
+    <string name="inline_key_placeholder">un tasto</string>
+    <string name="inline_key_advanced_hint">I tasti Accensione, Snap Key, Essential Key, Bixby e altri tasti simili richiedono la Modalità avanzata.</string>
+    <string name="inline_key_set_up">Configura</string>
+</resources>

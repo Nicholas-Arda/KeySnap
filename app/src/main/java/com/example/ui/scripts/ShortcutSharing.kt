@@ -24,11 +24,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.data.ScriptAction
 import com.example.data.ScriptActionCatalog
+import com.example.data.ActionEditorForms
+import com.example.data.ActionParameterKind
+import com.example.data.AppLabelResolver
+import com.example.data.previewCommand
 import com.example.ui.theme.MonoBody
 import io.github.nicholasarda.keysnap.R
 
@@ -40,8 +45,8 @@ fun shareShortcutText(context: Context, text: String) {
 
 /**
  * Lists what a shortcut runs before it is shared or imported. Every parameter of a
- * [ScriptActionCatalog.REVIEWED_LITERALLY] action is printed as written — never a summary — because this is
- * where the user decides whether to trust it.
+ * [ScriptActionCatalog.REVIEWED_LITERALLY] action keeps its literal payload. App identity fields
+ * show the app's label; privileged commands also keep their literal target for review.
  */
 @Composable
 fun ShortcutReviewDialog(
@@ -56,6 +61,7 @@ fun ShortcutReviewDialog(
     repliesToEveryChat: Boolean = false,
 ) {
     val colors = MaterialTheme.colorScheme
+    val context = LocalContext.current
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(title) },
@@ -75,8 +81,14 @@ fun ShortcutReviewDialog(
                         descriptor.parameters.forEach { spec ->
                             val value = action.params[spec.key].orEmpty()
                             if (value.isNotBlank()) {
-                                // A switch reads On/Off; anything else exactly as written.
-                                val shown = if (spec.choices == listOf("true", "false")) {
+                                // This is a trust review: an app can name itself anything, so the
+                                // literal package always stands next to its label. Switches read
+                                // On/Off; payloads stay literal.
+                                val shown = if (spec.kind == ActionParameterKind.PACKAGE) {
+                                    val label = AppLabelResolver.get(context).displayName(value, context.resources)
+                                        .filterNot { Character.isISOControl(it) || Character.getType(it) == Character.FORMAT.toInt() }
+                                    if (label == value) value else "$label ($value)"
+                                } else if (spec.choices == listOf("true", "false")) {
                                     stringResource(if (value == "true") R.string.scripts_toggle_state_on else R.string.scripts_toggle_state_off)
                                 } else {
                                     value
@@ -88,6 +100,23 @@ fun ShortcutReviewDialog(
                                     color = colors.onSurface,
                                 )
                             }
+                        }
+                        if ((action.type == "send_intent" && !action.params["package"].isNullOrBlank()) || action.type == "force_stop_app") {
+                            val command = if (action.type == "force_stop_app") {
+                                action.params["packageName"]?.takeIf { it.isNotBlank() }?.let { "am force-stop $it" }.orEmpty()
+                            } else {
+                                previewCommand(action)
+                            }
+                            if (command.isNotEmpty()) Text(
+                                command,
+                                Modifier.padding(start = 8.dp, top = 2.dp),
+                                style = MonoBody,
+                                color = colors.onSurfaceVariant,
+                            )
+                        }
+                    } else {
+                        ActionEditorForms.summarize(action, context)?.let { summary ->
+                            Text(summary, Modifier.padding(start = 8.dp, top = 2.dp), style = MaterialTheme.typography.bodySmall)
                         }
                     }
                 }

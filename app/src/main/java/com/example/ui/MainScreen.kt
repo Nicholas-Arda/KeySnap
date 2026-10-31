@@ -14,6 +14,13 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import kotlinx.coroutines.flow.first
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -43,6 +50,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
@@ -68,7 +76,7 @@ import com.example.data.AccessibilityStatus
 import com.example.data.latestFailedScriptIds
 import com.example.ui.components.AppBottomBar
 import com.example.ui.components.AdvancedActivationBanner
-import com.example.ui.components.AccessibilityDisclosureDialog
+import com.example.ui.components.AccessibilityDisclosureSheet
 import com.example.ui.components.BottomBarClearance
 import com.example.ui.components.NameKeyDialog
 import com.example.ui.components.WhatsNewDialog
@@ -77,10 +85,11 @@ import com.example.ui.scripts.ASSISTANT_SETTINGS_ACTION_TYPES
 import com.example.ui.scripts.ActionConfigSheet
 import com.example.ui.scripts.ConstraintConfigSheet
 import com.example.ui.scripts.ScriptEditorScreen
+import com.example.ui.scripts.ShortcutEditorTransition
 import com.example.ui.scripts.ScriptSettingsSheet
 import com.example.ui.scripts.ScriptsScreen
 import com.example.ui.scripts.ShortcutReviewDialog
-import com.example.ui.scripts.TriggerPickerSheet
+import com.example.ui.scripts.InlineKeyPicker
 import com.example.ui.scripts.shareShortcutText
 import com.example.ui.settings.SettingsGear
 import com.example.capsule.CapsuleHooks
@@ -100,6 +109,7 @@ import com.example.ui.theme.pageFloorFor
 import com.example.ui.theme.resolveThemeMode
 import com.example.ui.wizard.SetupWizardModal
 import com.example.mode.ModeHooks
+import com.example.service.NotificationEventListener
 import com.example.viewmodel.HijackBannerStage
 import com.example.viewmodel.MainViewModel
 import io.github.nicholasarda.keysnap.R
@@ -118,6 +128,7 @@ fun MainScreen(viewModel: MainViewModel) {
     val isMappingEnabled by viewModel.isMappingEnabled.collectAsState()
     val keyHistory by viewModel.keyHistory.collectAsState()
     val isRecordingKey by viewModel.isRecordingKey.collectAsState()
+    val recordingKeys by viewModel.recordingKeys.collectAsState()
     val triggerCount by viewModel.triggerCount.collectAsState()
     val lastSource by viewModel.lastCapturedSource.collectAsState()
     val editorMessage by viewModel.editorMessage.collectAsState()
@@ -141,9 +152,14 @@ fun MainScreen(viewModel: MainViewModel) {
     var capsuleEditorOpen by rememberSaveable { mutableStateOf(false) }
     var capsuleIntroOpen by rememberSaveable { mutableStateOf(false) }
     var settingsOpen by rememberSaveable { mutableStateOf(false) }
+    // Where the header logo sat when it opened What's New; it flies from and back to there.
+    var whatsNewLogoOrigin by remember { mutableStateOf<Rect?>(null) }
+    var whatsNewLogoLifted by remember { mutableStateOf(false) }
     val showNameKeyDialogForCode by viewModel.showNameKeyDialogForCode.collectAsState()
     val editingScript by viewModel.editingScript.collectAsState()
     val isPro by viewModel.isPro.collectAsState()
+    val showModesExplainer by viewModel.showModesExplainer.collectAsState()
+    LaunchedEffect(isPro) { if (isPro) viewModel.dismissModesExplainer() }
     LaunchedEffect(isPro) { if (!isPro) capsuleEditorOpen = false else capsuleIntroOpen = false }
     LaunchedEffect(Unit) {
         viewModel.openProPurchase.collect {
@@ -153,6 +169,7 @@ fun MainScreen(viewModel: MainViewModel) {
     val proPrice by viewModel.proPrice.collectAsState()
     val scriptsMessage by viewModel.scriptsMessage.collectAsState()
     val nudgeDismissed by viewModel.nudgeDismissed.collectAsState()
+    val showColorOsRecentsTip by viewModel.showColorOsRecentsTip.collectAsState()
     val runLog by viewModel.runLog.collectAsState()
     val pendingImport by viewModel.pendingImport.collectAsState()
     val activeScriptLimit = EntitlementManager.FREE_SCRIPT_LIMIT
@@ -160,6 +177,9 @@ fun MainScreen(viewModel: MainViewModel) {
     var isEventLogExpanded by remember { mutableStateOf(false) }
     var showTriggerPicker by remember { mutableStateOf(false) }
     var showScriptSettings by remember { mutableStateOf(false) }
+    var shortcutFabCenter by remember { mutableStateOf<Offset?>(null) }
+    var fabLaunchOrigin by remember { mutableStateOf<Offset?>(null) }
+    var fabLaunchedScriptId by remember { mutableStateOf<String?>(null) }
     var showAccessibilityDisclosure by remember { mutableStateOf(false) }
     // A live bridge can redo Android's off/on switch for KeySnap's own entry; without it, the user does.
     val canReconnect = accessibilityStatus == AccessibilityStatus.NEEDS_RECONNECT && isAdvancedModeRunning
@@ -172,9 +192,7 @@ fun MainScreen(viewModel: MainViewModel) {
         when {
             // While our entry is briefly off mid-reconnect, a tap must not reopen the first-time disclosure.
             accessibilityReconnecting -> Unit
-            accessibilityStatus == AccessibilityStatus.DISABLED -> showAccessibilityDisclosure = true
-            canReconnect -> viewModel.reconnectAccessibility(context)
-            else -> viewModel.openAccessibilitySettings(context)
+            else -> showAccessibilityDisclosure = true
         }
     }
     val pagerState = rememberPagerState(pageCount = { 2 })
@@ -223,10 +241,7 @@ fun MainScreen(viewModel: MainViewModel) {
         val nearGlowAlpha by animateFloatAsState(targetNearGlow, tween(ThemeTransitionMs), label = "nearGlow")
         val farGlowAlpha by animateFloatAsState(targetFarGlow, tween(ThemeTransitionMs), label = "farGlow")
         val pageFloor by animateColorAsState(pageFloorFor(themeMode), tween(ThemeTransitionMs), label = "pageFloor")
-        Box(
-            Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
+        val screenGround = Modifier.background(MaterialTheme.colorScheme.background)
                 .background(
                     Brush.radialGradient(
                         colors = listOf(accent.copy(alpha = nearGlowAlpha), Color.Transparent),
@@ -247,11 +262,16 @@ fun MainScreen(viewModel: MainViewModel) {
                         startY = 0f,
                         endY = heightPx * PageFloorStop,
                     ),
-                ),
-        ) {
-        val draft = editingScript
-        val suggestionDraft = draft?.takeIf { it.fromSuggestion }
-        if (draft == null || suggestionDraft != null) {
+                )
+        Box(Modifier.fillMaxSize().then(screenGround)) {
+        val suggestionDraft = editingScript?.takeIf { it.fromSuggestion }
+        ShortcutEditorTransition(
+            editingScript?.takeUnless { it.fromSuggestion },
+            fabLaunchId = fabLaunchedScriptId,
+            fabOrigin = fabLaunchOrigin,
+            editorBackground = screenGround,
+        ) { draft ->
+        if (draft == null) {
             var settingsSection by rememberSaveable { mutableStateOf<SettingsSection?>(null) }
             val settingsMotion = rememberSettingsMotion(settingsOpen)
             val goToPage: (Int) -> Unit = { page -> pagerScope.launch { pagerState.animateScrollToPage(page, animationSpec = PageSlide) } }
@@ -292,16 +312,19 @@ fun MainScreen(viewModel: MainViewModel) {
                         onToggleMapping = { viewModel.toggleEnabled(!isMappingEnabled) },
                         onOpenWizard = { viewModel.openSetupWizard(0) },
                         onOpenAccessibility = onOpenAccessibility,
-                        accessibilityButton = accessibilityButton,
                         onPickSuggestion = viewModel::createSuggestedScript,
                         onOpenProScreen = { viewModel.purchasePro(context as Activity) },
                         onOpenWhatsNew = { viewModel.openWhatsNew(fromLogo = true) },
+                        onWhatsNewLogoBounds = { whatsNewLogoOrigin = it },
+                        whatsNewLogoAway = whatsNewLogoLifted,
                         announceWhatsNew = whatsNewAnnouncement,
                         showWhatsNewHint = whatsNewHint && browsedWhatsNew == null && whatsNew == null &&
                             !settingsOpen && pagerState.currentPage == 0 && !showSetupWizard,
                         onWhatsNewHintFinished = viewModel::consumeWhatsNewHint,
                         nudgeDismissed = nudgeDismissed,
                         onDismissNudge = viewModel::dismissFirstShortcutNudge,
+                        showColorOsRecentsTip = showColorOsRecentsTip,
+                        onDismissColorOsRecentsTip = viewModel::dismissColorOsRecentsTip,
                         scrollState = homeScrollState,
                         scrollToProCard = scrollHomeToProCard,
                         onScrolledToProCard = { scrollHomeToProCard = false },
@@ -316,19 +339,18 @@ fun MainScreen(viewModel: MainViewModel) {
                         globallyEnabled = isMappingEnabled,
                         themeMode = themeMode,
                         onToggleScriptEnabled = viewModel::toggleScriptEnabled,
-                        onOpenScript = viewModel::editScript,
+                        onReorderScripts = viewModel::reorderScripts,
+                        isPageVisible = pagerState.currentPage == 1 && !settingsOpen,
+                        onRenameScript = viewModel::renameScript,
+                        onSetScriptMode = viewModel::setScriptMode,
                         onDeleteScript = viewModel::deleteScript,
+                        onOpenScript = viewModel::editScript,
                         onGoHome = { goToPage(0) },
                         onImportText = viewModel::importShortcutText,
                         onImportUri = viewModel::importShortcutUri,
                         failedScriptIds = remember(runLog) { latestFailedScriptIds(runLog) },
                         isPro = isPro,
-                        onUpsell = {
-                            pagerScope.launch {
-                                pagerState.animateScrollToPage(0, animationSpec = PageSlide)
-                                scrollHomeToProCard = true
-                            }
-                        },
+                        onUpsell = viewModel::explainModes,
                         onUpdateScripts = viewModel::updateScripts,
                         onNewScriptId = viewModel::newScriptId,
                         savedKeys = savedKeys,
@@ -345,8 +367,11 @@ fun MainScreen(viewModel: MainViewModel) {
                 selectedPage = pagerState.targetPage,
                 onPageSelected = goToPage,
                 onNewShortcut = {
+                    fabLaunchOrigin = shortcutFabCenter
                     viewModel.createScript(ModeHooks.modeForNewShortcut(pagerState.currentPage == 1))
+                    fabLaunchedScriptId = viewModel.editingScript.value?.id
                 },
+                onNewShortcutCenterChanged = { shortcutFabCenter = it },
                 pages = pagesLayer,
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
@@ -404,6 +429,11 @@ fun MainScreen(viewModel: MainViewModel) {
                         if (isPro) capsuleEditorOpen = true else capsuleIntroOpen = true
                     },
                     onOpenWhatsNew = { viewModel.openWhatsNew() },
+                    savedKeys = savedKeys,
+                    isRecordingKey = isRecordingKey,
+                    onAddKey = viewModel::startAddingSavedKey,
+                    onCancelAddKey = viewModel::cancelRecordingKey,
+                    onRenameKey = viewModel::renameSavedKey,
                 )
             }
             val showAutoWhatsNew = !settingsOpen && pagerState.currentPage == 0 && suggestionDraft == null &&
@@ -414,8 +444,17 @@ fun MainScreen(viewModel: MainViewModel) {
                 WhatsNewDialog(
                     release = release,
                     themeMode = themeMode,
-                    onDismiss = viewModel::dismissWhatsNew,
+                    onDismiss = {
+                        whatsNewLogoOrigin = null
+                        whatsNewLogoLifted = false
+                        viewModel.dismissWhatsNew()
+                    },
+                    onLogoLifted = { whatsNewLogoLifted = true },
+                    // Only the header logo flies; an auto-shown or Settings-opened dialog just fades in.
+                    logoOrigin = whatsNewLogoOrigin.takeIf { browsedWhatsNew != null },
                     onOpenSettings = { destination ->
+                        whatsNewLogoOrigin = null
+                        whatsNewLogoLifted = false
                         viewModel.dismissWhatsNew()
                         when (destination) {
                             WhatsNewDestination.KEY_CAPSULE -> {
@@ -448,29 +487,50 @@ fun MainScreen(viewModel: MainViewModel) {
                 onClick = { settingsOpen = !settingsOpen },
                 modifier = Modifier.align(Alignment.TopEnd).statusBarsPadding().padding(top = 16.dp, end = 14.dp),
             )
-            // Over the gear: the banner's OK lands where the gear is, and the banner only stays a moment.
+            // Over the gear for a moment. The wizard would hide it, and its three seconds count only
+            // while the app is in front, so a pairing finished in Settings is still announced.
+            val bannerShown = hijackBannerStage == HijackBannerStage.BOTTOM_EXPANDED && !showSetupWizard
+            val lifecycle = LocalLifecycleOwner.current.lifecycle
+            LaunchedEffect(bannerShown) {
+                if (!bannerShown) return@LaunchedEffect
+                lifecycle.currentStateFlow.first { it.isAtLeast(Lifecycle.State.RESUMED) }
+                delay(3_000)
+                viewModel.dismissHijackBanner()
+            }
             AnimatedVisibility(
-                visible = hijackBannerStage == HijackBannerStage.BOTTOM_EXPANDED,
-                enter = fadeIn(),
-                exit = fadeOut(),
+                visible = bannerShown,
+                enter = slideInVertically(spring(dampingRatio = .72f, stiffness = Spring.StiffnessMediumLow)) { -it * 2 } + fadeIn(),
+                exit = slideOutVertically(tween(260)) { -it * 2 } + fadeOut(tween(260)),
                 modifier = Modifier.align(Alignment.TopCenter).statusBarsPadding().padding(horizontal = 16.dp, vertical = 12.dp),
             ) {
                 AdvancedActivationBanner(viewModel::dismissHijackBanner)
             }
-            if (suggestionDraft != null) {
-                // Assigning the key saves the shortcut outright, which clears the draft and the sheet.
-                TriggerPickerSheet(
-                    pressType = suggestionDraft.trigger?.pressType ?: suggestionDraft.pressType,
-                    keyCodes = suggestionDraft.trigger?.keyCodes.orEmpty(),
+            // The editor's own key dock. Assigning the key saves the shortcut outright, which
+            // clears the draft and the dock; the recipe keeps its press type, editable later.
+            BackHandler(enabled = suggestionDraft != null) { viewModel.discardDraft() }
+            AnimatedVisibility(suggestionDraft != null, enter = fadeIn(), exit = fadeOut()) {
+                Box(
+                    Modifier.fillMaxSize().background(Color.Black.copy(alpha = .32f))
+                        .clickable(interactionSource = null, indication = null, onClick = viewModel::discardDraft),
+                )
+            }
+            AnimatedVisibility(
+                suggestionDraft != null,
+                enter = slideInVertically { it } + fadeIn(),
+                exit = slideOutVertically { it } + fadeOut(),
+                modifier = Modifier.align(Alignment.BottomCenter),
+            ) {
+                InlineKeyPicker(
                     savedKeys = savedKeys,
-                    isRecordingKey = isRecordingKey,
+                    isRecording = isRecordingKey,
                     onDismiss = viewModel::discardDraft,
                     onSelectKey = viewModel::draftSetTriggerKey,
                     onStartRecording = viewModel::startRecordingKey,
                     onCancelRecording = viewModel::cancelRecordingKey,
-                    onSetPressType = viewModel::draftSetPressType,
                     // A phone with no spare key can still use a recipe, from a widget or tile.
                     onSwitchToSurface = { viewModel.draftSetSurfaceOnly(true) },
+                    advancedModeActive = isAdvancedModeRunning,
+                    onSetUpAdvancedMode = { viewModel.openSetupWizard(0) },
                 )
             }
         } else {
@@ -481,6 +541,10 @@ fun MainScreen(viewModel: MainViewModel) {
             var pendingConstraintType by remember { mutableStateOf<String?>(null) }
             var pendingConstraintIndex by remember { mutableStateOf<Int?>(null) }
             var confirmShare by remember { mutableStateOf(false) }
+            var keypressTrigger by remember(draft.id) { mutableStateOf(draft.trigger) }
+            LaunchedEffect(draft.trigger) {
+                if (!draft.automation && draft.trigger != null) keypressTrigger = draft.trigger
+            }
             val installedApps by viewModel.installedApps.collectAsState()
             val pickedPoints by viewModel.pickedPoints.collectAsState()
             var canDrawOverlays by remember { mutableStateOf(Settings.canDrawOverlays(context)) }
@@ -490,12 +554,16 @@ fun MainScreen(viewModel: MainViewModel) {
             ) { canDrawOverlays = Settings.canDrawOverlays(context) }
 
             fun closeEditorSheets() {
+                viewModel.cancelRecordingKey()
                 showTriggerPicker = false
                 showScriptSettings = false
                 configuringType = null
                 configuringIndex = null
                 pendingConstraintType = null
                 pendingConstraintIndex = null
+            }
+            LaunchedEffect(showTriggerPicker) {
+                if (showTriggerPicker) viewModel.keyRecordingResults.collect { showTriggerPicker = false }
             }
             // An app constraint's row shows the app label only once the list is loaded.
             LaunchedEffect(draft.constraints) {
@@ -516,31 +584,70 @@ fun MainScreen(viewModel: MainViewModel) {
                 },
                 onConfigureAction = { index ->
                     val type = draft.actions.getOrNull(index)?.type
-                    if (type in ASSISTANT_SETTINGS_ACTION_TYPES) {
-                        viewModel.openAssistantSettings(context)
-                    } else {
-                        viewModel.loadInstalledApps()
-                        draft.actions.getOrNull(index)?.let {
+                    if (type != null && viewModel.acceptProFeature(type)) {
+                        if (type in ASSISTANT_SETTINGS_ACTION_TYPES) {
+                            viewModel.openAssistantSettings(context)
+                        } else {
+                            viewModel.loadInstalledApps()
                             configuringIndex = index
-                            configuringType = it.type
+                            configuringType = type
                         }
                     }
                 },
                 onRemoveAction = viewModel::draftRemoveAction,
                 onMoveAction = viewModel::draftMoveAction,
                 onRemoveConstraint = viewModel::draftRemoveConstraint,
+                onSetConstraintParams = viewModel::draftSetConstraintParams,
+                onTestAction = viewModel::draftTestAction,
                 onConfigureConstraint = { index ->
                     draft.constraints.getOrNull(index)?.let {
-                        viewModel.loadInstalledApps()
-                        pendingConstraintIndex = index
-                        pendingConstraintType = it.type
+                        if (viewModel.acceptProFeature(it.type)) {
+                            viewModel.loadInstalledApps()
+                            pendingConstraintIndex = index
+                            pendingConstraintType = it.type
+                        }
                     }
                 },
                 installedApps = installedApps,
                 advancedModeActive = isAdvancedModeRunning,
                 runs = runLog.filter { it.scriptId == draft.id },
                 onOpenTriggerPicker = { showTriggerPicker = true },
-                onToggleAutomation = viewModel::draftToggleAutomation,
+                keyPickerOpen = showTriggerPicker,
+                savedKeys = savedKeys,
+                isRecordingKey = isRecordingKey,
+                recordingKeys = recordingKeys,
+                onDismissKeyPicker = {
+                    viewModel.cancelRecordingKey()
+                    showTriggerPicker = false
+                },
+                onSelectKey = {
+                    viewModel.cancelRecordingKey()
+                    viewModel.draftSetTriggerKey(it)
+                    showTriggerPicker = false
+                },
+                onStartRecording = viewModel::startRecordingKey,
+                onCancelRecording = viewModel::cancelRecordingKey,
+                onSetUpAdvancedMode = { viewModel.openSetupWizard(0) },
+                onSetPressType = viewModel::draftSetPressType,
+                onSwitchToSurface = {
+                    viewModel.cancelRecordingKey()
+                    showTriggerPicker = false
+                    viewModel.draftSetSurfaceOnly(true)
+                },
+                onToggleAutomation = {
+                    if (draft.automation) {
+                        viewModel.draftToggleAutomation()
+                        keypressTrigger?.let { trigger ->
+                            viewModel.draftSetTriggerKeys(trigger.keyCodes)
+                            viewModel.draftSetPressType(trigger.pressType)
+                            viewModel.draftSetDoublePressWindow(trigger.doublePressWindowMs)
+                            viewModel.draftSetLongPressThreshold(trigger.longPressThresholdMs)
+                        }
+                    } else {
+                        keypressTrigger = draft.trigger
+                        viewModel.draftToggleAutomation()
+                    }
+                },
                 onClearSurfaceOnly = { viewModel.draftSetSurfaceOnly(false) },
                 onPickConstraint = { type ->
                     if (viewModel.acceptProFeature(type)) {
@@ -619,27 +726,26 @@ fun MainScreen(viewModel: MainViewModel) {
                         configuringType = null
                         configuringIndex = null
                     },
-                )
-            }
-            if (showTriggerPicker) {
-                TriggerPickerSheet(
-                    pressType = draft.trigger?.pressType ?: draft.pressType,
-                    keyCodes = draft.trigger?.keyCodes.orEmpty(),
-                    savedKeys = savedKeys,
-                    isRecordingKey = isRecordingKey,
-                    onDismiss = { showTriggerPicker = false },
-                    onSelectKey = viewModel::draftSetTriggerKey,
-                    onStartRecording = viewModel::startRecordingKey,
-                    onCancelRecording = viewModel::cancelRecordingKey,
-                    onSetPressType = viewModel::draftSetPressType,
-                    onSwitchToAutomation = {
-                        showTriggerPicker = false
-                        viewModel.draftSetAutomation()
+                    // New actions only: an edited row keeps its type, so its params would land on the wrong action.
+                    onSwitchAction = if (index == null) {
+                        { newType -> if (viewModel.acceptProFeature(newType)) configuringType = newType }
+                    } else {
+                        null
                     },
-                    onSwitchToSurface = {
-                        showTriggerPicker = false
-                        viewModel.draftSetSurfaceOnly(true)
-                    },
+                    advancedActive = isAdvancedModeRunning,
+                    onSetUpAdvancedMode = { viewModel.openSetupWizard(0) },
+                    everyChatWarning = ScriptConstraintCatalog.startsFromNotification(draft.automation, draft.constraints) &&
+                        draft.constraints.none {
+                            it.type == ScriptConstraintCatalog.NOTIFICATION_RECEIVED && !it.params["contact"].isNullOrBlank()
+                        },
+                    cooldownRemoved = draft.cooldownRemoved,
+                    existingCooldownMinutes = draft.constraints
+                        .firstOrNull { it.type == ScriptConstraintCatalog.COOLDOWN }
+                        ?.params
+                        ?.get("minutes"),
+                    onRemoveReplyCooldown = viewModel::draftDismissReplyCooldown,
+                    notificationAccessGranted = NotificationEventListener.isAccessGranted(context),
+                    canWriteSettings = Settings.System.canWrite(context),
                 )
             }
             if (showScriptSettings) {
@@ -654,6 +760,7 @@ fun MainScreen(viewModel: MainViewModel) {
                     onSetLongPressThreshold = viewModel::draftSetLongPressThreshold,
                     onSetConsumeOriginalEvent = viewModel::draftSetConsumeOriginalEvent,
                     onSetVibrateOnTrigger = viewModel::draftSetVibrateOnTrigger,
+                    onSetShowCapsule = viewModel::draftSetShowCapsule,
                     onSetHapticDurationMs = viewModel::draftSetHapticDurationMs,
                     onSetExactTiming = viewModel::draftSetExactTiming,
                 )
@@ -693,6 +800,7 @@ fun MainScreen(viewModel: MainViewModel) {
                 )
             }
         }
+        }
         SnackbarHost(
             snackbarHostState,
             Modifier
@@ -712,7 +820,14 @@ fun MainScreen(viewModel: MainViewModel) {
         }
     }
 
-    if (capsuleIntroOpen && !isPro) {
+    // Same pane change as the Pro editor below, so the free preview never cuts in.
+    AnimatedVisibility(
+        visible = capsuleIntroOpen && !isPro,
+        modifier = Modifier.fillMaxSize(),
+        enter = fadeIn(tween(200, delayMillis = 90)) +
+            slideInVertically(tween(260, delayMillis = 90)) { height -> height / 12 },
+        exit = fadeOut(tween(110)),
+    ) {
         CapsuleHooks.Intro(
             themeMode = themeMode,
             onClose = { capsuleIntroOpen = false },
@@ -726,14 +841,21 @@ fun MainScreen(viewModel: MainViewModel) {
             },
         )
     }
-    if (capsuleEditorOpen && isPro) {
+    // Same pane change as ScriptEditorScreen: the editor fades and rises a twelfth; leaving fades.
+    AnimatedVisibility(
+        visible = capsuleEditorOpen && isPro,
+        modifier = Modifier.fillMaxSize(),
+        enter = fadeIn(tween(200, delayMillis = 90)) +
+            slideInVertically(tween(260, delayMillis = 90)) { height -> height / 12 },
+        exit = fadeOut(tween(110)),
+    ) {
         CapsuleHooks.Editor(
             savedKeyLabels = savedKeys.associate { it.keyCode to keyDisplayName(context.resources, it.keyCode, savedKeys) },
             themeMode = themeMode,
             onClose = { capsuleEditorOpen = false },
         )
     }
-    if (showSetupWizard) SetupWizardModal(viewModel, viewModel::closeSetupWizard)
+    if (showSetupWizard) SetupWizardModal(viewModel, themeMode, viewModel::closeSetupWizard)
     showNameKeyDialogForCode?.let { code ->
         NameKeyDialog(code, viewModel::dismissNameKeyDialog) { viewModel.saveUnknownKey(code, it) }
     }
@@ -753,12 +875,22 @@ fun MainScreen(viewModel: MainViewModel) {
         )
     }
     if (showAccessibilityDisclosure) {
-        AccessibilityDisclosureDialog(
+        AccessibilityDisclosureSheet(
             onAgree = {
                 showAccessibilityDisclosure = false
-                viewModel.openAccessibilitySettings(context)
+                // A live bridge can switch KeySnap's entry on (or redo its off/on) directly; without it, Android's screen does.
+                if (canReconnect) viewModel.reconnectAccessibility(context)
+                else if (isAdvancedModeRunning && accessibilityStatus == AccessibilityStatus.DISABLED) {
+                    viewModel.reconnectAccessibility(context, enable = true)
+                } else viewModel.openAccessibilitySettings(context)
             },
             onDismiss = { showAccessibilityDisclosure = false },
+        )
+    }
+    if (showModesExplainer && !isPro) {
+        ModeHooks.ModesExplainer(
+            onUnlock = viewModel::unlockModes,
+            onDismiss = viewModel::dismissModesExplainer,
         )
     }
 }

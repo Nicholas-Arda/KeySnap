@@ -2,7 +2,6 @@
 <resources>
     <string name="app_name">KeySnap</string>
     <string name="accessibility_service_description">भौतिक बटन दबाने (वॉल्यूम, पावर और अन्य हार्डवेयर बटन) का पता लगाता है, ताकि वे आपके शॉर्टकट को ट्रिगर कर सकें। केवल उन्नत मोड सेटअप के दौरान, यह आपके लिए सिस्टम की पेयरिंग कोड विंडो भी खोलता है और उससे कोड पढ़ता है। यह किसी अन्य ऐप की स्क्रीन नहीं पढ़ सकता।</string>
-    <string name="accessibility_disclosure_agree">सहमत हूँ, सेटिंग्स खोलें</string>
 
     <!-- क्रिया श्रेणियां -->
     <string name="action_category_input">इनपुट</string>
@@ -268,6 +267,7 @@
 
     <!-- क्रिया एडिटर: ज़रूरी बैज -->
     <string name="badge_expert_mode">उन्नत मोड ज़रूरी है</string>
+    <string name="badge_advanced_full_access">पूरी पहुँच के लिए उन्नत मोड ज़रूरी है</string>
     <string name="badge_accessibility">सुलभता सेवा ज़रूरी है</string>
     <string name="badge_notification_policy">डू नॉट डिस्टर्ब एक्सेस ज़रूरी है</string>
     <string name="badge_notification_access">सूचना एक्सेस ज़रूरी है</string>
@@ -553,7 +553,6 @@
     <string name="settings_close">सेटिंग बंद करें</string>
 
     <!-- डायलॉग -->
-    <string name="dialog_expert_connected">उन्नत मोड कनेक्ट हो गया</string>
     <string name="dialog_new_input_title">नया इनपुट मिला</string>
     <string name="dialog_new_input_body">इस इनपुट को एक छोटा नाम दें।</string>
     <string name="dialog_new_input_hint">जैसे: शॉर्टकट बटन</string>
@@ -577,8 +576,6 @@
     <string name="trigger_picker_listening">सुन रहा है… रोकने के लिए टैप करें</string>
     <string name="trigger_picker_tap_to_record">टैप करें, फिर एक बटन दबाएं, या कई बटन एक साथ दबाकर रखें</string>
     <string name="trigger_picker_save_combo">बटन सेव करें</string>
-    <string name="trigger_picker_use_automation">इसके बजाय एक ऑटोमेशन इस्तेमाल करें</string>
-    <string name="trigger_picker_use_key">%1$s इस्तेमाल करें</string>
 
     <!-- प्रति-शॉर्टकट सेटिंग -->
     <string name="script_settings_name">नाम</string>
@@ -667,33 +664,12 @@
     <string name="home_triggers_session">इस सेशन में रन</string>
     <string name="home_last_from">%1$s से आखिरी</string>
     <string name="home_open_label_settings">%1$s सेटिंग खोलें</string>
-    <string name="home_setup_title_off">आपके शॉर्टकट अभी चल नहीं रहे</string>
-    <string name="home_setup_subtitle_off">तीन चरण, सभी Android की अपनी सेटिंग में। हर चरण में क्या टैप करना है, यहाँ बताया गया है।</string>
-    <string name="home_setup_title_at_risk">आपके शॉर्टकट काम करना बंद कर सकते हैं</string>
-    <string name="home_setup_subtitle_at_risk">जब तक ये चालू नहीं होते, Android ऐप को बैकग्राउंड में बंद कर सकता है।</string>
-    <string name="home_setup_progress">%1$d/3</string>
-    <string name="home_setup_step_accessibility">सुलभता सेवा चालू करें</string>
-    <string name="home_setup_why_accessibility">KeySnap इसी के ज़रिए आपके बटन दबाने को पढ़ता है। जब तक यह चालू नहीं है, कुछ नहीं चलेगा।</string>
     <string name="home_setup_open_accessibility">सुलभता सेटिंग खोलें</string>
-    <string name="home_setup_step_background">KeySnap को बैकग्राउंड में चलने दें</string>
-    <string name="home_setup_why_background">Android उन ऐप्स को बंद कर देता है जिन्हें वह सोया हुआ समझता है। Android पूछे तो “अनुमति दें” पर टैप करें — “अस्वीकार करें” से KeySnap बंद होता रहेगा।</string>
     <string name="home_setup_allow_background">बैकग्राउंड में चलने दें</string>
-    <string name="home_setup_done_background">अनुमति दी गई</string>
-    <string name="home_setup_step_notifications">सूचनाओं की अनुमति दें</string>
-    <string name="home_setup_why_notifications">सेटअप के लिए, यह बताने के लिए कि कोई शॉर्टकट कब नहीं चल पाया, और आपके अपने शॉर्टकट की सूचनाओं के लिए। Android पूछे तो “अनुमति दें” पर टैप करें — “अनुमति न दें” यहीं सेटअप रोक देगा।</string>
-    <string name="home_setup_ask_now">अभी पूछें</string>
-    <string name="home_setup_done_notifications">अनुमति है</string>
-    <string name="home_setup_all_done">तीनों चालू हैं। आपके बटन अब काम करते हैं।</string>
     <string name="home_setup_state_done">पूरा हुआ</string>
     <string name="home_setup_state_current">मौजूदा चरण</string>
     <string name="home_setup_state_upcoming">अभी शुरू नहीं हुआ</string>
     <string name="home_setup_illo_downloaded_apps">डाउनलोड किए गए ऐप्स</string>
-    <string name="home_setup_why">क्यों?</string>
-    <string name="home_setup_why_expanded">खुला हुआ</string>
-    <string name="home_setup_why_collapsed">बंद किया हुआ</string>
-    <string name="home_setup_whytext_accessibility">Android हार्डवेयर बटन सिर्फ़ एक ऐक्सेसिबिलिटी सेवा को दिखाता है, इसलिए KeySnap ठीक इसी काम के लिए एक सेवा इस्तेमाल करता है: बटन दबना पहचानना और आपका शॉर्टकट चलाना। यह दूसरे ऐप्स की स्क्रीन नहीं पढ़ता। सिर्फ़ उन्नत मोड सेटअप के दौरान यह वायरलेस डिबगिंग पेज पर दिख रहा पेयरिंग कोड भी पढ़ता है, और कुछ नहीं।</string>
-    <string name="home_setup_whytext_background">Android उन ऐप्स को बंद कर देता है जिन्हें वह निष्क्रिय समझता है, और बंद ऐप आपके शॉर्टकट नहीं चला सकता। इससे आपका फ़ोन सोते समय भी KeySnap चलता रहता है। बैकग्राउंड में यह बटन दबने का इंतज़ार करने के अलावा कुछ नहीं करता।</string>
-    <string name="home_setup_whytext_notifications">उन्नत मोड सेटअप के दौरान: पेयरिंग कोड और सेवा चल रही है या नहीं। उसके बाद सिर्फ़ तब, जब कोई शॉर्टकट नहीं चल पाया, और क्यों, और वे सूचनाएं जो आप अपने शॉर्टकट में डालते हैं। हमारी ओर से कोई रिमाइंडर नहीं, कोई प्रचार नहीं, और कभी कुछ और नहीं।</string>
     <string name="home_setup_illo_battery_dialog">KeySnap को हमेशा बैकग्राउंड में चलने दें?</string>
     <string name="home_setup_illo_battery_body">इससे बैटरी जल्दी खर्च हो सकती है।</string>
     <string name="home_setup_illo_battery_deny">अस्वीकार करें</string>
@@ -703,6 +679,8 @@
     <string name="home_nudge_title">अपना पहला शॉर्टकट बनाएँ</string>
     <string name="home_nudge_subtitle">टॉर्च नीचे ही है, एक टैप दूर।</string>
     <string name="home_nudge_dismiss">बंद करें</string>
+    <string name="home_coloros_recents_title">KeySnap को हाल की सूची में लॉक करें</string>
+    <string name="home_coloros_recents_body">इस फ़ोन पर KeySnap को स्वाइप करके हटाने से सुलभता बंद हो जाती है, इसलिए शॉर्टकट कुंजियाँ अपना सामान्य काम भी करती हैं। हाल की सूची खोलें और KeySnap का कार्ड नीचे खींचकर लॉक करें।</string>
 
     <!-- Pro अपसेल -->
     <string name="pro_card_subtitle">मुफ़्त वर्शन %1$d शॉर्टकट चालू रखता है। Pro सभी को चालू रखता है।</string>
@@ -820,9 +798,6 @@
     <string name="wizard_title">उन्नत मोड चालू करें</string>
     <string name="wizard_subtitle">सेटअप विज़ार्ड</string>
     <string name="wizard_continue">जारी रखें</string>
-    <string name="wizard_finish_pairing">पेयरिंग पूरी करें</string>
-    <string name="wizard_step_intro">परिचय</string>
-    <string name="wizard_step_pairing">पेयरिंग</string>
     <string name="wizard_step_done">हो गया</string>
     <string name="wizard_what_is_expert">उन्नत मोड क्या है?</string>
     <string name="wizard_expert_explainer">KeySnap आपके फ़ोन की अपनी वायरलेस डिबगिंग से जुड़ता है और कीज़ सीधे कर्नेल से पढ़ता है — पावर, असिस्टेंट, कैमरा; वे बटन जिन्हें Android ऐप्स से छिपाता है।</string>
@@ -834,7 +809,10 @@
     <string name="wizard_illo_action">↳ टॉर्च चालू</string>
     <string name="wizard_how_to_dev_options">डेवलपर विकल्प कैसे चालू करें?</string>
     <string name="wizard_auto_pairing">ऑटोमेटिक ADB पेयरिंग</string>
-    <string name="wizard_auto_pairing_explainer">पेयरिंग कोड खुद टाइप करने की ज़रूरत नहीं — हम इसे बैकग्राउंड में पढ़कर अपने आप कनेक्ट कर देते हैं। अगर यह विफल हो जाए, तो आप इसे सूचना से डाल सकते हैं।</string>
+    <string-array name="wizard_auto_pairing_points">
+        <item>पेयरिंग कोड खुद टाइप करने की ज़रूरत नहीं — हम इसे बैकग्राउंड में पढ़कर अपने आप कनेक्ट कर देते हैं।</item>
+        <item>अगर यह विफल हो जाए, तो आप इसे सूचना से डाल सकते हैं।</item>
+    </string-array>
     <string name="wizard_open_settings">सेटिंग खोलें और पेयरिंग शुरू करें</string>
     <string name="wizard_expert_running">उन्नत मोड चल रहा है</string>
     <string name="wizard_expert_running_body">सभी Android हार्डवेयर बटन (पावर, असिस्टेंट, वॉल्यूम, कैमरा, आदि) को Linux कर्नेल स्तर पर सुना जा रहा है।</string>
@@ -843,7 +821,6 @@
     <string name="wizard_connecting">कनेक्ट हो रहा है…</string>
     <string name="wizard_connecting_body">उन्नत मोड शुरू हो रहा है। इसमें कुछ सेकंड लगते हैं — यह स्क्रीन खुली रखें।</string>
     <string name="wizard_kernel_stream">लाइव कर्नेल इवेंट स्ट्रीम</string>
-    <string name="wizard_test_flash">टॉर्च ट्रिगर टेस्ट करें</string>
 
     <!-- पेयरिंग स्टेटस -->
     <string name="pairing_idle">पेयरिंग का इंतज़ार हो रहा है…</string>
@@ -928,7 +905,6 @@
     <string name="widget_description">एक टैप से अपना कोई शॉर्टकट चलाएं</string>
     <string name="trigger_kind_surface">विजेट या टाइल</string>
     <string name="surface_card_subtitle">होम स्क्रीन विजेट या क्विक सेटिंग टाइल पर टैप करने पर चलता है</string>
-    <string name="trigger_picker_use_surface">कोई खाली बटन नहीं? विजेट या टाइल इस्तेमाल करें</string>
     <string name="run_source_widget">विजेट</string>
     <string name="run_source_tile">क्विक सेटिंग टाइल</string>
     <string name="widget_limit_reached">फ़्री प्लान: होम स्क्रीन पर %1$d विजेट। अनलिमिटेड विजेट के लिए Pro लें।</string>
@@ -1100,9 +1076,9 @@
     <string name="param_mode_pulse">मोड का वाइब्रेशन</string>
     <string name="param_mode_gap">वाइब्रेशन के बीच का अंतर</string>
     <string name="param_mode_lead_gap">मोड वाइब्रेशन से पहले का विराम</string>
-    <string name="choice_mode_feedback_toast">स्क्रीन पर संदेश</string>
+    <string name="choice_mode_feedback_toast">संदेश</string>
     <string name="choice_mode_feedback_vibrate">वाइब्रेशन</string>
-    <string name="choice_mode_feedback_both">संदेश और वाइब्रेशन</string>
+    <string name="choice_mode_feedback_both">दोनों</string>
     <string name="param_mode_number">मोड नंबर</string>
     <string name="constraint_mode_is">मोड है</string>
     <string name="mode_current">मोड %1$d</string>
@@ -1115,4 +1091,15 @@
     <string name="assistant_redirect_note">KeySnap आपका असिस्टेंट है, इसलिए यह कार्रवाई आपके फ़ोन पर कोई दूसरा असिस्टेंट खोलती है।</string>
     <string name="assistant_no_other_app">इस फ़ोन पर कोई दूसरा असिस्टेंट उपलब्ध नहीं है।</string>
     <string name="assistant_voice_wakeup_warning">जब तक KeySnap आपका असिस्टेंट है, पिछले असिस्टेंट का वॉइस वेक-अप काम करना बंद कर सकता है।</string>
+    <string name="script_settings_show_capsule">की कैप्सूल दिखाएं</string>
+    <string name="script_settings_show_capsule_description">यह शॉर्टकट चलने पर प्रतिक्रिया दिखाएं।</string>
+    <plurals name="home_recipes_show_more">
+        <item quantity="one">%d और दिखाएँ</item>
+        <item quantity="other">%d और दिखाएँ</item>
+    </plurals>
+    <string name="home_recipes_show_less">कम दिखाएँ</string>
+    <string name="settings_saved_keys">सहेजे गए बटन</string>
+    <string name="settings_saved_keys_summary">बटन का नाम बदलें या इस्तेमाल से पहले नया जोड़ें</string>
+    <string name="settings_saved_keys_add">बटन जोड़ें</string>
+    <string name="settings_saved_keys_rename">बटन का नाम बदलें</string>
 </resources>

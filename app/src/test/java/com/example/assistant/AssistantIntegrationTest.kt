@@ -11,6 +11,7 @@ import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.os.SystemClock
 import androidx.test.core.app.ApplicationProvider
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -41,23 +42,45 @@ class AssistantIntegrationTest {
         })
     }
 
-    @Test fun selectedAssistantUsesExplicitOverlayAndArmsLoopGuardBeforeLaunch() {
+    @Test fun selectedAssistantUsesExplicitOverlayAndArmsLoopGuardBeforeLaunch() = runTest {
         selectKeySnap()
         addActivity("android.intent.action.VOICE_ASSIST", assistantPackagePriority.first())
-        assertTrue(AssistantIntegration.launch(context))
+        assertTrue(AssistantIntegration.launch(context, Intent.ACTION_ASSIST) {
+            error("KeySnap must never request its own voice session")
+        })
         val intent = shadowOf(context).nextStartedActivity
         assertEquals("android.intent.action.VOICE_ASSIST", intent.action)
         assertEquals(ComponentName(assistantPackagePriority.first(), assistantPackagePriority.first() + ".AssistActivity"), intent.component)
         assertFalse(AssistantIntegration.invocations.accept(SystemClock.elapsedRealtime()))
     }
 
-    @Test fun selfAndUnexportedActivitiesAreExcludedAndNoAlternativeShowsToast() {
+    @Test fun selfAndUnexportedActivitiesAreExcludedAndNoAlternativeShowsToast() = runTest {
         selectKeySnap()
         addActivity(Intent.ACTION_ASSIST, context.packageName)
         addActivity(Intent.ACTION_VOICE_COMMAND, "private.assistant", exported = false)
         assertFalse(AssistantIntegration.launch(context))
         assertNull(shadowOf(context).nextStartedActivity)
         assertEquals("No other assistant is available on this phone.", ShadowToast.getTextOfLatestToast())
+    }
+
+    @Test fun externalAssistantUsesBridgeSessionForBothActionsWithoutOpeningAnApp() = runTest {
+        for (action in listOf(Intent.ACTION_ASSIST, Intent.ACTION_VOICE_COMMAND)) {
+            var requests = 0
+            assertTrue(AssistantIntegration.launch(context, action) {
+                requests++
+                assertFalse(AssistantIntegration.invocations.accept(SystemClock.elapsedRealtime()))
+                true
+            })
+            assertEquals(1, requests)
+            assertNull(shadowOf(context).nextStartedActivity)
+        }
+    }
+
+    @Test fun unavailableBridgeSessionFallsBackToTheRequestedSystemIntent() = runTest {
+        for (action in listOf(Intent.ACTION_ASSIST, Intent.ACTION_VOICE_COMMAND)) {
+            assertTrue(AssistantIntegration.launch(context, action) { false })
+            assertEquals(action, shadowOf(context).nextStartedActivity.action)
+        }
     }
 
     @Test fun settingsOpensVoiceInputPickerInsteadOfRequestingTheRole() {

@@ -42,6 +42,9 @@ class KeyMapperAccessibilityService : AccessibilityService() {
         @Volatile
         private var instance: KeyMapperAccessibilityService? = null
 
+        /** Use only for the current attachment; callers must not cache the service Context. */
+        fun connectedOverlayContext(): Context? = instance?.takeIf { it.isConnectionAvailable() }
+
         /** Queries the framework connection without reading windows or running an action. */
         fun refreshConnectionStatus(): Boolean {
             val service = instance

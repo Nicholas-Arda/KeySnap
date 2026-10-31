@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="inline_key_choose">Elige una tecla</string>
+    <string name="inline_key_record">Grabar una tecla</string>
+    <string name="inline_key_listening">Pulsa una tecla ahora</string>
+    <string name="inline_key_release">Mantén las teclas pulsadas a la vez. Suéltalas para terminar.</string>
+    <string name="inline_key_edit">Toca la tecla para volver a grabarla.</string>
+    <string name="inline_key_placeholder">una tecla</string>
+    <string name="inline_key_advanced_hint">El botón de encendido, Snap Key, Essential Key, Bixby y otras teclas similares requieren el Modo avanzado.</string>
+    <string name="inline_key_set_up">Configurar</string>
+</resources>

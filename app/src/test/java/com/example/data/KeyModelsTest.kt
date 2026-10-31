@@ -78,7 +78,17 @@ class KeyModelsTest {
     @Test
     fun unlabelledKeysAreDetectedByCodeNotByName() {
         assertTrue(isUnlabelledKey(999))
+        assertTrue(isUnlabelledKey(0x40000123))
         assertFalse(isUnlabelledKey(KeyEvent.KEYCODE_VOLUME_DOWN))
+        assertFalse(isUnlabelledKey(KeyEvent.KEYCODE_E))
+    }
+
+    @Test
+    fun keyboardKeysAreNamedByAndroid() {
+        val res = RuntimeEnvironment.getApplication().resources
+        assertEquals("E", keyDisplayName(res, KeyEvent.KEYCODE_E, emptyList()))
+        assertEquals("Ctrl Left", keyDisplayName(res, KeyEvent.KEYCODE_CTRL_LEFT, emptyList()))
+        assertEquals("Button A", keyDisplayName(res, KeyEvent.KEYCODE_BUTTON_A, emptyList()))
     }
 
     @Test

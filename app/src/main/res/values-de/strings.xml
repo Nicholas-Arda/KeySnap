@@ -2,7 +2,6 @@
 <resources>
     <string name="app_name">KeySnap</string>
     <string name="accessibility_service_description">Erkennt physische Tastendrücke (Lautstärke, Ein/Aus und andere Hardwaretasten), damit sie deine Kurzbefehle auslösen können. Nur während der Einrichtung des Erweiterten Modus öffnet sie außerdem den Kopplungscode-Dialog des Systems für dich und liest den Code daraus. Sie kann den Bildschirm keiner anderen App lesen.</string>
-    <string name="accessibility_disclosure_agree">Zustimmen und Einstellungen öffnen</string>
 
     <!-- Aktionskategorien -->
     <string name="action_category_input">Eingabe</string>
@@ -268,6 +267,7 @@
 
     <!-- Aktionseditor: Anforderungshinweise -->
     <string name="badge_expert_mode">Erfordert den Erweiterten Modus</string>
+    <string name="badge_advanced_full_access">Voller Zugriff erfordert den Erweiterten Modus</string>
     <string name="badge_accessibility">Erfordert den Bedienungshilfen-Dienst</string>
     <string name="badge_notification_policy">Erfordert Zugriff auf „Nicht stören“</string>
     <string name="badge_notification_access">Erfordert Benachrichtigungszugriff</string>
@@ -553,7 +553,6 @@
     <string name="settings_close">Einstellungen schließen</string>
 
     <!-- Dialoge -->
-    <string name="dialog_expert_connected">ERWEITERTER MODUS VERBUNDEN</string>
     <string name="dialog_new_input_title">Neue Eingabe erkannt</string>
     <string name="dialog_new_input_body">Gib dieser Eingabe einen kurzen Namen.</string>
     <string name="dialog_new_input_hint">z. B. Kurzbefehltaste</string>
@@ -577,8 +576,6 @@
     <string name="trigger_picker_listening">Wird aufgezeichnet… zum Stoppen tippen</string>
     <string name="trigger_picker_tap_to_record">Tippen und dann eine Taste drücken oder mehrere zusammen halten</string>
     <string name="trigger_picker_save_combo">Taste speichern</string>
-    <string name="trigger_picker_use_automation">Stattdessen eine Automatisierung verwenden</string>
-    <string name="trigger_picker_use_key">%1$s verwenden</string>
 
     <!-- Einstellungen pro Kurzbefehl -->
     <string name="script_settings_name">Name</string>
@@ -667,33 +664,12 @@
     <string name="home_triggers_session">Ausführungen in dieser Sitzung</string>
     <string name="home_last_from">Zuletzt von %1$s</string>
     <string name="home_open_label_settings">%1$s-Einstellungen öffnen</string>
-    <string name="home_setup_title_off">Deine Kurzbefehle laufen noch nicht</string>
-    <string name="home_setup_subtitle_off">Drei Schritte, alle in Androids eigenen Einstellungen. Hier steht, was du jeweils antippst.</string>
-    <string name="home_setup_title_at_risk">Deine Kurzbefehle funktionieren möglicherweise nicht mehr</string>
-    <string name="home_setup_subtitle_at_risk">Android kann die App im Hintergrund beenden, solange dies nicht aktiviert ist.</string>
-    <string name="home_setup_progress">%1$d/3</string>
-    <string name="home_setup_step_accessibility">Bedienungshilfen-Dienst aktivieren</string>
-    <string name="home_setup_why_accessibility">Darüber liest KeySnap deine Tastendrücke. Ohne ihn läuft nichts.</string>
     <string name="home_setup_open_accessibility">Bedienungshilfen öffnen</string>
-    <string name="home_setup_step_background">KeySnap im Hintergrund laufen lassen</string>
-    <string name="home_setup_why_background">Android beendet Apps, die es für schlafend hält. Tippe auf „Zulassen“, wenn Android fragt — mit „Ablehnen“ kann KeySnap weiter beendet werden.</string>
     <string name="home_setup_allow_background">Hintergrundnutzung zulassen</string>
-    <string name="home_setup_done_background">Zugelassen</string>
-    <string name="home_setup_step_notifications">Benachrichtigungen zulassen</string>
-    <string name="home_setup_why_notifications">Für die Einrichtung, um dir zu sagen, wenn ein Kurzbefehl nicht ausgeführt werden konnte, und für Benachrichtigungen deiner eigenen Kurzbefehle. Tippe auf „Zulassen“, wenn Android fragt — „Nicht zulassen“ beendet die Einrichtung hier.</string>
-    <string name="home_setup_ask_now">Jetzt fragen</string>
-    <string name="home_setup_done_notifications">Zugelassen</string>
-    <string name="home_setup_all_done">Alle drei sind an. Deine Tasten funktionieren jetzt.</string>
     <string name="home_setup_state_done">Erledigt</string>
     <string name="home_setup_state_current">Aktueller Schritt</string>
     <string name="home_setup_state_upcoming">Noch nicht begonnen</string>
     <string name="home_setup_illo_downloaded_apps">Heruntergeladene Apps</string>
-    <string name="home_setup_why">Warum?</string>
-    <string name="home_setup_why_expanded">Ausgeklappt</string>
-    <string name="home_setup_why_collapsed">Eingeklappt</string>
-    <string name="home_setup_whytext_accessibility">Android zeigt Hardwaretasten nur einem Bedienungshilfe-Dienst. Genau dafür nutzt KeySnap einen: einen Tastendruck bemerken und deinen Kurzbefehl ausführen. Bildschirme anderer Apps liest er nicht. Nur während der Einrichtung des Erweiterten Modus liest er zusätzlich den Kopplungscode auf der Seite für kabelloses Debugging — sonst nichts.</string>
-    <string name="home_setup_whytext_background">Android beendet Apps, die es für untätig hält, und eine beendete App kann deine Kurzbefehle nicht ausführen. Das hält KeySnap am Leben, während dein Telefon schläft. Im Hintergrund tut es nichts, außer auf eine Taste zu warten.</string>
-    <string name="home_setup_whytext_notifications">Während der Einrichtung des Erweiterten Modus: der Kopplungscode und ob der Dienst läuft. Danach nur, wenn ein Kurzbefehl nicht ausgeführt werden konnte, und warum, sowie die Benachrichtigungen, die du in deine eigenen Kurzbefehle einbaust. Keine Erinnerungen von uns, keine Werbung, sonst nie etwas.</string>
     <string name="home_setup_illo_battery_dialog">Darf KeySnap immer im Hintergrund laufen?</string>
     <string name="home_setup_illo_battery_body">Das kann die Akkulaufzeit verkürzen.</string>
     <string name="home_setup_illo_battery_deny">Ablehnen</string>
@@ -703,6 +679,8 @@
     <string name="home_nudge_title">Erstelle deinen ersten Kurzbefehl</string>
     <string name="home_nudge_subtitle">Die Taschenlampe ist gleich darunter, ein Tippen.</string>
     <string name="home_nudge_dismiss">Schließen</string>
+    <string name="home_coloros_recents_title">KeySnap in den letzten Apps sperren</string>
+    <string name="home_coloros_recents_body">Auf diesem Telefon schaltet Wegwischen von KeySnap die Bedienungshilfe aus. Die Tasten deiner Kurzbefehle machen dann auch ihre normale Aufgabe. Öffne die letzten Apps und ziehe die Karte von KeySnap nach unten, um sie zu sperren.</string>
 
     <!-- Pro-Angebot -->
     <string name="pro_card_subtitle">Gratis hält %1$d Kurzbefehle aktiv. Pro hält alle aktiv.</string>
@@ -820,9 +798,6 @@
     <string name="wizard_title">Erweiterten Modus aktivieren</string>
     <string name="wizard_subtitle">Einrichtungsassistent</string>
     <string name="wizard_continue">Weiter</string>
-    <string name="wizard_finish_pairing">Kopplung abschließen</string>
-    <string name="wizard_step_intro">Einführung</string>
-    <string name="wizard_step_pairing">Kopplung</string>
     <string name="wizard_step_done">Fertig</string>
     <string name="wizard_what_is_expert">Was ist der Erweiterte Modus?</string>
     <string name="wizard_expert_explainer">KeySnap koppelt sich mit dem kabellosen Debugging deines Telefons und liest Tasten direkt aus dem Kernel — Ein/Aus, Assistent, Kamera; die Tasten, die Android vor Apps verbirgt.</string>
@@ -834,7 +809,10 @@
     <string name="wizard_illo_action">↳ Taschenlampe an</string>
     <string name="wizard_how_to_dev_options">Wie aktiviert man die Entwickleroptionen?</string>
     <string name="wizard_auto_pairing">Automatische ADB-Kopplung</string>
-    <string name="wizard_auto_pairing_explainer">Der Kopplungscode muss nicht manuell eingegeben werden – wir lesen ihn im Hintergrund und verbinden automatisch. Falls das fehlschlägt, kannst du ihn über die Benachrichtigung eingeben.</string>
+    <string-array name="wizard_auto_pairing_points">
+        <item>Der Kopplungscode muss nicht manuell eingegeben werden – wir lesen ihn im Hintergrund und verbinden automatisch.</item>
+        <item>Falls das fehlschlägt, kannst du ihn über die Benachrichtigung eingeben.</item>
+    </string-array>
     <string name="wizard_open_settings">Einstellungen öffnen und Kopplung starten</string>
     <string name="wizard_expert_running">Der Erweiterte Modus läuft</string>
     <string name="wizard_expert_running_body">Alle Android-Hardwaretasten (Ein/Aus, Assistent, Lautstärke, Kamera usw.) werden auf Linux-Kernel-Ebene erfasst.</string>
@@ -843,7 +821,6 @@
     <string name="wizard_connecting">Verbinde…</string>
     <string name="wizard_connecting_body">Der Erweiterte Modus wird gestartet. Das dauert ein paar Sekunden – lass diesen Bildschirm offen.</string>
     <string name="wizard_kernel_stream">Live-Ereignisstream des Kernels</string>
-    <string name="wizard_test_flash">Taschenlampen-Auslöser testen</string>
 
     <!-- Kopplungsstatus -->
     <string name="pairing_idle">Warten auf Kopplung…</string>
@@ -928,7 +905,6 @@
     <string name="widget_description">Führe einen deiner Kurzbefehle mit einem Tippen aus</string>
     <string name="trigger_kind_surface">Widget oder Kachel</string>
     <string name="surface_card_subtitle">Wird ausgeführt, wenn du auf sein Startbildschirm-Widget oder seine Schnelleinstellungen-Kachel tippst</string>
-    <string name="trigger_picker_use_surface">Keine freie Taste? Nutze ein Widget oder eine Kachel</string>
     <string name="run_source_widget">Widget</string>
     <string name="run_source_tile">Schnelleinstellungen-Kachel</string>
     <string name="widget_limit_reached">Kostenloser Plan: %1$d Startbildschirm-Widgets. Hol dir Pro für unbegrenzte Widgets.</string>
@@ -1100,9 +1076,9 @@
     <string name="param_mode_pulse">Modus-Vibration</string>
     <string name="param_mode_gap">Pause zwischen Vibrationen</string>
     <string name="param_mode_lead_gap">Pause vor der Modus-Vibration</string>
-    <string name="choice_mode_feedback_toast">Bildschirmmeldung</string>
+    <string name="choice_mode_feedback_toast">Nachricht</string>
     <string name="choice_mode_feedback_vibrate">Vibration</string>
-    <string name="choice_mode_feedback_both">Meldung und Vibration</string>
+    <string name="choice_mode_feedback_both">Beides</string>
     <string name="param_mode_number">Modusnummer</string>
     <string name="constraint_mode_is">Modus ist</string>
     <string name="mode_current">Modus %1$d</string>
@@ -1115,4 +1091,15 @@
     <string name="assistant_redirect_note">KeySnap ist dein Assistent. Diese Aktion öffnet daher einen anderen Assistenten auf deinem Smartphone.</string>
     <string name="assistant_no_other_app">Auf diesem Smartphone ist kein anderer Assistent verfügbar.</string>
     <string name="assistant_voice_wakeup_warning">Solange KeySnap dein Assistent ist, kann die Sprachaktivierung deines vorherigen Assistenten nicht mehr funktionieren.</string>
+    <string name="script_settings_show_capsule">Key capsule anzeigen</string>
+    <string name="script_settings_show_capsule_description">Eine Rückmeldung anzeigen, wenn dieser Kurzbefehl ausgeführt wird.</string>
+    <plurals name="home_recipes_show_more">
+        <item quantity="one">%d weiteres anzeigen</item>
+        <item quantity="other">%d weitere anzeigen</item>
+    </plurals>
+    <string name="home_recipes_show_less">Weniger anzeigen</string>
+    <string name="settings_saved_keys">Gespeicherte Tasten</string>
+    <string name="settings_saved_keys_summary">Tasten umbenennen oder vorab hinzufügen</string>
+    <string name="settings_saved_keys_add">Taste hinzufügen</string>
+    <string name="settings_saved_keys_rename">Taste umbenennen</string>
 </resources>

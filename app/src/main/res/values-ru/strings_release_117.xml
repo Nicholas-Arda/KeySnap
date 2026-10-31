@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_editor_title">Более простой редактор ярлыков</string>
+    <string name="whats_new_editor_description">Более понятный редактор с записью кнопок прямо в нём и плавными переходами при открытии и закрытии.</string>
+    <string name="whats_new_fix_update_startup">Исправлен сбой при открытии KeySnap после обновления</string>
+    <string name="whats_new_dutch_title">Теперь на нидерландском</string>
+    <string name="whats_new_dutch_description">Используйте KeySnap на нидерландском. Выберите Nederlands в разделе Настройки → Язык.</string>
+</resources>

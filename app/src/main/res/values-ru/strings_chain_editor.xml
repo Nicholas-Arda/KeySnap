@@ -1,0 +1,17 @@
+<resources>
+    <string name="chain_is">ДА</string>
+    <string name="chain_not">НЕТ</string>
+    <string name="chain_action_empty">Действие не может быть пустым</string>
+    <string name="chain_condition_empty">Проверьте настройки условия</string>
+    <string name="chain_shell_limited">Shell работает с ограничениями</string>
+    <string name="chain_set_up">Настроить</string>
+    <string name="chain_test_running">Проверка действия</string>
+    <string name="chain_test_success">Проверка успешна</string>
+    <string name="chain_test_failure">Проверка не удалась</string>
+    <string name="chain_test_action">Проверить действие</string>
+    <string name="chain_test_timeout">Время истекло</string>
+    <string name="chain_http_status">HTTP %1$d</string>
+    <string name="chain_exit_code">Код выхода %1$d</string>
+    <string name="chain_test_result">%1$s %2$s · %3$s · %4$s с</string>
+    <string name="chain_needs_condition">Сначала добавьте условие</string>
+</resources>

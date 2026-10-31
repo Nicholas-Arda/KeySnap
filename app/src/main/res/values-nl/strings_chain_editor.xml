@@ -1,0 +1,17 @@
+<resources>
+    <string name="chain_is">IS</string>
+    <string name="chain_not">NIET</string>
+    <string name="chain_action_empty">Actie mag niet leeg zijn</string>
+    <string name="chain_condition_empty">Controleer de voorwaarde-instellingen</string>
+    <string name="chain_shell_limited">Shell werkt hier beperkt</string>
+    <string name="chain_set_up">Instellen</string>
+    <string name="chain_test_running">Actie testen</string>
+    <string name="chain_test_success">Test geslaagd</string>
+    <string name="chain_test_failure">Test mislukt</string>
+    <string name="chain_test_action">Actie testen</string>
+    <string name="chain_test_timeout">Time-out</string>
+    <string name="chain_http_status">HTTP %1$d</string>
+    <string name="chain_exit_code">Afsluitcode %1$d</string>
+    <string name="chain_test_result">%1$s %2$s · %3$s · %4$s s</string>
+    <string name="chain_needs_condition">Voeg eerst een voorwaarde toe</string>
+</resources>

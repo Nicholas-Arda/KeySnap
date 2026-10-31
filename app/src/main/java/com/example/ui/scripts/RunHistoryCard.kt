@@ -1,7 +1,17 @@
 package com.example.ui.scripts
 
 import android.content.res.Resources
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.style.TextAlign
+import com.example.ui.components.MinTouchTarget
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -52,6 +62,7 @@ internal fun RunHistoryCard(runs: List<RunRecord>, triggerKeys: List<Int>) {
             .fillMaxWidth()
             .clip(InnerShape)
             .border(1.dp, colors.outline.copy(alpha = .6f), InnerShape)
+            .animateContentSize()
             .testTag("run_history_card"),
     ) {
         if (runs.isEmpty()) {
@@ -62,7 +73,9 @@ internal fun RunHistoryCard(runs: List<RunRecord>, triggerKeys: List<Int>) {
                 style = MaterialTheme.typography.bodyMedium,
             )
         }
-        runs.forEachIndexed { index, run ->
+        var expanded by rememberSaveable { mutableStateOf(false) }
+        val shown = if (expanded) runs else runs.take(VISIBLE_RUNS)
+        shown.forEachIndexed { index, run ->
             val failures = run.actions.filterNot { it.ok }
             Row(
                 Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp).testTag("run_row_$index"),
@@ -96,8 +109,27 @@ internal fun RunHistoryCard(runs: List<RunRecord>, triggerKeys: List<Int>) {
                 }
             }
         }
+        if (runs.size > VISIBLE_RUNS) {
+            val label = if (expanded) stringResource(R.string.home_recipes_show_less) else
+                pluralStringResource(R.plurals.home_recipes_show_more, runs.size - VISIBLE_RUNS, runs.size - VISIBLE_RUNS)
+            Text(
+                label,
+                Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = MinTouchTarget)
+                    .clickable(role = Role.Button) { expanded = !expanded }
+                    .padding(horizontal = 16.dp, vertical = 14.dp)
+                    .testTag("run_history_toggle"),
+                color = colors.primary,
+                style = MaterialTheme.typography.labelLarge,
+                textAlign = TextAlign.Center,
+            )
+        }
     }
 }
+
+/** The newest few: a busy shortcut's history otherwise ran far past the editor. */
+private const val VISIBLE_RUNS = 3
 
 private fun runTriggerLabel(run: RunRecord, res: Resources, triggerKeys: List<Int>): String {
     val keyCode = run.keyCode

@@ -16,6 +16,7 @@ import com.example.ui.components.WhatsNewDialog
 import com.example.ui.theme.MyApplicationTheme
 import com.example.ui.theme.ThemeMode
 import com.github.takahirom.roborazzi.captureRoboImage
+import io.github.nicholasarda.keysnap.R
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -31,6 +32,31 @@ import org.robolectric.annotation.GraphicsMode
 @Config(sdk = [34], qualifiers = "en-w411dp-h891dp-mdpi")
 class WhatsNewDialogTest {
     @get:Rule val rule = createComposeRule()
+
+    @Test fun release117AssistantFixIsVisibleInLightMode() = checkAssistantFix117(ThemeMode.LIGHT)
+
+    @Test fun release117AssistantFixIsVisibleInDarkMode() = checkAssistantFix117(ThemeMode.DARK)
+
+    private fun checkAssistantFix117(theme: ThemeMode) {
+        rule.setContent {
+            MyApplicationTheme(themeMode = theme) {
+                WhatsNewDialog(whatsNewReleases.getValue(17L), theme, {}, {})
+            }
+        }
+        rule.onNodeWithText("Now in Dutch").assertIsDisplayed()
+        if (com.example.capsule.CapsuleHooks.AVAILABLE) {
+            rule.onNodeWithText("New looks for Key capsule").performScrollTo().assertIsDisplayed()
+            rule.onNodeWithText("More useful capsule feedback").performScrollTo().assertIsDisplayed()
+        }
+        rule.onNodeWithText("A simpler shortcut editor").performScrollTo().assertIsDisplayed()
+        rule.onNodeWithText("Your assistant opens again from a key in Advanced Mode").performScrollTo().assertIsDisplayed()
+        rule.onNodeWithTag("whats_new_fix_${R.string.whats_new_fix_update_startup}")
+            .performScrollTo().assertIsDisplayed()
+        rule.onNodeWithTag("whats_new_fix_${R.string.whats_new_fix_large_text}")
+            .performScrollTo().assertIsDisplayed()
+        rule.onNodeWithTag("whats_new_got_it").assertIsDisplayed()
+        rule.onNodeWithTag("whats_new_dialog").captureRoboImage("build/outputs/whats-new-review/117-assistant-${theme.name.lowercase()}.png")
+    }
 
     @Test
     @Config(qualifiers = "en-w320dp-h640dp-mdpi")

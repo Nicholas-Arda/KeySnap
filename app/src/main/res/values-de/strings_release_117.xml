@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_editor_title">Einfacherer Kurzbefehl-Editor</string>
+    <string name="whats_new_editor_description">Ein übersichtlicherer Editor mit Tastenaufnahme direkt im Editor und flüssigerem Öffnen und Schließen.</string>
+    <string name="whats_new_fix_update_startup">Absturz beim Öffnen von KeySnap nach einem Update behoben</string>
+    <string name="whats_new_dutch_title">Jetzt auf Niederländisch</string>
+    <string name="whats_new_dutch_description">Nutze KeySnap auf Niederländisch. Wähle Nederlands unter Einstellungen → Sprache.</string>
+</resources>

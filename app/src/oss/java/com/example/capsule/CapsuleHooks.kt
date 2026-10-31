@@ -17,13 +17,17 @@ import kotlinx.coroutines.flow.flowOf
 object CapsuleHooks {
     const val AVAILABLE = false
 
+    fun prepare(context: Context) = Unit
+
+    fun onMatched(context: Context, scriptId: String, keyCode: Int, pressType: String?, actionTypes: List<String>): Long = 0L
+
     fun whatsNewRelease(versionCode: Long): WhatsNewRelease? = null
 
     fun enabledFlow(context: Context): Flow<Boolean> = flowOf(false)
 
     fun isEnabled(context: Context): Boolean = false
 
-    fun onRun(context: Context, record: RunRecord, appResults: List<Boolean?>, bridgeReport: List<Pair<String, Boolean>>?) = Unit
+    fun onRun(context: Context, record: RunRecord, appResults: List<Boolean?>, bridgeReport: List<Pair<String, Boolean>>?, runId: Long? = null) = Unit
 
     fun onBridgeFeedback(context: Context, trigger: BridgeTrigger) = Unit
 

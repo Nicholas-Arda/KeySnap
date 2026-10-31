@@ -1,0 +1,17 @@
+<resources>
+    <string name="chain_is">É</string>
+    <string name="chain_not">NÃO</string>
+    <string name="chain_action_empty">A ação não pode ficar vazia</string>
+    <string name="chain_condition_empty">Confira as configurações da condição</string>
+    <string name="chain_shell_limited">Shell funciona com limites aqui</string>
+    <string name="chain_set_up">Configurar</string>
+    <string name="chain_test_running">Testando ação</string>
+    <string name="chain_test_success">Teste bem-sucedido</string>
+    <string name="chain_test_failure">Teste falhou</string>
+    <string name="chain_test_action">Testar ação</string>
+    <string name="chain_test_timeout">Tempo esgotado</string>
+    <string name="chain_http_status">HTTP %1$d</string>
+    <string name="chain_exit_code">Saída %1$d</string>
+    <string name="chain_test_result">%1$s %2$s · %3$s · %4$s s</string>
+    <string name="chain_needs_condition">Adicione uma condição primeiro</string>
+</resources>

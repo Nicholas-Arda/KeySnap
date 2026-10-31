@@ -24,11 +24,15 @@ object FlashlightController {
     private var cameraManager: CameraManager? = null
     private var cameraId: String? = null
     private var isInitialized = false
+    @Volatile private var stateKnown = false
+
+    internal fun knownState(): Boolean? = if (stateKnown) _isFlashlightOn.value else null
 
     private val torchCallback = object : CameraManager.TorchCallback() {
         override fun onTorchModeChanged(id: String, enabled: Boolean) {
             super.onTorchModeChanged(id, enabled)
             if (id == cameraId || cameraId == null) {
+                stateKnown = true
                 _isFlashlightOn.value = enabled
             }
         }
@@ -36,6 +40,7 @@ object FlashlightController {
         override fun onTorchModeUnavailable(id: String) {
             super.onTorchModeUnavailable(id)
             if (id == cameraId || cameraId == null) {
+                stateKnown = false
                 _isAvailable.value = false
             }
         }
@@ -78,6 +83,7 @@ object FlashlightController {
 
     /** Test-only hook to simulate a torch state change without a real camera. */
     fun setTestState(on: Boolean) {
+        stateKnown = true
         _isFlashlightOn.value = on
     }
 
@@ -100,6 +106,7 @@ object FlashlightController {
 
         return try {
             cm.setTorchMode(targetCameraId, enabled)
+            stateKnown = true
             _isFlashlightOn.value = enabled
             _lastActionMessage.value = if (enabled) "Torch on" else "Torch off"
             true

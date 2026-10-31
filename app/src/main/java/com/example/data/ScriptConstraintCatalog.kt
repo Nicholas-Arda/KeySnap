@@ -163,6 +163,9 @@ object ScriptConstraintCatalog {
 
     fun isAvailable(type: String): Boolean = byType[type]?.availability == ConstraintAvailability.AVAILABLE
 
+    /** mode_is uses a Boolean fail-closed API, which cannot safely be inverted. */
+    fun supportsNegation(type: String): Boolean = isAvailable(type) && com.example.bridge.ConstraintNegation.supported(type)
+
     /**
      * Constraints that can wake a key-less (automation) script: states Android announces with a
      * broadcast or callback, on which `DeviceEventReceiver` re-evaluates — nothing polls — or, for
@@ -205,7 +208,7 @@ object ScriptConstraintCatalog {
      * once) has no triggering notification, and such a reply fails rather than pick another chat.
      */
     fun startsFromNotification(automation: Boolean, constraints: List<ScriptConstraint>): Boolean =
-        automation && constraints.any { it.type == NOTIFICATION_RECEIVED }
+        automation && constraints.any { it.type == NOTIFICATION_RECEIVED && !com.example.bridge.ConstraintNegation.requested(it.params) }
 
     /** Titles are localized, so search matches against the strings the user is actually reading. */
     fun search(query: String, resources: Resources): List<ConstraintDescriptor> {

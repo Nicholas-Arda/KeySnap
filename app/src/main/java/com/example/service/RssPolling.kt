@@ -34,6 +34,12 @@ object RssPolling {
 
     @Volatile private var pulsing: String? = null
 
+    // Only a successful check is evidence for absence of new items. Never invert an unpolled/failed feed.
+    private val readableFeeds = java.util.Collections.synchronizedSet(mutableSetOf<String>())
+
+    internal fun knownPulse(url: String?): Boolean? =
+        if (url != null && (url == pulsing || url in readableFeeds)) isPulsing(url) else null
+
     fun isPulsing(url: String?): Boolean = url != null && url == pulsing
 
     /** Feeds on enabled automations, each once, exactly as typed. */
@@ -47,6 +53,7 @@ object RssPolling {
     /** Schedules the job while any feed is followed and cancels it otherwise; forgets feeds no longer followed. */
     fun sync(context: Context, scripts: List<ShortcutScript>) {
         val urls = feedUrls(scripts).toSet()
+        readableFeeds.retainAll(urls)
         val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
         prefs.edit { prefs.all.keys.filter { it != LAST_POLL && it !in urls }.forEach { remove(it) } }
         val scheduler = context.getSystemService(JobScheduler::class.java) ?: return
@@ -75,6 +82,7 @@ object RssPolling {
         reevaluate: () -> Unit,
     ) {
         seed()
+        readableFeeds.add(url)
         pulsing = url
         try {
             reevaluate()
@@ -85,7 +93,11 @@ object RssPolling {
     }
 
     suspend fun pollOnce(context: Context) {
-        val urls = feedUrls(ScriptRepository.getInstance(context).scripts.value)
+        val scripts = ScriptRepository.getInstance(context).scripts.value
+        val urls = feedUrls(scripts)
+        val negatedUrls = scripts.filter { it.automation && it.enabled }.flatMap { it.constraints }
+            .filter { it.type == ScriptConstraintCatalog.RSS_NEW_ITEM && com.example.bridge.ConstraintNegation.requested(it.params) }
+            .mapNotNull { it.params["url"] }.toSet()
         if (urls.isEmpty()) {
             // Nothing follows a feed any more: leave nothing scheduled.
             context.getSystemService(JobScheduler::class.java)?.cancel(JOB_ID)
@@ -96,6 +108,7 @@ object RssPolling {
         // far are forgotten, so the first check after the pause only records: what was published
         // during it is not replayed, as for every other automation.
         if (!ScriptRepository.getInstance(context).globallyEnabled.value) {
+            readableFeeds.clear()
             prefs.edit { clear() }
             return
         }
@@ -105,11 +118,18 @@ object RssPolling {
         if (!isPollDue(prefs.getLong(LAST_POLL, -1L).takeIf { it >= 0 }, now)) return
         prefs.edit { putLong(LAST_POLL, now) }
         urls.forEach { url ->
-            val ids = fetchItemIds(url) ?: return@forEach // a failed check keeps the last known items
+            val ids = fetchItemIds(url) ?: run {
+                readableFeeds.remove(url)
+                if (url in negatedUrls) withContext(Dispatchers.Main) { HardwareKeyTriggerCoordinator.reevaluateAutomations() }
+                return@forEach
+            }
+            readableFeeds.add(url)
             val previous = prefs.getStringSet(url, null)
             prefs.edit { putStringSet(url, ids.toSet()) }
             if (hasNewItems(previous, ids)) {
                 withContext(Dispatchers.Main) { pulse(url, reevaluate = HardwareKeyTriggerCoordinator::reevaluateAutomations) }
+            } else if (url in negatedUrls) {
+                withContext(Dispatchers.Main) { HardwareKeyTriggerCoordinator.reevaluateAutomations() }
             }
         }
     }

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="inline_key_choose">Choose a key</string>
+    <string name="inline_key_record">Record a key</string>
+    <string name="inline_key_listening">Press a key now</string>
+    <string name="inline_key_release">Hold keys together. Release to finish.</string>
+    <string name="inline_key_edit">Tap the key to record again.</string>
+    <string name="inline_key_placeholder">a key</string>
+    <string name="inline_key_advanced_hint">Power, Snap Key, Essential Key, Bixby and similar keys need Advanced Mode.</string>
+    <string name="inline_key_set_up">Set up</string>
+</resources>

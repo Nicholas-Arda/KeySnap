@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_test_editors_title_120">Editors you can test</string>
+    <string name="whats_new_test_editors_description_120">Try any step with ▶ before saving.</string>
+    <string name="whats_new_reorder_shortcuts_title_120">Reorder and edit shortcuts</string>
+    <string name="whats_new_reorder_shortcuts_description_120">Tap ✎ or hold one. Drag to reorder.</string>
+    <string name="whats_new_input_devices_title_120">Keyboards, mice and gamepads</string>
+    <string name="whats_new_input_devices_description_120">Advanced Mode: real key names, Ctrl shortcuts.</string>
+    <string name="whats_new_fix_setup_120">Setup in two steps, notifications optional</string>
+    <string name="whats_new_fix_conditions_120">Flip any condition with NOT</string>
+    <string name="whats_new_fix_app_names_120">Apps show by their names</string>
+    <string name="whats_new_fix_side_power_keys_120">Side and power keys: clear hint</string>
+    <string name="whats_new_fix_idle_battery_120">Lighter on battery when idle</string>
+    <string name="whats_new_fix_advanced_setup_120">Advanced Mode setup on one page</string>
+    <string name="whats_new_fix_saved_keys_120">Rename saved keys or add ahead</string>
+    <string name="whats_new_fix_shortcuts_page_120">Tidier Shortcuts page, shorter lists</string>
+    <string name="whats_new_fix_modes_120">Modes: turn off or delete anytime</string>
+</resources>

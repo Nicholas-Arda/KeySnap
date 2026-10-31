@@ -30,8 +30,13 @@ public final class EventServer implements Runnable {
         /** Runs one chain now and answers "<ran>	<total>	<actionResults>". */
         String onRunRequested(String payloadJson);
 
+        default String onTestActionRequested(String payloadJson) { return "{}"; }
+
         /** Presses the Send button of the chat the app just opened; answers one outcome word. */
         String onPressSendRequested(String payloadJson);
+
+        /** The app owns role discovery and its outgoing-invocation guard. */
+        default boolean onShowAssistantRequested() { return false; }
 
         /** No app trigger subscriber received a physical run; optionally wake display-only UI. */
         default void onFeedbackWakeRequested() { }
@@ -46,6 +51,12 @@ public final class EventServer implements Runnable {
     private final long startedAtMillis = System.currentTimeMillis();
     private final FeedbackMailbox feedback = new FeedbackMailbox();
     private final Object deliveryLock = new Object();
+    // Socket writes and cold-service wakeups must never sit on the action executor.
+    private final java.util.concurrent.ExecutorService reports = java.util.concurrent.Executors.newSingleThreadExecutor(r -> {
+        Thread thread = new Thread(r, "arda-bridge-reports");
+        thread.setDaemon(true);
+        return thread;
+    });
 
     private volatile boolean running = true;
     private volatile ServerSocket serverSocket;
@@ -75,6 +86,7 @@ public final class EventServer implements Runnable {
             client.close();
         }
         clients.clear();
+        reports.shutdownNow();
     }
 
     /**
@@ -114,19 +126,37 @@ public final class EventServer implements Runnable {
 
     public void broadcastTrigger(long timestamp, int keyCode, String pressType, String scriptId, boolean success,
             String actionResults) {
+        broadcastTrigger(timestamp, keyCode, pressType, scriptId, success, actionResults, 0L);
+    }
+
+    public void broadcastTrigger(long timestamp, int keyCode, String pressType, String scriptId, boolean success,
+            String actionResults, long runId) {
+        reports.execute(() -> deliverRun(timestamp, keyCode, pressType, scriptId, success, actionResults, runId, false));
+    }
+
+    /** Display-only match; it never causes app-side actions or increments the trigger counter. */
+    public void broadcastPending(long timestamp, int keyCode, String pressType, String scriptId,
+            String actionTypes, long runId) {
+        reports.execute(() -> deliverRun(timestamp, keyCode, pressType, scriptId, false, actionTypes, runId, true));
+    }
+
+    private void deliverRun(long timestamp, int keyCode, String pressType, String scriptId, boolean success,
+            String actionResults, long runId, boolean pending) {
         String fields = "" + SEP + timestamp + SEP + keyCode + SEP + pressType
-                + SEP + sanitize(scriptId) + SEP + (success ? 1 : 0) + SEP + sanitize(actionResults);
+                + SEP + sanitize(scriptId) + SEP + (success ? 1 : 0) + SEP + sanitize(actionResults)
+                + SEP + runId + SEP + (pending ? 1 : 0);
         boolean delivered = false;
         synchronized (deliveryLock) {
             feedback.clear();
             for (ClientConnection client : clients) {
-                if (client.watching) delivered |= client.send(BridgeProtocol.MSG_TRIGGER + fields);
+                if (client.watching) delivered |= client.send((pending ? BridgeProtocol.MSG_FEEDBACK : BridgeProtocol.MSG_TRIGGER) + fields);
             }
             if (!delivered) {
                 feedback.offer(BridgeProtocol.MSG_FEEDBACK + fields, monotonicMillis());
                 for (ClientConnection client : clients) {
                     if (client.feedbackOnly && client.send(BridgeProtocol.MSG_FEEDBACK + fields)) {
                         feedback.clear();
+                        delivered = true;
                         break;
                     }
                 }
@@ -244,9 +274,15 @@ public final class EventServer implements Runnable {
                     } else if (BridgeProtocol.CMD_RUN.equals(command)) {
                         writeDirect(BridgeProtocol.MSG_OK + SEP
                                 + listener.onRunRequested(parts.length >= 2 ? parts[1] : ""));
+                    } else if (BridgeProtocol.CMD_TEST_ACTION.equals(command)) {
+                        writeDirect(BridgeProtocol.MSG_OK + SEP
+                                + listener.onTestActionRequested(parts.length >= 2 ? parts[1] : ""));
                     } else if (BridgeProtocol.CMD_PRESS_SEND.equals(command)) {
                         writeDirect(BridgeProtocol.MSG_OK + SEP
                                 + listener.onPressSendRequested(parts.length >= 2 ? parts[1] : ""));
+                    } else if (BridgeProtocol.CMD_SHOW_ASSISTANT.equals(command)) {
+                        writeDirect(BridgeProtocol.MSG_OK + SEP
+                                + (listener.onShowAssistantRequested() ? "1" : "0"));
                     } else if (BridgeProtocol.CMD_SHUTDOWN.equals(command)) {
                         writeDirect(BridgeProtocol.MSG_BYE);
                         listener.onShutdownRequested();
@@ -257,7 +293,7 @@ public final class EventServer implements Runnable {
                 }
             } catch (Exception e) {
                 if (running) {
-                    BridgeLog.w("Control client ended: " + e);
+                    BridgeLog.w("Control client ended: " + e.getClass().getSimpleName());
                 }
             } finally {
                 close();

@@ -3,6 +3,7 @@ package com.example.service
 import android.app.NotificationManager
 import android.app.WallpaperManager
 import android.media.AudioManager
+import com.example.bridge.BrightnessScale
 import com.example.data.ScriptAction
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
@@ -106,15 +107,15 @@ class ScriptActionExecutorTest {
         assertEquals(NotificationManager.INTERRUPTION_FILTER_ALL, dndFilterFor(NotificationManager.INTERRUPTION_FILTER_ALL, false))
     }
 
-    @Test fun brightnessStepsStayInsideTheBridgeZeroToTwoFiftyFiveRange() {
-        assertEquals(154, brightnessLevelFor(128, BRIGHTNESS_STEP))
-        assertEquals(102, brightnessLevelFor(128, -BRIGHTNESS_STEP))
-        // The bridge clamps rather than refusing, so the +/- actions saturate at both ends.
-        assertEquals(MAX_BRIGHTNESS, brightnessLevelFor(250, BRIGHTNESS_STEP))
-        assertEquals(0, brightnessLevelFor(10, -BRIGHTNESS_STEP))
-        // change_brightness passes its raw param through with no step.
-        assertEquals(MAX_BRIGHTNESS, brightnessLevelFor(9000, 0))
-        assertEquals(0, brightnessLevelFor(-5, 0))
+    @Test fun brightnessUsesTheSharedBridgeScaleAndPreservesSavedValues() {
+        val standard = BrightnessScale(255, false)
+        assertEquals(154, standard.step(128, 1))
+        assertEquals(255, standard.step(250, 1))
+        assertEquals(128, standard.fromLegacy(128))
+        val oplus = BrightnessScale.resolve(4095, 255, 255)
+        assertEquals(2056, oplus.fromLegacy(128))
+        assertEquals(4095, oplus.fromLegacy(9000))
+        assertEquals(0, oplus.fromLegacy(-5))
     }
 
     @Test fun rotationCyclesThroughAllFourQuartersAndWrapsBackToPortrait() {
@@ -179,7 +180,7 @@ class ScriptActionExecutorTest {
             ScriptAction("toggle_wifi"),
         )
 
-        val results = executor.executeEach(actions) { it.type != "toggle_wifi" }
+        val results = executor.executeEach(actions) { _, action -> action.type != "toggle_wifi" }
 
         assertEquals(listOf(true, true, false, null), results)
     }
@@ -198,7 +199,7 @@ class ScriptActionExecutorTest {
         assertEquals(listOf(false), executor.executeEach(listOf(ScriptAction("repeat_previous", mapOf("count" to "2")))))
 
         val bridged = listOf(ScriptAction("toggle_wifi"), ScriptAction("repeat_previous", mapOf("count" to "2")))
-        assertEquals(listOf(null, null), executor.executeEach(bridged) { it.type != "toggle_wifi" })
+        assertEquals(listOf(null, null), executor.executeEach(bridged) { _, action -> action.type != "toggle_wifi" })
     }
 
     @Test fun wallpaperTargetsMapToWallpaperManagerFlags() {

@@ -16,7 +16,6 @@ import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
@@ -28,9 +27,7 @@ import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.Icon
@@ -126,11 +123,6 @@ private val HaloBlur = 12.dp
  */
 val BottomBarClearance = BarMargin + BarHeight + FabOverhang
 
-// The lens's two edges run on separate springs: the one leading the move is stiff and overshoots,
-// the trailing one is soft, so the lens stretches in flight and squashes as it lands.
-private val LeadSpring = spring<Float>(dampingRatio = 0.58f, stiffness = 307f)
-private val TrailSpring = spring<Float>(dampingRatio = 0.9f, stiffness = 122f)
-
 private data class BottomNavDestination(
     @StringRes val labelRes: Int,
     val icon: ImageVector,
@@ -158,8 +150,8 @@ fun AppBottomBar(
     onNewShortcut: () -> Unit,
     pages: GraphicsLayer,
     modifier: Modifier = Modifier,
+    onNewShortcutCenterChanged: (Offset) -> Unit = {},
 ) {
-    val colors = MaterialTheme.colorScheme
     val glass = LocalGlass.current
     val frosted = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
     val half = LensSize.value / 2
@@ -168,8 +160,8 @@ fun AppBottomBar(
     LaunchedEffect(selectedPage) {
         val center = tabCenter(selectedPage)
         val towardEnd = center > (lensStart.value + lensEnd.value) / 2
-        launch { lensStart.animateTo(center - half, if (towardEnd) TrailSpring else LeadSpring) }
-        launch { lensEnd.animateTo(center + half, if (towardEnd) LeadSpring else TrailSpring) }
+        launch { lensStart.animateTo(center - half, if (towardEnd) SelectionTrailSpring else SelectionLeadSpring) }
+        launch { lensEnd.animateTo(center + half, if (towardEnd) SelectionLeadSpring else SelectionTrailSpring) }
     }
     // Tall enough to hold the +'s overhang, so the whole button sits inside the bar's touch bounds.
     Box(
@@ -206,19 +198,13 @@ fun AppBottomBar(
             BarTab(HomeTab, selectedPage == HomeTab.page, onPageSelected, Modifier.align(Alignment.CenterStart))
             BarTab(ShortcutsTab, selectedPage == ShortcutsTab.page, onPageSelected, Modifier.align(Alignment.CenterEnd))
         }
-        Box(
-            Modifier
+        ShortcutFab(
+            onClick = onNewShortcut,
+            onCenterChanged = onNewShortcutCenterChanged,
+            modifier = Modifier
                 .align(Alignment.TopCenter)
-                .size(FabSize)
-                .shadow(10.dp, CircleShape, ambientColor = colors.primary, spotColor = colors.primary)
-                .clip(CircleShape)
-                .background(colors.primary)
-                .clickable(role = Role.Button, onClick = onNewShortcut)
-                .testTag("new_script_button"),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(Icons.Filled.Add, stringResource(R.string.scripts_new_shortcut), Modifier.size(30.dp), tint = colors.onPrimary)
-        }
+                .size(FabSize),
+        )
     }
 }
 

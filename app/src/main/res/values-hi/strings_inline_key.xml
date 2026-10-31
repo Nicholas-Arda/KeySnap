@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="inline_key_choose">बटन चुनें</string>
+    <string name="inline_key_record">बटन रिकॉर्ड करें</string>
+    <string name="inline_key_listening">अब बटन दबाएँ</string>
+    <string name="inline_key_release">बटन एक साथ दबाकर रखें। पूरा करने के लिए छोड़ें।</string>
+    <string name="inline_key_edit">फिर से रिकॉर्ड करने के लिए बटन पर टैप करें।</string>
+    <string name="inline_key_placeholder">कोई बटन</string>
+    <string name="inline_key_advanced_hint">पावर, Snap Key, Essential Key, Bixby और इसी तरह के बटनों के लिए उन्नत मोड ज़रूरी है।</string>
+    <string name="inline_key_set_up">सेट अप करें</string>
+</resources>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="inline_key_choose">Kies een toets</string>
+    <string name="inline_key_record">Toets opnemen</string>
+    <string name="inline_key_listening">Druk nu op een toets</string>
+    <string name="inline_key_release">Houd de toetsen tegelijk ingedrukt. Laat los om af te ronden.</string>
+    <string name="inline_key_edit">Tik op de toets om deze opnieuw op te nemen.</string>
+    <string name="inline_key_placeholder">een toets</string>
+    <string name="inline_key_advanced_hint">De aan-uitknop, Snap Key, Essential Key, Bixby en vergelijkbare toetsen vereisen de Geavanceerde modus.</string>
+    <string name="inline_key_set_up">Instellen</string>
+</resources>

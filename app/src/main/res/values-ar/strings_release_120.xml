@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_test_editors_title_120">محررات يمكنك اختبارها</string>
+    <string name="whats_new_test_editors_description_120">جرّب أي خطوة بزر ▶ قبل الحفظ.</string>
+    <string name="whats_new_reorder_shortcuts_title_120">رتّب الاختصارات وعدّلها</string>
+    <string name="whats_new_reorder_shortcuts_description_120">اضغط ✎ أو مطولًا على اختصار؛ اسحبه لترتيبه.</string>
+    <string name="whats_new_input_devices_title_120">لوحات المفاتيح والفأرة وأذرع الألعاب</string>
+    <string name="whats_new_input_devices_description_120">الوضع المتقدم: أسماء حقيقية للأزرار واختصارات Ctrl.</string>
+    <string name="whats_new_fix_setup_120">إعداد بخطوتين، والإشعارات اختيارية</string>
+    <string name="whats_new_fix_conditions_120">اعكس أي شرط باستخدام «ليس»</string>
+    <string name="whats_new_fix_app_names_120">التطبيقات تظهر بأسمائها</string>
+    <string name="whats_new_fix_side_power_keys_120">الأزرار الجانبية والطاقة: توضيح واضح</string>
+    <string name="whats_new_fix_idle_battery_120">استهلاك أقل للبطارية أثناء الخمول</string>
+    <string name="whats_new_fix_advanced_setup_120">إعداد الوضع المتقدم بصفحة واحدة</string>
+    <string name="whats_new_fix_saved_keys_120">أعد تسمية الأزرار المحفوظة أو أضفها مسبقًا</string>
+    <string name="whats_new_fix_shortcuts_page_120">صفحة اختصارات أرتب وقوائم أقصر</string>
+    <string name="whats_new_fix_modes_120">الأوضاع: عطّلها أو احذفها متى شئت</string>
+</resources>

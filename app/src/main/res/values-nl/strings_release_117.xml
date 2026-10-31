@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_editor_title">Een eenvoudigere snelkoppelingseditor</string>
+    <string name="whats_new_editor_description">Een overzichtelijkere editor met knopregistratie in de editor en vloeiendere overgangen bij openen en sluiten.</string>
+    <string name="whats_new_fix_update_startup">Een crash bij het openen van KeySnap na een update verholpen</string>
+    <string name="whats_new_dutch_title">Nu in het Nederlands</string>
+    <string name="whats_new_dutch_description">Gebruik KeySnap in het Nederlands. Kies Nederlands onder Instellingen → Taal.</string>
+</resources>

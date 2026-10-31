@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_test_editors_title_120">Des éditeurs à tester</string>
+    <string name="whats_new_test_editors_description_120">Testez chaque étape avec ▶ avant d’enregistrer.</string>
+    <string name="whats_new_reorder_shortcuts_title_120">Triez et modifiez vos raccourcis</string>
+    <string name="whats_new_reorder_shortcuts_description_120">Touchez ✎ ou maintenez un raccourci appuyé ; glissez-le pour le déplacer.</string>
+    <string name="whats_new_input_devices_title_120">Claviers, souris et manettes</string>
+    <string name="whats_new_input_devices_description_120">Mode avancé : vrais noms de touches, raccourcis Ctrl.</string>
+    <string name="whats_new_fix_setup_120">Configuration en deux étapes, notifications facultatives</string>
+    <string name="whats_new_fix_conditions_120">Inversez chaque condition avec NON</string>
+    <string name="whats_new_fix_app_names_120">Les applications affichent leur nom</string>
+    <string name="whats_new_fix_side_power_keys_120">Boutons latéraux et marche/arrêt : indication claire</string>
+    <string name="whats_new_fix_idle_battery_120">Moins de batterie au repos</string>
+    <string name="whats_new_fix_advanced_setup_120">Mode avancé : configuration sur une page</string>
+    <string name="whats_new_fix_saved_keys_120">Renommez des touches enregistrées, ajoutez-les d’avance</string>
+    <string name="whats_new_fix_shortcuts_page_120">Page Raccourcis épurée, listes plus courtes</string>
+    <string name="whats_new_fix_modes_120">Modes : désactivez ou supprimez à volonté</string>
+</resources>

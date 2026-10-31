@@ -41,6 +41,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.text.ParagraphIntrinsics
 import androidx.compose.ui.text.TextLayoutResult
@@ -368,7 +369,7 @@ class LargeScaleLayoutTest(private val language: String, private val fontScale: 
         )
         content {
             Column(Modifier.padding(16.dp)) {
-                ScriptCard(script, true, false, { _, _ -> }, {}, {})
+                ScriptCard(script, true, false, { _, _ -> }, {})
                 ShortcutRow(script) {}
             }
         }
@@ -416,6 +417,11 @@ class LargeScaleLayoutTest(private val language: String, private val fontScale: 
                 SuggestedShortcutsPanel(isPro = false, scripts = emptyList(), onPick = {})
             }
         }
+        // Keep checking every recipe, including rows initially trimmed in the All view.
+        tagged("recipe_show_more_").forEach { tag ->
+            rule.onNodeWithTag(tag).performScrollTo().performClick()
+            rule.waitForIdle()
+        }
         captureR2("suggestions")
         val titles = tagged("suggestion_title_")
         assertTrue("suggestions rendered", titles.isNotEmpty())
@@ -438,6 +444,29 @@ class LargeScaleLayoutTest(private val language: String, private val fontScale: 
         captureR2("suggestions-automation")
     }
 
+    @Test fun suggestionShelvesExpandInAllAndStayFullInChipView() {
+        val shelf = SuggestedShortcuts.ordered.groupBy { it.category }.entries.first { it.value.size > 3 }
+        val category = shelf.key.name.lowercase()
+        val fourthRow = "suggestion_${shelf.value[3].id}"
+        content {
+            Column(Modifier.verticalScroll(rememberScrollState()).padding(horizontal = 16.dp)) {
+                SuggestedShortcutsPanel(isPro = true, scripts = emptyList(), onPick = {})
+            }
+        }
+        rule.onNodeWithTag(fourthRow).assertDoesNotExist()
+        rule.onNodeWithTag("recipe_chip_$category").performScrollTo().performClick()
+        shelf.value.forEach { rule.onNodeWithTag("suggestion_${it.id}").assertExists() }
+        rule.onNodeWithTag("recipe_show_more_$category").assertDoesNotExist()
+        rule.onNodeWithTag("recipe_show_less_$category").assertDoesNotExist()
+        rule.onNodeWithTag("recipe_category_chips").performScrollToNode(hasTestTag("recipe_chip_all"))
+        rule.onNodeWithTag("recipe_chip_all").performClick()
+        rule.onNodeWithTag(fourthRow).assertDoesNotExist()
+        rule.onNodeWithTag("recipe_show_more_$category").performScrollTo().performClick()
+        rule.onNodeWithTag(fourthRow).assertExists()
+        rule.onNodeWithTag("recipe_show_less_$category").performScrollTo().performClick()
+        rule.onNodeWithTag(fourthRow).assertDoesNotExist()
+    }
+
     @Test fun setupCardKeepsWholeWordsInEveryStep() {
         content {
             Column(Modifier.verticalScroll(rememberScrollState()).padding(horizontal = 16.dp)) {
@@ -454,8 +483,7 @@ class LargeScaleLayoutTest(private val language: String, private val fontScale: 
             .forEach(::assertWholeWords)
         rule.onAllNodesWithTag("permission_alerts")[1].performScrollTo()
         captureR2("setup-step2")
-        rule.onAllNodesWithTag("permission_alerts")[2].performScrollTo()
-        captureR2("setup-step3")
+        assertEquals(2, rule.onAllNodesWithTag("permission_alerts").fetchSemanticsNodes().size)
     }
 
     @Test fun settingsPanelHidesThePageAboveIt() {

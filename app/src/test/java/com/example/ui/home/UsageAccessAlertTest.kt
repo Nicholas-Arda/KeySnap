@@ -22,15 +22,15 @@ import org.robolectric.annotation.Config
 class UsageAccessAlertTest {
     @get:Rule val rule = createComposeRule()
 
-    @Test fun permissionRowExplainsTheGrantAndOpensUsageAccessSettings() {
+    @Test fun sheetExplainsTheGrantAndOpensSettings() {
         val context = ApplicationProvider.getApplicationContext<Context>()
+        var opened = false
         rule.setContent {
-            MyApplicationTheme(themeMode = ThemeMode.LIGHT) { UsageAccessAlert() }
+            MyApplicationTheme(themeMode = ThemeMode.LIGHT) { UsageAccessSheet(onOpenSettings = { opened = true }, onDismiss = {}) }
         }
-        rule.onNodeWithText("Permissions needed").assertIsDisplayed()
-        rule.onNodeWithText(context.getString(io.github.nicholasarda.keysnap.R.string.constraint_needs_usage_access))
-            .assertIsDisplayed()
+        rule.onNodeWithText("Allow usage access").assertIsDisplayed()
+        rule.onNodeWithText("Shows which app is in front").assertIsDisplayed()
         rule.onNodeWithText("Open settings").performClick()
-        assertEquals(Settings.ACTION_USAGE_ACCESS_SETTINGS, shadowOf(context as android.app.Application).nextStartedActivity.action)
+        assertEquals(true, opened)
     }
 }

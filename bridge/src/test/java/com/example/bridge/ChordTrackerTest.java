@@ -91,6 +91,34 @@ public class ChordTrackerTest {
     }
 
     @Test
+    public void aModifierMayBeHeldPastTheWindow() {
+        // Ctrl+[ and Ctrl+\ as typed: Ctrl held ~0.4 s first, then [ pressed twice under it.
+        int ctrl = 113, bracket = 71, backslash = 73;
+        List<List<Integer>> chords = Arrays.asList(Arrays.asList(bracket, ctrl), Arrays.asList(backslash, ctrl));
+        java.util.Set<Integer> solo = Collections.singleton(UP);
+        int id = ChordTracker.chordId(Arrays.asList(bracket, ctrl));
+        ChordTracker t = new ChordTracker();
+        assertEquals(Collections.singletonList(pass(ctrl, true)), t.onEvent(ctrl, true, 1_000, chords, solo));
+        assertEquals(Arrays.asList(cancel(ctrl), chord(id, true)), t.onEvent(bracket, true, 1_450, chords, solo));
+        assertEquals(Collections.singletonList(chord(id, false)), t.onEvent(bracket, false, 1_560, chords, solo));
+        assertEquals(Collections.singletonList(chord(id, true)), t.onEvent(bracket, true, 1_780, chords, solo));
+    }
+
+    @Test
+    public void aMemberThatIsAlsoItsOwnShortcutStillNeedsTheWindow() {
+        ChordTracker t = new ChordTracker();
+        java.util.Set<Integer> solo = Collections.singleton(UP);
+        t.onEvent(UP, true, 1_000, VOL, solo);
+        assertEquals(Collections.singletonList(pass(DOWN, true)), t.onEvent(DOWN, true, 1_400, VOL, solo));
+    }
+
+    @Test
+    public void soloKeysAreTheOneKeyTriggers() {
+        assertEquals(Collections.singleton(UP), ChordTracker.soloKeysOf(Arrays.asList(
+                Collections.singletonList(UP), Arrays.asList(UP, DOWN))));
+    }
+
+    @Test
     public void laterMemberUpsAreSwallowed() {
         ChordTracker t = new ChordTracker();
         t.onEvent(UP, true, 1_000, VOL);

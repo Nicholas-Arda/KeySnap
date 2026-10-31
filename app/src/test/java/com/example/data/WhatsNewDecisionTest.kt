@@ -93,12 +93,25 @@ class WhatsNewDecisionTest {
     @Test
     fun manualOpenUsesThisVersionOrTheNewestReleaseNotAfterIt() {
         assertEquals(whatsNewReleases.getValue(16L), whatsNewReleaseFor(16L))
-        assertEquals(whatsNewReleases.getValue(16L), whatsNewReleaseFor(99L))
+        assertEquals(whatsNewReleases.getValue(17L), whatsNewReleaseFor(17L))
+        assertEquals(whatsNewReleases.getValue(20L), whatsNewReleaseFor(99L))
+        assertEquals(whatsNewReleases.getValue(17L), whatsNewReleaseFor(18L))
         if (whatsNewReleases[15L] == null) {
             val below = whatsNewReleases.keys.filter { it <= 15L }.maxOrNull()
             assertNotNull(below)
             assertEquals(whatsNewReleases.getValue(below!!), whatsNewReleaseFor(15L))
         }
+    }
+
+    @Test fun release117ShowsTheAssistantFixAfterUpdatingFrom116() {
+        val release = whatsNewReleases.getValue(17L)
+        val capsuleDestinations = if (com.example.capsule.CapsuleHooks.AVAILABLE) {
+            listOf(WhatsNewDestination.KEY_CAPSULE, WhatsNewDestination.KEY_CAPSULE)
+        } else emptyList()
+        assertEquals(capsuleDestinations + WhatsNewDestination.SHORTCUTS, release.features.map { it.destination })
+        assertTrue(R.string.whats_new_fix_assistant in release.fixes)
+        assertEquals(WhatsNewDecision.SHOW, whatsNewDecision(16L, 17L, false, true, false, true))
+        assertEquals(WhatsNewDecision.NONE, whatsNewDecision(17L, 17L, false, true, false, true))
     }
 
     @Test

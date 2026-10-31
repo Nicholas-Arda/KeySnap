@@ -2,6 +2,8 @@ package com.example.service
 
 import android.content.ComponentName
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Assume.assumeTrue
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -42,6 +44,27 @@ class AccessibilityReconnectTest {
         assertEquals(emptyList<String>(), run.writes)
     }
 
+    @Test fun enableAddsTheMissingEntryAfterTheOthers() {
+        val run = runScript(other, enabled = "1", enable = true)
+        assertEquals(0, run.exit)
+        assertEquals(listOf("$other:$ownFull"), run.writes)
+    }
+
+    @Test fun enableOnAnEmptyListWritesOnlyOwnEntry() {
+        val run = runScript("null", enabled = "0", enable = true)
+        assertEquals(0, run.exit)
+        assertEquals(listOf(ownFull), run.writes)
+    }
+
+    @Test fun recentsLockTipIsColorOsOnlyUntilDismissed() {
+        listOf("OPPO", "OnePlus", "realme", "REALME").forEach { manufacturer ->
+            assertTrue(manufacturer, showColorOsRecentsLockTip(manufacturer, dismissed = false))
+            assertFalse(manufacturer, showColorOsRecentsLockTip(manufacturer, dismissed = true))
+        }
+        assertFalse(showColorOsRecentsLockTip("Google", dismissed = false))
+        assertFalse(showColorOsRecentsLockTip("samsung", dismissed = false))
+    }
+
     @Test fun neverWritesBackAnUnexpectedRead() {
         val run = runScript("Error: settings provider busy; $ownFull", enabled = "1")
         assertEquals(6, run.exit)
@@ -51,7 +74,7 @@ class AccessibilityReconnectTest {
     private class Run(val exit: Int, val writes: List<String>, val enabled: String)
 
     /** Runs the real command against a fake `settings` backed by files, where a POSIX sh exists. */
-    private fun runScript(services: String, enabled: String): Run {
+    private fun runScript(services: String, enabled: String, enable: Boolean = false): Run {
         val sh = listOf("/bin/sh", "C:/Program Files/Git/bin/sh.exe").firstOrNull { File(it).canExecute() }
         assumeTrue("no POSIX sh on this machine", sh != null)
         val dir = Files.createTempDirectory("a11y").toFile()
@@ -65,7 +88,7 @@ class AccessibilityReconnectTest {
               put) printf %s "${'$'}4" > "${'$'}f"; [ "${'$'}3" = accessibility_enabled ] || echo "${'$'}4" >> "$d/writes";;
               delete) rm -f "${'$'}f"; echo "<deleted>" >> "$d/writes";; esac; }
         """.trimIndent()
-        val script = File(dir, "run.sh").apply { writeText(fake + "\n" + accessibilityReconnectCommand(own, 0) + "\n") }
+        val script = File(dir, "run.sh").apply { writeText(fake + "\n" + accessibilityReconnectCommand(own, 0, enable) + "\n") }
         val process = ProcessBuilder(sh, script.absolutePath).redirectErrorStream(true).start()
         process.inputStream.readBytes()
         val exit = process.waitFor()

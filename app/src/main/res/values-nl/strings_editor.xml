@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="editor_chain_if">Als</string>
+    <string name="editor_fine_tune">Fijnafstelling</string>
+    <string name="editor_fine_tune_summary">Naam · Modi · Trillen</string>
+    <string name="editor_highlight_hint">Tik op een gemarkeerd woord om het te wijzigen.</string>
+    <string name="editor_press">Druk op</string>
+    <string name="editor_save_shortcut">Snelkoppeling opslaan</string>
+    <string name="editor_test">Testen</string>
+</resources>

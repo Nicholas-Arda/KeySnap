@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pro_card_pay_once">Payez une fois, gardez-le pour toujours.</string>
+    <string name="pro_table_what_you_get">Ce que vous obtenez</string>
+    <string name="pro_table_modes">Modes de raccourcis</string>
+    <string name="pro_table_future">Futures fonctionnalités Pro</string>
+    <string name="pro_table_everything_else">Toutes les autres fonctionnalités</string>
+    <string name="pro_card_one_time">Achat unique · Sans abonnement</string>
+</resources>

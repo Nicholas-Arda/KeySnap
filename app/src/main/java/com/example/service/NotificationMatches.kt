@@ -48,7 +48,7 @@ internal object NotificationMatches {
     /** The newest notification that matched one of [constraints] inside the window, or null. */
     @Synchronized
     fun triggeringKey(constraints: List<ScriptConstraint>, nowMs: Long): String? =
-        constraints.filter { it.type == ScriptConstraintCatalog.NOTIFICATION_RECEIVED }
+        constraints.filter { it.type == ScriptConstraintCatalog.NOTIFICATION_RECEIVED && !com.example.bridge.ConstraintNegation.requested(it.params) }
             .mapNotNull { recent(it, nowMs) }
             .maxByOrNull { it.atMs }
             ?.key

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_fix_capsule_preview_118">L\'aperçu de la Key capsule est plus facile à essayer</string>
+    <string name="whats_new_fix_settings_motion_118">Les sections des Paramètres s\'ouvrent plus en douceur</string>
+    <string name="whats_new_fix_pro_card_118">Carte Pro et textes du thème clair plus nets</string>
+    <string name="whats_new_fix_key_code_118">Envoyer un code de touche précise qu\'il envoie une seule touche</string>
+</resources>

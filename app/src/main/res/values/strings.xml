@@ -3,7 +3,6 @@
     <!-- Shown on the system\'s accessibility settings screen. It must describe everything the
          service actually does, including the scoped screen read, or it misrepresents the app. -->
     <string name="accessibility_service_description">Detects physical key presses (Volume, Power, and other hardware buttons) so they can trigger your shortcuts. During Advanced Mode setup only, it also opens the system’s pairing-code dialog for you and reads the pairing code from it. It cannot read any other app\'s screen.</string>
-    <string name="accessibility_disclosure_agree">Agree and open settings</string>
 
     <!-- Action categories -->
     <string name="action_category_input">Input</string>
@@ -275,6 +274,7 @@
 
     <!-- Action editor: requirement badges -->
     <string name="badge_expert_mode">Requires Advanced Mode</string>
+    <string name="badge_advanced_full_access">Full access requires Advanced Mode</string>
     <string name="badge_accessibility">Requires the Accessibility service</string>
     <string name="badge_notification_policy">Requires Do Not Disturb access</string>
     <string name="badge_notification_access">Requires notification access</string>
@@ -583,7 +583,6 @@
     <string name="settings_close">Close settings</string>
 
     <!-- Dialogs -->
-    <string name="dialog_expert_connected">ADVANCED MODE CONNECTED</string>
     <string name="dialog_new_input_title">New input detected</string>
     <string name="dialog_new_input_body">Give this input a short name.</string>
     <string name="dialog_new_input_hint">e.g. Shortcut key</string>
@@ -603,8 +602,6 @@
     <string name="trigger_picker_listening">Listening… tap to stop</string>
     <string name="trigger_picker_tap_to_record">Tap, then press a key, or hold several together</string>
     <string name="trigger_picker_save_combo">Save key</string>
-    <string name="trigger_picker_use_automation">Use an automation instead</string>
-    <string name="trigger_picker_use_key">Use %1$s</string>
 
     <!-- Per-shortcut settings -->
     <string name="script_settings_name">Name</string>
@@ -694,32 +691,11 @@
     <string name="home_triggers_session">Runs this session</string>
     <string name="home_last_from">Last from %1$s</string>
     <string name="home_open_label_settings">Open %1$s settings</string>
-    <string name="home_setup_title_off">Your shortcuts aren’t running yet</string>
-    <string name="home_setup_subtitle_off">Three steps, all in Android’s own settings. Here’s what to tap on each.</string>
-    <string name="home_setup_title_at_risk">Your shortcuts may stop working</string>
-    <string name="home_setup_subtitle_at_risk">Android can close the app in the background until these are on.</string>
-    <string name="home_setup_progress">%1$d/3</string>
-    <string name="home_setup_step_accessibility">Turn on the Accessibility service</string>
-    <string name="home_setup_why_accessibility">KeySnap reads your button presses through it. Nothing runs until this is on.</string>
     <string name="home_setup_open_accessibility">Open Accessibility settings</string>
-    <string name="home_setup_step_background">Let KeySnap run in the background</string>
-    <string name="home_setup_why_background">Android closes apps it thinks are asleep. Tap Allow when Android asks — Deny leaves KeySnap stoppable.</string>
     <string name="home_setup_allow_background">Allow background use</string>
-    <string name="home_setup_done_background">Allowed</string>
-    <string name="home_setup_step_notifications">Allow notifications</string>
-    <string name="home_setup_why_notifications">For setup, to tell you when a shortcut couldn’t run, and for notifications your own shortcuts show. Tap Allow when Android asks — Don’t allow stops setup here.</string>
-    <string name="home_setup_ask_now">Ask me now</string>
-    <string name="home_setup_done_notifications">Allowed</string>
-    <string name="home_setup_all_done">All three are on. Your buttons work now.</string>
     <string name="home_setup_state_done">Done</string>
     <string name="home_setup_state_current">Current step</string>
     <string name="home_setup_state_upcoming">Not started yet</string>
-    <string name="home_setup_why">Why?</string>
-    <string name="home_setup_why_expanded">Expanded</string>
-    <string name="home_setup_why_collapsed">Collapsed</string>
-    <string name="home_setup_whytext_accessibility">Android shows hardware buttons only to an accessibility service, so KeySnap uses one for exactly that: noticing a press and running your shortcut. It does not read other apps\' screens. During Advanced Mode setup it also reads the pairing code on the Wireless Debugging page, and nothing else.</string>
-    <string name="home_setup_whytext_background">Android closes apps it thinks are idle, and a closed app cannot run your shortcuts. This keeps KeySnap alive while your phone sleeps. In the background it does nothing but wait for a button.</string>
-    <string name="home_setup_whytext_notifications">During Advanced Mode setup: the pairing code and whether the service is running. After that, only when a shortcut couldn’t run, and why, and the notifications you add to your own shortcuts. No reminders from us, no promotions, nothing else, ever.</string>
     <string name="home_setup_illo_downloaded_apps">Downloaded apps</string>
     <string name="home_setup_illo_battery_dialog">Let KeySnap always run in background?</string>
     <string name="home_setup_illo_battery_body">This may reduce battery life.</string>
@@ -730,6 +706,8 @@
     <string name="home_nudge_title">Make your first shortcut</string>
     <string name="home_nudge_subtitle">Flashlight is one tap below.</string>
     <string name="home_nudge_dismiss">Dismiss</string>
+    <string name="home_coloros_recents_title">Lock KeySnap in Recents</string>
+    <string name="home_coloros_recents_body">On this phone, swiping KeySnap away turns its Accessibility off, so shortcut keys also do their normal job. Open Recents, pull KeySnap\'s card down to lock it.</string>
 
     <!-- Key capsule introduction. Demo only; never executes a shortcut or starts a purchase. -->
     <string name="capsule_intro_title">Key capsule</string>
@@ -813,6 +791,7 @@
     <string name="language_russian" translatable="false">Русский</string>
     <string name="language_italian" translatable="false">Italiano</string>
     <string name="language_hindi" translatable="false">हिन्दी</string>
+    <string name="language_dutch" translatable="false">Nederlands</string>
 
     <!-- Appearance -->
     <string name="theme_light">Light</string>
@@ -868,9 +847,6 @@
     <string name="wizard_title">Turn on Advanced Mode</string>
     <string name="wizard_subtitle">Setup wizard</string>
     <string name="wizard_continue">Continue</string>
-    <string name="wizard_finish_pairing">Finish pairing</string>
-    <string name="wizard_step_intro">Intro</string>
-    <string name="wizard_step_pairing">Pairing</string>
     <string name="wizard_step_done">Done</string>
     <string name="wizard_what_is_expert">What is Advanced Mode?</string>
     <string name="wizard_expert_explainer">KeySnap pairs with your phone\'s own Wireless Debugging, then reads keys straight from the kernel — Power, assistant, camera, the buttons Android hides from apps.</string>
@@ -883,7 +859,10 @@
     <string name="wizard_illo_action">↳ Flashlight on</string>
     <string name="wizard_how_to_dev_options">How to enable Developer Options?</string>
     <string name="wizard_auto_pairing">Automatic ADB pairing</string>
-    <string name="wizard_auto_pairing_explainer">No need to type the pairing code manually — we read it in the background and connect automatically. If it fails, you can enter it from the notification.</string>
+    <string-array name="wizard_auto_pairing_points">
+        <item>No need to type the pairing code manually — we read it in the background and connect automatically.</item>
+        <item>If it fails, you can enter it from the notification.</item>
+    </string-array>
     <string name="wizard_open_settings">Open settings and start pairing</string>
     <string name="wizard_expert_running">Advanced Mode is running</string>
     <string name="wizard_expert_running_body">All Android hardware keys (Power, assistant, Volume, Camera, etc.) are being listened to at the Linux kernel level.</string>
@@ -893,7 +872,6 @@
     <string name="wizard_connecting_body">Advanced Mode is starting. This takes a few seconds — keep this screen open.</string>
     <string name="wizard_kernel_stream">Live kernel event stream</string>
     <string name="wizard_kernel_placeholder" translatable="false">/dev/input/event0: EV_KEY KEY_POWER DOWN (listening…)</string>
-    <string name="wizard_test_flash">Test flash trigger</string>
 
     <!-- Pairing status -->
     <string name="pairing_idle">Waiting for pairing…</string>
@@ -978,7 +956,6 @@
     <string name="widget_description">Run one of your shortcuts with a tap</string>
     <string name="trigger_kind_surface">Widget or tile</string>
     <string name="surface_card_subtitle">Runs when you tap its home-screen widget or Quick Settings tile</string>
-    <string name="trigger_picker_use_surface">No spare key? Use a widget or tile</string>
     <!-- Manifest labels of the three tiles; brand name plus a digit, the same in every language. -->
     <string name="tile_label_1" translatable="false">KeySnap 1</string>
     <string name="tile_label_2" translatable="false">KeySnap 2</string>
@@ -1152,9 +1129,9 @@
     <string name="param_mode_pulse">Mode buzz</string>
     <string name="param_mode_gap">Gap between buzzes</string>
     <string name="param_mode_lead_gap">Pause before mode buzz</string>
-    <string name="choice_mode_feedback_toast">On-screen message</string>
+    <string name="choice_mode_feedback_toast">Message</string>
     <string name="choice_mode_feedback_vibrate">Vibration</string>
-    <string name="choice_mode_feedback_both">Message and vibration</string>
+    <string name="choice_mode_feedback_both">Both</string>
     <string name="param_mode_number">Mode number</string>
     <string name="constraint_mode_is">Mode is</string>
     <string name="mode_current">Mode %1$d</string>
@@ -1167,4 +1144,15 @@
     <string name="assistant_redirect_note">KeySnap is your assistant, so this opens another assistant on your phone.</string>
     <string name="assistant_no_other_app">No other assistant is available on this phone.</string>
     <string name="assistant_voice_wakeup_warning">While KeySnap is your assistant, voice wake-up from your previous assistant may stop working.</string>
+    <string name="script_settings_show_capsule">Show key capsule</string>
+    <string name="script_settings_show_capsule_description">Show feedback when this shortcut runs.</string>
+    <plurals name="home_recipes_show_more">
+        <item quantity="one">Show %d more</item>
+        <item quantity="other">Show %d more</item>
+    </plurals>
+    <string name="home_recipes_show_less">Show less</string>
+    <string name="settings_saved_keys">Saved keys</string>
+    <string name="settings_saved_keys_summary">Rename keys, or add one before you use it</string>
+    <string name="settings_saved_keys_add">Add key</string>
+    <string name="settings_saved_keys_rename">Rename key</string>
 </resources>

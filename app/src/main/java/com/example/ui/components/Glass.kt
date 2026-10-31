@@ -20,7 +20,8 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.CacheDrawScope
+import androidx.compose.ui.draw.DrawResult
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
@@ -31,7 +32,6 @@ import androidx.compose.ui.graphics.ClipOp
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.drawscope.scale
@@ -81,21 +81,20 @@ internal fun PageGroundLayer(themeMode: ThemeMode, modifier: Modifier = Modifier
     val oled = LocalOled.current
     Crossfade(themeMode to oled, modifier, animationSpec = tween(ThemeTransitionMs), label = "pageGround") { (mode, oledOn) ->
         val ground = groundFor(mode, oledOn)
-        Spacer(Modifier.fillMaxSize().drawBehind { drawGround(ground) })
+        // Brushes are built once per size. A redraw (a sheet looping above this ground, a scroll)
+        // must not allocate a new gradient for every glow on every frame.
+        Spacer(Modifier.fillMaxSize().drawWithCache { groundLayer(ground) })
     }
 }
 
-private fun DrawScope.drawGround(ground: PageGround) {
+private fun CacheDrawScope.groundLayer(ground: PageGround): DrawResult {
     val height = size.height
     fun y(at: Float, fraction: Boolean) = if (fraction) at * height else at.dp.toPx()
     val stops = ground.stops.map { y(it.at, it.fraction) to it.color }.sortedBy { it.first }
     // Dark's stops are fixed lengths that can run past a short page; the last colour then holds.
     val end = maxOf(height, stops.last().first)
-    drawRect(
-        Brush.verticalGradient(*stops.map { (it.first / end) to it.second }.toTypedArray(), endY = end),
-        size = size.copy(height = height),
-    )
-    ground.glows.asReversed().forEach { glow ->
+    val fill = Brush.verticalGradient(*stops.map { (it.first / end) to it.second }.toTypedArray(), endY = end)
+    val glows = ground.glows.asReversed().map { glow ->
         val center = Offset(glow.x * size.width, y(glow.y, glow.yFraction))
         val rx = glow.rx.toPx()
         // Fading to the glow's own colour at zero alpha, not to transparent black, keeps the edge clean.
@@ -105,8 +104,15 @@ private fun DrawScope.drawGround(ground: PageGround) {
             center = center,
             radius = rx,
         )
-        scale(scaleX = 1f, scaleY = glow.ry.toPx() / rx, pivot = center) {
-            drawCircle(brush, radius = rx, center = center)
+        Triple(brush, center, rx to glow.ry.toPx() / rx)
+    }
+    return onDrawBehind {
+        drawRect(fill, size = size.copy(height = height))
+        glows.forEach { (brush, center, radii) ->
+            val (rx, scaleY) = radii
+            scale(scaleX = 1f, scaleY = scaleY, pivot = center) {
+                drawCircle(brush, radius = rx, center = center)
+            }
         }
     }
 }

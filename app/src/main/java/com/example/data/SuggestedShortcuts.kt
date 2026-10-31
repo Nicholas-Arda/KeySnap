@@ -402,8 +402,8 @@ object SuggestedShortcuts {
         ),
         // Service recipes: every URL is blank (CLAUDE.md forbids shipping an endpoint the user did
         // not enter), so each opens the editor on it, and the subtitle says what to paste. Bodies are
-        // form-encoded because the HTTP action sets no Content-Type and HttpURLConnection then sends
-        // form-urlencoded. Renamed ones keep their old ids, which users may have built.
+        // form-encoded to preserve the default content_type=none behavior. Headers always stay blank;
+        // users supply their own credentials. Renamed ones keep their old ids, which users may have built.
         command("recipe_smart_home", R.string.recipe_smart_home, R.string.recipe_smart_home_subtitle, webhook("POST")),
         command(
             "recipe_ha_arrived_home", R.string.recipe_ha_arrived_home, R.string.recipe_ha_arrived_home_subtitle, webhook("POST"),

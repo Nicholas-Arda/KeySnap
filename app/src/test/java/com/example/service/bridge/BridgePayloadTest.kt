@@ -43,6 +43,14 @@ class BridgePayloadTest {
         }
     }
 
+    @Test fun negationFlagReachesTheBridgeParserUnchanged() {
+        val payload = BridgePayload(context)
+        val constraints = listOf(com.example.data.ScriptConstraint("screen_on",mapOf("negate" to "true")),com.example.data.ScriptConstraint("wifi_off"))
+        assertTrue(payload.writeConfig(listOf(flashlightScript().copy(constraints = constraints)),true,KeyMappingConfig()))
+        val back = BridgeConfig.read(payload.configFile()!!).scripts.single().constraints
+        assertEquals(constraints.map { it.params },back.map { it.params })
+    }
+
     private fun flashlightScript(
         keyCode: Int = 25,
         pressType: TriggerPressType = TriggerPressType.DOUBLE_PRESS,

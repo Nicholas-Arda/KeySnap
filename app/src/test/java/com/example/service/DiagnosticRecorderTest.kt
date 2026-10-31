@@ -158,7 +158,7 @@ class DiagnosticRecorderTest {
             ),
             diagnosticScriptId = 42,
             diagnosticPressType = TriggerPressType.LONG_PRESS,
-        ) { it.type != "toggle_wifi" }
+        ) { _, action -> action.type != "toggle_wifi" }
 
         val text = DiagnosticRecorder.render()
         assertEquals(3, text.lineSequence().count { "type=go_back result=failed failure=ACTION_FAILED" in it })

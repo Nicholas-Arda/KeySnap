@@ -64,6 +64,7 @@ import com.example.service.AccessibilityReconnect
 import com.example.service.CalendarCondition
 import com.example.service.ReconnectResult
 import com.example.service.reconnectWarnsAfterwards
+import com.example.service.showColorOsRecentsLockTip
 import com.example.service.DiagnosticRecorder
 import com.example.service.FlashlightController
 import com.example.service.HardwareKeyTriggerCoordinator
@@ -100,7 +101,6 @@ import kotlinx.coroutines.withContext
 enum class HijackBannerStage {
     HIDDEN,
     BOTTOM_EXPANDED,
-    ANIMATING_TO_TOP,
     SETTLED_AT_TOP
 }
 
@@ -125,6 +125,7 @@ data class ScriptDraft(
     val vibrateOnTrigger: Boolean? = null,
     val hapticDurationMs: Long? = null,
     val exactTiming: Boolean = true,
+    val showCapsule: Boolean = true,
     /** The recipe's own instructions and limits, kept on screen while the user fills it in. */
     @StringRes val noteRes: Int? = null,
     /** The user deleted the cooldown in this editing session, so [withReplyCooldown] leaves it out. Never persisted. */
@@ -150,6 +151,14 @@ fun ScriptDraft.withReplyCooldown(before: ScriptDraft): ScriptDraft =
     } else {
         copy(constraints = constraints + ScriptConstraint(ScriptConstraintCatalog.COOLDOWN, mapOf("minutes" to "10")))
     }
+
+/** Drops only a 10-minute cooldown and remembers that, so [withReplyCooldown] does not add it back. */
+fun ScriptDraft.dismissReplyCooldown(): ScriptDraft = copy(
+    constraints = constraints.filterNot {
+        it.type == ScriptConstraintCatalog.COOLDOWN && it.params["minutes"] == "10"
+    },
+    cooldownRemoved = true,
+)
 
 private const val WhatsNewAnnounceVersion = "whats_new_announce_version"
 private const val WhatsNewAnnounceStartedAt = "whats_new_announce_started_at"
@@ -214,6 +223,8 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
     val keyHistory: StateFlow<List<LiveKeyEvent>> = _keyHistory.asStateFlow()
 
     val isRecordingKey: StateFlow<Boolean> = HardwareKeyTriggerCoordinator.isRecordingKey
+    val recordingKeys = HardwareKeyTriggerCoordinator.recordingKeys
+    val keyRecordingResults = HardwareKeyTriggerCoordinator.recordedKey
     val triggerCount: StateFlow<Int> = HardwareKeyTriggerCoordinator.triggerCount
     val lastCapturedSource: StateFlow<String> = HardwareKeyTriggerCoordinator.lastCapturedSource
 
@@ -263,6 +274,16 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
 
     fun newScriptId(): String = scriptRepository.newScriptId()
 
+    fun reorderScripts(orderedIds: List<String>) = scriptRepository.reorder(orderedIds)
+
+    fun renameScript(id: String, name: String) = scriptRepository.rename(id, name)
+
+    fun setScriptMode(id: String, mode: Int?) {
+        if (!ModeHooks.allows(ScriptConstraintCatalog.MODE_IS, isPro.value)) return
+        val script = scripts.value.firstOrNull { it.id == id } ?: return
+        scriptRepository.updateInPlace(listOf(script.copy(constraints = ModeHooks.withRunsIn(script.constraints, mode))))
+    }
+
     fun updateScripts(updated: List<ShortcutScript>) {
         if (!acceptsModeFeatures(updated.flatMap { it.actions }, updated.flatMap { it.constraints })) return
         scriptRepository.updateInPlace(updated)
@@ -304,6 +325,7 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
             vibrateOnTrigger = script.vibrateOnTrigger,
             hapticDurationMs = script.hapticDurationMs,
             exactTiming = script.exactTiming,
+            showCapsule = script.showCapsule,
         )
     }
 
@@ -319,16 +341,32 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
     fun draftSetName(name: String) = updateDraft { it.copy(name = name) }
 
     /**
-     * One-shot for a blocked Pro action. The ViewModel has no Activity, so the screen
-     * collects this and starts the same purchase flow as the Home Pro card.
+     * One-shot after the user chooses Unlock Pro. The screen starts the existing purchase flow.
      */
     private val _openProPurchase = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     val openProPurchase: SharedFlow<Unit> = _openProPurchase.asSharedFlow()
 
-    /** Mode actions and conditions are Pro. False blocks the add and, in the Pro edition, opens purchase. */
+    private val _showModesExplainer = MutableStateFlow(false)
+    val showModesExplainer: StateFlow<Boolean> = _showModesExplainer.asStateFlow()
+
+    fun explainModes() {
+        if (ModeHooks.AVAILABLE && !entitlementManager.isPro.value) _showModesExplainer.value = true
+    }
+
+    fun dismissModesExplainer() {
+        _showModesExplainer.value = false
+    }
+
+    fun unlockModes() {
+        if (!_showModesExplainer.value) return
+        if (!entitlementManager.isPro.value) _openProPurchase.tryEmit(Unit)
+        dismissModesExplainer()
+    }
+
+    /** Mode actions and conditions are Pro. Explain the feature before offering purchase. */
     fun acceptProFeature(type: String): Boolean {
         if (ModeHooks.allows(type, entitlementManager.isPro.value)) return true
-        if (ModeHooks.AVAILABLE) _openProPurchase.tryEmit(Unit)
+        explainModes()
         return false
     }
 
@@ -436,6 +474,8 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
 
     fun draftSetVibrateOnTrigger(vibrate: Boolean?) = updateDraft { it.copy(vibrateOnTrigger = vibrate) }
 
+    fun draftSetShowCapsule(show: Boolean) = updateDraft { it.copy(showCapsule = show) }
+
     fun draftSetHapticDurationMs(value: Long?) = updateDraft { it.copy(hapticDurationMs = value) }
 
     fun draftSetExactTiming(exact: Boolean) = updateDraft { it.copy(exactTiming = exact) }
@@ -468,6 +508,11 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
             cooldownRemoved = draft.cooldownRemoved || draft.constraints.getOrNull(index)?.type == ScriptConstraintCatalog.COOLDOWN,
         )
     }
+
+    fun draftDismissReplyCooldown() = updateDraft { it.dismissReplyCooldown() }
+
+    suspend fun draftTestAction(action: ScriptAction): com.example.bridge.ActionTestResult =
+        actionExecutor.runSingleActionForTest(action)
 
     /** Runs the chain once from the editor and reports what happened - a silent Run reads as broken. */
     fun draftRunOnce() {
@@ -522,6 +567,7 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
             actions = draft.actions,
             constraints = draft.constraints,
             surfaceOnly = draft.surfaceOnly,
+            showCapsule = draft.showCapsule,
         )
         return res.getString(R.string.share_text_intro) + "\n\n" + json
     }
@@ -590,6 +636,7 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
             surfaceOnly = imported.surfaceOnly,
             actions = imported.actions,
             constraints = imported.constraints,
+            showCapsule = imported.showCapsule,
             isNew = true,
         )
     }
@@ -652,6 +699,7 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
                 vibrateOnTrigger = draft.vibrateOnTrigger,
                 hapticDurationMs = draft.hapticDurationMs,
                 exactTiming = draft.exactTiming,
+                showCapsule = draft.showCapsule,
             ),
         )
         // The editor is closed by the time any of these is set, so they all go to the shell snackbar:
@@ -694,6 +742,11 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
     }
 
     private fun applyRecordedKey(keyCode: Int) {
+        // Settings' Add key only saves the key; it must not retarget anything.
+        if (addingSavedKey) {
+            addingSavedKey = false
+            return
+        }
         if (ModeHooks.offerRecordedKeys(listOf(keyCode))) return
         if (_editingScript.value != null) draftSetTriggerKey(keyCode) else repository.setTargetKey(keyCode)
     }
@@ -900,6 +953,17 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
         wizardPrefs.edit().putBoolean("first_shortcut_nudge_dismissed", true).apply()
     }
 
+    /** ColorOS turns Accessibility off when KeySnap is swiped out of Recents. Hidden once dismissed. */
+    private val _showColorOsRecentsTip = MutableStateFlow(
+        showColorOsRecentsLockTip(Build.MANUFACTURER, wizardPrefs.getBoolean("coloros_recents_lock_tip_dismissed", false)),
+    )
+    val showColorOsRecentsTip: StateFlow<Boolean> = _showColorOsRecentsTip.asStateFlow()
+
+    fun dismissColorOsRecentsTip() {
+        _showColorOsRecentsTip.value = false
+        wizardPrefs.edit().putBoolean("coloros_recents_lock_tip_dismissed", true).apply()
+    }
+
     private val _wizardManualIp = MutableStateFlow(wizardPrefs.getString("wizard_manual_ip", "127.0.0.1") ?: "127.0.0.1")
     val wizardManualIp: StateFlow<String> = _wizardManualIp.asStateFlow()
 
@@ -917,7 +981,6 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
     )
     val hijackBannerStage: StateFlow<HijackBannerStage> = _hijackBannerStage.asStateFlow()
 
-    private var bannerJob: Job? = null
 
     init {
         refreshWhatsNew()
@@ -1021,6 +1084,10 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
             HardwareKeyTriggerCoordinator.recordedKey.collect { keyCodes ->
                 // A chord is not added to saved keys and does not touch the legacy single target key.
                 if (keyCodes.size != 1) {
+                    if (addingSavedKey) {
+                        addingSavedKey = false
+                        return@collect
+                    }
                     if (ModeHooks.offerRecordedKeys(keyCodes)) return@collect
                     if (_editingScript.value != null) draftSetTriggerKeys(keyCodes)
                     return@collect
@@ -1132,12 +1199,24 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
     }
 
     fun startRecordingKey() {
+        addingSavedKey = false
         HardwareKeyTriggerCoordinator.startRecordingKey()
     }
 
     fun cancelRecordingKey() {
+        addingSavedKey = false
         HardwareKeyTriggerCoordinator.cancelRecordingKey()
     }
+
+    /** Settings' Add key: record one key into Saved keys without assigning it anywhere. */
+    private var addingSavedKey = false
+
+    fun startAddingSavedKey() {
+        HardwareKeyTriggerCoordinator.startRecordingKey()
+        addingSavedKey = true
+    }
+
+    fun renameSavedKey(keyCode: Int, name: String) = repository.renameSavedKey(keyCode, name)
 
     fun clearHistory() {
         _keyHistory.value = emptyList()
@@ -1239,7 +1318,6 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
     }
 
     fun dismissHijackBanner() {
-        bannerJob?.cancel()
         _hijackBannerStage.value = HijackBannerStage.SETTLED_AT_TOP
     }
 
@@ -1267,15 +1345,10 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
         }
     }
 
+    // The screen times the banner: it counts only while the user can see it, since pairing usually
+    // completes while they are still in Wireless debugging settings.
     private fun startAdvancedActivationAnimation() {
-        bannerJob?.cancel()
-        bannerJob = viewModelScope.launch {
-            _hijackBannerStage.value = HijackBannerStage.BOTTOM_EXPANDED
-            delay(4000L)
-            _hijackBannerStage.value = HijackBannerStage.ANIMATING_TO_TOP
-            delay(500L)
-            _hijackBannerStage.value = HijackBannerStage.SETTLED_AT_TOP
-        }
+        _hijackBannerStage.value = HijackBannerStage.BOTTOM_EXPANDED
     }
 
     // System Intents
@@ -1333,12 +1406,12 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
     val accessibilityReconnecting: StateFlow<Boolean> = _accessibilityReconnecting.asStateFlow()
 
     /** Only from the user's Reconnect tap. A failure falls back to the manual off/on in Android. */
-    fun reconnectAccessibility(context: Context) {
+    fun reconnectAccessibility(context: Context, enable: Boolean = false) {
         if (_accessibilityReconnecting.value) return
         _accessibilityReconnecting.value = true
         viewModelScope.launch {
             val result = try {
-                AccessibilityReconnect.run(appContext)
+                AccessibilityReconnect.run(appContext, enable)
             } finally {
                 _accessibilityReconnecting.value = false
             }

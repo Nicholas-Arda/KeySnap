@@ -36,6 +36,19 @@ class WhatsNewSettingsNavigationTest {
     }
     @Test fun aboutTargetRevealsProblemRecording() = checkTarget(SettingsSection.ABOUT, null)
 
+    @Test
+    @Config(qualifiers = "nl-rNL-w411dp-h891dp-mdpi")
+    fun dutchCapsuleEntryUsesTheLocalizedFeatureName() {
+        assumeTrue("Key capsule is a Pro-source feature", CapsuleHooks.AVAILABLE)
+        rule.setContent {
+            MyApplicationTheme(themeMode = ThemeMode.LIGHT) {
+                SettingsScreen(KeyMappingConfig(), {}, {}, themeMode = ThemeMode.LIGHT)
+            }
+        }
+        rule.onNodeWithText("Knopcapsule").assertIsDisplayed()
+        rule.onNodeWithText("Key capsule").assertDoesNotExist()
+    }
+
     @Test fun darkSettingsLabelsRemainReadable() {
         var background = Color.Unspecified
         rule.setContent {

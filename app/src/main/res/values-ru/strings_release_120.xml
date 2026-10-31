@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_test_editors_title_120">Редакторы с проверкой шагов</string>
+    <string name="whats_new_test_editors_description_120">Проверьте любой шаг кнопкой ▶ перед сохранением.</string>
+    <string name="whats_new_reorder_shortcuts_title_120">Сортировка и редактирование сценариев</string>
+    <string name="whats_new_reorder_shortcuts_description_120">Нажмите ✎ или удерживайте сценарий; перетащите для сортировки.</string>
+    <string name="whats_new_input_devices_title_120">Клавиатуры, мыши и геймпады</string>
+    <string name="whats_new_input_devices_description_120">Расширенный режим: настоящие названия, сочетания с Ctrl.</string>
+    <string name="whats_new_fix_setup_120">Настройка в два шага, уведомления необязательны</string>
+    <string name="whats_new_fix_conditions_120">Инверсия любого условия через «НЕТ»</string>
+    <string name="whats_new_fix_app_names_120">Приложения отображаются по своим названиям</string>
+    <string name="whats_new_fix_side_power_keys_120">Боковые кнопки и питание: понятная подсказка</string>
+    <string name="whats_new_fix_idle_battery_120">Меньше расход батареи в простое</string>
+    <string name="whats_new_fix_advanced_setup_120">Настройка Расширенного режима на одной странице</string>
+    <string name="whats_new_fix_saved_keys_120">Сохранённые кнопки: переименуйте или добавьте заранее</string>
+    <string name="whats_new_fix_shortcuts_page_120">Аккуратная страница сценариев, короткие списки</string>
+    <string name="whats_new_fix_modes_120">Режимы: отключайте или удаляйте когда угодно</string>
+</resources>

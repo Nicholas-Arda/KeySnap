@@ -18,6 +18,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.BlendMode
@@ -39,15 +42,18 @@ import kotlinx.coroutines.delay
 /** One pass of the header shine and the dot's pop, matching the approved header mock. */
 internal const val AnnouncementPeriodMs = 3_200
 
+/** How many passes play when What's New is announced, then the dot rests. */
+internal const val AnnouncementPlays = 3
+
 /** The approved hint bubble. It stays dark on every theme, the same way the lockup blue stays blue. */
 private val HintBubble = Color(0xFF1C1C1E)
 
 /** A white band, so it reads on the blue pieces in light, dark, and sepia. Not a glow. */
-internal fun Modifier.logoShine(progress: Float): Modifier = this
+internal fun Modifier.logoShine(progress: () -> Float): Modifier = this
     .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
     .drawWithContent {
         drawContent()
-        val center = size.width * shineCenterFraction(progress)
+        val center = size.width * shineCenterFraction(progress())
         val half = size.width * 0.32f
         drawRect(
             brush = Brush.linearGradient(
@@ -63,30 +69,42 @@ internal fun Modifier.logoShine(progress: Float): Modifier = this
         )
     }
 
+/**
+ * The shine's progress, read from draw. Plays [AnnouncementPlays] times while the app is in front,
+ * then stays at 0 so an idle Home stops asking for frames. A pass interrupted by leaving the app
+ * resumes; it does not start the count over.
+ */
 @Composable
-internal fun rememberAnnouncementCycle(animate: Boolean): Float {
+internal fun rememberAnnouncementCycle(animate: Boolean): () -> Float {
     val cycle = remember { Animatable(0f) }
+    val plays = remember { intArrayOf(0) }
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
     LaunchedEffect(animate) {
         if (!animate) {
+            plays[0] = 0
             cycle.snapTo(0f)
             return@LaunchedEffect
         }
-        while (true) {
-            cycle.snapTo(0f)
-            cycle.animateTo(1f, tween(AnnouncementPeriodMs, easing = LinearEasing))
+        lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            while (plays[0] < AnnouncementPlays) {
+                cycle.snapTo(0f)
+                cycle.animateTo(1f, tween(AnnouncementPeriodMs, easing = LinearEasing))
+                plays[0]++
+            }
+            if (cycle.value != 0f) cycle.snapTo(0f)
         }
     }
-    return cycle.value
+    return { cycle.value }
 }
 
 @Composable
-internal fun AnnouncementDot(progress: Float, animate: Boolean, modifier: Modifier = Modifier) {
+internal fun AnnouncementDot(progress: () -> Float, animate: Boolean, modifier: Modifier = Modifier) {
     val colors = MaterialTheme.colorScheme
-    val scale = if (animate) announcementDotScale(progress) else 1f
     Box(
         modifier
             .size(11.dp)
             .graphicsLayer {
+                val scale = if (animate) announcementDotScale(progress()) else 1f
                 scaleX = scale
                 scaleY = scale
             }

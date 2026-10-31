@@ -42,7 +42,16 @@ class DeviceEventReceiver : BroadcastReceiver() {
     private fun onAcl(intent: Intent, isConnected: Boolean) {
         val device = bluetoothDeviceExtra(intent) ?: return
         val address = device.address ?: return
-        if (isConnected) connected[address] = nameOf(device) else connected.remove(address)
+        val name = nameOf(device)
+        if (isConnected) {
+            connected[address] = name
+            disconnectedDevices.remove(address)
+            disconnectedDevices.remove(name.lowercase())
+        } else {
+            connected.remove(address)
+            disconnectedDevices.add(address)
+            if (name.isNotBlank()) disconnectedDevices.add(name.lowercase())
+        }
     }
 
     private fun bluetoothDeviceExtra(intent: Intent): BluetoothDevice? =
@@ -66,6 +75,16 @@ class DeviceEventReceiver : BroadcastReceiver() {
          */
         private val connected: MutableMap<String, String> = Collections.synchronizedMap(mutableMapOf())
         private val seeded = AtomicBoolean(false)
+
+        internal fun knownBluetoothDeviceConnected(address: String?, name: String?): Boolean? {
+            if (isBluetoothDeviceConnected(address, name)) return true
+            // Audio profile snapshots cannot prove that an arbitrary ACL device is disconnected.
+            // Require an observed ACL disconnect for negative evidence (cold-start remains unknown).
+            val key = address?.trim()?.takeIf { it.isNotEmpty() } ?: name?.trim()?.lowercase()
+            return if (key != null && key in disconnectedDevices) false else null
+        }
+
+        private val disconnectedDevices = java.util.Collections.synchronizedSet(mutableSetOf<String>())
 
         /**
          * Matches on [address] when given, else on [name] case-insensitively. The bridge sees only
@@ -112,7 +131,15 @@ class DeviceEventReceiver : BroadcastReceiver() {
         /** Test-only. */
         internal fun setConnectedForTest(address: String, name: String, isConnected: Boolean) {
             seeded.set(true)
-            if (isConnected) connected[address] = name else connected.remove(address)
+            if (isConnected) {
+                connected[address] = name
+                disconnectedDevices.remove(address)
+                disconnectedDevices.remove(name.lowercase())
+            } else {
+                connected.remove(address)
+                disconnectedDevices.add(address)
+                disconnectedDevices.add(name.lowercase())
+            }
         }
 
         fun intentFilter(): IntentFilter = IntentFilter().apply {

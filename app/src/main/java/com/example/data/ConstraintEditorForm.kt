@@ -1,5 +1,6 @@
 package com.example.data
 
+import android.content.Context
 import android.content.res.Resources
 import androidx.annotation.StringRes
 import io.github.nicholasarda.keysnap.R
@@ -227,6 +228,14 @@ object ConstraintEditorForms {
     /** The card row's second line, or null when the constraint takes no configuration. */
     fun summarize(constraint: ScriptConstraint, resources: Resources, installedApps: List<InstalledApp> = emptyList()): String? =
         byType[constraint.type]?.summary?.invoke(resources, constraint.params, installedApps)?.takeIf { it.isNotBlank() }
+
+    fun summarize(constraint: ScriptConstraint, context: Context): String? {
+        val packageKeys = byType[constraint.type]?.fields?.filterIsInstance<EditorField.AppPick>()?.map { it.key }.orEmpty()
+        val displayParams = constraint.params.mapValues { (key, value) ->
+            if (key in packageKeys) AppLabelResolver.get(context).displayName(value, context.resources) else value
+        }
+        return summarize(constraint.copy(params = displayParams), context.resources)
+    }
 
     /** Canonical `mon,tue,…` order regardless of which days were picked first. */
     fun formatDays(days: Set<DayOfWeek>): String = DayOfWeek.entries.filter { it in days }.joinToString(",") { DAY_CODES.getValue(it) }

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="inline_key_choose">Tuş seç</string>
+    <string name="inline_key_record">Tuş kaydet</string>
+    <string name="inline_key_listening">Şimdi bir tuşa bas</string>
+    <string name="inline_key_release">Tuşları birlikte basılı tut. Bitirmek için bırak.</string>
+    <string name="inline_key_edit">Yeniden kaydetmek için tuşa dokun.</string>
+    <string name="inline_key_placeholder">bir tuş</string>
+    <string name="inline_key_advanced_hint">Güç, Snap Key, Essential Key, Bixby ve benzeri tuşlar Uzman Modu gerektirir.</string>
+    <string name="inline_key_set_up">Kur</string>
+</resources>

@@ -23,6 +23,7 @@ internal data class SharedShortcut(
     val pressType: String? = null,
     val actions: List<PersistedScriptAction>,
     val constraints: List<PersistedScriptConstraint> = emptyList(),
+    val showCapsule: Boolean = true,
 )
 
 /** A shortcut decoded from shared text and validated. Nothing about it is saved yet. */
@@ -33,6 +34,7 @@ data class ImportedShortcut(
     val actions: List<ScriptAction>,
     val constraints: List<ScriptConstraint>,
     val surfaceOnly: Boolean = false,
+    val showCapsule: Boolean = true,
 ) {
     /** CLAUDE.md: an imported shortcut that runs anything privileged is never switched on for the user. */
     val startsEnabled: Boolean get() = actions.none { it.type in ScriptActionCatalog.PRIVILEGED }
@@ -80,6 +82,7 @@ object ShortcutShare {
      * personal data that means nothing on another phone, so it never leaves this one.
      */
     private val PHONE_BOUND_PARAMS: Map<String, Set<String>> = mapOf(
+        "http_request" to setOf("headers"),
         "set_wallpaper" to setOf("imageUri"),
         "play_sound" to setOf("uri"),
         "send_message" to setOf("contactName", "number"),
@@ -99,12 +102,14 @@ object ShortcutShare {
         actions: List<ScriptAction>,
         constraints: List<ScriptConstraint>,
         surfaceOnly: Boolean = false,
+        showCapsule: Boolean = true,
     ): String = adapter.toJson(
         SharedShortcut(
             keysnap = FORMAT_VERSION,
             name = name,
             automation = automation,
             surfaceOnly = surfaceOnly,
+            showCapsule = showCapsule,
             pressType = pressType.name,
             actions = actions.map { PersistedScriptAction(it.type, portableParams(it.type, it.params)) },
             // A Bluetooth device's address and name identify this phone's pairing and mean nothing on
@@ -160,7 +165,7 @@ object ShortcutShare {
         ) {
             return unsupported
         }
-        return ImportResult.Ok(ImportedShortcut(name, shared.automation, pressType, actions, constraints, shared.surfaceOnly))
+        return ImportResult.Ok(ImportedShortcut(name, shared.automation, pressType, actions, constraints, shared.surfaceOnly, shared.showCapsule))
     }
 
     /**

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="editor_chain_if">Si</string>
+    <string name="editor_fine_tune">Ajustes finos</string>
+    <string name="editor_fine_tune_summary">Nombre · Modos · Vibración</string>
+    <string name="editor_highlight_hint">Toca una palabra resaltada para cambiarla.</string>
+    <string name="editor_press">Pulsa</string>
+    <string name="editor_save_shortcut">Guardar atajo</string>
+    <string name="editor_test">Probar</string>
+</resources>

@@ -2,6 +2,7 @@ package com.example.data
 
 import android.content.Context
 import android.content.res.Configuration
+import android.app.LocaleManager
 import androidx.test.core.app.ApplicationProvider
 import io.github.nicholasarda.keysnap.R
 import org.junit.Assert.assertEquals
@@ -9,6 +10,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 import java.util.Locale
 
 /**
@@ -29,6 +31,72 @@ class LocalizationTest {
     private fun contextFor(tag: String): Context {
         val config = Configuration(base.resources.configuration).apply { setLocale(Locale.forLanguageTag(tag)) }
         return base.createConfigurationContext(config)
+    }
+
+    @Test fun everyShippedLanguageTranslatesTheProComparisonCard() {
+        val labels = listOf(
+            R.string.pro_card_pay_once,
+            R.string.pro_table_what_you_get,
+            R.string.pro_table_modes,
+            R.string.pro_table_future,
+            R.string.pro_table_everything_else,
+            R.string.pro_card_one_time,
+        )
+        val english = contextFor("en").resources
+        shippedLocales.forEach { tag ->
+            val res = contextFor(tag).resources
+            labels.forEach { label ->
+                assertTrue("[$tag] ${res.getResourceEntryName(label)} is blank", res.getString(label).isNotBlank())
+                if (tag != "en") {
+                    assertTrue("[$tag] ${res.getResourceEntryName(label)} falls back to English", res.getString(label) != english.getString(label))
+                }
+            }
+        }
+    }
+
+    @Test fun dutchSystemVariantsResolveDutchInsteadOfEnglishFallback() {
+        listOf("nl", "nl-NL", "nl-BE").forEach { tag ->
+            val res = contextFor(tag).resources
+            assertEquals("[$tag] settings", "Instellingen", res.getString(R.string.settings_title))
+            assertEquals("[$tag] action", "Zaklamp aan/uit", res.getString(R.string.action_toggle_flashlight))
+            assertEquals("[$tag] setup", "Geavanceerde modus inschakelen", res.getString(R.string.wizard_title))
+            assertEquals("[$tag] condition", "Melding ontvangen", res.getString(R.string.constraint_notification_received))
+            assertEquals("[$tag] guide", "Open Instellingen", res.getStringArray(R.array.guide_pixel_steps).first())
+        }
+    }
+
+    @Test fun dutchDynamicMessagesAndPluralFormsFormatCorrectly() {
+        val res = contextFor("nl").resources
+        assertEquals("2 van 3 acties uitgevoerd", res.getString(R.string.run_partial, 2, 3))
+        assertEquals("1 actie", res.getQuantityString(R.plurals.scripts_action_count, 1, 1))
+        assertEquals("2 acties", res.getQuantityString(R.plurals.scripts_action_count, 2, 2))
+        assertEquals("Alle 2 acties uitgevoerd", res.getQuantityString(R.plurals.run_all, 2, 2))
+    }
+
+    @Test
+    @Config(sdk = [30])
+    fun dutchSelectionSurvivesContextRecreationOnAndroid11() {
+        val previous = AppLocale.stored(base)
+        try {
+            AppLocale.set(base, "nl")
+            assertEquals("nl", AppLocale.stored(base))
+            assertEquals("Instellingen", AppLocale.wrap(base).getString(R.string.settings_title))
+        } finally {
+            AppLocale.set(base, previous)
+        }
+    }
+
+    @Test
+    @Config(sdk = [34])
+    fun dutchSelectionMirrorsToAndroidAppLanguages() {
+        val previous = AppLocale.stored(base)
+        try {
+            AppLocale.set(base, "nl")
+            assertEquals("nl", base.getSystemService(LocaleManager::class.java).applicationLocales[0].language)
+            assertEquals("Instellingen", AppLocale.wrap(base).getString(R.string.settings_title))
+        } finally {
+            AppLocale.set(base, previous)
+        }
     }
 
     @Test fun everyShippedLanguageNamesEveryActionAndConstraint() {

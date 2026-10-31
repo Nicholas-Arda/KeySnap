@@ -37,10 +37,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -67,9 +70,9 @@ import kotlinx.coroutines.launch
 
 /**
  * The empty Shortcuts page's own tutorial: the four taps that make a first shortcut, played on the
- * numbered rail Home's setup card uses, restarting for as long as the page stays empty. Nothing here
- * waits on a permission, so the rail advances itself — one step open at a time, ticked when its
- * beats have run, and the whole thing back to step 1 two seconds after the last one.
+ * numbered rail Home's setup card uses. Nothing here waits on a permission, so the rail advances
+ * itself — one step open at a time, ticked when its beats have run. It plays through once while
+ * this page is in front, then rests on the last frame. Play runs the open step again.
  *
  * The beat table below is the prototype's, millisecond for millisecond. Every beat states the screen
  * it starts on, where the finger goes, and what changes 170 ms after the tap lands; the timings the
@@ -83,9 +86,11 @@ import kotlinx.coroutines.launch
  * starts: step 4 stands open on its last frame with every marker ticked.
  */
 @Composable
-fun ShortcutTutorialCard(modifier: Modifier = Modifier) {
+fun ShortcutTutorialCard(modifier: Modifier = Modifier, active: Boolean = true) {
     val colors = MaterialTheme.colorScheme
     val reduced = rememberReducedMotion()
+    val resumed by LocalLifecycleOwner.current.lifecycle.currentStateFlow.collectAsState()
+    val running = active && resumed.isAtLeast(Lifecycle.State.RESUMED)
     val step = remember { mutableIntStateOf(if (reduced) Steps.lastIndex else 0) }
     val completed = remember { mutableIntStateOf(if (reduced) Steps.size else 0) }
     val loop = remember { mutableIntStateOf(0) }
@@ -100,8 +105,8 @@ fun ShortcutTutorialCard(modifier: Modifier = Modifier) {
     val beatIndex = remember { intArrayOf(0) }
     val holdFresh = remember { booleanArrayOf(false) }
 
-    LaunchedEffect(step.intValue, loop.intValue, playing.value, reduced) {
-        if (reduced) return@LaunchedEffect
+    LaunchedEffect(step.intValue, loop.intValue, playing.value, reduced, running) {
+        if (reduced || !running) return@LaunchedEffect
         if (!playing.value && !holdFresh[0]) return@LaunchedEffect
         holdFresh[0] = false
         val beats = Steps[step.intValue].beats
@@ -144,9 +149,8 @@ fun ShortcutTutorialCard(modifier: Modifier = Modifier) {
             step.intValue++
         } else {
             delay(RestartHoldMillis)
-            completed.intValue = 0
-            step.intValue = 0
-            loop.intValue++
+            // One performance, then the page can go idle. Play (or a tapped step) starts again.
+            playing.value = false
         }
     }
 

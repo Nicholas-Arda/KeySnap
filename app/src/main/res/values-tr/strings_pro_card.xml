@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pro_card_pay_once">Bir kez ödeyin, sonsuza dek sizin.</string>
+    <string name="pro_table_what_you_get">Neler var</string>
+    <string name="pro_table_modes">Kısayol modları</string>
+    <string name="pro_table_future">Gelecek Pro özellikleri</string>
+    <string name="pro_table_everything_else">Diğer tüm özellikler</string>
+    <string name="pro_card_one_time">Tek seferlik satın alma · Abonelik yok</string>
+</resources>

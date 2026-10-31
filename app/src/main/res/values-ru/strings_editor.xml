@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="editor_chain_if">Если</string>
+    <string name="editor_fine_tune">Точная настройка</string>
+    <string name="editor_fine_tune_summary">Имя · Режимы · Вибрация</string>
+    <string name="editor_highlight_hint">Нажмите на выделенное слово, чтобы изменить его.</string>
+    <string name="editor_press">Нажмите</string>
+    <string name="editor_save_shortcut">Сохранить ярлык</string>
+    <string name="editor_test">Тест</string>
+</resources>

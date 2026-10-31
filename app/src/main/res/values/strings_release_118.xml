@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_fix_capsule_preview_118">Key capsule preview is easier to try</string>
+    <string name="whats_new_fix_settings_motion_118">Settings sections open more smoothly</string>
+    <string name="whats_new_fix_pro_card_118">Clearer Pro card and light-theme text</string>
+    <string name="whats_new_fix_key_code_118">Input key code explains that it sends one key</string>
+</resources>

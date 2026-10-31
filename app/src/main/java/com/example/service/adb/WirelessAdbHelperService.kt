@@ -38,7 +38,16 @@ class WirelessAdbHelperService : Service() {
         const val CHANNEL_ID = "arda_mapper_fg_channel"
         const val NOTIFICATION_ID = 9091
 
+        // A stopService() that lands before onCreate's startForeground() makes Android crash the
+        // app (ForegroundServiceDidNotStartInTimeException). A fast spawn, e.g. replacing a stale
+        // bridge on the first launch after an update, hits exactly that. So an early stop is
+        // deferred: the service enters the foreground first, then stops itself.
+        private val lock = Any()
+        private var foreground = false
+        private var stopPending = false
+
         fun start(context: Context) {
+            synchronized(lock) { stopPending = false }
             try {
                 context.startForegroundService(Intent(context, WirelessAdbHelperService::class.java))
             } catch (e: Exception) {
@@ -47,6 +56,12 @@ class WirelessAdbHelperService : Service() {
         }
 
         fun stop(context: Context) {
+            synchronized(lock) {
+                if (!foreground) {
+                    stopPending = true
+                    return
+                }
+            }
             context.stopService(Intent(context, WirelessAdbHelperService::class.java))
         }
     }
@@ -68,6 +83,16 @@ class WirelessAdbHelperService : Service() {
             buildNotification(),
             ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE,
         )
+        val stopNow = synchronized(lock) {
+            foreground = true
+            stopPending.also { stopPending = false }
+        }
+        if (stopNow) stopSelf()
+    }
+
+    override fun onDestroy() {
+        synchronized(lock) { foreground = false }
+        super.onDestroy()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int = START_NOT_STICKY

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_fix_capsule_preview_118">Предпросмотр Key capsule стал проще попробовать</string>
+    <string name="whats_new_fix_settings_motion_118">Разделы настроек открываются плавнее</string>
+    <string name="whats_new_fix_pro_card_118">Более понятная карточка Pro и текст в светлой теме</string>
+    <string name="whats_new_fix_key_code_118">«Отправить код клавиши» поясняет, что отправляет одну клавишу</string>
+</resources>

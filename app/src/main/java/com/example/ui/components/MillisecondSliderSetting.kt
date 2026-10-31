@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.RestartAlt
@@ -55,6 +56,7 @@ fun MillisecondSliderSetting(
     enabled: Boolean = true,
     resetEnabled: Boolean = valueMs != spec.default,
     onReset: (() -> Unit)? = null,
+    icon: androidx.compose.ui.graphics.vector.ImageVector? = null,
     onValueChange: (Long) -> Unit,
 ) {
     val msDescription = stringResource(R.string.slider_milliseconds, valueMs)
@@ -68,7 +70,10 @@ fun MillisecondSliderSetting(
     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
         BoxWithConstraints(Modifier.fillMaxWidth()) {
             val stacked = maxWidth / LocalDensity.current.fontScale < 240.dp
-            FlowRow(Modifier.fillMaxWidth(), maxItemsInEachRow = if (stacked) 1 else 2) {
+            FlowRow(Modifier.fillMaxWidth(), maxItemsInEachRow = if (stacked) 1 else 3) {
+                if (icon != null) androidx.compose.material3.Icon(icon, contentDescription = null,
+                    Modifier.padding(end = 12.dp, top = 2.dp).size(24.dp),
+                    tint = MaterialTheme.colorScheme.primary.copy(alpha = if (enabled) 1f else .5f))
                 Column(modifier = if (stacked) Modifier.fillMaxWidth() else Modifier.weight(1f).padding(end = 12.dp)) {
                     Text(
                         title,

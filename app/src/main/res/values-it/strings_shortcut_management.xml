@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="shortcuts_edit">Modifica scorciatoie</string>
+    <string name="shortcuts_edit_done">Termina modifica scorciatoie</string>
+    <string name="shortcuts_edit_hint">Tocca una scorciatoia per modificarla</string>
+    <string name="shortcuts_drag">Trascina per riordinare %1$s</string>
+    <string name="shortcuts_name_required">Inserisci un nome</string>
+    <string name="shortcuts_delete">Elimina scorciatoia</string>
+    <string name="shortcuts_move_to_mode">Sposta in modalità</string>
+    <string name="shortcuts_rename_cancel">Annulla rinomina</string>
+    <string name="shortcuts_name_apply">Applica nome</string>
+    <string name="shortcuts_rename">Rinomina scorciatoia</string>
+</resources>

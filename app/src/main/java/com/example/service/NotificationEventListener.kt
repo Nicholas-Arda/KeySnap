@@ -30,10 +30,12 @@ class NotificationEventListener : NotificationListenerService() {
 
     override fun onListenerConnected() {
         instance = this
+        HardwareKeyTriggerCoordinator.reevaluateAutomations()
     }
 
     override fun onListenerDisconnected() {
         instance = null
+        HardwareKeyTriggerCoordinator.reevaluateAutomations()
     }
 
     override fun onNotificationPosted(sbn: StatusBarNotification) {
@@ -58,6 +60,8 @@ class NotificationEventListener : NotificationListenerService() {
         /** Null while notification access is off or the system has unbound the listener. */
         @Volatile private var instance: NotificationEventListener? = null
 
+        internal fun isConnected(): Boolean = instance != null
+
         /**
          * Sends `text` through a chat notification's own Reply button, like replying from the
          * shade. False when access is off, no notification from `packageName` has a Reply
@@ -81,6 +85,29 @@ class NotificationEventListener : NotificationListenerService() {
             }
             val target = pickReplyTarget(candidates, params["chat"], params[TRIGGER_NOTIFICATION_PARAM]) ?: return false
             return send(context, target.action, text)
+        }
+
+        /**
+         * Chat titles currently showing for [packageName]. In memory only: nothing is stored or logged.
+         * Ongoing rows and group summaries are not chats.
+         */
+        fun visibleChatTitles(packageName: String): List<String> {
+            if (packageName.isEmpty()) return emptyList()
+            val listener = instance ?: return emptyList()
+            val active = try {
+                listener.activeNotifications ?: return emptyList()
+            } catch (_: SecurityException) {
+                return emptyList()
+            }
+            return active.asSequence()
+                .filter { it.packageName == packageName && !it.isOngoing }
+                .mapNotNull { it.notification }
+                .filter { it.flags and Notification.FLAG_GROUP_SUMMARY == 0 }
+                .flatMap { titlesOf(it).asSequence() }
+                .map { it.trim() }
+                .filter { it.isNotEmpty() }
+                .distinct()
+                .toList()
         }
 
         /** The chat a notification is from, as both a condition's contact and a reply's chat match it. */

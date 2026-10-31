@@ -1,6 +1,5 @@
 package com.example.ui.home
 
-import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.SizeTransform
@@ -9,7 +8,9 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
@@ -39,14 +40,24 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.WarningAmber
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.material.icons.outlined.ChevronRight
+import androidx.compose.material.icons.outlined.AutoAwesome
+import androidx.compose.material.icons.outlined.DoneAll
+import androidx.compose.material.icons.outlined.Keyboard
+import androidx.compose.material.icons.outlined.Tune
+import androidx.compose.material.icons.outlined.Update
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -56,11 +67,11 @@ import android.icu.util.Measure
 import android.icu.util.MeasureUnit
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableLongStateOf
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.withStyle
 import com.example.billing.ProPrice
 import com.example.billing.ProSale
 import java.text.NumberFormat
@@ -69,6 +80,7 @@ import kotlinx.coroutines.delay
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.drawBehind
@@ -76,17 +88,23 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.LayoutDirection
 import kotlin.math.PI
 import kotlin.math.sin
 import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionOnScreen
+import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -100,6 +118,7 @@ import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.constrainHeight
 import androidx.compose.ui.zIndex
 import com.example.capsule.CapsuleHooks
@@ -139,6 +158,8 @@ fun HomeScreen(
     onPickSuggestion: (SuggestedShortcut) -> Unit,
     onOpenProScreen: () -> Unit,
     onOpenWhatsNew: () -> Unit = {},
+    onWhatsNewLogoBounds: (Rect) -> Unit = {},
+    whatsNewLogoAway: Boolean = false,
     announceWhatsNew: Boolean = false,
     showWhatsNewHint: Boolean = false,
     onWhatsNewHintFinished: () -> Unit = {},
@@ -148,17 +169,49 @@ fun HomeScreen(
     scrollToProCard: Boolean = false,
     onScrolledToProCard: () -> Unit = {},
     accessibilityStatus: AccessibilityStatus = if (isServiceActive) AccessibilityStatus.ACTIVE else AccessibilityStatus.DISABLED,
-    @StringRes accessibilityButton: Int = R.string.home_setup_open_accessibility,
     showRatingPrompt: Boolean = false,
     onRatingChoice: (RatingPromptChoice) -> Unit = {},
+    showColorOsRecentsTip: Boolean = false,
+    onDismissColorOsRecentsTip: () -> Unit = {},
 ) {
+    val scope = rememberCoroutineScope()
     val permissionGaps = rememberPermissionGaps()
-    val setupIncomplete = !isServiceActive || permissionGaps.any
-    // The tutorial plays a closing line and shrinks away rather than vanishing mid-frame, so its
-    // item outlives `setupIncomplete` by the length of that exit and retires itself.
-    var setupCardRetired by rememberSaveable { mutableStateOf(!setupIncomplete) }
-    LaunchedEffect(setupIncomplete) { if (setupIncomplete) setupCardRetired = false }
-    val showNudge = setupCardRetired && scripts.isEmpty() && !nudgeDismissed
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val prefs = remember(context) { context.getSharedPreferences("keysnap_setup", android.content.Context.MODE_PRIVATE) }
+    var notificationsDismissed by remember { mutableStateOf(prefs.getBoolean("notifications_dismissed", false)) }
+    val setup = RequiredSetupState(isServiceActive, permissionGaps.battery, permissionGaps.notifications, notificationsDismissed)
+    var sheet by rememberSaveable { mutableStateOf<SetupStep?>(null) }
+    var showUsageSheet by rememberSaveable { mutableStateOf(false) }
+    val requestNotifications = rememberNotificationPermissionRequest()
+    val dismissNotifications = {
+        notificationsDismissed = true
+        prefs.edit().putBoolean("notifications_dismissed", true).apply()
+    }
+    val openNext: () -> Unit = {
+        if (setup.nextStep == SetupStep.Accessibility) onOpenAccessibility() else sheet = setup.nextStep
+    }
+    val showNudge = setup.nextStep == null && scripts.isEmpty() && !nudgeDismissed
+    if (sheet != null) {
+        val current = sheet!!
+        SetupStepSheet(current, onConfirm = {
+            sheet = null
+            when (current) {
+                SetupStep.Accessibility -> onOpenAccessibility()
+                SetupStep.Background -> requestIgnoreBatteryOptimizations(context)
+                SetupStep.Notifications -> requestNotifications()
+            }
+        }, onDismiss = {
+            if (current == SetupStep.Notifications) dismissNotifications()
+            sheet = null
+        })
+    }
+    if (showUsageSheet) {
+        UsageAccessSheet(onOpenSettings = {
+            showUsageSheet = false
+            context.startActivity(android.content.Intent(android.provider.Settings.ACTION_USAGE_ACCESS_SETTINGS)
+                .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK))
+        }, onDismiss = { showUsageSheet = false })
+    }
     LaunchedEffect(scrollToProCard) {
         if (scrollToProCard && !isPro) {
             // The Pro card is the last thing on the page.
@@ -170,24 +223,29 @@ fun HomeScreen(
         ConsoleHeader(
             isMappingEnabled = isMappingEnabled,
             themeMode = themeMode,
-            onToggleMapping = onToggleMapping,
+            onToggleMapping = if (setup.nextStep != null) openNext else onToggleMapping,
+            setupRequired = setup.pill(isMappingEnabled) == SetupPill.Setup,
             onOpenWhatsNew = onOpenWhatsNew,
             announceWhatsNew = announceWhatsNew,
             showWhatsNewHint = showWhatsNewHint,
             onWhatsNewHintFinished = onWhatsNewHintFinished,
+            onLogoBounds = onWhatsNewLogoBounds,
+            logoAway = whatsNewLogoAway,
         )
-        if (!setupCardRetired) {
-            SetupCard(
-                gaps = permissionGaps,
-                isServiceActive = isServiceActive,
-                onOpenAccessibility = onOpenAccessibility,
-                onRetired = { setupCardRetired = true },
-                accessibilityStatus = accessibilityStatus,
-                accessibilityButton = accessibilityButton,
-            )
+        if (!isPro && proPrice?.sale != null) {
+            HomeSaleStrip(proPrice) {
+                scope.launch { scrollState.animateScrollTo(scrollState.maxValue) }
+            }
         }
-        if (!permissionGaps.usageAccess && com.example.service.needsUsageAccess(scripts)) {
-            UsageAccessAlert()
+        if (setup.nextStep != null) {
+            SetupCard(permissionGaps, isServiceActive, openNext)
+        }
+        AnimatedVisibility(setup.showNotifications, enter = fadeIn() + expandVertically(), exit = fadeOut() + shrinkVertically()) {
+            NotificationsCard(onTurnOn = { sheet = SetupStep.Notifications }, onClose = { dismissNotifications() })
+        }
+        AnimatedVisibility(!permissionGaps.usageAccess && com.example.service.needsUsageAccess(scripts),
+            enter = fadeIn() + expandVertically(), exit = fadeOut() + shrinkVertically()) {
+            UsageAccessBanner { showUsageSheet = true }
         }
         LiveStatusPanel(
             isServiceActive = isServiceActive,
@@ -197,6 +255,8 @@ fun HomeScreen(
             onOpenWizard = onOpenWizard,
             onOpenAccessibility = onOpenAccessibility,
             accessibilityStatus = accessibilityStatus,
+            showColorOsRecentsTip = showColorOsRecentsTip,
+            onDismissColorOsRecentsTip = onDismissColorOsRecentsTip,
         )
         if (scripts.isNotEmpty()) YourShortcutsPanel(scripts, onOpenScript)
         if (showRatingPrompt) RatingPromptCard(onRatingChoice)
@@ -214,6 +274,67 @@ fun HomeScreen(
     }
 }
 
+@Composable
+private fun HomeSaleStrip(proPrice: ProPrice, onClick: () -> Unit) {
+    val sale = proPrice.sale ?: return
+    val colors = MaterialTheme.colorScheme
+    val now = rememberSaleNow(sale.endsAtMillis)
+    val parts = sale.endsAtMillis?.let { saleTimeLeft(it, now) ?: return }
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .heightIn(min = MinTouchTarget)
+            .clip(ConsoleShape)
+            .background(colors.primary)
+            .testTag("home_sale_strip")
+            .semantics(mergeDescendants = true) {}
+            .clickable(role = Role.Button, onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 10.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        sale.percentOff?.let {
+            Text(
+                ("−" + NumberFormat.getPercentInstance().format(it / 100.0)).unbroken(),
+                Modifier.clip(InnerShape).background(colors.onPrimary.copy(alpha = .18f)).padding(6.dp),
+                style = MaterialTheme.typography.labelSmall,
+                color = colors.onPrimary,
+            )
+        }
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            Text(
+                stringResource(R.string.home_sale_strip_title),
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.Bold,
+                color = colors.onPrimary,
+                maxLines = 2,
+            )
+            if (parts != null) {
+                Text(
+                    stringResource(R.string.pro_sale_ends_in, formatTimeLeft(parts)),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = colors.onPrimary,
+                )
+            }
+        }
+        Column(horizontalAlignment = Alignment.End) {
+            Text(
+                sale.fullPrice.unbroken(),
+                style = MaterialTheme.typography.labelSmall,
+                textDecoration = TextDecoration.LineThrough,
+                color = colors.onPrimary.copy(alpha = .7f),
+            )
+            Text(
+                proPrice.price.unbroken(),
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.Bold,
+                color = colors.onPrimary,
+            )
+        }
+        Icon(Icons.Outlined.ChevronRight, null, Modifier.size(18.dp), tint = colors.onPrimary)
+    }
+}
+
 /**
  * Explains the free limit beside its usage count and opens the existing Pro purchase dialog.
  */
@@ -228,6 +349,8 @@ internal fun ProUpsellCard(
 ) {
     val colors = MaterialTheme.colorScheme
     val atCap = activeCount >= limit
+    val now = rememberSaleNow(sale?.endsAtMillis)
+    val liveSale = sale?.takeIf { it.endsAtMillis == null || saleTimeLeft(it.endsAtMillis, now) != null }
     BoxWithConstraints(
         Modifier
             .fillMaxWidth()
@@ -238,26 +361,41 @@ internal fun ProUpsellCard(
             .padding(16.dp),
     ) {
         val stacked = maxWidth / LocalDensity.current.fontScale < 240.dp
-        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 if (!stacked) {
                     Box(
-                        Modifier.size(36.dp).clip(InnerShape).background(colors.primary.copy(alpha = .2f)),
+                        Modifier.size(38.dp).clip(InnerShape).background(colors.primary.copy(alpha = .12f)),
                         contentAlignment = Alignment.Center,
                     ) {
                         Icon(Icons.Filled.WorkspacePremium, null, tint = colors.primary, modifier = Modifier.size(19.dp))
                     }
                 }
                 Column(Modifier.weight(1f)) {
-                    Text(stringResource(R.string.app_name_pro), style = MaterialTheme.typography.titleSmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph), color = colors.onSurface)
+                    Text(
+                        stringResource(R.string.app_name_pro),
+                        style = MaterialTheme.typography.titleMedium.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
+                        fontWeight = FontWeight.Bold,
+                        color = colors.onSurface,
+                    )
                     Text(
                         if (atCap) {
                             stringResource(R.string.pro_card_at_cap)
                         } else {
-                            stringResource(R.string.pro_card_subtitle, EntitlementManager.FREE_SCRIPT_LIMIT)
+                            stringResource(R.string.pro_card_pay_once)
                         },
-                        style = MaterialTheme.typography.labelSmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
+                        style = MaterialTheme.typography.bodySmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
                         color = colors.onSurfaceVariant,
+                    )
+                }
+                liveSale?.percentOff?.let {
+                    Text(
+                        ("−" + NumberFormat.getPercentInstance().format(it / 100.0)).unbroken(),
+                        Modifier.clip(CircleShape).background(colors.primary)
+                            .padding(horizontal = 9.dp, vertical = 5.dp).testTag("pro_sale_badge"),
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = colors.onPrimary,
                     )
                 }
             }
@@ -292,25 +430,38 @@ internal fun ProUpsellCard(
 
             FreeVsProTable(stacked)
 
-            if (sale != null && proPrice != null) ProSaleLine(sale, proPrice)
-
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Button(
-                    onClick = onOpenProScreen,
-                    colors = ButtonDefaults.buttonColors(containerColor = colors.primary, contentColor = colors.onPrimary),
-                    modifier = Modifier.weight(1f).heightIn(min = MinTouchTarget).testTag("pro_upsell_purchase_button"),
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
-                ) {
-                    // Play's formatted price only exists once the product query answers; without it the
-                    // button keeps its price-less label rather than showing a guessed amount. No line
-                    // cap: in a long language the price must wrap, not be cut to "…".
+            if (proPrice != null) {
+                if (liveSale != null) {
+                    ProSaleLine(liveSale, proPrice, stacked)
+                } else {
                     Text(
-                        if (proPrice != null) {
-                            stringResource(R.string.pro_unlock_with_price, proPrice.unbroken())
-                        } else {
-                            stringResource(R.string.pro_unlock)
-                        },
-                        style = MaterialTheme.typography.labelMedium.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
+                        proPrice.unbroken(),
+                        style = if (stacked) MaterialTheme.typography.titleMedium else MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = colors.primary,
+                    )
+                }
+            }
+
+            Button(
+                onClick = onOpenProScreen,
+                colors = ButtonDefaults.buttonColors(containerColor = colors.primary, contentColor = colors.onPrimary),
+                shape = InnerShape,
+                modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp).testTag("pro_upsell_purchase_button"),
+                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 12.dp),
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    Text(
+                        stringResource(R.string.pro_unlock),
+                        style = MaterialTheme.typography.titleSmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
+                        fontWeight = FontWeight.Bold,
+                        color = colors.onPrimary,
+                        textAlign = TextAlign.Center,
+                    )
+                    Text(
+                        stringResource(R.string.pro_card_one_time),
+                        style = MaterialTheme.typography.labelSmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
+                        color = colors.onPrimary.copy(alpha = .85f),
                         textAlign = TextAlign.Center,
                     )
                 }
@@ -324,35 +475,73 @@ internal fun ProUpsellCard(
  * end all come from Play, so ending the offer there removes this line; it also hides itself at the end.
  */
 @Composable
-private fun ProSaleLine(sale: ProSale, price: String) {
+@OptIn(ExperimentalLayoutApi::class)
+private fun ProSaleLine(sale: ProSale, price: String, stacked: Boolean = false) {
     val colors = MaterialTheme.colorScheme
-    var now by remember { mutableLongStateOf(System.currentTimeMillis()) }
-    LaunchedEffect(sale.endsAtMillis) {
-        while (true) {
-            delay(30_000)
-            now = System.currentTimeMillis()
-        }
-    }
+    val now = rememberSaleNow(sale.endsAtMillis)
     val parts = sale.endsAtMillis?.let { saleTimeLeft(it, now) ?: return }
-    Column(Modifier.testTag("pro_sale_line"), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-        Text(
-            buildAnnotatedString {
-                withStyle(SpanStyle(textDecoration = TextDecoration.LineThrough, color = colors.onSurfaceVariant)) { append(sale.fullPrice.unbroken()) }
-                append("  ")
-                withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = colors.primary)) { append(price.unbroken()) }
-                sale.percentOff?.let { append("  " + ("−" + NumberFormat.getPercentInstance().format(it / 100.0)).unbroken()) }
-            },
-            style = MaterialTheme.typography.titleSmall,
-            color = colors.onSurface,
-        )
+    FlowRow(
+        Modifier.fillMaxWidth().testTag("pro_sale_line"),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        FlowRow(
+            Modifier.align(Alignment.CenterVertically),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            Text(
+                sale.fullPrice.unbroken(),
+                Modifier.align(Alignment.CenterVertically),
+                style = MaterialTheme.typography.bodySmall,
+                textDecoration = TextDecoration.LineThrough,
+                color = colors.onSurfaceVariant,
+            )
+            Text(
+                price.unbroken(),
+                // At large font scales a long local price ("COP 10.500,00") is wider than the card.
+                style = if (stacked) MaterialTheme.typography.titleMedium else MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold,
+                color = colors.primary,
+            )
+        }
         if (parts != null) {
             Text(
                 stringResource(R.string.pro_sale_ends_in, formatTimeLeft(parts)),
-                style = MaterialTheme.typography.labelSmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
-                color = colors.onSurfaceVariant,
+                Modifier.clip(CircleShape).background(colors.primary.copy(alpha = .10f))
+                    .padding(horizontal = 10.dp, vertical = 6.dp),
+                style = MaterialTheme.typography.labelMedium.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
+                fontWeight = FontWeight.SemiBold,
+                color = colors.primary,
             )
         }
     }
+}
+
+/**
+ * The clock behind a sale countdown. No loop when the sale has no end, and no state write when the
+ * two units on screen (days and hours, or hours and minutes) have not changed. Stops in the background.
+ */
+@Composable
+private fun rememberSaleNow(endsAtMillis: Long?): Long {
+    var now by remember { mutableLongStateOf(System.currentTimeMillis()) }
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    LaunchedEffect(endsAtMillis) {
+        val ends = endsAtMillis ?: return@LaunchedEffect
+        if (System.currentTimeMillis() >= ends) return@LaunchedEffect
+        lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            while (true) {
+                delay(30_000)
+                val next = System.currentTimeMillis()
+                if (next >= ends) {
+                    now = next
+                    break
+                }
+                if (saleTimeLeft(ends, next) != saleTimeLeft(ends, now)) now = next
+            }
+        }
+    }
+    return now
 }
 
 /**
@@ -381,100 +570,149 @@ internal fun saleTimeLeft(endsAtMillis: Long, nowMillis: Long): List<Pair<Int, M
     }
 }
 
-/** The free and Pro active-shortcut limits, compared in one place. */
+/** Each feature is one accessible comparison, including in the large-font layout. */
 @Composable
 private fun FreeVsProTable(stacked: Boolean) {
     val colors = MaterialTheme.colorScheme
-    if (stacked) {
-        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-            HorizontalDivider(color = colors.outline.copy(alpha = .3f))
-            Text(stringResource(R.string.pro_active_shortcuts), style = MaterialTheme.typography.bodySmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph), color = colors.onSurface)
+    val locale = LocalConfiguration.current.locales[0]
+    Column(
+        Modifier.fillMaxWidth().clip(InnerShape).background(colors.surface)
+            .border(1.dp, colors.surfaceVariant, InnerShape),
+    ) {
+        Row(
+            Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
             Text(
-                "${stringResource(R.string.pro_table_free)}: ${EntitlementManager.FREE_SCRIPT_LIMIT}",
-                style = MaterialTheme.typography.labelSmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
+                stringResource(R.string.pro_table_what_you_get).uppercase(locale),
+                Modifier.weight(1f),
+                style = MaterialTheme.typography.labelSmall.copy(letterSpacing = .06.em, hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
                 color = colors.onSurfaceVariant,
             )
-            Text(
-                "${stringResource(R.string.pro_table_pro)}: ${stringResource(R.string.pro_table_unlimited)}",
-                style = MaterialTheme.typography.labelSmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
-                color = colors.onSurface,
-            )
-            if (CapsuleHooks.AVAILABLE) {
-                HorizontalDivider(color = colors.outline.copy(alpha = .3f))
-                Text(stringResource(R.string.capsule_intro_title), style = MaterialTheme.typography.bodySmall, color = colors.onSurface)
-                Text(
-                    "${stringResource(R.string.pro_table_free)}: ${stringResource(R.string.pro_table_not_included)}",
-                    style = MaterialTheme.typography.labelSmall, color = colors.onSurfaceVariant,
-                )
-                Text(
-                    "${stringResource(R.string.pro_table_pro)}: ${stringResource(R.string.pro_table_included)}",
-                    style = MaterialTheme.typography.labelSmall, color = colors.onSurface,
-                )
+            if (!stacked) {
+                ComparisonPlanPill(stringResource(R.string.pro_table_free).uppercase(locale), pro = false)
+                ComparisonPlanPill(stringResource(R.string.pro_table_pro).uppercase(locale), pro = true)
             }
         }
-        return
-    }
-    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-        // Three cells per row: read one at a time they are just loose words with no column to
-        // belong to, so every row is merged into a single "<label>: Free x, Pro y" utterance.
-        Row(Modifier.fillMaxWidth().semantics(mergeDescendants = true) {}) {
-            Spacer(Modifier.weight(1.3f))
-            Text(
-                stringResource(R.string.pro_table_free),
-                Modifier.weight(1f),
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.labelSmall,
-                color = colors.onSurfaceVariant,
-            )
-            Text(
-                stringResource(R.string.pro_table_pro),
-                Modifier.weight(1f),
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.labelSmall,
-                color = colors.primary,
-            )
-        }
-        HorizontalDivider(color = colors.outline.copy(alpha = .3f))
         ComparisonRow(
             stringResource(R.string.pro_active_shortcuts),
-            free = "${EntitlementManager.FREE_SCRIPT_LIMIT}",
-            pro = stringResource(R.string.pro_table_unlimited),
+            Icons.Outlined.Keyboard,
+            stacked,
+            freeIncluded = null,
         )
         if (CapsuleHooks.AVAILABLE) {
             ComparisonRow(
                 stringResource(R.string.capsule_intro_title),
-                free = stringResource(R.string.pro_table_not_included),
-                pro = stringResource(R.string.pro_table_included),
+                Icons.Outlined.AutoAwesome,
+                stacked,
+                freeIncluded = false,
+            )
+        }
+        if (com.example.mode.ModeHooks.AVAILABLE) {
+            ComparisonRow(
+                stringResource(R.string.pro_table_modes),
+                Icons.Outlined.Tune,
+                stacked,
+                freeIncluded = false,
+            )
+        }
+        ComparisonRow(stringResource(R.string.pro_table_future), Icons.Outlined.Update, stacked, freeIncluded = false)
+        ComparisonRow(stringResource(R.string.pro_table_everything_else), Icons.Outlined.DoneAll, stacked, freeIncluded = true)
+    }
+}
+
+@Composable
+private fun ComparisonPlanPill(label: String, pro: Boolean) {
+    val colors = MaterialTheme.colorScheme
+    Box(Modifier.width(56.dp), contentAlignment = Alignment.Center) {
+        Text(
+            label,
+            Modifier.clip(CircleShape)
+                .then(if (pro) Modifier.background(colors.primary) else Modifier.border(1.dp, colors.outline, CircleShape))
+                .padding(horizontal = 7.dp, vertical = 4.dp),
+            style = MaterialTheme.typography.labelSmall,
+            color = if (pro) colors.onPrimary else colors.onSurfaceVariant,
+        )
+    }
+}
+
+@Composable
+private fun ComparisonRow(label: String, icon: ImageVector, stacked: Boolean, freeIncluded: Boolean?) {
+    val colors = MaterialTheme.colorScheme
+    val free = if (freeIncluded == null) {
+        "${EntitlementManager.FREE_SCRIPT_LIMIT}"
+    } else {
+        stringResource(if (freeIncluded) R.string.pro_table_included else R.string.pro_table_not_included)
+    }
+    val pro = stringResource(if (freeIncluded == null) R.string.pro_table_unlimited else R.string.pro_table_included)
+    val rowDescription = stringResource(R.string.pro_table_row_description, label, free, pro)
+    HorizontalDivider(color = colors.surfaceVariant)
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .clearAndSetSemantics { contentDescription = rowDescription }
+            .padding(horizontal = 12.dp, vertical = 10.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                Icon(icon, null, Modifier.size(18.dp), tint = colors.onSurfaceVariant)
+                Text(
+                    label,
+                    Modifier.weight(1f),
+                    style = MaterialTheme.typography.bodySmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
+                    color = colors.onSurface,
+                )
+            }
+            if (!stacked) {
+                Box(Modifier.width(56.dp), contentAlignment = Alignment.Center) {
+                    if (freeIncluded == null) {
+                        Text(free, style = MaterialTheme.typography.bodyMedium, color = colors.onSurface)
+                    } else {
+                        ComparisonCheck(included = freeIncluded, pro = false)
+                    }
+                }
+                Box(Modifier.width(56.dp), contentAlignment = Alignment.Center) {
+                    if (freeIncluded == null) {
+                        Text("∞", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = colors.primary)
+                    } else {
+                        ComparisonCheck(included = true, pro = true)
+                    }
+                }
+            }
+        }
+        if (stacked) {
+            Text(
+                "${stringResource(R.string.pro_table_free)}: $free · ${stringResource(R.string.pro_table_pro)}: $pro",
+                style = MaterialTheme.typography.labelSmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
+                color = colors.onSurfaceVariant,
             )
         }
     }
 }
 
 @Composable
-private fun ComparisonRow(label: String, free: String, pro: String) {
+private fun ComparisonCheck(included: Boolean, pro: Boolean) {
     val colors = MaterialTheme.colorScheme
-    val rowDescription = stringResource(R.string.pro_table_row_description, label, free, pro)
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .clearAndSetSemantics { contentDescription = rowDescription },
-        verticalAlignment = Alignment.CenterVertically,
+    Box(
+        Modifier.size(24.dp).clip(CircleShape).then(
+            when {
+                !included -> Modifier.background(colors.surfaceVariant)
+                pro -> Modifier.background(colors.primary)
+                else -> Modifier.border(1.5.dp, colors.outline, CircleShape)
+            },
+        ),
+        contentAlignment = Alignment.Center,
     ) {
-        Text(label, Modifier.weight(1.3f), style = MaterialTheme.typography.bodySmall, color = colors.onSurface)
-        Text(
-            free,
-            Modifier.weight(1f),
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.labelSmall,
-            color = colors.onSurfaceVariant,
-        )
-        // No line cap: "Без ограничений" has to wrap onto a second line, not lose its second word.
-        Text(
-            pro,
-            Modifier.weight(1f),
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.labelSmall,
-            color = colors.onSurface,
+        Icon(
+            if (included) Icons.Filled.Check else Icons.Filled.Close,
+            null,
+            Modifier.size(if (included) 13.dp else 12.dp),
+            tint = when {
+                !included -> colors.onSurfaceVariant
+                pro -> colors.onPrimary
+                else -> colors.onSurface
+            },
         )
     }
 }
@@ -485,11 +723,17 @@ internal fun ConsoleHeader(
     themeMode: ThemeMode,
     onToggleMapping: () -> Unit,
     onOpenWhatsNew: () -> Unit,
+    setupRequired: Boolean = false,
     announceWhatsNew: Boolean = false,
     showWhatsNewHint: Boolean = false,
     onWhatsNewHintFinished: () -> Unit = {},
+    /** The lockup's on-screen bounds, reported just before [onOpenWhatsNew], so it can fly into the dialog. */
+    onLogoBounds: (Rect) -> Unit = {},
+    /** The lockup is away in the What's New dialog: leave its place empty until it flies back. */
+    logoAway: Boolean = false,
 ) {
     val reducedMotion = rememberReducedMotion()
+    var logoBounds by remember { mutableStateOf<Rect?>(null) }
     val animateAnnouncement = announceWhatsNew && !reducedMotion
     val cycle = rememberAnnouncementCycle(animateAnnouncement)
     Layout(
@@ -503,13 +747,18 @@ internal fun ConsoleHeader(
                 Modifier
                     .heightIn(min = MinTouchTarget)
                     .testTag("header_logo")
-                    .clickable(onClickLabel = stringResource(R.string.whats_new_title), onClick = onOpenWhatsNew),
+                    .clickable(onClickLabel = stringResource(R.string.whats_new_title)) {
+                        logoBounds?.let(onLogoBounds)
+                        onOpenWhatsNew()
+                    },
                 contentAlignment = Alignment.Center,
             ) {
                 Box {
                     KeySnapLockup(
                         themeMode,
-                        if (animateAnnouncement) Modifier.logoShine(cycle) else Modifier,
+                        (if (animateAnnouncement) Modifier.logoShine(cycle) else Modifier)
+                            .onGloballyPositioned { logoBounds = Rect(it.positionOnScreen(), it.size.toSize()) }
+                            .graphicsLayer { alpha = if (logoAway) 0f else 1f },
                     )
                     if (announceWhatsNew) {
                         AnnouncementDot(
@@ -528,7 +777,7 @@ internal fun ConsoleHeader(
                 }
             }
             Box(Modifier.testTag("header_controls")) {
-                MappingBadge(isMappingEnabled, onToggleMapping)
+                MappingBadge(isMappingEnabled, onToggleMapping, setupRequired)
             }
         },
     ) { measurables, constraints ->
@@ -550,11 +799,11 @@ internal fun ConsoleHeader(
 
 /** The global mapping switch: states what is true now, and flips it on tap. */
 @Composable
-private fun MappingBadge(active: Boolean, onClick: () -> Unit) {
+private fun MappingBadge(active: Boolean, onClick: () -> Unit, setupRequired: Boolean = false) {
     val colors = MaterialTheme.colorScheme
     // Moves only when the state flips — a colour sweep, the dot hopping into pause bars and the
     // label rolling over — and stands still otherwise. All of it follows the system animation scale.
-    val accent by animateColorAsState(if (active) colors.primary else colors.error, tween(BadgeMs), label = "badge_accent")
+    val accent by animateColorAsState(if (setupRequired) com.example.ui.theme.setupWarning() else if (active) colors.primary else colors.error, tween(BadgeMs), label = "badge_accent")
     val paused by animateFloatAsState(if (active) 0f else 1f, tween(BadgeMs, easing = BadgeEasing), label = "badge_icon")
     val sweep = remember { Animatable(1f) }
     val hop = remember { Animatable(1f) }
@@ -571,12 +820,12 @@ private fun MappingBadge(active: Boolean, onClick: () -> Unit) {
             .clip(CircleShape)
             .heightIn(min = MinTouchTarget)
             .clickable(
-                role = Role.Switch,
-                onClickLabel = stringResource(if (active) R.string.home_pause_all else R.string.home_resume_all),
+                role = if (setupRequired) Role.Button else Role.Switch,
+                onClickLabel = stringResource(if (setupRequired) R.string.setup_label else if (active) R.string.home_pause_all else R.string.home_resume_all),
                 onClick = onClick,
             )
             // Role.Switch alone leaves TalkBack with no on/off to read out.
-            .semantics { toggleableState = ToggleableState(active) }
+            .semantics { if (!setupRequired) toggleableState = ToggleableState(active) }
             .background(accent.copy(alpha = .14f))
             .drawBehind {
                 // Fills from the start edge over the first 60%, then fades out.
@@ -591,7 +840,9 @@ private fun MappingBadge(active: Boolean, onClick: () -> Unit) {
             .padding(horizontal = 12.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Canvas(
+        if (setupRequired) {
+            Icon(Icons.Default.WarningAmber, null, Modifier.size(14.dp), tint = accent)
+        } else Canvas(
             Modifier.size(8.dp).graphicsLayer {
                 val lift = sin(hop.value * PI.toFloat())
                 translationY = -5.dp.toPx() * lift
@@ -617,7 +868,7 @@ private fun MappingBadge(active: Boolean, onClick: () -> Unit) {
             label = "badge_label",
         ) { on ->
             Text(
-                stringResource(if (on) R.string.home_status_live else R.string.home_status_paused),
+                stringResource(if (setupRequired) R.string.setup_label else if (on) R.string.home_status_live else R.string.home_status_paused),
                 modifier = Modifier.testTag("mapping_status_label"),
                 style = MaterialTheme.typography.labelMedium,
                 color = accent,
@@ -641,6 +892,8 @@ private fun LiveStatusPanel(
     onOpenWizard: () -> Unit,
     onOpenAccessibility: () -> Unit,
     accessibilityStatus: AccessibilityStatus,
+    showColorOsRecentsTip: Boolean,
+    onDismissColorOsRecentsTip: () -> Unit,
 ) {
     // Anything that needs fixing is the setup card's job now, so this panel only ever reports:
     // it never paints an alarm and never opens itself.
@@ -653,6 +906,11 @@ private fun LiveStatusPanel(
         headerActionDescription = stringResource(if (isExpanded) R.string.home_collapse_status else R.string.home_expand_status),
         headerActionIcon = if (isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
     ) {
+        // Visible without expanding: ColorOS users need this before they swipe the app away.
+        if (showColorOsRecentsTip) {
+            ColorOsRecentsLockTip(onDismissColorOsRecentsTip)
+            HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = .45f))
+        }
         AnimatedVisibility(visible = isExpanded) {
             Column {
                 StatusLine(
@@ -699,6 +957,32 @@ private fun LiveStatusPanel(
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary,
             )
+        }
+    }
+}
+
+/** ColorOS kills a swiped-away KeySnap and turns Accessibility off. Dismiss hides it for good. */
+@Composable
+private fun ColorOsRecentsLockTip(onDismiss: () -> Unit) {
+    val colors = MaterialTheme.colorScheme
+    Row(
+        Modifier.fillMaxWidth().testTag("coloros_recents_lock_tip"),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            Text(
+                stringResource(R.string.home_coloros_recents_title),
+                style = MaterialTheme.typography.bodyLarge.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
+                color = colors.onSurface,
+            )
+            Text(
+                stringResource(R.string.home_coloros_recents_body),
+                style = MaterialTheme.typography.bodySmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
+                color = colors.onSurfaceVariant,
+            )
+        }
+        IconButton(onDismiss) {
+            Icon(Icons.Filled.Close, stringResource(R.string.home_nudge_dismiss), tint = colors.onSurfaceVariant)
         }
     }
 }

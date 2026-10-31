@@ -2,7 +2,6 @@
 <resources>
     <string name="app_name">KeySnap</string>
     <string name="accessibility_service_description">Détecte les appuis sur les touches physiques (Volume, Marche/Arrêt et autres boutons matériels) afin qu\'ils puissent déclencher vos raccourcis. Uniquement pendant la configuration du mode avancé, il ouvre également pour vous la boîte de dialogue système du code d\'appairage et y lit le code. Il ne peut lire l\'écran d\'aucune autre application.</string>
-    <string name="accessibility_disclosure_agree">Accepter et ouvrir les réglages</string>
 
     <!-- Catégories d\'actions -->
     <string name="action_category_input">Entrée</string>
@@ -268,6 +267,7 @@
 
     <!-- Éditeur d\'action : badges d\'exigence -->
     <string name="badge_expert_mode">Nécessite le mode avancé</string>
+    <string name="badge_advanced_full_access">L’accès complet nécessite le mode avancé</string>
     <string name="badge_accessibility">Nécessite le service d\'accessibilité</string>
     <string name="badge_notification_policy">Nécessite l\'accès à Ne pas déranger</string>
     <string name="badge_notification_access">Nécessite l\'accès aux notifications</string>
@@ -553,7 +553,6 @@
     <string name="settings_close">Fermer les paramètres</string>
 
     <!-- Boîtes de dialogue -->
-    <string name="dialog_expert_connected">MODE AVANCÉ CONNECTÉ</string>
     <string name="dialog_new_input_title">Nouvelle entrée détectée</string>
     <string name="dialog_new_input_body">Donnez un nom court à cette entrée.</string>
     <string name="dialog_new_input_hint">ex. Touche de raccourci</string>
@@ -577,8 +576,6 @@
     <string name="trigger_picker_listening">Écoute en cours… touchez pour arrêter</string>
     <string name="trigger_picker_tap_to_record">Touchez, puis appuyez sur une touche, ou maintenez-en plusieurs ensemble</string>
     <string name="trigger_picker_save_combo">Enregistrer la touche</string>
-    <string name="trigger_picker_use_automation">Utiliser une automatisation à la place</string>
-    <string name="trigger_picker_use_key">Utiliser %1$s</string>
 
     <!-- Paramètres par raccourci -->
     <string name="script_settings_name">Nom</string>
@@ -667,33 +664,12 @@
     <string name="home_triggers_session">Exécutions cette session</string>
     <string name="home_last_from">Dernier depuis %1$s</string>
     <string name="home_open_label_settings">Ouvrir les paramètres de %1$s</string>
-    <string name="home_setup_title_off">Vos raccourcis ne fonctionnent pas encore</string>
-    <string name="home_setup_subtitle_off">Trois étapes, toutes dans les réglages d\'Android. Voici quoi toucher à chaque fois.</string>
-    <string name="home_setup_title_at_risk">Vos raccourcis risquent de ne plus fonctionner</string>
-    <string name="home_setup_subtitle_at_risk">Android peut fermer l\'appli en arrière-plan tant que ce n\'est pas activé.</string>
-    <string name="home_setup_progress">%1$d/3</string>
-    <string name="home_setup_step_accessibility">Activez le service d\'accessibilité</string>
-    <string name="home_setup_why_accessibility">KeySnap lit vos appuis sur les boutons via ce service. Rien ne fonctionne tant qu\'il est désactivé.</string>
     <string name="home_setup_open_accessibility">Ouvrir les réglages d\'accessibilité</string>
-    <string name="home_setup_step_background">Laissez KeySnap tourner en arrière-plan</string>
-    <string name="home_setup_why_background">Android ferme les applis qu\'il croit endormies. Touchez Autoriser quand il le demande — Refuser laisse Android fermer KeySnap.</string>
     <string name="home_setup_allow_background">Autoriser l\'arrière-plan</string>
-    <string name="home_setup_done_background">Autorisé</string>
-    <string name="home_setup_step_notifications">Autorisez les notifications</string>
-    <string name="home_setup_why_notifications">Pour la configuration, pour vous prévenir quand un raccourci n\'a pas pu s\'exécuter, et pour les notifications de vos propres raccourcis. Touchez Autoriser quand Android le demande — Refuser arrête la configuration ici.</string>
-    <string name="home_setup_ask_now">Demander maintenant</string>
-    <string name="home_setup_done_notifications">Autorisées</string>
-    <string name="home_setup_all_done">Les trois sont activés. Vos boutons fonctionnent.</string>
     <string name="home_setup_state_done">Terminé</string>
     <string name="home_setup_state_current">Étape en cours</string>
     <string name="home_setup_state_upcoming">Pas encore commencé</string>
     <string name="home_setup_illo_downloaded_apps">Applis téléchargées</string>
-    <string name="home_setup_why">Pourquoi ?</string>
-    <string name="home_setup_why_expanded">Développé</string>
-    <string name="home_setup_why_collapsed">Réduit</string>
-    <string name="home_setup_whytext_accessibility">Android ne montre les boutons physiques qu\'à un service d\'accessibilité : KeySnap en utilise un exactement pour ça, remarquer un appui et lancer votre raccourci. Il ne lit pas l\'écran des autres applis. Pendant la configuration du mode avancé uniquement, il lit aussi le code d\'appairage sur la page de débogage sans fil, et rien d\'autre.</string>
-    <string name="home_setup_whytext_background">Android ferme les applis qu\'il croit inactives, et une appli fermée ne peut pas lancer vos raccourcis. Cela garde KeySnap en vie pendant que votre téléphone dort. En arrière-plan, il ne fait qu\'attendre un appui.</string>
-    <string name="home_setup_whytext_notifications">Pendant la configuration du mode avancé : le code d\'appairage et l\'état du service. Ensuite, seulement quand un raccourci n\'a pas pu s\'exécuter, et pourquoi, et les notifications que vous mettez dans vos propres raccourcis. Aucun rappel de notre part, aucune promotion, rien d\'autre, jamais.</string>
     <string name="home_setup_illo_battery_dialog">Autoriser KeySnap à toujours fonctionner en arrière-plan ?</string>
     <string name="home_setup_illo_battery_body">Cela peut réduire l\'autonomie.</string>
     <string name="home_setup_illo_battery_deny">Refuser</string>
@@ -703,6 +679,8 @@
     <string name="home_nudge_title">Créez votre premier raccourci</string>
     <string name="home_nudge_subtitle">La lampe torche est juste en dessous, en un geste.</string>
     <string name="home_nudge_dismiss">Fermer</string>
+    <string name="home_coloros_recents_title">Verrouillez KeySnap dans les applications récentes</string>
+    <string name="home_coloros_recents_body">Sur ce téléphone, balayer KeySnap pour le fermer coupe son accessibilité : les touches des raccourcis font aussi leur travail habituel. Ouvrez les applications récentes, puis tirez la carte de KeySnap vers le bas pour la verrouiller.</string>
 
     <!-- Offre Pro -->
     <string name="pro_card_subtitle">La version gratuite garde %1$d raccourcis activés. Pro les garde tous activés.</string>
@@ -820,9 +798,6 @@
     <string name="wizard_title">Activer le mode avancé</string>
     <string name="wizard_subtitle">Assistant de configuration</string>
     <string name="wizard_continue">Continuer</string>
-    <string name="wizard_finish_pairing">Terminer l\'appairage</string>
-    <string name="wizard_step_intro">Introduction</string>
-    <string name="wizard_step_pairing">Appairage</string>
     <string name="wizard_step_done">Terminé</string>
     <string name="wizard_what_is_expert">Qu\'est-ce que le mode avancé ?</string>
     <string name="wizard_expert_explainer">KeySnap s\'associe au débogage sans fil de votre téléphone, puis lit les touches directement dans le noyau — Marche/Arrêt, assistant, appareil photo, les boutons qu\'Android cache aux applis.</string>
@@ -834,7 +809,10 @@
     <string name="wizard_illo_action">↳ Lampe allumée</string>
     <string name="wizard_how_to_dev_options">Comment activer les options pour développeurs ?</string>
     <string name="wizard_auto_pairing">Appairage ADB automatique</string>
-    <string name="wizard_auto_pairing_explainer">Pas besoin de saisir le code d\'appairage manuellement — nous le lisons en arrière-plan et nous connectons automatiquement. En cas d\'échec, vous pouvez le saisir depuis la notification.</string>
+    <string-array name="wizard_auto_pairing_points">
+        <item>Pas besoin de saisir le code d\'appairage manuellement — nous le lisons en arrière-plan et nous connectons automatiquement.</item>
+        <item>En cas d\'échec, vous pouvez le saisir depuis la notification.</item>
+    </string-array>
     <string name="wizard_open_settings">Ouvrir les paramètres et démarrer l\'appairage</string>
     <string name="wizard_expert_running">Le mode avancé est actif</string>
     <string name="wizard_expert_running_body">Toutes les touches matérielles Android (Marche/Arrêt, assistant, Volume, Appareil photo, etc.) sont écoutées au niveau du noyau Linux.</string>
@@ -843,7 +821,6 @@
     <string name="wizard_connecting">Connexion en cours…</string>
     <string name="wizard_connecting_body">Le mode avancé démarre. Cela prend quelques secondes — laissez cet écran ouvert.</string>
     <string name="wizard_kernel_stream">Flux d\'événements noyau en direct</string>
-    <string name="wizard_test_flash">Tester le déclenchement de la torche</string>
 
     <!-- État de l\'appairage -->
     <string name="pairing_idle">En attente d\'appairage…</string>
@@ -929,7 +906,6 @@
     <string name="widget_description">Exécutez un de vos raccourcis d\'un seul appui</string>
     <string name="trigger_kind_surface">Widget ou tuile</string>
     <string name="surface_card_subtitle">S\'exécute quand vous touchez son widget d\'écran d\'accueil ou sa tuile des paramètres rapides</string>
-    <string name="trigger_picker_use_surface">Pas de touche libre ? Utilisez un widget ou une tuile</string>
     <string name="run_source_widget">Widget</string>
     <string name="run_source_tile">Tuile des paramètres rapides</string>
     <string name="widget_limit_reached">Offre gratuite : %1$d widgets d\'écran d\'accueil. Passez à Pro pour des widgets illimités.</string>
@@ -1101,9 +1077,9 @@
     <string name="param_mode_pulse">Vibration du mode</string>
     <string name="param_mode_gap">Pause entre les vibrations</string>
     <string name="param_mode_lead_gap">Pause avant la vibration du mode</string>
-    <string name="choice_mode_feedback_toast">Message à l’écran</string>
+    <string name="choice_mode_feedback_toast">Message</string>
     <string name="choice_mode_feedback_vibrate">Vibration</string>
-    <string name="choice_mode_feedback_both">Message et vibration</string>
+    <string name="choice_mode_feedback_both">Les deux</string>
     <string name="param_mode_number">Numéro du mode</string>
     <string name="constraint_mode_is">Le mode est</string>
     <string name="mode_current">Mode %1$d</string>
@@ -1116,4 +1092,16 @@
     <string name="assistant_redirect_note">KeySnap est votre assistant ; cette action ouvre donc un autre assistant sur votre téléphone.</string>
     <string name="assistant_no_other_app">Aucun autre assistant n’est disponible sur ce téléphone.</string>
     <string name="assistant_voice_wakeup_warning">Tant que KeySnap est votre assistant, l’activation vocale de votre assistant précédent peut cesser de fonctionner.</string>
+    <string name="script_settings_show_capsule">Afficher la capsule de touche</string>
+    <string name="script_settings_show_capsule_description">Afficher un retour lorsque ce raccourci est exécuté.</string>
+    <plurals name="home_recipes_show_more">
+        <item quantity="one">Afficher %d de plus</item>
+        <item quantity="many">Afficher %d de plus</item>
+        <item quantity="other">Afficher %d de plus</item>
+    </plurals>
+    <string name="home_recipes_show_less">Afficher moins</string>
+    <string name="settings_saved_keys">Touches enregistrées</string>
+    <string name="settings_saved_keys_summary">Renommez les touches ou ajoutez-en une avant de l\'utiliser</string>
+    <string name="settings_saved_keys_add">Ajouter une touche</string>
+    <string name="settings_saved_keys_rename">Renommer la touche</string>
 </resources>

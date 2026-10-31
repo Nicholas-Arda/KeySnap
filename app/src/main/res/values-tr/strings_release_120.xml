@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_test_editors_title_120">Test edilebilen editörler</string>
+    <string name="whats_new_test_editors_description_120">Kaydetmeden önce her adımı ▶ ile dene.</string>
+    <string name="whats_new_reorder_shortcuts_title_120">Kısayolları sırala ve düzenle</string>
+    <string name="whats_new_reorder_shortcuts_description_120">✎\'ye dokun ya da basılı tut. Sürükleyip sırala.</string>
+    <string name="whats_new_input_devices_title_120">Klavye, fare ve oyun kumandası</string>
+    <string name="whats_new_input_devices_description_120">Uzman Modu: gerçek tuş adları, Ctrl kısayolları.</string>
+    <string name="whats_new_fix_setup_120">Kurulum iki adım, bildirim isteğe bağlı</string>
+    <string name="whats_new_fix_conditions_120">Her koşul DEĞİL ile tersine çevrilir</string>
+    <string name="whats_new_fix_app_names_120">Uygulamalar kendi adıyla görünür</string>
+    <string name="whats_new_fix_side_power_keys_120">Yan ve güç tuşu: net ipucu</string>
+    <string name="whats_new_fix_idle_battery_120">Boştayken daha az pil</string>
+    <string name="whats_new_fix_advanced_setup_120">Uzman Modu kurulumu tek sayfa</string>
+    <string name="whats_new_fix_saved_keys_120">Kayıtlı tuşu adlandır, önceden ekle</string>
+    <string name="whats_new_fix_shortcuts_page_120">Daha düzenli Kısayollar, kısa listeler</string>
+    <string name="whats_new_fix_modes_120">Modlar: istediğin an kapat ya da sil</string>
+</resources>

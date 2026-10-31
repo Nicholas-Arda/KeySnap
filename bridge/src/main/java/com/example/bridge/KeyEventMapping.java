@@ -78,6 +78,87 @@ public final class KeyEventMapping {
         LINUX_CODES_BY_NAME = Collections.unmodifiableMap(codes);
     }
 
+    /**
+     * Android's Generic.kl for keyboards, the mouse's back/forward buttons and gamepads: Linux code
+     * to the Android key code the framework reports for the same press. Without it a keyboard's
+     * KEY_E came out of here as a synthetic code while Accessibility reported KEYCODE_E, so the
+     * coordinator could not tell they were one press and each key counted twice (2026-10-29).
+     * Mouse left/right/middle stay synthetic: Android reports them as pointer buttons, not keys.
+     */
+    private static final Map<Integer, Integer> STANDARD_BY_LINUX;
+    private static final Map<String, Integer> STANDARD_LINUX_BY_NAME;
+
+    static {
+        Map<Integer, Integer> byLinux = new HashMap<>();
+        Map<String, Integer> byName = new HashMap<>();
+        String letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        int[] letterLinux = {30, 48, 46, 32, 18, 33, 34, 35, 23, 36, 37, 38, 50, 49, 24, 25, 16, 19, 31, 20, 22, 47, 17, 45, 21, 44};
+        for (int i = 0; i < letters.length(); i++) {
+            standard(byLinux, byName, letterLinux[i], 29 + i, "KEY_" + letters.charAt(i));
+        }
+        for (int digit = 1; digit <= 9; digit++) {
+            standard(byLinux, byName, 1 + digit, 7 + digit, "KEY_" + digit);
+        }
+        standard(byLinux, byName, 11, 7, "KEY_0");
+        for (int f = 1; f <= 10; f++) {
+            standard(byLinux, byName, 58 + f, 130 + f, "KEY_F" + f);
+        }
+        standard(byLinux, byName, 87, 141, "KEY_F11");
+        standard(byLinux, byName, 88, 142, "KEY_F12");
+        int[][] keys = {
+                {1, 111}, {12, 69}, {13, 70}, {14, 67}, {15, 61}, {26, 71}, {27, 72}, {28, 66},
+                {29, 113}, {39, 74}, {40, 75}, {41, 68}, {42, 59}, {43, 73}, {51, 55}, {52, 56},
+                {53, 76}, {54, 60}, {55, 155}, {56, 57}, {57, 62}, {58, 115}, {69, 143}, {70, 116},
+                {71, 151}, {72, 152}, {73, 153}, {74, 156}, {75, 148}, {76, 149}, {77, 150}, {78, 157},
+                {79, 145}, {80, 146}, {81, 147}, {82, 144}, {83, 158}, {96, 160}, {97, 114}, {98, 154},
+                {99, 120}, {100, 58}, {103, 19}, {104, 92}, {105, 21}, {106, 22}, {107, 123}, {108, 20},
+                {109, 93}, {110, 124}, {111, 112}, {119, 121}, {125, 117}, {126, 118}, {127, 82},
+        };
+        String[] keyNames = {
+                "KEY_ESC", "KEY_MINUS", "KEY_EQUAL", "KEY_BACKSPACE", "KEY_TAB", "KEY_LEFTBRACE", "KEY_RIGHTBRACE", "KEY_ENTER",
+                "KEY_LEFTCTRL", "KEY_SEMICOLON", "KEY_APOSTROPHE", "KEY_GRAVE", "KEY_LEFTSHIFT", "KEY_BACKSLASH", "KEY_COMMA", "KEY_DOT",
+                "KEY_SLASH", "KEY_RIGHTSHIFT", "KEY_KPASTERISK", "KEY_LEFTALT", "KEY_SPACE", "KEY_CAPSLOCK", "KEY_NUMLOCK", "KEY_SCROLLLOCK",
+                "KEY_KP7", "KEY_KP8", "KEY_KP9", "KEY_KPMINUS", "KEY_KP4", "KEY_KP5", "KEY_KP6", "KEY_KPPLUS",
+                "KEY_KP1", "KEY_KP2", "KEY_KP3", "KEY_KP0", "KEY_KPDOT", "KEY_KPENTER", "KEY_RIGHTCTRL", "KEY_KPSLASH",
+                "KEY_SYSRQ", "KEY_RIGHTALT", "KEY_UP", "KEY_PAGEUP", "KEY_LEFT", "KEY_RIGHT", "KEY_END", "KEY_DOWN",
+                "KEY_PAGEDOWN", "KEY_INSERT", "KEY_DELETE", "KEY_PAUSE", "KEY_LEFTMETA", "KEY_RIGHTMETA", "KEY_COMPOSE",
+        };
+        for (int i = 0; i < keys.length; i++) {
+            standard(byLinux, byName, keys[i][0], keys[i][1], keyNames[i]);
+        }
+        // Mouse back/forward: Android turns these pointer buttons into BACK and FORWARD keys.
+        standard(byLinux, byName, 275, 4, "BTN_SIDE");
+        standard(byLinux, byName, 278, 4, "BTN_BACK");
+        standard(byLinux, byName, 276, 125, "BTN_EXTRA");
+        standard(byLinux, byName, 277, 125, "BTN_FORWARD");
+        // Gamepad face, shoulder and stick buttons, under every name getevent may print.
+        standard(byLinux, byName, 304, 96, "BTN_A", "BTN_SOUTH", "BTN_GAMEPAD");
+        standard(byLinux, byName, 305, 97, "BTN_B", "BTN_EAST");
+        standard(byLinux, byName, 306, 98, "BTN_C");
+        standard(byLinux, byName, 307, 99, "BTN_X", "BTN_NORTH");
+        standard(byLinux, byName, 308, 100, "BTN_Y", "BTN_WEST");
+        standard(byLinux, byName, 309, 101, "BTN_Z");
+        standard(byLinux, byName, 310, 102, "BTN_TL");
+        standard(byLinux, byName, 311, 103, "BTN_TR");
+        standard(byLinux, byName, 312, 104, "BTN_TL2");
+        standard(byLinux, byName, 313, 105, "BTN_TR2");
+        standard(byLinux, byName, 314, 109, "BTN_SELECT");
+        standard(byLinux, byName, 315, 108, "BTN_START");
+        standard(byLinux, byName, 316, 110, "BTN_MODE");
+        standard(byLinux, byName, 317, 106, "BTN_THUMBL");
+        standard(byLinux, byName, 318, 107, "BTN_THUMBR");
+        STANDARD_BY_LINUX = Collections.unmodifiableMap(byLinux);
+        STANDARD_LINUX_BY_NAME = Collections.unmodifiableMap(byName);
+    }
+
+    private static void standard(Map<Integer, Integer> byLinux, Map<String, Integer> byName,
+                                 int linux, int android, String... names) {
+        byLinux.put(linux, android);
+        for (String name : names) {
+            byName.put(name, linux);
+        }
+    }
+
     /** One decoded EV_KEY transition. */
     public static final class ParsedKey {
         public final String device;
@@ -149,7 +230,8 @@ public final class KeyEventMapping {
 
     private static Integer parseLinuxCode(String identifier) {
         if (identifier.startsWith("KEY_") || identifier.startsWith("BTN_")) {
-            return LINUX_CODES_BY_NAME.get(identifier);
+            Integer code = LINUX_CODES_BY_NAME.get(identifier);
+            return code != null ? code : STANDARD_LINUX_BY_NAME.get(identifier);
         }
         String token = identifier.startsWith("0X") ? identifier.substring(2) : identifier;
         try {
@@ -212,7 +294,7 @@ public final class KeyEventMapping {
         if ("KEY_PREVIOUSSONG".equals(identifier) || isCode(linuxCode, 165)) {
             return KEYCODE_MEDIA_PREVIOUS;
         }
-        return null;
+        return linuxCode != null ? STANDARD_BY_LINUX.get(linuxCode) : null;
     }
 
     private static boolean isCode(Integer linuxCode, int expected) {

@@ -12,7 +12,7 @@ import java.io.InputStreamReader;
  * framework-level audio APIs unreliable for uid 2000 (the same limitation documented in
  * {@link TorchController}).
  */
-final class ShellKeyInjector {
+public final class ShellKeyInjector {
 
     static final int KEYCODE_VOLUME_MUTE = 164;
     static final int KEYCODE_VOLUME_UP = 24;
@@ -87,9 +87,7 @@ final class ShellKeyInjector {
      */
     static boolean runShellUnlogged(String... command) {
         try {
-            Process process = new ProcessBuilder(command)
-                    .redirectErrorStream(true)
-                    .start();
+            Process process = new ProcessBuilder(command).redirectErrorStream(true).start();
             int exit = process.waitFor();
             if (exit != 0) {
                 BridgeLog.w(command[0] + " exited " + exit);
@@ -99,6 +97,93 @@ final class ShellKeyInjector {
         } catch (Exception e) {
             BridgeLog.w(command[0] + " failed: " + e.getClass().getSimpleName());
             return false;
+        }
+    }
+
+    /** Bounded, memory-only capture; even exceptions are deliberately not logged. */
+    public static ActionTestResult runShellUnlogged(int timeoutSeconds, boolean capture, String... command) {
+        long start = System.nanoTime();
+        try {
+            return awaitProcess(new ProcessBuilder(command).redirectErrorStream(true).start(), timeoutSeconds, capture, start);
+        } catch (Exception ignored) {
+            return ActionTestResult.outcome(false, start);
+        }
+    }
+
+    public static ActionTestResult shellCommand(java.util.Map<String, String> params, boolean capture) {
+        long start = System.nanoTime();
+        try {
+            String command = params.get("command");
+            if (command == null || command.isEmpty()) return ActionTestResult.outcome(false, start);
+            return runShellUnlogged(ActionPayloads.timeoutSeconds(params), capture, "sh", "-c", command);
+        } catch (Exception ignored) {
+            return ActionTestResult.outcome(false, start);
+        }
+    }
+
+    static ActionTestResult awaitProcess(Process process, int timeoutSeconds, boolean capture, long start) {
+        Tail tail = new Tail();
+        Thread drain = new Thread(() -> {
+            try (InputStreamReader reader = new InputStreamReader(process.getInputStream(), java.nio.charset.StandardCharsets.UTF_8)) {
+                char[] buffer = new char[1024];
+                int count;
+                while ((count = reader.read(buffer)) != -1) {
+                    if (capture) tail.append(buffer, count);
+                }
+            } catch (Exception ignored) { }
+        }, "keysnap-shell-output");
+        drain.setDaemon(true);
+        drain.start();
+        try {
+            boolean finished = process.waitFor(timeoutSeconds, java.util.concurrent.TimeUnit.SECONDS);
+            if (!finished) process.destroyForcibly();
+            // A child can inherit the pipe. Never wait indefinitely for its EOF.
+            drain.join(200);
+            return new ActionTestResult(finished && process.exitValue() == 0,
+                    finished ? process.exitValue() : null, null, ActionTestResult.elapsed(start),
+                    !finished, tail.snapshot());
+        } catch (InterruptedException ignored) {
+            process.destroyForcibly();
+            Thread.currentThread().interrupt();
+            return ActionTestResult.outcome(false, start);
+        } finally {
+            // Some process streams lock close() behind a blocked read when a child inherits stdout.
+            // Cleanup must not turn a completed timeout back into an unbounded caller wait.
+            Thread cleanup = new Thread(() -> {
+                try { process.getInputStream().close(); } catch (Exception ignored) { }
+                try { process.getOutputStream().close(); } catch (Exception ignored) { }
+                try { process.getErrorStream().close(); } catch (Exception ignored) { }
+            }, "keysnap-shell-cleanup");
+            cleanup.setDaemon(true);
+            cleanup.start();
+        }
+    }
+
+    /** Caps both line count and individual line length while reading (not after buffering). */
+    private static final class Tail {
+        private final java.util.ArrayDeque<String> lines = new java.util.ArrayDeque<>();
+        private final StringBuilder current = new StringBuilder();
+
+        synchronized void append(char[] chars, int count) {
+            for (int i = 0; i < count; i++) {
+                if (chars[i] == '\n') {
+                    if (current.length() > 0 && current.charAt(current.length() - 1) == '\r') {
+                        current.setLength(current.length() - 1);
+                    }
+                    lines.addLast(current.toString());
+                    if (lines.size() > 20) lines.removeFirst();
+                    current.setLength(0);
+                } else {
+                    current.append(chars[i]);
+                    if (current.length() > 2048) current.deleteCharAt(0);
+                }
+            }
+        }
+
+        synchronized java.util.List<String> snapshot() {
+            java.util.List<String> result = new java.util.ArrayList<>(lines);
+            if (current.length() > 0) result.add(current.toString());
+            return result.subList(Math.max(0, result.size() - 20), result.size());
         }
     }
 

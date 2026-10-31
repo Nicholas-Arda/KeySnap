@@ -173,4 +173,47 @@ class AssistantTriggerTest {
         assertEquals(listOf("launch_device_assistant"), ran)
         assertEquals(listOf(null, true), result.appResults)
     }
+
+    @Test fun bridgeOpenedAssistantIsNotOpenedAgainByTheApp() = runTest {
+        val actions = listOf(ScriptAction("launch_voice_assistant"), ScriptAction("launch_device_assistant"))
+        val ran = mutableListOf<String>()
+        val result = runChain(actions, ScriptActionExecutor { ran += it.type; true }) {
+            BridgeRunResult(2, 2, actions.map { it.type to true })
+        }
+        assertTrue(ran.isEmpty())
+        assertEquals(listOf(null, null), result.appResults)
+    }
+
+    @Test fun assistantFallbackUsesEachChainPositionIncludingRepeats() = runTest {
+        val actions = listOf(
+            ScriptAction("launch_voice_assistant"),
+            ScriptAction("repeat_previous", mapOf("count" to "2")),
+            ScriptAction("launch_voice_assistant"),
+        )
+        val ran = mutableListOf<String>()
+        val result = runChain(actions, ScriptActionExecutor { ran += it.type; true }) {
+            BridgeRunResult(2, 3, listOf("launch_voice_assistant" to true, "repeat_previous" to true, "launch_voice_assistant" to false))
+        }
+        assertEquals(listOf("launch_voice_assistant"), ran)
+        assertEquals(listOf(null, null, true), result.appResults)
+    }
+
+    @Test fun missingAssistantReportKeepsTheAppFallback() = runTest {
+        val ran = mutableListOf<String>()
+        val result = runChain(listOf(ScriptAction("launch_voice_assistant")), ScriptActionExecutor { ran += it.type; true }) {
+            BridgeRunResult(0, 1, null)
+        }
+        assertEquals(listOf("launch_voice_assistant"), ran)
+        assertEquals(listOf(true), result.appResults)
+    }
+
+    @Test fun failedAssistantRepeatFallsBackWithoutReopeningTheSuccessfulFirstAction() = runTest {
+        val actions = listOf(ScriptAction("launch_voice_assistant"), ScriptAction("repeat_previous", mapOf("count" to "2")))
+        var ran = 0
+        val result = runChain(actions, ScriptActionExecutor { ran++; true }) {
+            BridgeRunResult(1, 2, listOf("launch_voice_assistant" to true, "repeat_previous" to false))
+        }
+        assertEquals(2, ran)
+        assertEquals(listOf(null, true), result.appResults)
+    }
 }

@@ -31,7 +31,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -63,14 +67,16 @@ import kotlin.math.roundToInt
  * Each runs the prototype's 3.6 s loop off one [rememberInfiniteTransition]; the keyframe fractions
  * below are the prototype's CSS percentages. Every animated value is read inside a `drawBehind`,
  * `offset` or `graphicsLayer` lambda, so a running loop redraws without recomposing. The loop only
- * exists while its step is open, because the illustration is only composed then.
+ * exists while its step is open, because the illustration is only composed then, and only while
+ * the app is in front — leaving the app parks it on the end frame.
  */
 internal const val LoopMillis = 3600
 
-/** The loop position, 0..1 — or parked on its end frame when the system animator scale is 0. */
+/** The loop position, 0..1 — or parked on its end frame when motion is off or the app is not in front. */
 @Composable
 internal fun loopPosition(reduced: Boolean): State<Float> {
-    if (reduced) return rememberUpdatedState(1f)
+    val resumed by LocalLifecycleOwner.current.lifecycle.currentStateFlow.collectAsState()
+    if (reduced || !resumed.isAtLeast(Lifecycle.State.RESUMED)) return rememberUpdatedState(1f)
     return rememberInfiniteTransition(label = "illustration").animateFloat(
         initialValue = 0f,
         targetValue = 1f,

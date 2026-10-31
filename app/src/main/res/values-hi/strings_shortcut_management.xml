@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="shortcuts_edit">शॉर्टकट संपादित करें</string>
+    <string name="shortcuts_edit_done">शॉर्टकट संपादन पूरा करें</string>
+    <string name="shortcuts_edit_hint">बदलने हेतु शॉर्टकट पर टैप करें</string>
+    <string name="shortcuts_drag">क्रम बदलने हेतु %1$s खींचें</string>
+    <string name="shortcuts_name_required">नाम दर्ज करें</string>
+    <string name="shortcuts_delete">शॉर्टकट हटाएं</string>
+    <string name="shortcuts_move_to_mode">मोड में ले जाएं</string>
+    <string name="shortcuts_rename_cancel">नाम बदलना रद्द करें</string>
+    <string name="shortcuts_name_apply">नाम लागू करें</string>
+    <string name="shortcuts_rename">शॉर्टकट का नाम बदलें</string>
+</resources>

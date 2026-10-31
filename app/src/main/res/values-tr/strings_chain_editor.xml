@@ -1,0 +1,17 @@
+<resources>
+    <string name="chain_is">İSE</string>
+    <string name="chain_not">DEĞİL</string>
+    <string name="chain_action_empty">Eylem boş olamaz</string>
+    <string name="chain_condition_empty">Koşul ayarlarını kontrol edin</string>
+    <string name="chain_shell_limited">Shell burada sınırlı çalışır</string>
+    <string name="chain_set_up">Kurulum</string>
+    <string name="chain_test_running">Eylem deneniyor</string>
+    <string name="chain_test_success">Deneme başarılı</string>
+    <string name="chain_test_failure">Deneme başarısız</string>
+    <string name="chain_test_action">Eylemi dene</string>
+    <string name="chain_test_timeout">Zaman aşımı</string>
+    <string name="chain_http_status">HTTP %1$d</string>
+    <string name="chain_exit_code">Çıkış %1$d</string>
+    <string name="chain_test_result">%1$s %2$s · %3$s · %4$s sn</string>
+    <string name="chain_needs_condition">Önce bir koşul ekleyin</string>
+</resources>

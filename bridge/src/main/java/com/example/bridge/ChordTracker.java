@@ -17,8 +17,9 @@ import java.util.TreeSet;
  * (HardwareKeyTriggerCoordinator via KeyGestureFeed) and the detached bridge (BridgeMain), so the
  * two can never form different chords or derive different ids.
  *
- * <p>A chord forms when every member is held and the earliest and latest member down-times are at
- * most {@link #CHORD_WINDOW_MS} apart. Members whose down was already passed to the timing machine
+ * <p>A chord forms when every member is held and each member that is also a one-key shortcut went
+ * down at most {@link #CHORD_WINDOW_MS} before the completing key; other members are modifiers and
+ * may be held any time. Members whose down was already passed to the timing machine
  * are cancelled there; the window is below the 300 ms minimum long-press threshold, so their own
  * long press cannot have fired yet. A down that completes a bigger chord containing the active one
  * cancels the active chord and takes over, which is safe for the same reason. The most keys wins,
@@ -102,8 +103,31 @@ public final class ChordTracker {
     private List<Integer> activeMembers;
     private int activeId;
 
+    /** Every member counts as a shortcut on its own, so every chord must form within the window. */
     public synchronized List<Command> onEvent(int keyCode, boolean down, long eventTimeMs, List<List<Integer>> chords) {
-        return down ? onDown(keyCode, eventTimeMs, chords) : onUp(keyCode);
+        return down ? onDown(keyCode, eventTimeMs, chords, null) : onUp(keyCode);
+    }
+
+    /**
+     * {@code soloKeys} are keys that are also a shortcut by themselves. Only they must go down
+     * within {@link #CHORD_WINDOW_MS} of the completing key; any other member (Ctrl, say) acts as a
+     * modifier and may be held as long as the user likes, since cancelling its pass costs nothing.
+     */
+    public synchronized List<Command> onEvent(int keyCode, boolean down, long eventTimeMs,
+                                              List<List<Integer>> chords, Set<Integer> soloKeys) {
+        return down ? onDown(keyCode, eventTimeMs, chords, soloKeys) : onUp(keyCode);
+    }
+
+    /** Keys of every one-key trigger, the {@code soloKeys} of {@link #onEvent}. */
+    public static Set<Integer> soloKeysOf(List<List<Integer>> triggerKeyLists) {
+        Set<Integer> solo = new HashSet<>();
+        for (List<Integer> keys : triggerKeyLists) {
+            List<Integer> c = canonical(keys);
+            if (c.size() == 1) {
+                solo.add(c.get(0));
+            }
+        }
+        return solo;
     }
 
     public synchronized void reset() {
@@ -113,7 +137,7 @@ public final class ChordTracker {
         activeMembers = null;
     }
 
-    private List<Command> onDown(int keyCode, long eventTimeMs, List<List<Integer>> chords) {
+    private List<Command> onDown(int keyCode, long eventTimeMs, List<List<Integer>> chords, Set<Integer> soloKeys) {
         if (held.containsKey(keyCode)) {
             return Collections.emptyList();
         }
@@ -121,7 +145,7 @@ public final class ChordTracker {
         List<Integer> best = null;
         int bestId = 0;
         for (List<Integer> chord : chords) {
-            if (!chord.contains(keyCode) || !held.keySet().containsAll(chord) || !withinWindow(chord)) {
+            if (!chord.contains(keyCode) || !held.keySet().containsAll(chord) || !withinWindow(chord, eventTimeMs, soloKeys)) {
                 continue;
             }
             if (activeMembers != null && (chord.size() <= activeMembers.size() || !chord.containsAll(activeMembers))) {
@@ -168,14 +192,13 @@ public final class ChordTracker {
         return Collections.singletonList(new Command(PASS, keyCode, false));
     }
 
-    private boolean withinWindow(List<Integer> chord) {
-        long min = Long.MAX_VALUE;
-        long max = Long.MIN_VALUE;
+    /** The completing key is the newest down, so the window is measured back from it. */
+    private boolean withinWindow(List<Integer> chord, long completedAt, Set<Integer> soloKeys) {
         for (int member : chord) {
-            long t = held.get(member);
-            min = Math.min(min, t);
-            max = Math.max(max, t);
+            if ((soloKeys == null || soloKeys.contains(member)) && completedAt - held.get(member) > CHORD_WINDOW_MS) {
+                return false;
+            }
         }
-        return max - min <= CHORD_WINDOW_MS;
+        return true;
     }
 }

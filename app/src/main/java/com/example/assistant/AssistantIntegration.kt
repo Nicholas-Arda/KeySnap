@@ -9,6 +9,7 @@ import android.os.SystemClock
 import android.provider.Settings
 import android.service.voice.VoiceInteractionService
 import android.widget.Toast
+import com.example.service.bridge.BridgeController
 import io.github.nicholasarda.keysnap.R
 
 object AssistantIntegration {
@@ -27,10 +28,18 @@ object AssistantIntegration {
         }
     }
 
-    fun launch(context: Context, action: String = Intent.ACTION_ASSIST): Boolean {
+    suspend fun launch(context: Context, action: String = Intent.ACTION_ASSIST): Boolean =
+        launch(context, action, BridgeController::showAssistant)
+
+    internal suspend fun launch(context: Context, action: String, showSession: suspend () -> Boolean): Boolean {
         // Mark BEFORE startActivity: the framework can synchronously start our voice session.
         invocations.markOutgoing(SystemClock.elapsedRealtime())
-        if (!isSelected(context)) return start(context, Intent(action))
+        if (!isSelected(context)) {
+            // ASSIST / VOICE_COMMAND may open the full Google app. The shell-owned bridge can
+            // request the selected assistant's actual session, as the system gesture does.
+            if (showSession()) return true
+            return start(context, Intent(action))
+        }
         for (target in discoverTargets(context)) {
             val intent = Intent(target.action).setComponent(ComponentName(target.packageName, target.className))
             if (target.kind == AssistantTarget.Kind.LAUNCHER) intent.addCategory(Intent.CATEGORY_LAUNCHER)

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="inline_key_choose">Выберите кнопку</string>
+    <string name="inline_key_record">Записать кнопку</string>
+    <string name="inline_key_listening">Нажмите кнопку</string>
+    <string name="inline_key_release">Удерживайте кнопки вместе. Отпустите для завершения.</string>
+    <string name="inline_key_edit">Нажмите на кнопку, чтобы записать её снова.</string>
+    <string name="inline_key_placeholder">кнопку</string>
+    <string name="inline_key_advanced_hint">Для кнопки питания, Snap Key, Essential Key, Bixby и подобных кнопок необходим Расширенный режим.</string>
+    <string name="inline_key_set_up">Настроить</string>
+</resources>

@@ -10,6 +10,42 @@ import org.junit.Test
 
 class ShortcutShareTest {
 
+    @Test fun httpHeadersAreRemovedOnExportReviewAndImport() {
+        val action = ScriptAction("http_request", mapOf("method" to "POST", "url" to "https://example.org", "headers" to "Authorization:secret-header-value\nX-Private:secret", "content_type" to "json"))
+        assertFalse(ShortcutShare.portable(action).params.containsKey("headers"))
+        val encoded = ShortcutShare.encode("HTTP", false, TriggerPressType.SINGLE_PRESS, listOf(action), emptyList())
+        assertFalse(encoded.contains("secret"))
+        assertFalse(encoded.contains("headers"))
+        val imported = (ShortcutShare.decode(encoded) as ImportResult.Ok).shortcut.actions.single()
+        assertEquals("json", imported.params["content_type"])
+        val crafted = encoded.replace("\"content_type\":\"json\"", "\"content_type\":\"json\",\"headers\":\"X:secret\"")
+        assertFalse((ShortcutShare.decode(crafted) as ImportResult.Ok).shortcut.actions.single().params.containsKey("headers"))
+    }
+
+    @Test fun newNonSecretOptionsSurviveShareRoundTrip() {
+        val actions = listOf(
+            ScriptAction("shell_command", mapOf("command" to "echo test", "timeout_sec" to "60")),
+            ScriptAction("send_intent", mapOf("action" to "test.ACTION", "package" to "test.app", "target" to "activity")),
+        )
+        val encoded = ShortcutShare.encode("Test", false, TriggerPressType.SINGLE_PRESS, actions, emptyList())
+        assertEquals(actions, (ShortcutShare.decode(encoded) as ImportResult.Ok).shortcut.actions)
+        assertTrue(ShortcutShare.decode(encoded.replace("\"60\"", "\"11\"")) is ImportResult.Error)
+    }
+
+    @Test fun negationSurvivesPortableConstraintFiltering() {
+        val constraints = listOf(
+            ScriptConstraint("screen_on",mapOf("negate" to "true")),
+            ScriptConstraint("bluetooth_device_connected",mapOf("negate" to "true","address" to "AA:BB:CC:DD:EE:FF","name" to "Personal")),
+            ScriptConstraint("rss_new_item",mapOf("negate" to "true","url" to "https://example.org/private")),
+            ScriptConstraint("calendar_event_active",mapOf("negate" to "true","calendar" to "Personal")),
+            ScriptConstraint("notification_received",mapOf("negate" to "true","contact" to "Personal","packageName" to "test.app")),
+        )
+        val back = ok(encode(constraints = constraints,automation = true))
+        assertEquals(constraints.map { it.type },back.constraints.map { it.type })
+        back.constraints.forEach { assertEquals("true",it.params["negate"]) }
+        assertFalse(back.constraints.any { it.params.containsKey("url") || it.params.containsKey("contact") || it.params.containsKey("calendar") || it.params.containsKey("address") })
+    }
+
     private val torch = ScriptAction("toggle_flashlight")
     private val hook = ScriptAction("http_request", mapOf("method" to "POST", "url" to "https://example.org/h", "body" to "a=1"))
 
@@ -28,6 +64,12 @@ class ShortcutShareTest {
     }
 
     private fun error(text: String): Int = (ShortcutShare.decode(text) as ImportResult.Error).messageRes
+
+    @Test fun capsulePreferenceTravelsAndOldSharesDefaultOn() {
+        val json = ShortcutShare.encode("Torch", false, TriggerPressType.SINGLE_PRESS, listOf(torch), emptyList(), showCapsule = false)
+        assertFalse(ok(json).showCapsule)
+        assertTrue(ok(json.replace(",\"showCapsule\":false", "")).showCapsule)
+    }
 
     @Test fun roundTripKeepsEverythingButTheKey() {
         val constraints = listOf(ScriptConstraint("time", mapOf("start" to "22:00", "end" to "07:00")))

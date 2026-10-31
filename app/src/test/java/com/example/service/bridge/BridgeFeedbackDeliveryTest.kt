@@ -18,7 +18,7 @@ class BridgeFeedbackDeliveryTest {
             connect(port).use { probe ->
                 server.broadcastTrigger(100, 24, "SINGLE_PRESS", "first", true, "toggle_flashlight=1")
                 server.broadcastTrigger(101, 25, "SINGLE_PRESS", "last", true, "cycle_ringer_mode=1")
-                assertEquals(2, wakes.get())
+                awaitWakes(wakes, 2)
                 probe.send(BridgeProtocol.CMD_WATCH_FEEDBACK)
                 assertEquals("OK\twatching", probe.read())
                 val replay = probe.read()
@@ -39,8 +39,9 @@ class BridgeFeedbackDeliveryTest {
     }
 
     @Test fun foregroundColdAdoptionReplaysDisplayOnlyThenReceivesLiveTriggers() {
-        withServer { server, port, _ ->
+        withServer { server, port, wakes ->
             server.broadcastTrigger(100, 24, "SINGLE_PRESS", "cold", true, "toggle_flashlight=1")
+            awaitWakes(wakes, 1)
             connect(port).use { client ->
                 client.send(BridgeProtocol.CMD_WATCH)
                 assertEquals("OK\twatching", client.read())
@@ -79,6 +80,60 @@ class BridgeFeedbackDeliveryTest {
         server.bind()
         val worker = thread(isDaemon = true) { server.run() }
         try { block(server, port, wakes) } finally { server.stop(); worker.join(1000) }
+    }
+
+    @Test fun pendingIsDisplayOnlyAndPrecedesTheSingleExecutionReport() {
+        withServer { server, port, wakes ->
+            connect(port).use { client ->
+                client.send(BridgeProtocol.CMD_WATCH)
+                assertEquals("OK\twatching", client.read())
+                server.broadcastPending(100, 24, "SINGLE_PRESS", "run", "delay=0", 42)
+                assertEquals("FEEDBACK\t100\t24\tSINGLE_PRESS\trun\t0\tdelay=0\t42\t1", client.read())
+                // Execution has not finished, but the UI already has everything it needs.
+                server.broadcastTrigger(1100, 24, "SINGLE_PRESS", "run", true, "delay=1", 42)
+                assertEquals("TRIGGER\t1100\t24\tSINGLE_PRESS\trun\t1\tdelay=1\t42\t0", client.read())
+                assertEquals(0, wakes.get())
+            }
+        }
+    }
+
+    @Test fun coldPendingWakesBeforeCompletionAndFeedbackSubscriberReceivesBothPhases() {
+        withServer { server, port, wakes ->
+            server.broadcastPending(100, 24, "SINGLE_PRESS", "run", "delay=0", 42)
+            awaitWakes(wakes, 1)
+            connect(port).use { client ->
+                client.send(BridgeProtocol.CMD_WATCH_FEEDBACK)
+                assertEquals("OK\twatching", client.read())
+                assertTrue(client.read().endsWith("\t42\t1"))
+                server.broadcastTrigger(1100, 24, "SINGLE_PRESS", "run", true, "delay=1", 42)
+                assertTrue(client.read().endsWith("\t42\t0"))
+            }
+        }
+    }
+
+    @Test fun clientDecodesPendingIdentityWithoutCallingExecutionListener() {
+        val client = BridgeClient(port = 1, token = "test-token")
+        val dispatch = client.javaClass.getDeclaredMethod("dispatch", String::class.java, BridgeClient.Listener::class.java)
+            .apply { isAccessible = true }
+        val feedback = mutableListOf<BridgeTrigger>()
+        val triggers = mutableListOf<BridgeTrigger>()
+        val listener = object : BridgeClient.Listener {
+            override fun onFeedback(trigger: BridgeTrigger) { feedback += trigger }
+            override fun onTrigger(trigger: BridgeTrigger) { triggers += trigger }
+        }
+        dispatch.invoke(client, "FEEDBACK\t100\t24\tSINGLE_PRESS\trun\t0\tdelay=0\t42\t1", listener)
+        assertTrue(triggers.isEmpty())
+        assertTrue(feedback.single().pending)
+        assertEquals(42L, feedback.single().capsuleRunId)
+        dispatch.invoke(client, "TRIGGER\t1100\t24\tSINGLE_PRESS\trun\t1\tdelay=1\t42\t0", listener)
+        assertFalse(triggers.single().pending)
+        assertEquals(feedback.single().capsuleRunId, triggers.single().capsuleRunId)
+    }
+
+    private fun awaitWakes(wakes: AtomicInteger, count: Int) {
+        val deadline = System.nanoTime() + 2_000_000_000L
+        while (wakes.get() < count && System.nanoTime() < deadline) Thread.sleep(1)
+        assertEquals(count, wakes.get())
     }
 
     private fun connect(port: Int): Client = Client(Socket("127.0.0.1", port)).also {

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="shortcuts_edit">Edit shortcuts</string>
+    <string name="shortcuts_edit_done">Done editing shortcuts</string>
+    <string name="shortcuts_edit_hint">Tap a shortcut to edit it</string>
+    <string name="shortcuts_drag">Drag to reorder %1$s</string>
+    <string name="shortcuts_name_required">Enter a name</string>
+    <string name="shortcuts_delete">Delete shortcut</string>
+    <string name="shortcuts_move_to_mode">Move to mode</string>
+    <string name="shortcuts_rename_cancel">Cancel rename</string>
+    <string name="shortcuts_name_apply">Apply name</string>
+    <string name="shortcuts_rename">Rename shortcut</string>
+</resources>

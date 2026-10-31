@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="editor_chain_if">Eğer</string>
+    <string name="editor_fine_tune">İnce ayarlar</string>
+    <string name="editor_fine_tune_summary">Ad · Modlar · Titreşim</string>
+    <string name="editor_highlight_hint">Değiştirmek için vurgulanan sözcüğe dokunun.</string>
+    <string name="editor_press">Bas</string>
+    <string name="editor_save_shortcut">Kısayolu kaydet</string>
+    <string name="editor_test">Dene</string>
+</resources>

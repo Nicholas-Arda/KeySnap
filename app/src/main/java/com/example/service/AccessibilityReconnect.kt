@@ -17,7 +17,7 @@ enum class ReconnectResult { CONNECTED, NO_BRIDGE, FAILED }
  * entry removed. It never adds an entry the user removed: no entry, no change (exit 3). Android
  * recomputes accessibility_enabled from the list itself, so the script never writes it.
  */
-internal fun accessibilityReconnectCommand(component: ComponentName, userId: Int): String {
+internal fun accessibilityReconnectCommand(component: ComponentName, userId: Int, enable: Boolean = false): String {
     val full = component.flattenToString()
     val short = component.flattenToShortString()
     // Only package/class characters reach the shell; anything else means no command at all.
@@ -32,7 +32,9 @@ internal fun accessibilityReconnectCommand(component: ComponentName, userId: Int
         "ok() { case \"\$1\" in *[!A-Za-z0-9_.\$/:]*) return 1;; esac; }",
         "l=\$($get) && ok \"\$l\" || exit 6; n=; f=0; IFS=:",
         "for s in \$l; do if [ \"\$s\" = \"\$C\" ] || [ \"\$s\" = \"\$S\" ]; then f=1; else n=\"\${n:+\$n:}\$s\"; fi; done",
-        "unset IFS; [ \$f = 1 ] || exit 3",
+        // [enable] comes only from the user's own tap on the in-app disclosure: add the missing entry.
+        if (enable) "unset IFS; if [ \$f = 0 ]; then [ \"\$l\" = null ] && l=; $put \"\${l:+\$l:}\$C\" || exit 4; exit 0; fi"
+        else "unset IFS; [ \$f = 1 ] || exit 3",
         "if [ -n \"\$n\" ]; then $put \"\$n\"; else settings --user $userId delete secure enabled_accessibility_services; fi || exit 4",
         // Android must see the entry gone, or it never drops the crashed binding.
         "sleep 1",
@@ -47,12 +49,13 @@ object AccessibilityReconnect {
     private val lock = Mutex()
 
     /** User-initiated only. Success means the framework connection came back, not the shell's exit 0. */
-    suspend fun run(context: Context): ReconnectResult {
+    suspend fun run(context: Context, enable: Boolean = false): ReconnectResult {
         if (!lock.tryLock()) return ReconnectResult.FAILED
         try {
             val command = accessibilityReconnectCommand(
                 ComponentName(context, KeyMapperAccessibilityService::class.java),
                 Process.myUid() / 100_000,
+                enable,
             )
             // The script takes about a second; the cap only guards a bridge that stops answering.
             val result = withTimeoutOrNull(15_000) {
@@ -73,3 +76,10 @@ object AccessibilityReconnect {
 /** ColorOS (OPPO, OnePlus, realme) shows a "Turn off / Keep it on" dialog after the entry is re-added. */
 internal fun reconnectWarnsAfterwards(manufacturer: String): Boolean =
     manufacturer.lowercase() in setOf("oppo", "oneplus", "realme")
+
+/**
+ * The same phones turn Accessibility off when KeySnap is swiped out of Recents.
+ * Home shows a lock tip until the user dismisses it.
+ */
+internal fun showColorOsRecentsLockTip(manufacturer: String, dismissed: Boolean): Boolean =
+    !dismissed && reconnectWarnsAfterwards(manufacturer)

@@ -104,6 +104,66 @@ val whatsNewReleases = mapOf(
         ) + ModeHooks.whatsNewFeatures(16L),
         fixes = listOf(R.string.whats_new_fix_coloros_dnd, R.string.whats_new_fix_conditional_volume),
     ),
+    17L to WhatsNewRelease(
+        features = CapsuleHooks.whatsNewRelease(17L)?.features.orEmpty() + listOf(
+            WhatsNewFeature(
+                R.string.whats_new_editor_title,
+                R.string.whats_new_editor_description,
+                R.string.whats_new_try,
+                WhatsNewDestination.SHORTCUTS,
+            ),
+        ),
+        fixes = listOf(
+            R.string.whats_new_fix_assistant,
+            R.string.whats_new_fix_update_startup,
+            R.string.whats_new_fix_large_text,
+        ),
+        highlightTitle = R.string.whats_new_dutch_title,
+        highlightDescription = R.string.whats_new_dutch_description,
+    ),
+    // 1.1.8 is a polish update: no headline, only what changed.
+    19L to WhatsNewRelease(
+        features = emptyList(),
+        fixes = listOfNotNull(
+            R.string.whats_new_fix_capsule_preview_118.takeIf { CapsuleHooks.AVAILABLE },
+            R.string.whats_new_fix_settings_motion_118,
+            R.string.whats_new_fix_pro_card_118,
+            R.string.whats_new_fix_key_code_118,
+        ),
+    ),
+    20L to WhatsNewRelease(
+        features = listOf(
+            WhatsNewFeature(
+                R.string.whats_new_test_editors_title_120,
+                R.string.whats_new_test_editors_description_120,
+                R.string.whats_new_try,
+                WhatsNewDestination.SHORTCUTS,
+            ),
+            WhatsNewFeature(
+                R.string.whats_new_reorder_shortcuts_title_120,
+                R.string.whats_new_reorder_shortcuts_description_120,
+                R.string.whats_new_try,
+                WhatsNewDestination.SHORTCUTS,
+            ),
+            WhatsNewFeature(
+                R.string.whats_new_input_devices_title_120,
+                R.string.whats_new_input_devices_description_120,
+                R.string.whats_new_try,
+                WhatsNewDestination.SHORTCUTS,
+            ),
+        ),
+        fixes = listOfNotNull(
+            R.string.whats_new_fix_setup_120,
+            R.string.whats_new_fix_conditions_120,
+            R.string.whats_new_fix_app_names_120,
+            R.string.whats_new_fix_side_power_keys_120,
+            R.string.whats_new_fix_idle_battery_120,
+            R.string.whats_new_fix_advanced_setup_120,
+            R.string.whats_new_fix_saved_keys_120,
+            R.string.whats_new_fix_shortcuts_page_120,
+            R.string.whats_new_fix_modes_120.takeIf { ModeHooks.AVAILABLE },
+        ),
+    ),
 ) + listOf(14L, 15L).mapNotNull { code -> CapsuleHooks.whatsNewRelease(code)?.let { code to it } }.toMap()
 
 fun whatsNewVersionLabel(versionName: String): String = versionName.substringBefore("-dev")

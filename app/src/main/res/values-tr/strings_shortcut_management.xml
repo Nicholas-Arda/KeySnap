@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="shortcuts_edit">Kısayolları düzenle</string>
+    <string name="shortcuts_edit_done">Düzenlemeyi bitir</string>
+    <string name="shortcuts_edit_hint">Düzenlemek için bir kısayola dokun</string>
+    <string name="shortcuts_drag">%1$s kısayolunu sıralamak için sürükle</string>
+    <string name="shortcuts_name_required">Bir ad gir</string>
+    <string name="shortcuts_delete">Kısayolu sil</string>
+    <string name="shortcuts_move_to_mode">Moda taşı</string>
+    <string name="shortcuts_rename_cancel">Ad değiştirmeyi iptal et</string>
+    <string name="shortcuts_name_apply">Adı uygula</string>
+    <string name="shortcuts_rename">Kısayolu yeniden adlandır</string>
+</resources>

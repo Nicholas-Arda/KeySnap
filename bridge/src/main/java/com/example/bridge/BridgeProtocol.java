@@ -18,7 +18,7 @@ public final class BridgeProtocol {
     /** Bumped whenever the on-disk payload or the socket protocol changes incompatibly, or when
      *  :bridge behavior changes at all — an already-running detached bridge has no way to pick up
      *  a source-only fix otherwise. */
-    public static final int VERSION = 30;
+    public static final int VERSION = 38;
 
     /** Process name given to app_process, used by `pidof` for liveness checks. */
     public static final String NICE_NAME = "arda_bridge";
@@ -74,6 +74,8 @@ public final class BridgeProtocol {
      * omits the last field.
      */
     public static final String CMD_RUN = "RUN";
+    /** TEST_ACTION {actions:[one action]}: private ActionTestResult JSON, never telemetry. */
+    public static final String CMD_TEST_ACTION = "TEST_ACTION";
     /**
      * PRESS_SEND {"packageName":…,"text":…,"contactName":…,"number":…}: send_message's "Send
      * automatically" (number as digits; the chat's header must show the name or number), sent by the app
@@ -81,6 +83,8 @@ public final class BridgeProtocol {
      * in the config can reach it. Answered with OK and one outcome word, {@link #PRESS_SEND_OK} on success.
      */
     public static final String CMD_PRESS_SEND = "PRESS_SEND";
+    /** Opens the selected assistant's voice-interaction session, after the app's role guard. */
+    public static final String CMD_SHOW_ASSISTANT = "SHOW_ASSISTANT";
     public static final String PRESS_SEND_OK = "ok";
     /** Send was tapped but the field did not visibly empty: the message may have gone out. */
     public static final String PRESS_SEND_UNCONFIRMED = "unconfirmed";
@@ -97,9 +101,9 @@ public final class BridgeProtocol {
     public static final String MSG_PONG = "PONG";
     public static final String MSG_ERROR = "ERROR";
     public static final String MSG_EVENT = "EVENT";
-    /** TRIGGER ts keyCode pressType scriptId success actionResults — see {@link #encodeActionResults}. */
+    /** TRIGGER ts keyCode pressType scriptId success actionResults runId pending — see {@link #encodeActionResults}. */
     public static final String MSG_TRIGGER = "TRIGGER";
-    /** Same fields as TRIGGER, but display only: never execute actions from a retained report. */
+    /** Same fields as TRIGGER, but display only: a pending match or a retained completed report. */
     public static final String MSG_FEEDBACK = "FEEDBACK";
     public static final String MSG_DEVICE = "DEVICE";
     /** Display-only mode feedback. The durable value stays in the app-created mode file, never in telemetry. */

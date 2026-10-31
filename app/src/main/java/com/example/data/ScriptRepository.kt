@@ -69,15 +69,11 @@ class ScriptRepository internal constructor(
 
     /** A script with actions but no trigger yet is a legitimate saved draft; it simply never matches. */
     fun upsert(script: ShortcutScript) {
-        require(script.id.isNotBlank() && script.actions.isNotEmpty())
-        _scripts.value = _scripts.value.filterNot { it.id == script.id } + script
-        syncLegacyIfPrimary(script)
-        persistCurrent()
+        updateInPlace(listOf(script))
     }
 
     /**
      * Rewrites scripts by id and leaves the others where they are.
-     * [upsert] moves a script to the end, which would reshuffle a mode remap.
      */
     fun updateInPlace(updated: List<ShortcutScript>) {
         if (updated.isEmpty()) return
@@ -89,6 +85,18 @@ class ScriptRepository internal constructor(
         _scripts.value.firstOrNull()?.let { primary ->
             if (primary.id in byId) syncLegacyIfPrimary(primary)
         }
+        persistCurrent()
+    }
+
+    fun reorder(orderedIds: List<String>) {
+        _scripts.value = mergeShortcutOrder(_scripts.value, orderedIds)
+        _scripts.value.firstOrNull()?.let(::syncLegacyIfPrimary)
+        persistCurrent()
+    }
+
+    fun rename(id: String, name: String) {
+        val trimmed = name.trim().takeIf { it.isNotEmpty() } ?: return
+        _scripts.value = _scripts.value.map { if (it.id == id) it.copy(name = trimmed) else it }
         persistCurrent()
     }
 

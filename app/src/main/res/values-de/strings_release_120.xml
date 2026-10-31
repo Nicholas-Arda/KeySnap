@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_test_editors_title_120">Editoren zum Ausprobieren</string>
+    <string name="whats_new_test_editors_description_120">Teste jeden Schritt mit ▶ vor dem Speichern.</string>
+    <string name="whats_new_reorder_shortcuts_title_120">Kurzbefehle sortieren und bearbeiten</string>
+    <string name="whats_new_reorder_shortcuts_description_120">Tippe auf ✎ oder halte einen Kurzbefehl gedrückt; ziehe ihn zum Sortieren.</string>
+    <string name="whats_new_input_devices_title_120">Tastaturen, Mäuse und Gamepads</string>
+    <string name="whats_new_input_devices_description_120">Erweiterter Modus: echte Tastennamen, Strg-Kürzel.</string>
+    <string name="whats_new_fix_setup_120">Einrichtung in zwei Schritten, Benachrichtigungen optional</string>
+    <string name="whats_new_fix_conditions_120">Jede Bedingung mit NICHT umkehren</string>
+    <string name="whats_new_fix_app_names_120">Apps erscheinen mit ihrem Namen</string>
+    <string name="whats_new_fix_side_power_keys_120">Seiten- und Ein-/Aus-Tasten: klarer Hinweis</string>
+    <string name="whats_new_fix_idle_battery_120">Weniger Akkuverbrauch im Leerlauf</string>
+    <string name="whats_new_fix_advanced_setup_120">Erweiterten Modus auf einer Seite einrichten</string>
+    <string name="whats_new_fix_saved_keys_120">Gespeicherte Tasten umbenennen oder vorab hinzufügen</string>
+    <string name="whats_new_fix_shortcuts_page_120">Aufgeräumte Kurzbefehle-Seite, kürzere Listen</string>
+    <string name="whats_new_fix_modes_120">Modi: jederzeit ausschalten oder löschen</string>
+</resources>

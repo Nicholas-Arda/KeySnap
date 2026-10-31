@@ -2,7 +2,6 @@
 <resources>
     <string name="app_name">KeySnap</string>
     <string name="accessibility_service_description">Fiziksel tuş basışlarını (Ses, Güç ve diğer donanım düğmeleri) algılar; böylece kısayollarınızı tetikleyebilirler. Yalnızca Uzman Modu kurulumu sırasında, sistemin eşleştirme kodu penceresini sizin için açar ve oradaki kodu da okur. Başka hiçbir uygulamanın ekranını okuyamaz.</string>
-    <string name="accessibility_disclosure_agree">Kabul et ve ayarları aç</string>
 
     <!-- Eylem kategorileri -->
     <string name="action_category_input">Giriş</string>
@@ -268,6 +267,7 @@
 
     <!-- Eylem düzenleyici: gereksinim rozetleri -->
     <string name="badge_expert_mode">Uzman Modu gerektirir</string>
+    <string name="badge_advanced_full_access">Tam erişim Uzman Modu gerektirir</string>
     <string name="badge_accessibility">Erişilebilirlik hizmeti gerektirir</string>
     <string name="badge_notification_policy">Rahatsız Etmeyin erişimi gerektirir</string>
     <string name="badge_notification_access">Bildirim erişimi gerektirir</string>
@@ -551,7 +551,6 @@
     <string name="settings_close">Ayarları kapat</string>
 
     <!-- İletişim kutuları -->
-    <string name="dialog_expert_connected">UZMAN MODU BAĞLANDI</string>
     <string name="dialog_new_input_title">Yeni giriş algılandı</string>
     <string name="dialog_new_input_body">Bu girişe kısa bir ad verin.</string>
     <string name="dialog_new_input_hint">örn. Kısayol tuşu</string>
@@ -575,8 +574,6 @@
     <string name="trigger_picker_listening">Dinleniyor… durdurmak için dokunun</string>
     <string name="trigger_picker_tap_to_record">Dokunun, sonra bir tuşa basın veya birkaçını birlikte basılı tutun</string>
     <string name="trigger_picker_save_combo">Tuşu kaydet</string>
-    <string name="trigger_picker_use_automation">Bunun yerine otomasyon kullan</string>
-    <string name="trigger_picker_use_key">%1$s tuşunu kullan</string>
 
     <!-- Kısayol ayarları -->
     <string name="script_settings_name">Ad</string>
@@ -665,33 +662,12 @@
     <string name="home_triggers_session">Bu oturumdaki çalıştırmalar</string>
     <string name="home_last_from">Son kaynak: %1$s</string>
     <string name="home_open_label_settings">%1$s ayarlarını aç</string>
-    <string name="home_setup_title_off">Kısayollarınız henüz çalışmıyor</string>
-    <string name="home_setup_subtitle_off">Üç adım, hepsi Android’in kendi ayarlarında. Her adımda neye dokunacağınız burada.</string>
-    <string name="home_setup_title_at_risk">Kısayollarınız çalışmayı durdurabilir</string>
-    <string name="home_setup_subtitle_at_risk">Bunlar açılana kadar Android uygulamayı arka planda kapatabilir.</string>
-    <string name="home_setup_progress">%1$d/3</string>
-    <string name="home_setup_step_accessibility">Erişilebilirlik hizmetini açın</string>
-    <string name="home_setup_why_accessibility">KeySnap tuşlara basışlarınızı bunun üzerinden okur. Bu açılmadan hiçbir şey çalışmaz.</string>
     <string name="home_setup_open_accessibility">Erişilebilirlik ayarlarını aç</string>
-    <string name="home_setup_step_background">KeySnap’in arka planda çalışmasına izin verin</string>
-    <string name="home_setup_why_background">Android, uyuduğunu düşündüğü uygulamaları kapatır. Android sorduğunda İzin ver’e dokunun — Reddet, KeySnap’i kapanmaya açık bırakır.</string>
     <string name="home_setup_allow_background">Arka planda çalışmasına izin ver</string>
-    <string name="home_setup_done_background">İzin verildi</string>
-    <string name="home_setup_step_notifications">Bildirimlere izin verin</string>
-    <string name="home_setup_why_notifications">Kurulum için, bir kısayol çalışamadığında haber vermek için ve kendi kısayollarınızın gösterdiği bildirimler için. Android sorduğunda İzin ver’e dokunun — İzin verme, kurulumu burada durdurur.</string>
-    <string name="home_setup_ask_now">Şimdi sor</string>
-    <string name="home_setup_done_notifications">İzin verildi</string>
-    <string name="home_setup_all_done">Üçü de açık. Tuşlarınız artık çalışıyor.</string>
     <string name="home_setup_state_done">Tamamlandı</string>
     <string name="home_setup_state_current">Şu anki adım</string>
     <string name="home_setup_state_upcoming">Henüz başlamadı</string>
     <string name="home_setup_illo_downloaded_apps">İndirilen uygulamalar</string>
-    <string name="home_setup_why">Neden?</string>
-    <string name="home_setup_why_expanded">Genişletildi</string>
-    <string name="home_setup_why_collapsed">Daraltıldı</string>
-    <string name="home_setup_whytext_accessibility">Android, donanım tuşlarını yalnızca bir erişilebilirlik servisine gösterir; KeySnap de tam olarak bunun için bir tane kullanır: bir basışı fark etmek ve kısayolunuzu çalıştırmak. Başka uygulamaların ekranlarını okumaz. Yalnızca Uzman Modu kurulumu sırasında, Kablosuz Hata Ayıklama sayfasındaki eşleştirme kodunu da okur, başka hiçbir şeyi değil.</string>
-    <string name="home_setup_whytext_background">Android, boşta olduğunu düşündüğü uygulamaları kapatır; kapanmış bir uygulama da kısayollarınızı çalıştıramaz. Bu, telefonunuz uyurken KeySnap’i ayakta tutar. Arka planda bir tuşa basılmasını beklemekten başka bir şey yapmaz.</string>
-    <string name="home_setup_whytext_notifications">Uzman Modu kurulumu sırasında: eşleştirme kodu ve servisin çalışıp çalışmadığı. Sonrasında yalnızca bir kısayol çalışamadığında ve nedeni, bir de kendi kısayollarınıza eklediğiniz bildirimler. Bizden hatırlatma yok, tanıtım yok, başka hiçbir şey yok.</string>
     <string name="home_setup_illo_battery_dialog">KeySnap arka planda her zaman çalışsın mı?</string>
     <string name="home_setup_illo_battery_body">Bu, pil ömrünü kısaltabilir.</string>
     <string name="home_setup_illo_battery_deny">Reddet</string>
@@ -701,6 +677,8 @@
     <string name="home_nudge_title">İlk kısayolunuzu oluşturun</string>
     <string name="home_nudge_subtitle">Fener hemen aşağıda, tek dokunuş.</string>
     <string name="home_nudge_dismiss">Kapat</string>
+    <string name="home_coloros_recents_title">KeySnap’i son kullanılanlarda kilitleyin</string>
+    <string name="home_coloros_recents_body">Bu telefonda KeySnap’i kaydırarak kapatmak Erişilebilirlik’i kapatır; kısayol tuşları kendi işini de yapar. Son kullanılanları açın ve KeySnap kartını aşağı çekerek kilitleyin.</string>
 
     <!-- Pro tanıtımı -->
     <string name="pro_card_subtitle">Ücretsiz sürüm %1$d kısayolu açık tutar. Pro hepsini açık tutar.</string>
@@ -818,9 +796,6 @@
     <string name="wizard_title">Uzman Modu\'nu aç</string>
     <string name="wizard_subtitle">Kurulum Sihirbazı</string>
     <string name="wizard_continue">Devam</string>
-    <string name="wizard_finish_pairing">Eşleştirmeyi bitir</string>
-    <string name="wizard_step_intro">Giriş</string>
-    <string name="wizard_step_pairing">Eşleştirme</string>
     <string name="wizard_step_done">Bitti</string>
     <string name="wizard_what_is_expert">Uzman Modu nedir?</string>
     <string name="wizard_expert_explainer">KeySnap, telefonunuzun kendi Kablosuz Hata Ayıklama özelliğiyle eşleşir ve tuşları doğrudan çekirdekten okur — Güç, asistan, kamera; Android\'in uygulamalardan gizlediği düğmeler.</string>
@@ -832,7 +807,10 @@
     <string name="wizard_illo_action">↳ Fener açıldı</string>
     <string name="wizard_how_to_dev_options">Geliştirici Seçenekleri nasıl açılır?</string>
     <string name="wizard_auto_pairing">Otomatik ADB eşleştirme</string>
-    <string name="wizard_auto_pairing_explainer">Eşleştirme kodunu elle yazmanıza gerek yok — arka planda okuyup otomatik bağlanıyoruz. Başarısız olursa kodu bildirimden girebilirsiniz.</string>
+    <string-array name="wizard_auto_pairing_points">
+        <item>Eşleştirme kodunu elle yazmanıza gerek yok — arka planda okuyup otomatik bağlanıyoruz.</item>
+        <item>Başarısız olursa kodu bildirimden girebilirsiniz.</item>
+    </string-array>
     <string name="wizard_open_settings">Ayarları aç ve eşleştirmeyi başlat</string>
     <string name="wizard_expert_running">Uzman Modu çalışıyor</string>
     <string name="wizard_expert_running_body">Tüm Android donanım tuşları (Güç, asistan, Ses, Kamera vb.) Linux çekirdeği seviyesinde dinleniyor.</string>
@@ -841,7 +819,6 @@
     <string name="wizard_connecting">Bağlanılıyor…</string>
     <string name="wizard_connecting_body">Uzman Modu başlatılıyor. Bu birkaç saniye sürer — bu ekranı açık tutun.</string>
     <string name="wizard_kernel_stream">Canlı çekirdek olay akışı</string>
-    <string name="wizard_test_flash">Fener tetiklemesini dene</string>
 
     <!-- Eşleştirme durumu -->
     <string name="pairing_idle">Eşleştirme bekleniyor…</string>
@@ -926,7 +903,6 @@
     <string name="widget_description">Kısayollarınızdan birini tek dokunuşla çalıştırın</string>
     <string name="trigger_kind_surface">Widget veya kutucuk</string>
     <string name="surface_card_subtitle">Ana ekran widget\'ına ya da Hızlı Ayarlar kutucuğuna dokununca çalışır</string>
-    <string name="trigger_picker_use_surface">Yedek tuş yok mu? Widget veya kutucuk kullan</string>
     <string name="run_source_widget">Widget</string>
     <string name="run_source_tile">Hızlı Ayarlar kutucuğu</string>
     <string name="widget_limit_reached">Ücretsiz plan: %1$d ana ekran widget\'ı. Sınırsız widget için Pro\'ya geçin.</string>
@@ -1098,9 +1074,9 @@
     <string name="param_mode_pulse">Mod titreşimi</string>
     <string name="param_mode_gap">Titreşimler arası boşluk</string>
     <string name="param_mode_lead_gap">Mod titreşiminden önceki bekleme</string>
-    <string name="choice_mode_feedback_toast">Ekran mesajı</string>
+    <string name="choice_mode_feedback_toast">Mesaj</string>
     <string name="choice_mode_feedback_vibrate">Titreşim</string>
-    <string name="choice_mode_feedback_both">Mesaj ve titreşim</string>
+    <string name="choice_mode_feedback_both">İkisi de</string>
     <string name="param_mode_number">Mod numarası</string>
     <string name="constraint_mode_is">Geçerli mod</string>
     <string name="mode_current">Mod %1$d</string>
@@ -1113,4 +1089,15 @@
     <string name="assistant_redirect_note">Asistanınız KeySnap olduğu için bu eylem telefonunuzdaki başka bir asistanı açar.</string>
     <string name="assistant_no_other_app">Bu telefonda kullanılabilir başka bir asistan yok.</string>
     <string name="assistant_voice_wakeup_warning">KeySnap asistanınız olduğu sürece, önceki asistanınızın sesle uyandırması çalışmayı durdurabilir.</string>
+    <string name="script_settings_show_capsule">Tuş kapsülünü göster</string>
+    <string name="script_settings_show_capsule_description">Bu kısayol çalıştığında geri bildirim göster.</string>
+    <plurals name="home_recipes_show_more">
+        <item quantity="one">%d tane daha göster</item>
+        <item quantity="other">%d tane daha göster</item>
+    </plurals>
+    <string name="home_recipes_show_less">Daha az göster</string>
+    <string name="settings_saved_keys">Kayıtlı tuşlar</string>
+    <string name="settings_saved_keys_summary">Tuşları yeniden adlandır ya da kullanmadan önce ekle</string>
+    <string name="settings_saved_keys_add">Tuş ekle</string>
+    <string name="settings_saved_keys_rename">Tuşu yeniden adlandır</string>
 </resources>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_editor_title">A simpler shortcut editor</string>
+    <string name="whats_new_editor_description">A clearer shortcut editor with in-place key recording and smoother opening and closing.</string>
+    <string name="whats_new_fix_update_startup">Fixed a crash when opening KeySnap after an update</string>
+    <string name="whats_new_dutch_title">Now in Dutch</string>
+    <string name="whats_new_dutch_description">Use KeySnap in Dutch. Choose Nederlands in Settings → Language.</string>
+</resources>

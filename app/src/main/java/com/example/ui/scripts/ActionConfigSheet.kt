@@ -1,6 +1,9 @@
 package com.example.ui.scripts
 
 import android.content.Intent
+import androidx.annotation.StringRes
+import androidx.compose.material.icons.filled.Error
+import com.example.data.advancedModeWarningRes
 import android.net.Uri
 import android.provider.ContactsContract.CommonDataKinds.Phone
 import android.util.Size
@@ -30,6 +33,14 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.outlined.Contacts
 import androidx.compose.material.icons.outlined.MyLocation
 import androidx.compose.material.icons.outlined.Photo
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.isImeVisible
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.material3.ModalBottomSheetProperties
+import androidx.activity.compose.BackHandler
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -65,9 +76,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.platform.testTag
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.unit.dp
+import com.example.bridge.ActionTestResult
 import com.example.data.ActionEditorForms
+import com.example.data.AppLabelResolver
 import com.example.data.EditorField
 import com.example.data.InstalledApp
+import com.example.data.PrivilegedEditor
+import com.example.data.ScriptAction
 import com.example.data.NOTIFICATION_ACCESS_BADGE
 import com.example.data.NOTIFICATION_POLICY_BADGE
 import com.example.data.WRITE_SETTINGS_BADGE
@@ -94,7 +109,7 @@ import kotlinx.coroutines.withContext
  * chain row's gear. Every decision — which fields are visible, whether the form is complete, what
  * the defaults are — comes from [ActionEditorForms], which is unit-tested; this file only renders.
  */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun ActionConfigSheet(
     actionType: String,
@@ -116,6 +131,20 @@ fun ActionConfigSheet(
     onConfirm: (Map<String, String>) -> Unit,
     onDismiss: () -> Unit,
     scripts: List<ShortcutScript> = emptyList(),
+    /** Reopens the sheet as another action type; null hides the "Switch to Input text" button. */
+    onSwitchAction: ((String) -> Unit)? = null,
+    advancedActive: Boolean = false,
+    onSetUpAdvancedMode: () -> Unit = {},
+    everyChatWarning: Boolean = false,
+    cooldownRemoved: Boolean = false,
+    existingCooldownMinutes: String? = null,
+    onRemoveReplyCooldown: () -> Unit = {},
+    notificationAccessGranted: Boolean = true,
+    canWriteSettings: Boolean = true,
+    runTest: (suspend (ScriptAction) -> ActionTestResult)? = null,
+    readSetting: (suspend (String, String) -> String?)? = null,
+    writeSystemSetting: (suspend (String, String) -> ActionTestResult)? = null,
+    visibleChats: ((String) -> List<String>)? = null,
 ) {
     val colors = MaterialTheme.colorScheme
     val context = LocalContext.current
@@ -167,7 +196,43 @@ fun ActionConfigSheet(
     // Sized from the device: a fixed 560dp cap ran past the bottom of a short or landscape screen.
     val sheetMaxHeight = (LocalConfiguration.current.screenHeightDp * 0.7f).dp
 
-    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
+    // Back while typing closes only the keyboard. Material's own Back handling hides the sheet in
+    // one go on some OEMs (ColorOS), throwing away everything typed, so the sheet owns Back here.
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val sheetScope = rememberCoroutineScope()
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = sheetState,
+        properties = ModalBottomSheetProperties(shouldDismissOnBackPress = false),
+    ) {
+        val imeVisible = WindowInsets.isImeVisible
+        val keyboard = LocalSoftwareKeyboardController.current
+        BackHandler {
+            if (imeVisible) keyboard?.hide() else sheetScope.launch { sheetState.hide() }.invokeOnCompletion { onDismiss() }
+        }
+        if (actionType in PrivilegedEditor.TYPES) {
+            PrivilegedEditorPage(
+                actionType = actionType,
+                initialParams = initialParams,
+                startsFromNotification = startsFromNotification,
+                installedApps = installedApps,
+                onConfirm = onConfirm,
+                onDismiss = onDismiss,
+                advancedActive = advancedActive,
+                onSetUpAdvancedMode = onSetUpAdvancedMode,
+                everyChatWarning = everyChatWarning,
+                cooldownRemoved = cooldownRemoved,
+                existingCooldownMinutes = existingCooldownMinutes,
+                onRemoveReplyCooldown = onRemoveReplyCooldown,
+                notificationAccessGranted = notificationAccessGranted,
+                canWriteSettings = canWriteSettings,
+                onRequestWriteSettings = onRequestWriteSettings,
+                runTest = runTest,
+                readSetting = readSetting,
+                writeSystemSetting = writeSystemSetting,
+                visibleChats = visibleChats,
+            )
+        } else {
         Column(
             Modifier
                 .fillMaxWidth()
@@ -183,7 +248,9 @@ fun ActionConfigSheet(
             ActionEditorForms.helperRes(form, snapshot)?.let {
                 Text(stringResource(it), style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
             }
-            form.requirementRes?.let {
+            if (ActionEditorForms.needsAdvancedMode(actionType)) {
+                advancedModeWarningRes(actionType, advancedActive)?.let { AdvancedModeWarning(it, onSetUpAdvancedMode) }
+            } else form.requirementRes?.let {
                 val onClick = when (it) {
                     NOTIFICATION_POLICY_BADGE -> onRequestNotificationPolicyAccess
                     WRITE_SETTINGS_BADGE -> onRequestWriteSettings
@@ -202,8 +269,15 @@ fun ActionConfigSheet(
                         NumberFieldRow(field, values)
                     }
                     is EditorField.Choice -> ChoiceFieldRow(field, values)
-                    is EditorField.KeyCodePick -> KeyCodeFieldRow(field, values, isRecordingKey, onStartRecording, onCancelRecording)
-                    is EditorField.AppPick -> AppFieldRow(field, values, installedApps) { showAppPickerFor = field.key }
+                    is EditorField.KeyCodePick -> KeyCodeFieldRow(
+                        field,
+                        values,
+                        isRecordingKey,
+                        onStartRecording,
+                        onCancelRecording,
+                        onUseInputText = onSwitchAction?.let { switch -> { onCancelRecording(); switch("input_text") } },
+                    )
+                    is EditorField.AppPick -> AppFieldRow(field, values) { showAppPickerFor = field.key }
                     is EditorField.Point -> PointFieldRow(
                         label = stringResource(field.labelRes),
                         pointKeys = listOf(field.xKey, field.yKey),
@@ -245,6 +319,14 @@ fun ActionConfigSheet(
                 }
             }
             // CLAUDE.md "Privileged actions must stay legible": the literal link or intent, before it runs.
+            if (actionType == "force_stop_app" && !snapshot["packageName"].isNullOrBlank()) {
+                Text(
+                    stringResource(R.string.action_config_what_will_run, "am force-stop ${snapshot["packageName"]}"),
+                    Modifier.testTag("config_what_will_run"),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = colors.onSurfaceVariant,
+                )
+            }
             if (actionType == "send_message") {
                 val launch = remember(snapshot) { messageLaunchFor(context, snapshot) }
                 val hasNumber = !snapshot["number"].isNullOrBlank()
@@ -290,6 +372,7 @@ fun ActionConfigSheet(
             }
             Spacer(Modifier.height(8.dp))
         }
+        }
     }
 
     showAppPickerFor?.let { key ->
@@ -302,6 +385,23 @@ fun ActionConfigSheet(
             },
             onDismiss = { showAppPickerFor = null },
         )
+    }
+}
+
+/** Red, like the picker row: this action fails (or half-works) until Advanced Mode is on. */
+@Composable
+private fun AdvancedModeWarning(@StringRes text: Int, onSetUp: () -> Unit) {
+    val error = MaterialTheme.colorScheme.error
+    Row(
+        Modifier.fillMaxWidth().clip(InnerShape).background(error.copy(alpha = .10f)).padding(start = 10.dp).testTag("advanced_mode_warning"),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(Icons.Filled.Error, null, tint = error, modifier = Modifier.size(16.dp))
+        Spacer(Modifier.width(6.dp))
+        Text(stringResource(text), Modifier.weight(1f), color = error, style = MaterialTheme.typography.bodySmall)
+        TextButton(onClick = onSetUp, modifier = Modifier.testTag("advanced_mode_set_up")) {
+            Text(stringResource(R.string.chain_set_up), color = error)
+        }
     }
 }
 
@@ -391,9 +491,11 @@ private fun KeyCodeFieldRow(
     isRecordingKey: Boolean,
     onStartRecording: () -> Unit,
     onCancelRecording: () -> Unit,
+    onUseInputText: (() -> Unit)?,
 ) {
     val colors = MaterialTheme.colorScheme
     val current = values[field.key]?.toIntOrNull()
+    val inputTextName = stringResource(R.string.action_input_text)
     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
         Text(stringResource(field.labelRes), style = SectionLabel, color = colors.onSurfaceVariant)
         if (current != null) {
@@ -404,6 +506,8 @@ private fun KeyCodeFieldRow(
             onValueChange = { input -> values[field.key] = input.filter { it.isDigit() }.take(5) },
             modifier = Modifier.fillMaxWidth().testTag("config_field_${field.key}"),
             label = { Text(stringResource(R.string.action_config_enter_key_code)) },
+            // A Play review read this as a number field; the 5-digit cap stays, the hint says why.
+            supportingText = { Text(stringResource(R.string.key_code_single_key_hint, inputTextName)) },
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         )
@@ -413,6 +517,11 @@ private fun KeyCodeFieldRow(
         ) {
             Text(stringResource(if (isRecordingKey) R.string.action_config_cancel_recording else R.string.action_config_record_key), color = colors.primary)
         }
+        onUseInputText?.let {
+            TextButton(onClick = it, modifier = Modifier.testTag("key_code_use_input_text")) {
+                Text(stringResource(R.string.key_code_switch_to_input_text, inputTextName), color = colors.primary)
+            }
+        }
     }
 }
 
@@ -420,12 +529,13 @@ private fun KeyCodeFieldRow(
 internal fun AppFieldRow(
     field: EditorField.AppPick,
     values: MutableMap<String, String>,
-    installedApps: List<InstalledApp>,
     onOpenPicker: () -> Unit,
 ) {
     val colors = MaterialTheme.colorScheme
     val selected = values[field.key].orEmpty()
-    val label = installedApps.firstOrNull { it.packageName == selected }?.label
+    val context = LocalContext.current
+    val app = AppLabelResolver.get(context).resolve(selected, context.resources)
+    var enterPackage by remember { mutableStateOf(false) }
     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
         Text(stringResource(field.labelRes), style = SectionLabel, color = colors.onSurfaceVariant)
         Row(
@@ -437,13 +547,22 @@ internal fun AppFieldRow(
                 .padding(14.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(
-                label ?: selected.ifEmpty { stringResource(R.string.action_config_choose_app) },
-                Modifier.weight(1f),
-                color = if (selected.isEmpty()) colors.onSurfaceVariant else colors.onSurface,
-            )
+            Column(Modifier.weight(1f)) {
+                Text(
+                    app.label.ifEmpty { stringResource(R.string.action_config_choose_app) },
+                    color = if (selected.isEmpty()) colors.onSurfaceVariant else colors.onSurface,
+                )
+                if (!app.installed) Text(
+                    stringResource(R.string.app_not_installed),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = colors.onSurfaceVariant,
+                )
+            }
         }
-        OutlinedTextField(
+        TextButton(onClick = { enterPackage = !enterPackage }) {
+            Text(stringResource(R.string.action_config_enter_package))
+        }
+        if (enterPackage) OutlinedTextField(
             value = selected,
             onValueChange = { values[field.key] = it.trim() },
             modifier = Modifier.fillMaxWidth().testTag("config_field_${field.key}"),

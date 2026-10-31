@@ -24,6 +24,7 @@ import android.os.PowerManager
 import android.os.SystemClock
 import android.provider.Settings
 import android.util.Log
+import com.example.bridge.ConstraintNegation
 import com.example.data.ScriptConstraint
 import com.example.data.ScriptConstraintCatalog
 import com.example.mode.ModeHooks
@@ -43,6 +44,7 @@ interface ConstraintEvaluator {
  * `com.example.bridge.ConstraintEvaluator` in `:bridge`, which answers the same
  * predicates via shell commands since the detached bridge process has no [Context].
  *
+ * Negated predicates preserve unknown and fail closed; mode_is negation is unsupported.
  * Mode predicates fail closed on unreadable state, so an error cannot select the wrong shortcut.
  * For other device predicates, unknown never blocks: whenever the state cannot be read (missing permission, no service
  * instance, malformed parameter, API failure) the constraint reads as satisfied, so a script
@@ -70,6 +72,12 @@ class AndroidConstraintEvaluator(
 
     private fun evaluate(constraint: ScriptConstraint): Boolean {
         val p = constraint.params
+        if (ConstraintNegation.requested(p)) {
+            if (!ConstraintNegation.supported(constraint.type)) return false
+            if (constraint.type == ScriptConstraintCatalog.COOLDOWN) return true
+            val state = runCatching { readKnownState(ConstraintNegation.positiveType(constraint.type), constraint) }.getOrNull()
+            return ConstraintNegation.apply(ConstraintNegation.predicate(constraint.type, state))
+        }
         return when (constraint.type) {
             ScriptConstraintCatalog.MODE_IS -> ModeHooks.matches(appContext, p["mode"])
             "screen_on" -> isScreenOn()
@@ -135,6 +143,103 @@ class AndroidConstraintEvaluator(
             // A constraint type that isn't AVAILABLE never blocks a script.
             else -> true
         }
+    }
+
+    /** Strict reads used by negation; never invert a legacy fallback value. */
+    private fun readKnownState(type: String, constraint: ScriptConstraint): Boolean? {
+        val p = constraint.params
+        return when (type) {
+            "screen_on" -> power { it.isInteractive }
+            "wifi_on" -> read<WifiManager>(Context.WIFI_SERVICE, "WiFi") { it.isWifiEnabled }
+            "bluetooth_on" -> service<BluetoothManager>(Context.BLUETOOTH_SERVICE)?.adapter?.isEnabled
+            "charging" -> read<BatteryManager>(Context.BATTERY_SERVICE, "battery") { it.isCharging }
+            "in_phone_call" -> audioMode()?.takeIf { it in 0..6 }?.let { isInPhoneCall(it) }
+            "phone_ringing" -> audioMode()?.takeIf { it in 0..6 }?.let { isPhoneRinging(it) }
+            "flashlight_on" -> FlashlightController.knownState()
+            "app_in_foreground" -> isAppInForeground(p["packageName"])
+            "media_is_playing" -> audio { it.isMusicActive }
+            "bluetooth_device_connected" -> knownBluetoothDevice(p["address"], p["name"])
+            "screen_orientation" -> appContext.resources.configuration.orientation.let {
+                if (it !in setOf(Configuration.ORIENTATION_PORTRAIT, Configuration.ORIENTATION_LANDSCAPE) ||
+                    p["orientation"]?.trim()?.lowercase() !in setOf("portrait", "landscape")) null
+                else matchesOrientation(p["orientation"], it)
+            }
+            "dark_mode_on" -> (appContext.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK).let {
+                if (it == Configuration.UI_MODE_NIGHT_UNDEFINED) null else it == Configuration.UI_MODE_NIGHT_YES
+            }
+            "connected_to_wifi_network" -> knownWifiNetwork(p["ssid"])
+            "keyboard_showing" -> KeyMapperAccessibilityService.isKeyboardShowing()
+            "device_locked" -> keyguard { it.isDeviceLocked }
+            "lock_screen_showing" -> keyguard { it.isKeyguardLocked }
+            "no_app_open" -> knownNoAppOpen()
+            "battery_saver_on" -> power { it.isPowerSaveMode }
+            "charging_wired", "charging_wireless" -> appContext.registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+                ?.takeIf { it.hasExtra(BatteryManager.EXTRA_PLUGGED) }
+                ?.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1)?.takeIf { it >= 0 }
+                ?.let { pluggedKind(it) == if (type == "charging_wired") "wired" else "wireless" }
+            "battery_above", "battery_below" -> p["percent"]?.trim()?.toIntOrNull()?.takeIf { it in 0..100 }?.let { limit ->
+                batteryPercent()?.let { if (type == "battery_above") it > limit else it < limit }
+            }
+            "location_on" -> isLocationEnabled()
+            "time" -> if (knownTime(p["start"]) == null || knownTime(p["end"]) == null) null
+                else isWithinTimeWindow(p["start"], p["end"], TimeSchedule.now().toLocalTime())
+            "day_of_week" -> if (parseDaySet(p["days"]).isEmpty()) null else isDayInSet(p["days"], TimeSchedule.now().dayOfWeek)
+            "mobile_data_on" -> knownSetting("mobile_data")
+            "airplane_mode_on" -> knownSetting(Settings.Global.AIRPLANE_MODE_ON)
+            "ringer_normal", "ringer_vibrate", "ringer_silent" -> service<AudioManager>(Context.AUDIO_SERVICE)?.ringerMode?.let {
+                if (it !in 0..2) null else it == when (type) { "ringer_normal" -> 2; "ringer_vibrate" -> 1; else -> 0 }
+            }
+            "dnd_on" -> service<NotificationManager>(Context.NOTIFICATION_SERVICE)?.currentInterruptionFilter?.let {
+                if (it !in NotificationManager.INTERRUPTION_FILTER_ALL..NotificationManager.INTERRUPTION_FILTER_ALARMS) null else it != NotificationManager.INTERRUPTION_FILTER_ALL
+            }
+            "headphones_connected" -> audio { manager -> manager.getDevices(AudioManager.GET_DEVICES_OUTPUTS).any { it.type in HEADPHONE_TYPES } }
+            ScriptConstraintCatalog.NOTIFICATION_RECEIVED -> if (!NotificationEventListener.isConnected() || !NotificationEventListener.isAccessGranted(appContext) || p["packageName"].isNullOrBlank()) null
+                else NotificationMatches.isRecent(constraint, SystemClock.elapsedRealtime())
+            ScriptConstraintCatalog.RSS_NEW_ITEM -> RssPolling.knownPulse(p["url"])
+            ScriptConstraintCatalog.AT_TIME -> if (knownTime(p["time"]) == null ||
+                (!p["days"].isNullOrBlank() && parseDaySet(p["days"]).isEmpty())) null else TimeSchedule.isPulsing(constraint)
+            ScriptConstraintCatalog.INTERVAL -> if (TimeRules.intervalSeconds(p["every"], p["unit"]) == null) null else TimeSchedule.isPulsing(constraint)
+            ScriptConstraintCatalog.CALENDAR_EVENT_ACTIVE -> CalendarCondition.knownActive(appContext, p["calendar"], p["title"])
+            else -> null
+        }
+    }
+
+    private fun knownWifiNetwork(ssid: String?): Boolean? {
+        val cm = service<ConnectivityManager>(Context.CONNECTIVITY_SERVICE) ?: return null
+        val network = cm.activeNetwork ?: return false
+        val caps = cm.getNetworkCapabilities(network) ?: return null
+        if (!caps.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) return false
+        if (ssid.isNullOrBlank()) return true
+        if (!hasFineLocation()) return null
+        return currentSsid(caps)?.let { it == ssid.trim() }
+    }
+
+    private fun knownTime(value: String?): LocalTime? =
+        value?.trim()?.takeIf { it.matches(Regex("\\d{1,2}:\\d{2}")) }?.let(::parseHhMm)
+
+    private fun knownSetting(key: String): Boolean? = Settings.Global.getInt(appContext.contentResolver, key)
+        .takeIf { it in 0..1 }?.let { it == 1 }
+
+    private fun knownBluetoothDevice(address: String?, name: String?): Boolean? {
+        if (address.isNullOrBlank() && name.isNullOrBlank()) return null
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+            appContext.checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) return null
+        val adapter = service<BluetoothManager>(Context.BLUETOOTH_SERVICE)?.adapter ?: return null
+        if (!adapter.isEnabled) return false
+        DeviceEventReceiver.seedConnectedDevices(appContext)
+        return DeviceEventReceiver.knownBluetoothDeviceConnected(address, name)
+    }
+
+    private fun knownNoAppOpen(): Boolean? {
+        if (!hasUsageAccess(appContext)) return null
+        val mode = audioMode() ?: return null
+        if (isPhoneRinging(mode) || isInPhoneCall(mode)) return false
+        val foreground = foregroundState() ?: return null
+        val locked = keyguard { it.isKeyguardLocked } ?: return null
+        if (locked) return foreground.resumedPackage == null
+        val home = (if (decisionSnapshot) decisionHome else defaultHomePackage()) ?: return null
+        val resumed = foreground.resumedPackage ?: return null
+        return isHomeInForeground(resumed, home)
     }
 
     private inline fun <reified T> service(name: String): T? = appContext.getSystemService(name) as? T

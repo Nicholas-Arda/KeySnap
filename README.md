@@ -58,7 +58,7 @@
   </tr>
   <tr>
     <td><h3>🧩 Pick a recipe</h3>Start with a ready-made shortcut. Customize, share or import.</td>
-    <td><h3>🎨 Your look</h3>System, light, dark and sepia. OLED option. Ten languages.</td>
+    <td><h3>🎨 Your look</h3>System, light, dark and sepia. OLED option. Eleven languages.</td>
   </tr>
 </table>
 

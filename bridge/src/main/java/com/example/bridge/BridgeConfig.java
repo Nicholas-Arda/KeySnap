@@ -361,6 +361,15 @@ public final class BridgeConfig {
 
     /** Distinct key sets of every enabled multi-key trigger, canonical (sorted). */
     public List<List<Integer>> chords() {
+        return ChordTracker.chordsOf(triggerKeyLists());
+    }
+
+    /** Keys that are a one-key shortcut of an enabled script, see {@link ChordTracker#soloKeysOf}. */
+    public java.util.Set<Integer> soloKeys() {
+        return ChordTracker.soloKeysOf(triggerKeyLists());
+    }
+
+    private List<List<Integer>> triggerKeyLists() {
         List<List<Integer>> lists = new ArrayList<>();
         if (!globallyEnabled) {
             return lists;
@@ -373,7 +382,7 @@ public final class BridgeConfig {
                 lists.add(trigger.keyCodes);
             }
         }
-        return ChordTracker.chordsOf(lists);
+        return lists;
     }
 
     /**

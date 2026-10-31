@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_test_editors_title_120">Editor da provare</string>
+    <string name="whats_new_test_editors_description_120">Prova ogni passaggio con ▶ prima di salvare.</string>
+    <string name="whats_new_reorder_shortcuts_title_120">Riordina e modifica le scorciatoie</string>
+    <string name="whats_new_reorder_shortcuts_description_120">Tocca ✎ o tieni premuta una scorciatoia; trascinala per riordinarla.</string>
+    <string name="whats_new_input_devices_title_120">Tastiere, mouse e gamepad</string>
+    <string name="whats_new_input_devices_description_120">Modalità avanzata: nomi reali, scorciatoie Ctrl.</string>
+    <string name="whats_new_fix_setup_120">Configurazione in due passaggi, notifiche facoltative</string>
+    <string name="whats_new_fix_conditions_120">Inverti ogni condizione con NON</string>
+    <string name="whats_new_fix_app_names_120">Le app mostrano il proprio nome</string>
+    <string name="whats_new_fix_side_power_keys_120">Tasti laterali e accensione: indicazione chiara</string>
+    <string name="whats_new_fix_idle_battery_120">Meno batteria a riposo</string>
+    <string name="whats_new_fix_advanced_setup_120">Modalità avanzata: configurazione su una pagina</string>
+    <string name="whats_new_fix_saved_keys_120">Rinomina tasti salvati o aggiungili prima</string>
+    <string name="whats_new_fix_shortcuts_page_120">Pagina Scorciatoie ordinata, elenchi più brevi</string>
+    <string name="whats_new_fix_modes_120">Modalità: disattiva o elimina quando vuoi</string>
+</resources>

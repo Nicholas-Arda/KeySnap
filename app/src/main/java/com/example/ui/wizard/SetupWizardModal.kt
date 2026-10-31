@@ -1,15 +1,43 @@
 package com.example.ui.wizard
 
-import androidx.compose.foundation.BorderStroke
+import android.Manifest
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
+import android.view.WindowManager
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.Bolt
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.PowerSettingsNew
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.window.DialogWindowProvider
+import androidx.core.view.WindowCompat
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,496 +48,360 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DeveloperMode
-import androidx.compose.material.icons.filled.Error
-import androidx.compose.material.icons.filled.FlashOn
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.material.icons.filled.Terminal
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
-import androidx.compose.ui.semantics.clearAndSetSemantics
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
-import io.github.nicholasarda.keysnap.R
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import android.Manifest
-import android.os.Build
-import android.content.pm.PackageManager
-import androidx.core.content.ContextCompat
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.ui.window.DialogProperties
+import androidx.core.content.ContextCompat
 import com.example.data.DeveloperOptionsGuides
 import com.example.service.adb.PairingStatus
 import com.example.ui.components.ConsoleShape
+import com.example.ui.components.InnerShape
+import com.example.ui.components.MinTouchTarget
+import com.example.ui.components.PageGroundLayer
+import com.example.ui.components.PointBox
+import com.example.ui.components.PointLine
+import com.example.ui.components.glassCard
 import com.example.ui.home.loopPosition
 import com.example.ui.home.ramp
 import com.example.ui.home.rememberReducedMotion
-import com.example.ui.components.InnerShape
-import com.example.ui.components.singleLineWidth
+import com.example.ui.scripts.SentenceSection
+import com.example.ui.theme.LocalGlass
 import com.example.ui.theme.MonoBody
 import com.example.ui.theme.MonoLabel
+import com.example.ui.theme.ThemeMode
 import com.example.viewmodel.MainViewModel
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.foundation.rememberScrollState
+import io.github.nicholasarda.keysnap.R
 import kotlin.math.roundToInt
 
+/**
+ * Advanced Mode setup as one page read like the shortcut editor's sentence: what it is, pairing,
+ * done. The step in hand is open, a finished one folds to its line, the next waits below. Every
+ * explanation is the wording the paged wizard used; only the layout changed (2026-10-29).
+ */
 @Composable
 fun SetupWizardModal(
     viewModel: MainViewModel,
-    onDismiss: () -> Unit
+    themeMode: ThemeMode,
+    onDismiss: () -> Unit,
 ) {
     val context = LocalContext.current
-    val currentStep by viewModel.wizardStep.collectAsState()
+    val step by viewModel.wizardStep.collectAsState()
     val isRunning by viewModel.isAdvancedModeRunning.collectAsState()
-    var isDevSettingsOpened by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
-
     val pairingStatus by viewModel.pairingStatus.collectAsState()
-    val isStep1Valid = currentStep != 1 || isDevSettingsOpened
     val lastKernelLine by viewModel.lastRawKernelLine.collectAsState()
+    var settingsOpened by remember { mutableStateOf(false) }
+    var introReopened by remember { mutableStateOf(false) }
 
     LaunchedEffect(pairingStatus, isRunning) {
-        if ((pairingStatus == PairingStatus.PAIRED_SUCCESS || isRunning) && currentStep < 2) {
+        if ((pairingStatus == PairingStatus.PAIRED_SUCCESS || isRunning) && step < 2) {
             viewModel.setWizardStep(2)
         }
     }
 
     Dialog(
         onDismissRequest = onDismiss,
-        properties = DialogProperties(
-            usePlatformDefaultWidth = false,
-            decorFitsSystemWindows = false
-        )
+        properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false),
     ) {
         val colors = MaterialTheme.colorScheme
-        Scaffold(
-            modifier = Modifier.fillMaxSize(),
-            containerColor = colors.background,
-            topBar = {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .statusBarsPadding()
-                        .background(colors.background)
-                        .padding(horizontal = 20.dp, vertical = 12.dp)
+        // Insets read as zero inside a dialog, and where its window lands differs by device: it
+        // started below the status bar and ran off the bottom. So the window is let out to the
+        // whole display, and the padding is whatever of the activity's bars this box actually
+        // overlaps, measured from where it sits on screen.
+        val view = LocalView.current
+        // Re-applied on every composition: the dialog resets its own window parameters, and when
+        // opened from Settings it kept stopping short of the camera cutout, so the page behind
+        // showed through a strip at the top.
+        SideEffect {
+            (view.parent as? DialogWindowProvider)?.window?.apply {
+                setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
+                setDimAmount(0f)
+                val params = attributes
+                if (params.layoutInDisplayCutoutMode != WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS ||
+                    params.fitInsetsTypes != 0 || params.fitInsetsSides != 0
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        // Weighted so a long title wraps in its own space instead of running under
-                        // the close button.
-                        Row(
-                            modifier = Modifier.weight(1f).padding(end = 8.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(10.dp)
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(38.dp)
-                                    .clip(InnerShape)
-                                    .background(colors.primary),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Build,
-                                    contentDescription = null,
-                                    tint = colors.background,
-                                    modifier = Modifier.size(19.dp)
-                                )
-                            }
-                            Column {
-                                Text(stringResource(R.string.wizard_title), style = MaterialTheme.typography.titleSmall, color = colors.onBackground)
-                                Text(stringResource(R.string.wizard_subtitle), style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant)
-                            }
-                        }
-                        IconButton(
-                            onClick = onDismiss,
-                            modifier = Modifier
-                                .size(34.dp)
-                                .clip(CircleShape)
-                                .background(colors.surfaceVariant)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Close,
-                                contentDescription = stringResource(R.string.common_close),
-                                tint = colors.onSurfaceVariant,
-                                modifier = Modifier.size(15.dp)
-                            )
-                        }
+                    attributes = params.apply {
+                        layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS
+                        fitInsetsTypes = 0
+                        fitInsetsSides = 0
                     }
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    WizardStepIndicator(currentStep = currentStep)
                 }
-            },
-            bottomBar = {
-                Surface(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .navigationBarsPadding()
-                        // A usePlatformDefaultWidth=false dialog is sized to the whole display but
-                        // still starts below the status bar, so the Scaffold lays its bottom bar
-                        // out that far past the screen; the bottom padding is what pulls Continue
-                        // back up. 64dp only just cancelled the overflow and left the button on the
-                        // gesture handle — this clears it. Insets read as zero inside the dialog,
-                        // so navigationBarsPadding above cannot do the job here.
-                        .padding(start = 16.dp, top = 12.dp, end = 16.dp, bottom = 96.dp),
-                    shape = ConsoleShape,
-                    color = colors.surface,
-                    border = BorderStroke(1.dp, colors.outline.copy(alpha = .4f)),
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 14.dp, vertical = 12.dp),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        if (currentStep in 1..1) {
-                            OutlinedButton(
-                                onClick = { viewModel.setWizardStep(currentStep - 1) },
-                                colors = ButtonDefaults.outlinedButtonColors(contentColor = colors.onSurfaceVariant),
-                                border = BorderStroke(1.5.dp, colors.outline.copy(alpha = .5f)),
-                                shape = ConsoleShape,
-                                modifier = Modifier.widthIn(min = 104.dp).heightIn(min = 52.dp),
-                                contentPadding = WizardButtonPadding,
-                            ) {
-                                Icon(Icons.AutoMirrored.Filled.ArrowBack, null, Modifier.size(15.dp))
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Text(stringResource(R.string.common_back), style = MaterialTheme.typography.labelLarge)
-                            }
-                        }
-
-                        if (currentStep < 1) {
-                            Button(
-                                onClick = { viewModel.setWizardStep(currentStep + 1) },
-                                colors = ButtonDefaults.buttonColors(containerColor = colors.primary),
-                                shape = ConsoleShape,
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .heightIn(min = 52.dp)
-                                    .testTag("wizard_next_button"),
-                                enabled = (currentStep == 0) || (currentStep == 1 && isStep1Valid)
-                            ) {
-                                Text(stringResource(R.string.wizard_continue), color = colors.background, style = MaterialTheme.typography.labelLarge)
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Icon(Icons.AutoMirrored.Filled.ArrowForward, null, tint = colors.background, modifier = Modifier.size(15.dp))
-                            }
-                        } else if (currentStep == 1) {
-                            Button(
-                                onClick = { viewModel.setWizardStep(currentStep + 1) },
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = colors.primary,
-                                    disabledContainerColor = colors.surfaceVariant,
-                                ),
-                                shape = ConsoleShape,
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .heightIn(min = 52.dp)
-                                    .testTag("wizard_next_to_done_button"),
-                                contentPadding = WizardButtonPadding,
-                                enabled =(pairingStatus == PairingStatus.PAIRED_SUCCESS || pairingStatus == PairingStatus.ADVANCED_MODE_RUNNING)
-                            ) {
-                                val onColor = if (pairingStatus == PairingStatus.PAIRED_SUCCESS || pairingStatus == PairingStatus.ADVANCED_MODE_RUNNING) colors.background else colors.onSurfaceVariant
-                                Text(stringResource(R.string.wizard_finish_pairing), color = onColor, style = MaterialTheme.typography.labelLarge)
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Icon(Icons.Default.Check, null, tint = onColor, modifier = Modifier.size(15.dp))
-                            }
-                        } else if (currentStep == 2) {
-                            Button(
-                                onClick = onDismiss,
-                                colors = ButtonDefaults.buttonColors(containerColor = colors.primary),
-                                shape = ConsoleShape,
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .heightIn(min = 52.dp)
-                            ) {
-                                Icon(Icons.Default.CheckCircle, null, tint = colors.background, modifier = Modifier.size(17.dp))
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(stringResource(R.string.onboarding_finish), color = colors.background, style = MaterialTheme.typography.labelLarge)
-                            }
-                        }
+                // Now over the status bar, this window decides its icon colour: keep the app's.
+                context.findActivity()?.window?.let { activityWindow ->
+                    val own = WindowCompat.getInsetsController(activityWindow, activityWindow.decorView)
+                    WindowCompat.getInsetsController(this, decorView).apply {
+                        isAppearanceLightStatusBars = own.isAppearanceLightStatusBars
+                        isAppearanceLightNavigationBars = own.isAppearanceLightNavigationBars
                     }
                 }
             }
-        ) { innerPadding ->
-            val scrollState = rememberScrollState()
+        }
+        val bars = WindowInsets.systemBars.asPaddingValues()
+        val topBar = bars.calculateTopPadding()
+        val bottomBar = bars.calculateBottomPadding()
+        Box(Modifier.fillMaxSize()) {
+            PageGroundLayer(themeMode, Modifier.fillMaxSize())
             Column(
-                modifier = Modifier
+                Modifier
                     .fillMaxSize()
-                    .padding(innerPadding)
-                    .verticalScroll(scrollState)
-                    .padding(horizontal = 20.dp, vertical = 12.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                    .verticalScroll(rememberScrollState())
+                    .padding(start = 16.dp, end = 16.dp, top = topBar + 12.dp, bottom = bottomBar + 120.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                when (currentStep) {
-                    0 -> WizardIntroStep(onGoToPairing = { viewModel.setWizardStep(1) })
-                    1 -> WizardDeveloperOptionsStep(
-                        pairingStatus = pairingStatus,
-                        settingsOpened = isDevSettingsOpened,
-                        onOpenSettings = { viewModel.openDeveloperSettings(context) },
-                        onSettingsOpened = { isDevSettingsOpened = true },
-                        onSubmitCode = viewModel::submitPairingCode,
-                    )
-                    2 -> WizardSuccessStep(
+                WizardHeader(onDismiss)
+                Box(Modifier.fillMaxWidth().glassCard(LocalGlass.current).padding(10.dp)) {
+                    WizardKernelIllustration(rememberReducedMotion())
+                }
+                Column(Modifier.padding(horizontal = 4.dp)) {
+                    val introOpen = step == 0 || introReopened
+                    SentenceSection(
+                        title = stringResource(R.string.wizard_what_is_expert),
+                        titleStyle = WizardTitle,
+                        titleColor = colors.onSurface,
+                        line = colors.primary.copy(alpha = .45f),
+                        lineWidth = 2.dp,
+                        tint = colors.primary,
+                        modifier = if (step > 0) {
+                            Modifier.clickable(role = Role.Button) { introReopened = !introReopened }
+                        } else Modifier,
+                    ) {
+                        if (step > 0) {
+                            Icon(if (introOpen) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore, null, tint = colors.onSurfaceVariant)
+                        }
+                        Folding(introOpen) { IntroContent(onGoToPairing = { viewModel.setWizardStep(1) }) }
+                    }
+                    SentenceSection(
+                        title = stringResource(R.string.wizard_auto_pairing),
+                        titleStyle = WizardTitle,
+                        titleColor = colors.onSurface,
+                        line = colors.primary.copy(alpha = .45f),
+                        lineWidth = 2.dp,
+                        tint = if (step >= 1) colors.primary else colors.primary.copy(alpha = .35f),
+                    ) {
+                        if (step >= 2) {
+                            Text(stringResource(R.string.pairing_connected), style = MaterialTheme.typography.bodySmall, color = colors.primary)
+                        }
+                        Folding(step == 1) {
+                            PairingContent(
+                                pairingStatus = pairingStatus,
+                                settingsOpened = settingsOpened,
+                                onOpenSettings = { viewModel.openDeveloperSettings(context) },
+                                onSettingsOpened = { settingsOpened = true },
+                                onSubmitCode = viewModel::submitPairingCode,
+                            )
+                        }
+                    }
+                    DoneSection(
+                        reached = step == 2,
                         isRunning = isRunning,
                         pairingStatus = pairingStatus,
                         lastKernelLine = lastKernelLine,
-                        onTestFlash = { viewModel.toggleFlashlight() }
                     )
                 }
             }
+            WizardCapsule(
+                step = step,
+                pairingStatus = pairingStatus,
+                settingsOpened = settingsOpened,
+                onContinue = { viewModel.setWizardStep(1) },
+                onFinish = onDismiss,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(start = 16.dp, end = 16.dp, bottom = bottomBar + 16.dp),
+            )
+        }
+    }
+}
+
+private tailrec fun Context.findActivity(): Activity? = when (this) {
+    is Activity -> this
+    is ContextWrapper -> baseContext.findActivity()
+    else -> null
+}
+
+/** A section's body, opened and closed with motion rather than appearing at once. */
+@Composable
+private fun Folding(open: Boolean, content: @Composable () -> Unit) {
+    AnimatedVisibility(
+        visible = open,
+        enter = expandVertically(tween(280)) + fadeIn(tween(220, delayMillis = 60)),
+        exit = shrinkVertically(tween(240)) + fadeOut(tween(140)),
+    ) {
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) { content() }
+    }
+}
+
+@Composable
+private fun WizardHeader(onDismiss: () -> Unit) {
+    val colors = MaterialTheme.colorScheme
+    val glass = LocalGlass.current
+    Row(verticalAlignment = Alignment.Top) {
+        Column(Modifier.weight(1f).padding(start = 4.dp, end = 8.dp)) {
+            Text(
+                stringResource(R.string.wizard_title),
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold,
+                color = colors.onBackground,
+            )
+            Text(stringResource(R.string.wizard_subtitle), style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
+        }
+        Box(
+            Modifier
+                .size(MinTouchTarget)
+                .clip(CircleShape)
+                .background(glass.cardTop)
+                .border(1.dp, glass.cardRim, CircleShape)
+                .clickable(role = Role.Button, onClickLabel = stringResource(R.string.common_close), onClick = onDismiss),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(Icons.Filled.Close, stringResource(R.string.common_close), Modifier.size(20.dp), tint = colors.onSurface)
         }
     }
 }
 
 /**
- * Back and Finish pairing share one row; Material's 24 dp side padding left "l'accoppiamento" too
- * little room and split it mid-word.
+ * Every claim of the first version survives: three capabilities and three limits, read at a glance
+ * as two columns instead of a "can"/"never" mark on each line.
  */
-private val WizardButtonPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
+@Composable
+private fun IntroContent(onGoToPairing: () -> Unit) {
+    val colors = MaterialTheme.colorScheme
+    PointBox(colors.primary) {
+        PointLine(Icons.Filled.Bolt, colors.primary, stringResource(R.string.wizard_expert_explainer))
+    }
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        ScopeColumn(
+            mark = stringResource(R.string.wizard_can),
+            lines = stringArrayResource(R.array.wizard_can_do_lines),
+            tint = colors.primary,
+            sign = Icons.Filled.Check,
+            modifier = Modifier.weight(1f),
+        )
+        ScopeColumn(
+            mark = stringResource(R.string.wizard_never),
+            lines = stringArrayResource(R.array.wizard_never_does_lines),
+            tint = colors.error,
+            sign = Icons.Filled.Close,
+            modifier = Modifier.weight(1f),
+        )
+    }
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Icon(Icons.Filled.PowerSettingsNew, null, Modifier.size(16.dp), tint = colors.tertiary)
+        Text(stringResource(R.string.wizard_expert_off_note), style = MaterialTheme.typography.labelLarge, color = colors.onSurface)
+    }
+    GlassRow(
+        icon = Icons.Filled.DeveloperMode,
+        title = stringResource(R.string.wizard_no_dev_options),
+        subtitle = stringResource(R.string.wizard_no_dev_options_sub),
+        trailing = { Icon(Icons.AutoMirrored.Filled.ArrowForward, null, Modifier.size(18.dp), tint = colors.onSurfaceVariant) },
+        onClick = onGoToPairing,
+    )
+}
 
 @Composable
-fun WizardStepIndicator(currentStep: Int) {
-    val colors = MaterialTheme.colorScheme
-    val steps = listOf(
-        stringResource(R.string.wizard_step_intro),
-        stringResource(R.string.wizard_step_pairing),
-        stringResource(R.string.wizard_step_done),
-    )
-    // Every label needs its 22 dp dot and 7 dp gap, and each connector at least 16 dp of line plus
-    // its 16 dp of padding. Where long labels or a large font leave less, only the current step is
-    // named and the others keep their numbered dots, rather than the lines vanishing or a label
-    // being clipped.
-    val labelStyle = MaterialTheme.typography.labelMedium
-    val needed = steps.fold(0.dp) { sum, title -> sum + singleLineWidth(title, labelStyle) } +
-        29.dp * steps.size + 32.dp * (steps.size - 1)
-    BoxWithConstraints(Modifier.fillMaxWidth()) {
-        val allNamed = maxWidth >= needed
-        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            steps.forEachIndexed { index, title ->
-                val isCompleted = currentStep > index
-                val isActive = currentStep == index
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(7.dp)) {
-                    Box(
-                        modifier = Modifier
-                            .size(22.dp)
-                            .clip(CircleShape)
-                            .background(if (isCompleted || isActive) colors.primary else colors.surfaceVariant),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        if (isCompleted) {
-                            Icon(Icons.Default.Check, null, tint = colors.background, modifier = Modifier.size(12.dp))
-                        } else {
-                            Text(
-                                (index + 1).toString(),
-                                color = if (isActive) colors.background else colors.onSurfaceVariant,
-                                style = MaterialTheme.typography.labelMedium,
-                            )
-                        }
-                    }
-                    if (allNamed || isActive) {
-                        Text(
-                            title,
-                            color = if (isActive || isCompleted) colors.onBackground else colors.onSurfaceVariant,
-                            style = labelStyle,
-                            maxLines = 1,
-                        )
-                    }
-                }
-                if (index != steps.lastIndex) {
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(horizontal = 8.dp)
-                            .height(2.dp)
-                            .clip(InnerShape)
-                            .background(if (isCompleted) colors.primary else colors.outline.copy(alpha = .4f))
-                    )
-                }
+private fun ScopeColumn(
+    mark: String,
+    lines: Array<String>,
+    tint: Color,
+    sign: androidx.compose.ui.graphics.vector.ImageVector,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier
+            .clip(RoundedCornerShape(16.dp))
+            .background(tint.copy(alpha = .09f))
+            .padding(10.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        Text(mark.uppercase(), style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.SemiBold, color = tint)
+        lines.forEach { line ->
+            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                Icon(sign, null, Modifier.padding(top = 2.dp).size(14.dp), tint = tint)
+                Text(line, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface)
             }
         }
     }
 }
 
-/** Bordered card matching [ConsoleShape] and the panel border used across the redesign. */
+/** A tappable glass row: an icon tile, a title over a subtitle, and whatever sits at the end. */
 @Composable
-private fun WizardCard(
+private fun GlassRow(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     title: String,
+    subtitle: String,
+    trailing: @Composable () -> Unit,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    content: @Composable androidx.compose.foundation.layout.ColumnScope.() -> Unit,
 ) {
     val colors = MaterialTheme.colorScheme
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = colors.surface),
-        shape = ConsoleShape,
-        border = BorderStroke(1.dp, colors.outline.copy(alpha = .4f)),
+    Row(
+        modifier
+            .fillMaxWidth()
+            .glassCard(LocalGlass.current)
+            .clip(ConsoleShape)
+            .clickable(onClick = onClick)
+            .padding(horizontal = 14.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Column(modifier = Modifier.padding(18.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                Icon(icon, null, tint = colors.primary, modifier = Modifier.size(20.dp))
-                Text(title, style = MaterialTheme.typography.titleSmall, color = colors.onBackground)
-            }
-            Spacer(modifier = Modifier.height(10.dp))
-            content()
+        Box(
+            Modifier.size(36.dp).clip(RoundedCornerShape(11.dp)).background(colors.primary.copy(alpha = .12f)),
+            contentAlignment = Alignment.Center,
+        ) { Icon(icon, null, Modifier.size(20.dp), tint = colors.primary) }
+        Column(Modifier.weight(1f)) {
+            Text(title, style = MaterialTheme.typography.bodyLarge, color = colors.onSurface)
+            Text(subtitle, style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant)
         }
-    }
-}
-
-@Composable
-private fun NumberBadge(number: Int) {
-    val colors = MaterialTheme.colorScheme
-    Box(
-        modifier = Modifier
-            .size(22.dp)
-            .clip(CircleShape)
-            .background(colors.primary.copy(alpha = .14f)),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(number.toString(), color = colors.primary, style = MaterialTheme.typography.labelMedium)
-    }
-}
-
-/**
- * The first thing anyone meets after tapping Advanced Mode, so it is the step most likely to be
- * skipped: it used to run to two full cards of prose before Continue came into view, and the
- * Developer Options walkthrough on it described a screen the user had not been asked to open yet.
- *
- * Every claim from that version survives — the three capabilities and the three limits — as lines
- * short enough to be read at a glance, marked "can"/"never" per line instead of under two headings.
- * The walkthrough moved to [WizardDeveloperOptionsStep], where it is next to the button that opens
- * that screen, and a press producing a kernel line says what the paragraph was trying to.
- */
-@Composable
-fun WizardIntroStep(onGoToPairing: () -> Unit) {
-    val colors = MaterialTheme.colorScheme
-    val reduced = rememberReducedMotion()
-    WizardCard(icon = Icons.Default.Terminal, title = stringResource(R.string.wizard_what_is_expert)) {
-        WizardKernelIllustration(reduced)
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Text(
-            text = stringResource(R.string.wizard_expert_explainer),
-            style = MaterialTheme.typography.bodySmall,
-            color = colors.onSurfaceVariant,
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-        HorizontalDivider(color = colors.outline.copy(alpha = .4f))
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Column(verticalArrangement = Arrangement.spacedBy(7.dp)) {
-            val can = stringResource(R.string.wizard_can)
-            val never = stringResource(R.string.wizard_never)
-            stringArrayResource(R.array.wizard_can_do_lines).forEach {
-                ScopeLine(mark = can, markColor = colors.primary, line = it)
-            }
-            stringArrayResource(R.array.wizard_never_does_lines).forEach {
-                ScopeLine(mark = never, markColor = colors.error, line = it)
-            }
-        }
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Text(
-            text = stringResource(R.string.wizard_expert_off_note),
-            style = MonoLabel,
-            color = colors.onSurfaceVariant,
-        )
-    }
-
-    Spacer(modifier = Modifier.height(16.dp))
-
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = colors.surface),
-        shape = ConsoleShape,
-        border = BorderStroke(1.dp, colors.outline.copy(alpha = .4f)),
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable(onClick = onGoToPairing)
-                .padding(horizontal = 18.dp, vertical = 12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-        ) {
-            Icon(Icons.Default.DeveloperMode, null, tint = colors.primary, modifier = Modifier.size(20.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    stringResource(R.string.wizard_no_dev_options),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = colors.onBackground,
-                )
-                Text(
-                    stringResource(R.string.wizard_no_dev_options_sub),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = colors.onSurfaceVariant,
-                )
-            }
-            Icon(Icons.AutoMirrored.Filled.ArrowForward, null, tint = colors.onSurfaceVariant, modifier = Modifier.size(15.dp))
-        }
-    }
-}
-
-/** One capability or limit: a "can"/"never" mark, then the line it applies to. */
-@Composable
-private fun ScopeLine(mark: String, markColor: Color, line: String) {
-    Row(horizontalArrangement = Arrangement.spacedBy(9.dp), verticalAlignment = Alignment.Top) {
-        // widthIn rather than width: the mark is a word, and a longer translation must push the
-        // sentence across rather than be clipped. Not the monospace face: it has no Arabic or
-        // Devanagari glyphs, so those marks fell back with odd spacing.
-        Text(mark, style = MaterialTheme.typography.labelSmall, color = markColor, modifier = Modifier.widthIn(min = 42.dp).padding(top = 2.dp))
-        Text(line, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        trailing()
     }
 }
 
@@ -527,8 +419,7 @@ private fun WizardKernelIllustration(reduced: Boolean) {
             .fillMaxWidth()
             .height(118.dp)
             .clip(InnerShape)
-            .background(colors.surfaceVariant)
-            .border(1.dp, colors.outline.copy(alpha = .55f), InnerShape)
+            .background(colors.surfaceVariant.copy(alpha = .55f))
             .clearAndSetSemantics {},
         horizontalArrangement = Arrangement.spacedBy(18.dp, Alignment.CenterHorizontally),
         verticalAlignment = Alignment.CenterVertically,
@@ -587,14 +478,91 @@ private fun WizardKernelIllustration(reduced: Boolean) {
 }
 
 @Composable
-fun DeveloperOptionsGuideCard() {
+private fun PairingContent(
+    pairingStatus: PairingStatus,
+    settingsOpened: Boolean,
+    onOpenSettings: () -> Unit,
+    onSettingsOpened: () -> Unit,
+    onSubmitCode: (String) -> Unit,
+) {
     val colors = MaterialTheme.colorScheme
-    var selectedGuide by androidx.compose.runtime.remember {
-        androidx.compose.runtime.mutableStateOf(DeveloperOptionsGuides.detectForDevice())
+    val context = LocalContext.current
+    val open = {
+        onOpenSettings()
+        onSettingsOpened()
     }
+    val permissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { open() }
+
+    val (automatic, fallback) = stringArrayResource(R.array.wizard_auto_pairing_points)
+    PointBox(colors.primary) {
+        PointLine(Icons.Filled.AutoAwesome, colors.primary, automatic)
+        PointLine(Icons.Filled.Notifications, colors.tertiary, fallback)
+    }
+    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        stringArrayResource(R.array.wizard_pairing_steps).forEachIndexed { index, step ->
+            NumberedLine(index + 1, step)
+        }
+    }
+    Button(
+        onClick = {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
+            ) {
+                permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            } else {
+                open()
+            }
+        },
+        modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp).testTag("open_developer_options_button"),
+        shape = RoundedCornerShape(50),
+    ) {
+        Icon(Icons.Filled.OpenInNew, null, Modifier.size(16.dp))
+        Spacer(Modifier.width(8.dp))
+        Text(stringResource(R.string.wizard_open_settings), style = MaterialTheme.typography.labelLarge)
+    }
+
+    // No code within a few seconds of opening Settings: the assisted tap found nothing to tap, or
+    // Android needs the user first. The manual path works without the notification too.
+    var showManual by remember { mutableStateOf(false) }
+    LaunchedEffect(settingsOpened, pairingStatus) {
+        if (settingsOpened && pairingStatus == PairingStatus.SEARCHING_MDNS_AND_SCREEN) {
+            kotlinx.coroutines.delay(MANUAL_FALLBACK_MS)
+            showManual = true
+        } else if (pairingStatus == PairingStatus.ERROR) {
+            showManual = true
+        }
+    }
+    Folding(showManual && pairingStatus != PairingStatus.PAIRED_SUCCESS && pairingStatus != PairingStatus.ADVANCED_MODE_RUNNING) {
+        ManualPairingCard(onSubmitCode)
+    }
+    DeveloperOptionsGuideCard()
+}
+
+@Composable
+private fun NumberedLine(number: Int, text: String) {
+    val colors = MaterialTheme.colorScheme
+    Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.Top) {
+        Box(
+            Modifier.size(24.dp).clip(CircleShape).background(colors.primary),
+            contentAlignment = Alignment.Center,
+        ) { Text(number.toString(), color = colors.onPrimary, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold) }
+        Text(text, Modifier.padding(top = 2.dp), style = MaterialTheme.typography.bodyMedium, color = colors.onSurface)
+    }
+}
+
+/**
+ * The phone maker's walkthrough, folded: most people already have Developer Options. It opens on
+ * the maker this phone reports.
+ */
+@Composable
+private fun DeveloperOptionsGuideCard() {
+    val colors = MaterialTheme.colorScheme
+    var open by remember { mutableStateOf(false) }
+    var selectedGuide by remember { mutableStateOf(DeveloperOptionsGuides.detectForDevice()) }
     val chipListState = androidx.compose.foundation.lazy.rememberLazyListState()
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(open) {
+        if (!open) return@LaunchedEffect
         val index = DeveloperOptionsGuides.all.indexOfFirst { it.id == selectedGuide.id }
         if (index > 0) {
             chipListState.scrollToItem(index)
@@ -608,39 +576,47 @@ fun DeveloperOptionsGuideCard() {
         }
     }
 
-    WizardCard(icon = Icons.Default.DeveloperMode, title = stringResource(R.string.wizard_how_to_dev_options)) {
-        LazyRow(state = chipListState, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            items(DeveloperOptionsGuides.all) { guide ->
-                val isSelected = guide.id == selectedGuide.id
-                Box(
-                    modifier = Modifier
-                        .clip(InnerShape)
-                        .background(if (isSelected) colors.primary else colors.surfaceVariant)
-                        .clickable { selectedGuide = guide }
-                        .padding(horizontal = 14.dp, vertical = 8.dp)
-                ) {
-                    Text(
-                        stringResource(guide.labelRes),
-                        style = MaterialTheme.typography.labelMedium,
-                        color = if (isSelected) colors.background else colors.onSurfaceVariant,
-                    )
-                }
+    Column(Modifier.fillMaxWidth().glassCard(LocalGlass.current).animateContentSize()) {
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .clip(ConsoleShape)
+                .clickable(role = Role.Button) { open = !open }
+                .padding(horizontal = 14.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Box(
+                Modifier.size(36.dp).clip(RoundedCornerShape(11.dp)).background(colors.primary.copy(alpha = .12f)),
+                contentAlignment = Alignment.Center,
+            ) { Icon(Icons.Filled.DeveloperMode, null, Modifier.size(20.dp), tint = colors.primary) }
+            Column(Modifier.weight(1f)) {
+                Text(stringResource(R.string.wizard_how_to_dev_options), style = MaterialTheme.typography.bodyLarge, color = colors.onSurface)
+                Text(stringResource(selectedGuide.labelRes), style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant)
             }
+            Icon(if (open) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore, null, tint = colors.onSurfaceVariant)
         }
-
-        Spacer(modifier = Modifier.height(14.dp))
-
-        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            stringArrayResource(selectedGuide.stepsRes).forEachIndexed { index, step ->
-                Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.Top) {
-                    NumberBadge(index + 1)
-                    Text(
-                        step,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = colors.onSurfaceVariant,
-                        modifier = Modifier.padding(top = 3.dp),
-                    )
+        if (open) {
+            Column(Modifier.padding(start = 14.dp, end = 14.dp, bottom = 14.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                LazyRow(state = chipListState, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    items(DeveloperOptionsGuides.all) { guide ->
+                        val isSelected = guide.id == selectedGuide.id
+                        Box(
+                            Modifier
+                                .clip(RoundedCornerShape(50))
+                                .background(if (isSelected) colors.primary else colors.surfaceVariant)
+                                .clickable { selectedGuide = guide }
+                                .padding(horizontal = 14.dp, vertical = 8.dp),
+                        ) {
+                            Text(
+                                stringResource(guide.labelRes),
+                                style = MaterialTheme.typography.labelMedium,
+                                color = if (isSelected) colors.onPrimary else colors.onSurfaceVariant,
+                            )
+                        }
+                    }
                 }
+                stringArrayResource(selectedGuide.stepsRes).forEachIndexed { index, step -> NumberedLine(index + 1, step) }
             }
         }
     }
@@ -658,138 +634,6 @@ private fun pairingStatusLabel(status: PairingStatus): String = when (status) {
     PairingStatus.ERROR -> stringResource(R.string.pairing_error)
 }
 
-/**
- * The mDNS search starts with the step, not with the user, so "Searching…" was pulsing at someone
- * who had not tapped anything yet. Until [started] the row says what to tap instead.
- */
-@Composable
-private fun PairingStatusRow(status: PairingStatus, started: Boolean) {
-    val colors = MaterialTheme.colorScheme
-    val waitingOnUser = !started &&
-        (status == PairingStatus.IDLE || status == PairingStatus.SEARCHING_MDNS_AND_SCREEN)
-    val dotColor = when {
-        waitingOnUser -> colors.onSurfaceVariant
-        status == PairingStatus.ERROR -> colors.error
-        status == PairingStatus.IDLE -> colors.onSurfaceVariant
-        else -> colors.primary
-    }
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(ConsoleShape)
-            .background(colors.surface)
-            .then(Modifier)
-            .padding(horizontal = 16.dp, vertical = 14.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
-    ) {
-        Box(modifier = Modifier.size(8.dp).clip(CircleShape).background(dotColor))
-        Text(
-            if (waitingOnUser) stringResource(R.string.pairing_not_started) else pairingStatusLabel(status),
-            style = MaterialTheme.typography.labelLarge,
-            color = colors.onSurfaceVariant,
-        )
-    }
-}
-
-@Composable
-fun WizardDeveloperOptionsStep(
-    pairingStatus: PairingStatus,
-    settingsOpened: Boolean,
-    onOpenSettings: () -> Unit,
-    onSettingsOpened: () -> Unit,
-    onSubmitCode: (String) -> Unit = {},
-) {
-    val colors = MaterialTheme.colorScheme
-    val context = LocalContext.current
-    val permissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission(),
-        onResult = { isGranted ->
-            onOpenSettings()
-            onSettingsOpened()
-        }
-    )
-
-    WizardCard(icon = Icons.Default.DeveloperMode, title = stringResource(R.string.wizard_auto_pairing)) {
-        Text(
-            text = stringResource(R.string.wizard_auto_pairing_explainer),
-            style = MaterialTheme.typography.bodySmall,
-            color = colors.onSurfaceVariant,
-        )
-
-        Spacer(modifier = Modifier.height(14.dp))
-
-        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            val steps = stringArrayResource(R.array.wizard_pairing_steps)
-            steps.forEachIndexed { index, step ->
-                Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.Top) {
-                    NumberBadge(index + 1)
-                    Text(
-                        step,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = colors.onSurfaceVariant,
-                        modifier = Modifier.padding(top = 3.dp),
-                    )
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-            onClick = {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    if (ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
-                        onOpenSettings()
-                        onSettingsOpened()
-                    } else {
-                        permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                    }
-                } else {
-                    onOpenSettings()
-                    onSettingsOpened()
-                }
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = 52.dp)
-                .testTag("open_developer_options_button"),
-            colors = ButtonDefaults.buttonColors(containerColor = colors.surfaceVariant),
-            shape = ConsoleShape
-        ) {
-            Icon(Icons.Default.OpenInNew, null, tint = colors.primary, modifier = Modifier.size(16.dp))
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(stringResource(R.string.wizard_open_settings), color = colors.primary, style = MaterialTheme.typography.labelLarge)
-        }
-    }
-
-    Spacer(modifier = Modifier.height(16.dp))
-
-    PairingStatusRow(pairingStatus, started = settingsOpened)
-
-    // No code within a few seconds of opening Settings: the assisted tap found nothing to tap, or
-    // Android needs the user first. The manual path works without the notification too.
-    var showManual by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
-    LaunchedEffect(settingsOpened, pairingStatus) {
-        if (settingsOpened && pairingStatus == PairingStatus.SEARCHING_MDNS_AND_SCREEN) {
-            kotlinx.coroutines.delay(MANUAL_FALLBACK_MS)
-            showManual = true
-        } else if (pairingStatus == PairingStatus.ERROR) {
-            showManual = true
-        }
-    }
-    if (showManual && pairingStatus != PairingStatus.PAIRED_SUCCESS && pairingStatus != PairingStatus.ADVANCED_MODE_RUNNING) {
-        Spacer(modifier = Modifier.height(16.dp))
-        ManualPairingCard(onSubmitCode)
-    }
-
-    Spacer(modifier = Modifier.height(16.dp))
-
-    // Moved here from the intro: it is a walkthrough of the screen the button above opens, so this
-    // is the first point at which it is worth reading.
-    DeveloperOptionsGuideCard()
-}
-
 /** How long after opening Settings the pairing step offers the manual path. */
 internal const val MANUAL_FALLBACK_MS = 10_000L
 
@@ -797,10 +641,16 @@ internal const val MANUAL_FALLBACK_MS = 10_000L
 private fun ManualPairingCard(onSubmitCode: (String) -> Unit) {
     val colors = MaterialTheme.colorScheme
     // Not saveable: a one-time pairing code has no business in the saved-instance bundle.
-    var code by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf("") }
-    WizardCard(icon = Icons.Default.Terminal, title = stringResource(R.string.wizard_manual_title)) {
-        Text(stringResource(R.string.wizard_manual_body), style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant)
-        Spacer(modifier = Modifier.height(12.dp))
+    var code by remember { mutableStateOf("") }
+    Column(
+        Modifier.fillMaxWidth().glassCard(LocalGlass.current).padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            Icon(Icons.Filled.Terminal, null, tint = colors.primary, modifier = Modifier.size(20.dp))
+            Text(stringResource(R.string.wizard_manual_title), style = MaterialTheme.typography.titleSmall, color = colors.onSurface)
+        }
+        Text(stringResource(R.string.wizard_manual_body), style = MaterialTheme.typography.bodyMedium, color = colors.onSurface)
         androidx.compose.material3.OutlinedTextField(
             value = code,
             onValueChange = { code = it.filter(Char::isDigit).take(6) },
@@ -811,15 +661,13 @@ private fun ManualPairingCard(onSubmitCode: (String) -> Unit) {
             ),
             modifier = Modifier.fillMaxWidth().testTag("manual_pairing_code"),
         )
-        Spacer(modifier = Modifier.height(12.dp))
         Button(
             onClick = { onSubmitCode(code) },
             enabled = code.length == 6,
             modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp).testTag("manual_pairing_submit"),
-            colors = ButtonDefaults.buttonColors(containerColor = colors.primary),
-            shape = ConsoleShape,
+            shape = RoundedCornerShape(50),
         ) {
-            Text(stringResource(R.string.wizard_manual_pair), color = colors.background, style = MaterialTheme.typography.labelLarge)
+            Text(stringResource(R.string.wizard_manual_pair), style = MaterialTheme.typography.labelLarge)
         }
     }
 }
@@ -827,132 +675,210 @@ private fun ManualPairingCard(onSubmitCode: (String) -> Unit) {
 /** How long the last step waits for the bridge before it calls the attempt failed. */
 private const val CONNECT_GRACE_MS = 30_000L
 
+/**
+ * The sentence's last clause. Pairing succeeds seconds before the bridge answers, so it waits for a
+ * definitive answer — a running bridge, a reported error, or the grace period running out — rather
+ * than opening on an error and turning green later. A late success still wins.
+ */
 @Composable
-fun WizardSuccessStep(
+private fun DoneSection(
+    reached: Boolean,
     isRunning: Boolean,
     pairingStatus: PairingStatus,
     lastKernelLine: String?,
-    onTestFlash: () -> Unit
 ) {
     val colors = MaterialTheme.colorScheme
-
-    // Pairing succeeds seconds before the bridge answers, so this step used to open on the red
-    // error card and only turn green later. Wait for a definitive answer instead: a running
-    // bridge, a reported error, or the grace period running out. A late success still wins.
-    var graceExpired by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
-    LaunchedEffect(isRunning, pairingStatus) {
+    var graceExpired by remember { mutableStateOf(false) }
+    LaunchedEffect(isRunning, pairingStatus, reached) {
         graceExpired = false
-        if (!isRunning) {
+        if (reached && !isRunning) {
             kotlinx.coroutines.delay(CONNECT_GRACE_MS)
             graceExpired = true
         }
     }
     val failed = !isRunning && (pairingStatus == PairingStatus.ERROR || graceExpired)
     val waiting = !isRunning && !failed
-
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = colors.surface),
-        shape = ConsoleShape,
-        border = BorderStroke(1.dp, colors.outline.copy(alpha = .4f)),
+    val title = when {
+        !reached -> R.string.wizard_step_done
+        isRunning -> R.string.wizard_expert_running
+        waiting -> R.string.wizard_connecting
+        else -> R.string.wizard_connection_error
+    }
+    SentenceSection(
+        title = stringResource(title),
+        titleStyle = WizardTitle,
+        titleColor = colors.onSurface,
+        line = colors.primary.copy(alpha = .45f),
+        lineWidth = 2.dp,
+        tint = when {
+            !reached -> colors.primary.copy(alpha = .35f)
+            failed -> colors.error
+            else -> colors.primary
+        },
+        last = true,
     ) {
-        Column(
-            modifier = Modifier.padding(22.dp).fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            val statusColor = when {
-                isRunning -> colors.primary
-                failed -> colors.error
-                else -> colors.onSurfaceVariant
-            }
-            Box(
-                modifier = Modifier
-                    .size(76.dp)
-                    .clip(CircleShape)
-                    .background(statusColor.copy(alpha = 0.14f)),
-                contentAlignment = Alignment.Center
-            ) {
-                if (waiting) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(30.dp),
-                        color = colors.primary,
-                        strokeWidth = 3.dp,
-                    )
-                } else {
-                    Icon(
-                        imageVector = if (isRunning) Icons.Default.CheckCircle else Icons.Default.Error,
-                        contentDescription = null,
-                        tint = statusColor,
-                        modifier = Modifier.size(32.dp)
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(14.dp))
-
-            Text(
-                text = stringResource(
-                    when {
-                        isRunning -> R.string.wizard_expert_running
-                        waiting -> R.string.wizard_connecting
-                        else -> R.string.wizard_connection_error
+        Folding(reached) {
+            AnimatedContent(
+                targetState = Triple(isRunning, waiting, failed),
+                transitionSpec = { fadeIn(tween(220)) togetherWith fadeOut(tween(140)) },
+                label = "wizardDone",
+            ) { (running, wait, _) ->
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        when {
+                            wait -> CircularProgressIndicator(Modifier.size(22.dp), strokeWidth = 2.5.dp)
+                            running -> RunningTick()
+                        }
+                        Text(
+                            stringResource(
+                                when {
+                                    running -> R.string.wizard_expert_running_body
+                                    wait -> R.string.wizard_connecting_body
+                                    else -> R.string.wizard_connection_error_body
+                                },
+                            ),
+                            Modifier.weight(1f),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = if (running || wait) colors.onSurface else colors.error,
+                        )
                     }
-                ),
-                style = MaterialTheme.typography.titleSmall,
-                color = colors.onBackground,
-                textAlign = TextAlign.Center,
-            )
-
-            Spacer(modifier = Modifier.height(6.dp))
-
-            Text(
-                text = stringResource(
-                    when {
-                        isRunning -> R.string.wizard_expert_running_body
-                        waiting -> R.string.wizard_connecting_body
-                        else -> R.string.wizard_connection_error_body
-                    }
-                ),
-                style = MaterialTheme.typography.bodySmall,
-                color = colors.onSurfaceVariant,
-                textAlign = TextAlign.Center,
-            )
-
-            if (isRunning) {
-                Spacer(modifier = Modifier.height(20.dp))
-
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(ConsoleShape)
-                        .background(colors.background)
-                        .padding(14.dp)
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                        Box(modifier = Modifier.size(7.dp).clip(CircleShape).background(colors.primary))
-                        Text(stringResource(R.string.wizard_kernel_stream), style = MonoLabel, color = colors.primary)
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = lastKernelLine ?: stringResource(R.string.wizard_kernel_placeholder),
-                        style = MonoBody,
-                        color = colors.onSurfaceVariant,
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Button(
-                    onClick = onTestFlash,
-                    modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = colors.primary.copy(alpha = .14f)),
-                    shape = ConsoleShape
-                ) {
-                    Icon(Icons.Default.FlashOn, null, tint = colors.primary, modifier = Modifier.size(16.dp))
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(stringResource(R.string.wizard_test_flash), color = colors.primary, style = MaterialTheme.typography.labelLarge)
+                    if (running) KernelStream(lastKernelLine)
                 }
             }
         }
     }
 }
+
+@Composable
+private fun RunningTick() {
+    val colors = MaterialTheme.colorScheme
+    var shown by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) { shown = true }
+    Box(Modifier.size(36.dp), contentAlignment = Alignment.Center) {
+        AnimatedVisibility(shown, enter = scaleIn(spring(dampingRatio = .55f, stiffness = Spring.StiffnessMediumLow)) + fadeIn()) {
+            Box(Modifier.size(36.dp).clip(CircleShape).background(colors.primary), contentAlignment = Alignment.Center) {
+                Icon(Icons.Filled.Check, null, Modifier.size(20.dp), tint = colors.onPrimary)
+            }
+        }
+    }
+}
+
+/** The last few kernel lines, newest at the bottom, so a key pressed now is seen arriving. */
+@Composable
+private fun KernelStream(lastKernelLine: String?) {
+    val colors = MaterialTheme.colorScheme
+    val lines = remember { mutableStateListOf<String>() }
+    LaunchedEffect(lastKernelLine) {
+        val line = lastKernelLine ?: return@LaunchedEffect
+        lines.add(line)
+        while (lines.size > 5) lines.removeAt(0)
+    }
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .clip(InnerShape)
+            .background(colors.inverseSurface)
+            .padding(14.dp)
+            .animateContentSize(),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            Box(Modifier.size(7.dp).clip(CircleShape).background(colors.inversePrimary))
+            Text(stringResource(R.string.wizard_kernel_stream), style = MonoLabel, color = colors.inversePrimary)
+        }
+        if (lines.isEmpty()) {
+            Text(stringResource(R.string.wizard_kernel_placeholder), style = MonoBody, color = colors.inverseOnSurface.copy(alpha = .75f))
+        }
+        lines.forEachIndexed { index, line ->
+            Text(
+                line,
+                style = MonoBody,
+                color = if (index == lines.lastIndex) colors.inversePrimary else colors.inverseOnSurface.copy(alpha = .75f),
+                maxLines = 2,
+            )
+        }
+    }
+}
+
+/**
+ * The floating capsule: Continue on the first step, the live pairing status on the second (the
+ * page moves on by itself once paired), Finish setup on the last.
+ */
+@Composable
+private fun WizardCapsule(
+    step: Int,
+    pairingStatus: PairingStatus,
+    settingsOpened: Boolean,
+    onContinue: () -> Unit,
+    onFinish: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val colors = MaterialTheme.colorScheme
+    val glass = LocalGlass.current
+    val shape = RoundedCornerShape(50)
+    Box(
+        modifier
+            .fillMaxWidth()
+            .shadow(12.dp, shape, ambientColor = glass.barShadow, spotColor = glass.barShadow)
+            .clip(shape)
+            .background(Brush.verticalGradient(listOf(glass.sheetTop, glass.sheetMid)))
+            .border(1.2.dp, glass.barRim, shape)
+            .padding(6.dp),
+    ) {
+        AnimatedContent(
+            targetState = step,
+            transitionSpec = { fadeIn(tween(200)) togetherWith fadeOut(tween(120)) },
+            label = "wizardCapsule",
+        ) { current ->
+            when (current) {
+                0 -> CapsuleButton(stringResource(R.string.wizard_continue), "wizard_next_button", onContinue)
+                1 -> PairingStatusLine(pairingStatus, settingsOpened)
+                else -> CapsuleButton(stringResource(R.string.onboarding_finish), "wizard_finish_button", onFinish)
+            }
+        }
+    }
+}
+
+@Composable
+private fun CapsuleButton(label: String, tag: String, onClick: () -> Unit) {
+    Button(
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp).testTag(tag),
+        shape = RoundedCornerShape(50),
+    ) { Text(label, style = MaterialTheme.typography.labelLarge) }
+}
+
+/**
+ * The mDNS search starts with the step, not with the user, so "Searching…" was pulsing at someone
+ * who had not tapped anything yet. Until [started] the line says what to tap instead.
+ */
+@Composable
+private fun PairingStatusLine(status: PairingStatus, started: Boolean) {
+    val colors = MaterialTheme.colorScheme
+    val waitingOnUser = !started &&
+        (status == PairingStatus.IDLE || status == PairingStatus.SEARCHING_MDNS_AND_SCREEN)
+    val dotColor = when {
+        waitingOnUser || status == PairingStatus.IDLE -> colors.onSurfaceVariant
+        status == PairingStatus.ERROR -> colors.error
+        else -> colors.primary
+    }
+    Row(
+        Modifier.fillMaxWidth().heightIn(min = 52.dp).padding(horizontal = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+        Box(Modifier.size(8.dp).clip(CircleShape).background(dotColor))
+        AnimatedContent(
+            targetState = if (waitingOnUser) stringResource(R.string.pairing_not_started) else pairingStatusLabel(status),
+            transitionSpec = { fadeIn(tween(180)) togetherWith fadeOut(tween(120)) },
+            label = "pairingStatus",
+        ) { text ->
+            Text(text, style = MaterialTheme.typography.labelLarge, color = colors.onSurface)
+        }
+    }
+}
+
+/** Section titles: dark and a size up from the editor's, which sit above much larger controls. */
+private val WizardTitle: TextStyle
+    @Composable @ReadOnlyComposable
+    get() = MaterialTheme.typography.titleMedium

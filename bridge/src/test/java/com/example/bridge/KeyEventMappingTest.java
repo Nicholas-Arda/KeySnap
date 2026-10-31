@@ -45,6 +45,26 @@ public class KeyEventMappingTest {
     }
 
     @Test
+    public void keyboardMouseAndGamepadKeysGetAndroidsOwnCodes() {
+        // The same codes Accessibility reports, so one press is not counted twice.
+        assertEquals(33, KeyEventMapping.parse("/dev/input/event11: EV_KEY KEY_E DOWN").androidKeyCode);
+        assertEquals(113, KeyEventMapping.parse("/dev/input/event11: EV_KEY KEY_LEFTCTRL DOWN").androidKeyCode);
+        assertEquals(7, KeyEventMapping.parse("/dev/input/event11: EV_KEY KEY_0 DOWN").androidKeyCode);
+        assertEquals(142, KeyEventMapping.parse("/dev/input/event11: EV_KEY KEY_F12 DOWN").androidKeyCode);
+        assertEquals(33, KeyEventMapping.parse("/dev/input/event11: 0001 0012 00000001").androidKeyCode);
+        assertEquals(4, KeyEventMapping.parse("/dev/input/event8: EV_KEY BTN_SIDE DOWN").androidKeyCode);
+        assertEquals(96, KeyEventMapping.parse("/dev/input/event9: EV_KEY BTN_SOUTH DOWN").androidKeyCode);
+        assertEquals(96, KeyEventMapping.parse("/dev/input/event9: EV_KEY BTN_A DOWN").androidKeyCode);
+    }
+
+    @Test
+    public void mouseClicksStaySynthetic() {
+        // Android reports these as pointer buttons, never as key events.
+        assertTrue(KeyEventMapping.isSynthetic(
+                KeyEventMapping.parse("/dev/input/event8: EV_KEY BTN_MOUSE DOWN").androidKeyCode));
+    }
+
+    @Test
     public void repeatIsDistinguishedFromDown() {
         assertEquals(KeyEventMapping.ACTION_REPEAT,
                 KeyEventMapping.parse("/dev/input/event1: EV_KEY KEY_VOLUMEUP 00000002").action);

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_editor_title">आसान शॉर्टकट एडिटर</string>
+    <string name="whats_new_editor_description">अब एडिटर में ही बटन रिकॉर्ड करें। सरल लेआउट और खुलने-बंद होने के ज़्यादा सहज ट्रांज़िशन के साथ।</string>
+    <string name="whats_new_fix_update_startup">अपडेट के बाद KeySnap खोलते समय होने वाला क्रैश ठीक किया गया</string>
+    <string name="whats_new_dutch_title">अब डच में भी</string>
+    <string name="whats_new_dutch_description">KeySnap को डच में इस्तेमाल करें. सेटिंग → भाषा में Nederlands चुनें.</string>
+</resources>

@@ -212,13 +212,6 @@ private fun AppRow(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
-            Text(
-                app.packageName,
-                style = MaterialTheme.typography.bodySmall,
-                color = colors.onSurfaceVariant,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
         }
         if (selected) {
             Icon(Icons.Filled.Check, stringResource(R.string.app_picker_selected), tint = colors.primary)

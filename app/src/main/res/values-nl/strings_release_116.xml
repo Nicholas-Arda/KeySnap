@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_assistant_gesture_title">Jouw aan/uit-knop, jouw snelkoppeling</string>
+    <string name="whats_new_assistant_gesture_description">Stel KeySnap in als assistent op je telefoon. Op telefoons die bij ingedrukt houden van de aan/uit-knop de assistent oproepen, wordt je snelkoppeling ‘Assistentgebaar’ uitgevoerd.</string>
+    <string name="whats_new_home_only_title">Alleen op start- of vergrendelscherm</string>
+    <string name="whats_new_home_only_description">Voeg ‘Geen app open’ toe onder ‘Alleen als’, zodat volumeknoppen binnen apps normaal werken. Gebruikstoegang vereist.</string>
+    <string name="whats_new_fix_coloros_dnd">Niet storen-acties werken nu op ColorOS in de geavanceerde modus</string>
+    <string name="whats_new_fix_conditional_volume">Een volumeknop wordt alleen overgenomen als aan de voorwaarden van de snelkoppeling is voldaan</string>
+    <string name="rating_prompt_title">Doet KeySnap wat je nodig hebt?</string>
+    <string name="rating_prompt_body">Een beoordeling op Google Play helpt enorm.</string>
+    <string name="rating_prompt_rate">Beoordelen</string>
+    <string name="rating_prompt_later">Later</string>
+    <string name="rating_prompt_no_thanks">Nee, bedankt</string>
+</resources>

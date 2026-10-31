@@ -33,6 +33,7 @@ object AppLocale {
         "es" to R.string.language_spanish,
         "fr" to R.string.language_french,
         "it" to R.string.language_italian,
+        "nl" to R.string.language_dutch,
         "pt-BR" to R.string.language_portuguese,
         "tr" to R.string.language_turkish,
         "ru" to R.string.language_russian,
@@ -56,6 +57,7 @@ object AppLocale {
         "ru" -> "🇷🇺"
         "it" -> "🇮🇹"
         "hi" -> "🇮🇳"
+        "nl" -> "🇳🇱"
         else -> ""
     }
 

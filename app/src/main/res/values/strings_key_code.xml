@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="key_code_single_key_hint">Sends one key (e.g. 66 = Enter). To type numbers or text, use %1$s.</string>
+    <string name="key_code_switch_to_input_text">Switch to %1$s</string>
+</resources>

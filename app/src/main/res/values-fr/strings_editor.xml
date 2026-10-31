@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="editor_chain_if">Si</string>
+    <string name="editor_fine_tune">Réglages précis</string>
+    <string name="editor_fine_tune_summary">Nom · Modes · Vibration</string>
+    <string name="editor_highlight_hint">Touchez un mot en surbrillance pour le modifier.</string>
+    <string name="editor_press">Appuyez sur</string>
+    <string name="editor_save_shortcut">Enregistrer le raccourci</string>
+    <string name="editor_test">Tester</string>
+</resources>

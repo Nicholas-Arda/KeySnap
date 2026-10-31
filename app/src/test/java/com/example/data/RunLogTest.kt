@@ -186,4 +186,15 @@ class RunLogTest {
         val log = listOf(record("a", 3L, ok = true), record("a", 2L, ok = false), record("b", 1L, ok = false))
         assertEquals(setOf("b"), latestFailedScriptIds(log))
     }
+
+    @Test fun advancedModeWarningNamesRealActionsAndVanishesWhileOn() {
+        (ADVANCED_MODE_TYPES + ADVANCED_MODE_PARTIAL_TYPES).forEach { type ->
+            assertTrue(type, ScriptActionCatalog.isAvailable(type))
+            assertEquals(type, null, advancedModeWarningRes(type, advancedMode = true))
+        }
+        assertEquals(io.github.nicholasarda.keysnap.R.string.badge_expert_mode, advancedModeWarningRes("toggle_wifi", false))
+        assertEquals(io.github.nicholasarda.keysnap.R.string.badge_advanced_full_access, advancedModeWarningRes("shell_command", false))
+        assertEquals(io.github.nicholasarda.keysnap.R.string.badge_advanced_full_access, advancedModeWarningRes("launch_device_assistant", false))
+        assertEquals(null, advancedModeWarningRes("toggle_flashlight", false))
+    }
 }

@@ -29,6 +29,11 @@ public final class BridgeModes {
         return 0L;
     }
 
+    /** No mode waveform in the public build. */
+    public boolean awaitBuzz() {
+        return true;
+    }
+
     public interface ModeSignal {
         void broadcast(int mode);
     }

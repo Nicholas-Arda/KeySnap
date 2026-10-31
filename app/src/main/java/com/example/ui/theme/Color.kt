@@ -1,12 +1,14 @@
 package com.example.ui.theme
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 
-// Warm laboratory white rather than a clinical pure-white interface.
-val LightBackground = Color(0xFFF2F0EA)
-val LightSurface = Color(0xFFFCFAF5)
-val LightSurfaceVariant = Color(0xFFE8E4DA)
-val LightSurfaceElevated = Color(0xFFD5D0C4)
+// Cool neutrals that sit with the blue accent and the blue glass ground; the earlier warm cream
+// read as yellow on chips and switch tracks against that ground. Sepia keeps the warm palette.
+val LightBackground = Color(0xFFF1F3F7)
+val LightSurface = Color(0xFFFBFCFE)
+val LightSurfaceVariant = Color(0xFFE5E9F0)
+val LightSurfaceElevated = Color(0xFFCBD2DD)
 
 /**
  * The accent hue is the same blue in every appearance; only its value changes, so the brand reads
@@ -32,3 +34,15 @@ val CrimsonOnLight = Color(0xFFB3261E)
 
 val TextPrimary = Color(0xFFF5F1E8)
 val TextSecondary = Color(0xFFA9A49A)
+
+/** Success text. The dark value is for a navy surface; the light value clears the light surfaces. */
+val SuccessOnLight = Color(0xFF146C2E)
+val SuccessOnDark = Color(0xFF8FDBA8)
+
+/** Caution text for plain HTTP, limited shell, and a setting that needs Advanced Mode. */
+val CautionOnLight = Color(0xFF7A4F00)
+val CautionOnDark = Color(0xFFFFD27A)
+
+fun successOn(background: Color): Color = if (background.luminance() < 0.5f) SuccessOnDark else SuccessOnLight
+
+fun cautionOn(background: Color): Color = if (background.luminance() < 0.5f) CautionOnDark else CautionOnLight

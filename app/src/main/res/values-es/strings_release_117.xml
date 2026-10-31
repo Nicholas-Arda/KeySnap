@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_editor_title">Un editor de atajos más sencillo</string>
+    <string name="whats_new_editor_description">Un editor más claro que permite registrar teclas sin salir de él, con aperturas y cierres más fluidos.</string>
+    <string name="whats_new_fix_update_startup">Se corrigió un cierre inesperado al abrir KeySnap tras una actualización</string>
+    <string name="whats_new_dutch_title">Ahora en neerlandés</string>
+    <string name="whats_new_dutch_description">Usa KeySnap en neerlandés. Elige Nederlands en Ajustes → Idioma.</string>
+</resources>

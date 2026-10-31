@@ -49,16 +49,13 @@ class AccessibilityRecoveryTest {
                         gaps = PermissionGaps(notifications = true, battery = true),
                         isServiceActive = false,
                         onOpenAccessibility = { opens++ },
-                        accessibilityStatus = AccessibilityStatus.NEEDS_RECONNECT,
                     )
                 }
             }
         }
-        rule.onNodeWithText("Reconnect Accessibility").assertIsDisplayed()
-        rule.onNodeWithText("Android has Accessibility enabled, but KeySnap is disconnected. Turn KeySnap off, then on again in Accessibility settings.")
-            .performScrollTo().assertIsDisplayed()
+        rule.onNodeWithText("Shortcuts aren’t running yet").assertIsDisplayed()
         rule.onNodeWithTag("permission_alerts").captureRoboImage("build/outputs/accessibility-recovery/$name.png")
-        rule.onNodeWithText("Open Accessibility settings").performScrollTo().assertIsDisplayed().performClick()
+        rule.onNodeWithText("Fix").performScrollTo().assertIsDisplayed().performClick()
         assertEquals(1, opens)
     }
 

@@ -32,12 +32,26 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Alarm
+import androidx.compose.material.icons.outlined.Block
+import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.LooksTwo
+import androidx.compose.material.icons.outlined.PowerSettingsNew
+import androidx.compose.material.icons.outlined.SmartButton
+import androidx.compose.material.icons.outlined.Timelapse
+import androidx.compose.material.icons.outlined.Timer
+import androidx.compose.material.icons.outlined.TouchApp
+import androidx.compose.material.icons.outlined.Vibration
+import androidx.compose.material3.Icon
+import androidx.compose.ui.graphics.vector.ImageVector
+import com.example.capsule.CapsuleHooks
 import com.example.data.KeyMappingConfig
 import com.example.data.MillisecondSettingSpec
 import com.example.data.TriggerPressType
 import com.example.data.TriggerTimingSpecs
 import com.example.service.TimeSchedule
-import com.example.ui.components.ConsoleSwitch
 import com.example.ui.components.MillisecondSliderSetting
 import androidx.compose.ui.res.stringResource
 import io.github.nicholasarda.keysnap.R
@@ -59,6 +73,7 @@ fun ScriptSettingsSheet(
     onSetLongPressThreshold: (Long?) -> Unit,
     onSetConsumeOriginalEvent: (Boolean?) -> Unit = {},
     onSetVibrateOnTrigger: (Boolean?) -> Unit = {},
+    onSetShowCapsule: (Boolean) -> Unit = {},
     onSetHapticDurationMs: (Long?) -> Unit = {},
     onSetExactTiming: (Boolean) -> Unit = {},
 ) {
@@ -95,9 +110,10 @@ fun ScriptSettingsSheet(
                 onValueChange = onSetName,
                 modifier = Modifier.fillMaxWidth().testTag("script_settings_name_field"),
                 label = { Text(stringResource(R.string.script_settings_name)) },
+                leadingIcon = { Icon(Icons.Outlined.Edit, contentDescription = null, tint = colors.primary) },
                 singleLine = true,
             )
-            ConsoleSwitch(stringResource(R.string.script_settings_enabled), draft.enabled, onSetEnabled)
+            SheetSwitchRow(Icons.Outlined.PowerSettingsNew, stringResource(R.string.script_settings_enabled), null, draft.enabled, onSetEnabled)
             HorizontalDivider(color = colors.outline.copy(alpha = .45f))
             OverridableConsumeSwitch(
                 override = draft.consumeOriginalEvent,
@@ -105,6 +121,12 @@ fun ScriptSettingsSheet(
                 onChange = onSetConsumeOriginalEvent,
             )
             HorizontalDivider(color = colors.outline.copy(alpha = .45f))
+            if (CapsuleHooks.AVAILABLE && draft.trigger != null && !draft.automation && !draft.surfaceOnly) {
+                SheetSwitchRow(Icons.Outlined.SmartButton, stringResource(R.string.script_settings_show_capsule),
+                    stringResource(R.string.script_settings_show_capsule_description), draft.showCapsule, onSetShowCapsule,
+                    Modifier.testTag("script_settings_capsule_switch"))
+                HorizontalDivider(color = colors.outline.copy(alpha = .45f))
+            }
             OverridableVibrateSwitch(
                 override = draft.vibrateOnTrigger,
                 globalDefault = defaults.vibrateOnTrigger,
@@ -116,6 +138,7 @@ fun ScriptSettingsSheet(
                 globalDefault = defaults.hapticDurationMs,
                 spec = TriggerTimingSpecs.hapticDuration,
                 testTag = "script_haptic_duration_slider",
+                icon = Icons.Outlined.Timer,
                 enabled = draft.vibrateOnTrigger ?: defaults.vibrateOnTrigger,
                 onChange = onSetHapticDurationMs,
             )
@@ -131,7 +154,10 @@ fun ScriptSettingsSheet(
                     style = MaterialTheme.typography.bodySmall,
                 )
             } else {
-                Text(stringResource(R.string.script_settings_trigger_type), style = SectionLabel, color = colors.onSurfaceVariant)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    SheetIcon(Icons.Outlined.TouchApp)
+                    Text(stringResource(R.string.script_settings_trigger_type), style = SectionLabel, color = colors.onSurfaceVariant)
+                }
                 PressTypeChips(draft.trigger.pressType, onSetPressType)
                 OverridableMillisecondSlider(
                     title = stringResource(R.string.script_settings_double_press_window),
@@ -139,6 +165,7 @@ fun ScriptSettingsSheet(
                     globalDefault = defaults.doublePressWindowMs,
                     spec = TriggerTimingSpecs.doublePressWindow,
                     testTag = "script_double_press_window_slider",
+                    icon = Icons.Outlined.LooksTwo,
                     onChange = onSetDoublePressWindow,
                 )
                 OverridableMillisecondSlider(
@@ -147,6 +174,7 @@ fun ScriptSettingsSheet(
                     globalDefault = defaults.longPressThresholdMs,
                     spec = TriggerTimingSpecs.longPressThreshold,
                     testTag = "script_long_press_threshold_slider",
+                    icon = Icons.Outlined.Timelapse,
                     onChange = onSetLongPressThreshold,
                 )
             }
@@ -186,6 +214,7 @@ private fun OverridableMillisecondSlider(
     spec: MillisecondSettingSpec,
     testTag: String,
     enabled: Boolean = true,
+    icon: ImageVector? = null,
     onChange: (Long?) -> Unit,
 ) {
     MillisecondSliderSetting(
@@ -201,6 +230,7 @@ private fun OverridableMillisecondSlider(
         enabled = enabled,
         resetEnabled = override != null,
         onReset = { onChange(null) },
+        icon = icon,
         onValueChange = { onChange(it) },
     )
 }
@@ -222,6 +252,7 @@ private fun OverridableVibrateSwitch(
             ).testTag("script_settings_vibrate_switch"),
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            SheetIcon(Icons.Outlined.Vibration)
             Column(Modifier.weight(1f).padding(end = 12.dp)) {
                 Text(
                     stringResource(R.string.script_settings_vibrate),
@@ -261,6 +292,7 @@ private fun ExactTimingSwitch(checked: Boolean, onChange: (Boolean) -> Unit) {
             .testTag("script_settings_exact_timing_switch"),
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        SheetIcon(Icons.Outlined.Alarm)
         Column(Modifier.weight(1f).padding(end = 12.dp)) {
             Text(
                 stringResource(R.string.script_settings_exact_timing),
@@ -295,6 +327,7 @@ private fun OverridableConsumeSwitch(
             ),
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            SheetIcon(Icons.Outlined.Block)
             Column(Modifier.weight(1f).padding(end = 12.dp)) {
                 Text(
                     stringResource(R.string.script_settings_consume_input),
@@ -323,5 +356,34 @@ private fun OverridableConsumeSwitch(
                 }
             }
         }
+    }
+}
+
+/** Same leading icon as the key capsule settings rows. */
+@Composable
+private fun SheetIcon(icon: ImageVector) {
+    Icon(icon, contentDescription = null, Modifier.padding(end = 12.dp).size(24.dp), tint = MaterialTheme.colorScheme.primary)
+}
+
+@Composable
+private fun SheetSwitchRow(
+    icon: ImageVector,
+    title: String,
+    description: String?,
+    checked: Boolean,
+    onChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val colors = MaterialTheme.colorScheme
+    Row(
+        modifier.fillMaxWidth().heightIn(min = 48.dp).toggleable(value = checked, role = Role.Switch, onValueChange = onChange),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        SheetIcon(icon)
+        Column(Modifier.weight(1f).padding(end = 12.dp)) {
+            Text(title, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium, color = colors.onSurface)
+            description?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant) }
+        }
+        Switch(checked = checked, onCheckedChange = null)
     }
 }

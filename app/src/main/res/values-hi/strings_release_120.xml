@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_test_editors_title_120">टेस्ट करने लायक एडिटर</string>
+    <string name="whats_new_test_editors_description_120">सेव करने से पहले हर स्टेप ▶ से आज़माएँ।</string>
+    <string name="whats_new_reorder_shortcuts_title_120">शॉर्टकट क्रम बदलें और संपादित करें</string>
+    <string name="whats_new_reorder_shortcuts_description_120">✎ टैप करें या शॉर्टकट दबाकर रखें; क्रम बदलने के लिए खींचें।</string>
+    <string name="whats_new_input_devices_title_120">कीबोर्ड, माउस और गेमपैड</string>
+    <string name="whats_new_input_devices_description_120">उन्नत मोड: असली बटन नाम, Ctrl शॉर्टकट।</string>
+    <string name="whats_new_fix_setup_120">दो-चरणीय सेटअप, सूचनाएँ वैकल्पिक</string>
+    <string name="whats_new_fix_conditions_120">हर शर्त «नहीं» से उलटें</string>
+    <string name="whats_new_fix_app_names_120">ऐप अपने नाम से दिखते हैं</string>
+    <string name="whats_new_fix_side_power_keys_120">साइड और पावर बटन: स्पष्ट संकेत</string>
+    <string name="whats_new_fix_idle_battery_120">खाली रहने पर कम बैटरी खर्च</string>
+    <string name="whats_new_fix_advanced_setup_120">उन्नत मोड सेटअप एक पेज पर</string>
+    <string name="whats_new_fix_saved_keys_120">सहेजे गए बटन: नाम बदलें, पहले जोड़ें</string>
+    <string name="whats_new_fix_shortcuts_page_120">साफ़ शॉर्टकट पेज, छोटी सूचियाँ</string>
+    <string name="whats_new_fix_modes_120">मोड: कभी भी बंद करें, हटाएँ</string>
+</resources>

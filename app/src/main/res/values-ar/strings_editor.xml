@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="editor_chain_if">إذا</string>
+    <string name="editor_fine_tune">ضبط دقيق</string>
+    <string name="editor_fine_tune_summary">الاسم · الأوضاع · الاهتزاز</string>
+    <string name="editor_highlight_hint">انقر على كلمة مميزة لتغييرها.</string>
+    <string name="editor_press">اضغط</string>
+    <string name="editor_save_shortcut">حفظ الاختصار</string>
+    <string name="editor_test">اختبار</string>
+</resources>

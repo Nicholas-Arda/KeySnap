@@ -31,6 +31,7 @@ internal fun sortInstalledApps(apps: List<InstalledApp>): List<InstalledApp> = a
  */
 class InstalledAppsRepository(context: Context) {
 
+    private val appContext = context.applicationContext
     private val packageManager: PackageManager = context.applicationContext.packageManager
     @Volatile private var cache: List<InstalledApp>? = null
 
@@ -43,7 +44,7 @@ class InstalledAppsRepository(context: Context) {
                 resolved.map { info ->
                     InstalledApp(
                         packageName = info.activityInfo.packageName,
-                        label = info.loadLabel(packageManager).toString(),
+                        label = AppLabelResolver.get(appContext).resolve(info.activityInfo.packageName, appContext.resources).label,
                     )
                 },
             )
@@ -53,7 +54,7 @@ class InstalledAppsRepository(context: Context) {
     }
 
     fun labelFor(packageName: String): String? =
-        cache?.firstOrNull { it.packageName == packageName }?.label
+        AppLabelResolver.get(appContext).resolve(packageName, appContext.resources).takeIf { it.installed }?.label
 
     /**
      * The launcher icon rendered at [sizePx], or null when the package is gone (uninstalled between

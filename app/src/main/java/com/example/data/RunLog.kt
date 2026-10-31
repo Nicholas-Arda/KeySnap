@@ -88,6 +88,18 @@ internal val ADVANCED_MODE_TYPES = setOf(
     "switch_keyboard", "force_stop_app", "modify_setting", "shell_command",
     "screen_on", "screen_off", "toggle_screen",
 )
+
+/** Run without Advanced Mode, but only partly: shell has app privileges, assistants miss the overlay. */
+internal val ADVANCED_MODE_PARTIAL_TYPES = setOf("shell_command", "launch_voice_assistant", "launch_device_assistant")
+
+/** The red line under an action while Advanced Mode is off; null when it runs fully without it. */
+@StringRes
+internal fun advancedModeWarningRes(type: String, advancedMode: Boolean): Int? = when {
+    advancedMode -> null
+    type in ADVANCED_MODE_PARTIAL_TYPES -> R.string.badge_advanced_full_access
+    type in ADVANCED_MODE_TYPES -> R.string.badge_expert_mode
+    else -> null
+}
 internal val ACCESSIBILITY_TYPES = setOf(
     "input_text", "tap_screen", "swipe_screen", "pinch_screen",
     "go_back", "go_home", "open_recents", "expand_notification_drawer", "expand_quick_settings",

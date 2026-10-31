@@ -98,10 +98,10 @@ object ScriptActionCatalog {
         ActionDescriptor("launch_app", R.string.action_launch_app, ActionCategory.APPS, ActionAvailability.AVAILABLE, listOf(param("packageName", R.string.param_app, ActionParameterKind.PACKAGE))),
         ActionDescriptor("launch_app_shortcut", R.string.action_launch_app_shortcut, ActionCategory.APPS, parameters = listOf(param("shortcutId", R.string.param_shortcut, ActionParameterKind.TEXT))),
         ActionDescriptor("open_url", R.string.action_open_url, ActionCategory.APPS, ActionAvailability.AVAILABLE, listOf(param("url", R.string.param_url, ActionParameterKind.URL))),
-        ActionDescriptor("http_request", R.string.action_http_request, ActionCategory.APPS, ActionAvailability.AVAILABLE, listOf(param("method", R.string.param_method, ActionParameterKind.CHOICE, choices = listOf("GET", "POST", "PUT", "DELETE")), param("url", R.string.param_url, ActionParameterKind.URL), param("body", R.string.param_body, ActionParameterKind.TEXT, required = false))),
-        ActionDescriptor("shell_command", R.string.action_shell_command, ActionCategory.APPS, ActionAvailability.AVAILABLE, listOf(param("command", R.string.param_command, ActionParameterKind.TEXT))),
+        ActionDescriptor("http_request", R.string.action_http_request, ActionCategory.APPS, ActionAvailability.AVAILABLE, listOf(param("method", R.string.param_method, ActionParameterKind.CHOICE, choices = listOf("GET", "POST", "PUT", "DELETE")), param("url", R.string.param_url, ActionParameterKind.URL), param("body", R.string.param_body, ActionParameterKind.TEXT, required = false), param("headers", R.string.param_headers, ActionParameterKind.TEXT, required = false), param("content_type", R.string.param_content_type, ActionParameterKind.CHOICE, required = false, choices = listOf("none", "json", "form", "text")))),
+        ActionDescriptor("shell_command", R.string.action_shell_command, ActionCategory.APPS, ActionAvailability.AVAILABLE, listOf(param("command", R.string.param_command, ActionParameterKind.TEXT), param("timeout_sec", R.string.param_timeout_sec, ActionParameterKind.CHOICE, required = false, choices = listOf("5", "10", "30", "60")))),
         // "extras" is optional "key=value" pairs separated by ';', each added as a String extra.
-        ActionDescriptor("send_intent", R.string.action_send_intent, ActionCategory.APPS, ActionAvailability.AVAILABLE, listOf(param("action", R.string.param_action, ActionParameterKind.TEXT), param("uri", R.string.param_uri, ActionParameterKind.TEXT, required = false), param("extras", R.string.param_extras, ActionParameterKind.TEXT, required = false))),
+        ActionDescriptor("send_intent", R.string.action_send_intent, ActionCategory.APPS, ActionAvailability.AVAILABLE, listOf(param("action", R.string.param_action, ActionParameterKind.TEXT), param("uri", R.string.param_uri, ActionParameterKind.TEXT, required = false), param("extras", R.string.param_extras, ActionParameterKind.TEXT, required = false), param("package", R.string.param_app, ActionParameterKind.PACKAGE, required = false), param("target", R.string.param_intent_target, ActionParameterKind.CHOICE, required = false, choices = listOf("broadcast", "activity")))),
         // Sends through a chat notification's own RemoteInput "Reply" action, from the notification
         // listener: truly background, but only while that chat has a notification showing. The
         // bridge has no listener, so this is app-only (see UNSUPPORTED_BY_BRIDGE).
@@ -271,12 +271,14 @@ object ScriptActionCatalog {
      * AVAILABLE action types the app process runs even while the bridge is up, because the bridge
      * either cannot run them at all (no live Context/window in the shell-UID process) or can only
      * run them worse than the app can — `input text` corrupting non-ASCII, KEYCODE_SLEEP not
-     * actually locking, KEYCODE_SYSRQ not taking a screenshot on most OEM builds. Mirrored by the
+     * actually locking, KEYCODE_SYSRQ not taking a screenshot on most OEM builds. Assistant actions
+     * are conditional: the app runs them only when the bridge did not open the session. Mirrored by the
      * `return false` branches in `BridgeMain.executeAction` (`:bridge`) — keep both lists in sync
      * when an action moves between "app-only" and "bridge-supported".
      */
     val UNSUPPORTED_BY_BRIDGE: Set<String> = setOf(
-        // Requires role-aware discovery and the app's assistant invocation loop guard.
+        // Conditional fallback: the bridge opens an external assistant's session itself. The app
+        // runs these only when its per-action report did not confirm success (e.g. KeySnap's role).
         "launch_device_assistant",
         "launch_voice_assistant",
         "pinch_screen",

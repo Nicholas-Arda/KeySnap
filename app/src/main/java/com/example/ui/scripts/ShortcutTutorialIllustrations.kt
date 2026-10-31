@@ -9,13 +9,10 @@ import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.MutableTransitionState
-import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.animateOffset
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.expandVertically
@@ -619,23 +616,24 @@ private fun PressTypeChip(label: String, selected: Boolean, modifier: Modifier) 
     )
 }
 
-/** The recording indicator: the only infinite loop in the drawing, and it stops on the key landing. */
+/** The recording indicator: three pulses, and it stops on the key landing or when those pulses end. */
 @Composable
 private fun RecordDot(recorded: Boolean, reduced: Boolean) {
     val colors = MaterialTheme.colorScheme
-    val ping = if (recorded || reduced) {
-        null
-    } else {
-        rememberInfiniteTransition(label = "rec").animateFloat(
-            initialValue = 0f,
-            targetValue = 1f,
-            animationSpec = infiniteRepeatable(tween(1500, easing = LinearEasing), RepeatMode.Restart),
-            label = "ping",
-        )
+    val ping = remember { Animatable(0f) }
+    LaunchedEffect(recorded, reduced) {
+        if (recorded || reduced) {
+            ping.snapTo(0f)
+            return@LaunchedEffect
+        }
+        repeat(3) {
+            ping.snapTo(0f)
+            ping.animateTo(1f, tween(1500, easing = LinearEasing))
+        }
     }
     val dot = if (recorded) colors.onSurfaceVariant.copy(alpha = .35f) else colors.error
     Box(Modifier.size(16.dp), contentAlignment = Alignment.Center) {
-        if (ping != null) {
+        if (!recorded && !reduced) {
             Box(
                 Modifier.size(16.dp).drawBehind {
                     val t = (ping.value / .7f).coerceIn(0f, 1f)

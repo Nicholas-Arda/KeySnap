@@ -1,15 +1,20 @@
 package com.example.ui.scripts
 
 import android.view.KeyEvent
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -28,34 +33,43 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Bolt
-import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.ArrowDownward
 import androidx.compose.material.icons.outlined.ArrowUpward
 import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material.icons.outlined.ChevronRight
+import androidx.compose.material.icons.outlined.ExpandMore
+import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material.icons.outlined.DeleteOutline
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.GridView
 import androidx.compose.material.icons.outlined.Keyboard
+import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.PlayCircleOutline
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
@@ -64,32 +78,38 @@ import androidx.compose.material.icons.outlined.WarningAmber
 import androidx.compose.material.icons.outlined.Widgets
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.key
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.Shape
@@ -98,15 +118,25 @@ import androidx.compose.ui.graphics.drawOutline
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.disabled
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.annotation.StringRes
 import com.example.data.ActionAvailability
+import com.example.data.advancedModeWarningRes
 import com.example.data.ActionCategory
 import com.example.data.ActionDescriptor
 import com.example.data.ActionEditorForms
@@ -114,24 +144,33 @@ import com.example.data.ScriptAction
 import com.example.data.ScriptActionCatalog
 import com.example.data.ConstraintEditorForms
 import com.example.data.InstalledApp
+import com.example.data.PhysicalKeyOption
+import com.example.data.TriggerPressType
+import com.example.bridge.KeyEventMapping
+import com.example.bridge.ActionTestResult
+import com.example.bridge.ConstraintNegation
+import com.example.data.constraintLabel
+import com.example.data.shellRunsIn
+import com.example.data.ShellContext
 import com.example.data.RunRecord
 import com.example.data.ScriptConstraint
 import com.example.data.ScriptConstraintCatalog
-import com.example.data.ShortcutScript
 import com.example.data.keyDisplayName
 import com.example.mode.ModeHooks
 import com.example.ui.components.AppAlertDialog
-import com.example.ui.components.ConsoleShape
 import com.example.ui.components.IconTile
 import com.example.ui.components.InnerShape
 import com.example.ui.components.MinTouchTarget
-import com.example.ui.components.singleLineWidth
+import com.example.ui.components.SelectionLeadSpring
+import com.example.ui.components.SelectionTrailSpring
 import com.example.ui.components.trailingEdgeFade
 import com.example.ui.theme.SectionLabel
 import com.example.ui.theme.categoryTileColors
 import io.github.nicholasarda.keysnap.R
 import com.example.viewmodel.ScriptDraft
 import com.example.viewmodel.hasTrigger
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 
 /**
  * These two actions take no params, so [ActionEditorForms] has no form for them; "Configure" still
@@ -174,11 +213,31 @@ fun ScriptEditorScreen(
     scripts: List<com.example.data.ShortcutScript> = emptyList(),
     isPro: Boolean = false,
     onSetRunsIn: (Int?) -> Unit = {},
+    keyPickerOpen: Boolean = false,
+    savedKeys: List<PhysicalKeyOption> = emptyList(),
+    isRecordingKey: Boolean = false,
+    recordingKeys: List<Int> = emptyList(),
+    onDismissKeyPicker: () -> Unit = {},
+    onSelectKey: (Int) -> Unit = {},
+    onStartRecording: () -> Unit = {},
+    onCancelRecording: () -> Unit = {},
+    onSetPressType: (TriggerPressType) -> Unit = {},
+    onSwitchToSurface: () -> Unit = {},
+    onSetUpAdvancedMode: () -> Unit = {},
+    onSetConstraintParams: (Int, Map<String, String>) -> Unit = { _, _ -> },
+    onTestAction: suspend (ScriptAction) -> ActionTestResult = { ActionTestResult(false, null, null, 0, false, emptyList()) },
 ) {
-    val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
+    var feedback by remember { mutableStateOf<EditorFeedback?>(null) }
+    LaunchedEffect(feedback) {
+        if (feedback != null) {
+            delay(2_600)
+            feedback = null
+        }
+    }
     LaunchedEffect(message) {
         val text = message ?: return@LaunchedEffect
-        snackbarHostState.showSnackbar(text)
+        Toast.makeText(context.applicationContext, text, Toast.LENGTH_SHORT).show()
         onConsumeMessage()
     }
     var query by remember { mutableStateOf("") }
@@ -190,10 +249,15 @@ fun ScriptEditorScreen(
     // draft and everything it holds are data classes, so structural inequality means "touched".
     val opened = remember(draft.id) { draft }
     fun requestClose() {
+        if (keyPickerOpen) onDismissKeyPicker()
         if (draft != opened) confirmDiscard = true else onClose()
     }
     // Back pops one level: a catalog pane returns to the chain; the chain closes like the top-bar tile.
-    BackHandler { if (pane != EditorPane.CHAIN) pane = EditorPane.CHAIN else requestClose() }
+    BackHandler {
+        if (keyPickerOpen) onDismissKeyPicker()
+        else if (pane != EditorPane.CHAIN) pane = EditorPane.CHAIN
+        else requestClose()
+    }
 
     if (confirmDiscard) {
         DiscardChangesDialog(
@@ -242,6 +306,7 @@ fun ScriptEditorScreen(
                     if (ActionEditorForms.isConfigurable(type)) onConfigureNewAction(type) else onAddAction(type, emptyMap())
                 },
                 onClose = { pane = EditorPane.CHAIN },
+                advancedModeActive = advancedModeActive,
             )
             EditorPane.ADD_CONSTRAINT -> ConstraintPickerScreen(
                 automation = draft.automation,
@@ -260,11 +325,10 @@ fun ScriptEditorScreen(
                 EditorTopBar(
                     name = draft.name,
                     onSetName = onSetName,
-                    onOpenScriptSettings = onOpenScriptSettings,
-                    // Same rule as MainViewModel.commitDraft: no actions, or a key shortcut with no
-                    // key, is not a shortcut worth saving.
-                    canSave = draft.actions.isNotEmpty() && draft.hasTrigger(),
-                    onDone = onDone,
+                    isNew = draft.isNew,
+                    canShare = draft.actions.isNotEmpty(),
+                    onShare = onShare,
+                    onDelete = { confirmDelete = true },
                     onClose = { requestClose() },
                 )
                 Box(Modifier.weight(1f)) {
@@ -275,29 +339,62 @@ fun ScriptEditorScreen(
                             isPro = isPro,
                             onSetRunsIn = onSetRunsIn,
                             onOpenTriggerPicker = onOpenTriggerPicker,
-                            onToggleAutomation = onToggleAutomation,
+                            onToggleAutomation = { onDismissKeyPicker(); onToggleAutomation() },
                             onClearSurfaceOnly = onClearSurfaceOnly,
-                            onConfigureAction = onConfigureAction,
+                            onConfigureAction = { onDismissKeyPicker(); onConfigureAction(it) },
                             onRemoveAction = onRemoveAction,
                             onMoveAction = onMoveAction,
-                            onOpenConstraintPicker = { pane = EditorPane.ADD_CONSTRAINT },
+                            onOpenConstraintPicker = { onDismissKeyPicker(); pane = EditorPane.ADD_CONSTRAINT },
                             onRemoveConstraint = onRemoveConstraint,
-                            onConfigureConstraint = onConfigureConstraint,
+                            onConfigureConstraint = { onDismissKeyPicker(); onConfigureConstraint(it) },
+                            onSetConstraintParams = onSetConstraintParams,
+                            onTestAction = onTestAction,
+                            onTestResult = { feedback = it },
+                            onSetUpAdvancedMode = onSetUpAdvancedMode,
                             installedApps = installedApps,
+                            savedKeys = savedKeys,
                             advancedModeActive = advancedModeActive,
                             runs = runs,
-                            onOpenAddAction = { pane = EditorPane.ADD_ACTION },
+                            onSetName = onSetName,
+                            onOpenScriptSettings = onOpenScriptSettings,
+                            onOpenAddAction = { onDismissKeyPicker(); pane = EditorPane.ADD_ACTION },
+                            keyPickerOpen = keyPickerOpen,
+                            isRecordingKey = isRecordingKey,
+                            recordingKeys = recordingKeys,
+                            onSetPressType = onSetPressType,
                             modifier = Modifier.weight(1f),
                         )
-                        BottomToolbar(
+                        EditorFeedbackPill(feedback, Modifier.align(Alignment.CenterHorizontally).padding(horizontal = 16.dp))
+                        AnimatedContent(
+                            targetState = keyPickerOpen,
+                            transitionSpec = { fadeIn(tween(180)) togetherWith fadeOut(tween(100)) },
+                            label = "inlineKeyDock",
+                        ) { choosing ->
+                        if (choosing) InlineKeyPicker(
+                            savedKeys = savedKeys, isRecording = isRecordingKey,
+                            onDismiss = onDismissKeyPicker, onSelectKey = onSelectKey,
+                            onStartRecording = onStartRecording, onCancelRecording = onCancelRecording,
+                            onSwitchToSurface = onSwitchToSurface,
+                            advancedModeActive = advancedModeActive,
+                            onSetUpAdvancedMode = onSetUpAdvancedMode,
+                        ) else BottomToolbar(
                             canRun = draft.actions.isNotEmpty(),
-                            canDelete = !draft.isNew,
                             onRunOnce = onRunOnce,
-                            onDeleteScript = { confirmDelete = true },
-                            onShare = onShare,
+                            onDone = {
+                                val fromNotification = ScriptConstraintCatalog.startsFromNotification(draft.automation, draft.constraints)
+                                val error = when {
+                                    draft.actions.isEmpty() -> R.string.editor_needs_action
+                                    !draft.hasTrigger() -> R.string.editor_needs_trigger
+                                    draft.automation && draft.constraints.isEmpty() -> R.string.chain_needs_condition
+                                    draft.actions.any { ActionEditorForms.missingRequired(it, fromNotification).isNotEmpty() } -> R.string.chain_action_empty
+                                    draft.constraints.any { !ConstraintEditorForms.isComplete(it.type, it.params) } -> R.string.chain_condition_empty
+                                    else -> null
+                                }
+                                if (error == null) onDone() else feedback = EditorFeedback(context.getString(error), true)
+                            },
                         )
+                        }
                     }
-                    SnackbarHost(snackbarHostState, Modifier.align(Alignment.BottomCenter))
                 }
             }
         }
@@ -332,45 +429,97 @@ private enum class EditorPane { CHAIN, ADD_ACTION, ADD_CONSTRAINT }
 private fun EditorTopBar(
     name: String,
     onSetName: (String) -> Unit,
-    onOpenScriptSettings: () -> Unit,
-    canSave: Boolean,
-    onDone: () -> Unit,
+    isNew: Boolean,
+    canShare: Boolean,
+    onShare: () -> Unit,
+    onDelete: () -> Unit,
     onClose: () -> Unit,
 ) {
+    var menuOpen by remember { mutableStateOf(false) }
+    var renaming by rememberSaveable { mutableStateOf(false) }
+    var pendingName by rememberSaveable { mutableStateOf(name) }
+    var invalidName by rememberSaveable { mutableStateOf(false) }
+    val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
+    fun cancelRename() {
+        pendingName = name
+        invalidName = false
+        renaming = false
+        focusManager.clearFocus()
+    }
+    fun applyName() {
+        invalidName = pendingName.isBlank()
+        if (!invalidName) {
+            onSetName(pendingName.trim())
+            renaming = false
+            focusManager.clearFocus()
+        }
+    }
+    BackHandler(renaming) { cancelRename() }
+    LaunchedEffect(renaming) { if (renaming) focusRequester.requestFocus() }
     val colors = MaterialTheme.colorScheme
-    val placeholder = stringResource(R.string.editor_shortcut_name)
-    val doneLabel = stringResource(R.string.common_done)
-    // Inline, the field needs its placeholder plus its 16 dp lead and 48 dp edit-icon slot, beside
-    // two 48 dp tiles and Done (12 + 18 + 4 + label + 12). Where that does not fit, the name gets a
-    // line of its own under the buttons rather than breaking mid-word. The name the editor opened
-    // with counts too, so a long saved name is not clipped; typing never moves the field.
-    val openedName = remember { name }
-    val nameWidth = maxOf(
-        singleLineWidth(placeholder, MaterialTheme.typography.titleSmall),
-        singleLineWidth(openedName, MaterialTheme.typography.titleSmall),
-    )
-    val inlineWidth = nameWidth + 64.dp +
-        MinTouchTarget * 2 + singleLineWidth(doneLabel, MaterialTheme.typography.labelLarge) + 46.dp
-    BoxWithConstraints(Modifier.fillMaxWidth().background(colors.background).padding(horizontal = 8.dp, vertical = 8.dp)) {
-        val inline = maxWidth >= inlineWidth
-        Column {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                TopBarIconTile(Icons.Filled.Close, stringResource(R.string.editor_discard_changes), onClose)
-                if (inline) ScriptNameField(name, placeholder, onSetName, Modifier.weight(1f)) else Spacer(Modifier.weight(1f))
-                TopBarIconTile(
-                    Icons.Outlined.Settings,
-                    stringResource(R.string.editor_shortcut_settings),
-                    onOpenScriptSettings,
-                    Modifier.testTag("script_settings_button"),
-                )
-                TextButton(onClick = onDone, enabled = canSave, modifier = Modifier.testTag("script_done_button")) {
-                    val tint = if (canSave) colors.primary else colors.onSurfaceVariant.copy(alpha = .4f)
-                    Icon(Icons.Filled.Check, null, tint = tint, modifier = Modifier.size(18.dp))
-                    Spacer(Modifier.width(4.dp))
-                    Text(doneLabel, color = tint, style = MaterialTheme.typography.labelLarge)
-                }
+    Row(
+        Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        IconButton(onClick = { if (renaming) cancelRename() else onClose() }) {
+            Icon(Icons.Filled.Close, stringResource(if (renaming) R.string.shortcuts_rename_cancel else R.string.editor_discard_changes), tint = colors.onSurface)
+        }
+        if (renaming) {
+            OutlinedTextField(
+                value = pendingName,
+                onValueChange = { pendingName = it; invalidName = false },
+                modifier = Modifier.weight(1f).focusRequester(focusRequester).testTag("editor_inline_name"),
+                label = { Text(stringResource(R.string.script_settings_name)) },
+                singleLine = true,
+                isError = invalidName,
+                supportingText = if (invalidName) ({ Text(stringResource(R.string.shortcuts_name_required)) }) else null,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(onDone = { applyName() }),
+            )
+            IconButton(onClick = { applyName() }, modifier = Modifier.testTag("editor_apply_name")) {
+                Icon(Icons.Filled.Check, stringResource(R.string.shortcuts_name_apply), tint = colors.primary)
             }
-            if (!inline) ScriptNameField(name, placeholder, onSetName, Modifier.fillMaxWidth())
+        } else {
+            val renameDescription = stringResource(R.string.shortcuts_rename)
+            Row(
+                Modifier.weight(1f).heightIn(min = MinTouchTarget)
+                    .clickable { pendingName = name; invalidName = false; renaming = true }
+                    .semantics { contentDescription = renameDescription }
+                    .testTag("editor_rename_title").padding(horizontal = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Text(
+                    name.ifBlank { stringResource(R.string.scripts_new_shortcut) },
+                    Modifier.weight(1f, fill = false),
+                    style = MaterialTheme.typography.titleSmall,
+                    color = colors.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                Icon(Icons.Outlined.Edit, null, Modifier.size(16.dp), tint = colors.onSurfaceVariant)
+            }
+        }
+        if (!renaming) Box {
+            IconButton(onClick = { menuOpen = true }) {
+                Icon(Icons.Filled.MoreVert, stringResource(R.string.editor_more_options, name.ifBlank { stringResource(R.string.scripts_new_shortcut) }), tint = colors.onSurfaceVariant)
+            }
+            DropdownMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }) {
+                DropdownMenuItem(
+                    text = { Text(stringResource(R.string.share_action)) },
+                    leadingIcon = { Icon(Icons.Outlined.Share, null) },
+                    enabled = canShare,
+                    modifier = Modifier.testTag("share_script_button"),
+                    onClick = { menuOpen = false; onShare() },
+                )
+                if (!isNew) DropdownMenuItem(
+                    text = { Text(stringResource(R.string.common_delete), color = colors.error) },
+                    leadingIcon = { Icon(Icons.Outlined.DeleteOutline, null, tint = colors.error) },
+                    modifier = Modifier.testTag("delete_script_button"),
+                    onClick = { menuOpen = false; onDelete() },
+                )
+            }
         }
     }
 }
@@ -420,86 +569,242 @@ private fun ChainArea(
     onRemoveConstraint: (Int) -> Unit,
     onOpenAddAction: () -> Unit,
     modifier: Modifier = Modifier,
+    keyPickerOpen: Boolean = false,
+    isRecordingKey: Boolean = false,
+    recordingKeys: List<Int> = emptyList(),
+    onSetPressType: (TriggerPressType) -> Unit = {},
     onConfigureConstraint: (Int) -> Unit = {},
+    onSetConstraintParams: (Int, Map<String, String>) -> Unit,
+    onTestAction: suspend (ScriptAction) -> ActionTestResult,
+    onTestResult: (EditorFeedback) -> Unit,
+    onSetUpAdvancedMode: () -> Unit,
     installedApps: List<InstalledApp> = emptyList(),
+    savedKeys: List<PhysicalKeyOption> = emptyList(),
     advancedModeActive: Boolean = false,
     runs: List<RunRecord> = emptyList(),
+    onSetName: (String) -> Unit,
+    onOpenScriptSettings: () -> Unit,
 ) {
-    // Held here rather than inside the row: with per-row state, removing or reordering an action
-    // leaves an open menu attached to whichever action slid into that position.
     var openMenuFor by remember { mutableStateOf<Int?>(null) }
+    var fineTuneExpanded by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val showHighlightHint = remember { highlightHintStillShown(context) }
+    val colors = MaterialTheme.colorScheme
+    val visibleConstraints = draft.constraints
+    val conditionColor = sentenceConditionColor(visibleConstraints)
+    val actionColor = sentenceActionColor(draft.actions)
     LazyColumn(
-        modifier.fillMaxWidth().padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp),
-        contentPadding = PaddingValues(top = 8.dp, bottom = 24.dp),
+        modifier.fillMaxWidth().testTag("editor_chain").padding(horizontal = 24.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(top = 12.dp, bottom = 24.dp),
     ) {
-        // A recipe's instructions stay in view while its blanks are filled in.
+        item { ShortcutTypeSelector(draft, onToggleAutomation, onClearSurfaceOnly) }
         draft.noteRes?.let { note -> item { ChainHint(stringResource(note)) } }
-        item { ChainLabel(stringResource(R.string.editor_chain_when)) }
-        item { TriggerCard(draft, onOpenTriggerPicker, onToggleAutomation, onClearSurfaceOnly) }
-        // An empty item still takes the column's gap, so this is omitted entirely unless it draws.
-        if (ModeHooks.showsRunsIn(draft.id, scripts, isPro)) {
-            item {
-                ModeHooks.RunsInField(
-                    scriptId = draft.id,
-                    constraints = draft.constraints,
-                    scripts = scripts,
-                    isPro = isPro,
-                    onChange = onSetRunsIn,
-                )
-            }
-        }
-        // Done is disabled until both of these are filled in; say which one is missing.
-        if (!draft.hasTrigger()) {
-            item { ChainHint(stringResource(R.string.editor_needs_trigger)) }
-        }
-        item { ChainLabel(stringResource(R.string.editor_chain_only_if), topPadding = 6.dp) }
         item {
-            ConstraintsCard(
-                scriptId = draft.id,
-                scripts = scripts,
-                isPro = isPro,
-                constraints = draft.constraints,
-                onOpenPicker = onOpenConstraintPicker,
-                onRemove = onRemoveConstraint,
-                onConfigure = onConfigureConstraint,
-                installedApps = installedApps,
-            )
-        }
-        item { ChainLabel(stringResource(R.string.editor_chain_do), topPadding = 6.dp) }
-        val everyChatIndex = ActionEditorForms.everyChatReplyIndex(draft.automation, draft.constraints, draft.actions)
-        // Keyed on instance identity, which survives a reorder: draftMoveAction moves the same
-        // ScriptAction objects, and only an edited action becomes a new instance.
-        itemsIndexed(draft.actions, key = { _, action -> System.identityHashCode(action) }) { index, action ->
-            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                ActionChainCard(
-                    action = action,
-                    index = index,
-                    total = draft.actions.size,
-                    menuOpen = openMenuFor == index,
-                    advancedModeActive = advancedModeActive,
-                    startsFromNotification = ScriptConstraintCatalog.startsFromNotification(draft.automation, draft.constraints),
-                    onOpenMenu = { openMenuFor = index },
-                    onDismissMenu = { openMenuFor = null },
-                    onConfigure = { onConfigureAction(index) },
-                    onRemove = { onRemoveAction(index) },
-                    onMoveUp = { onMoveAction(index, index - 1) },
-                    onMoveDown = { onMoveAction(index, index + 1) },
-                )
-                if (index == everyChatIndex) EveryChatWarning()
+            AnimatedContent(
+                targetState = draft.takeUnless { it.automation },
+                contentKey = { it != null },
+                transitionSpec = {
+                    (fadeIn(tween(180, delayMillis = 60)) togetherWith fadeOut(tween(100)))
+                        .using(SizeTransform(clip = false))
+                },
+                label = "shortcutKeyClause",
+            ) { keyDraft ->
+                if (keyDraft != null) SentenceSection(stringResource(R.string.editor_chain_when), colors.onSurfaceVariant) {
+                    TriggerCard(keyDraft, onOpenTriggerPicker, onClearSurfaceOnly,
+                        keyPickerOpen, isRecordingKey, recordingKeys, onSetPressType, savedKeys = savedKeys)
+                    if (!keyDraft.hasTrigger()) ChainHint(stringResource(R.string.editor_needs_trigger))
+                }
             }
         }
-        item { AddActionRow(onOpenAddAction) }
-        if (draft.actions.isEmpty()) {
-            item { ChainHint(stringResource(R.string.editor_needs_action)) }
+        item {
+            SentenceSection(stringResource(if (draft.automation) R.string.editor_chain_if else R.string.editor_chain_only_if), conditionColor,
+                modifier = Modifier.alpha(if (keyPickerOpen) .4f else 1f)) {
+                ConstraintsCard(
+                    constraints = draft.constraints, onOpenPicker = onOpenConstraintPicker,
+                    onRemove = onRemoveConstraint, onConfigure = onConfigureConstraint,
+                    onSetParams = onSetConstraintParams,
+                    installedApps = installedApps, automation = draft.automation,
+                )
+            }
         }
-        // Only a saved shortcut can have run; a new draft's id has no history yet.
+        item {
+            SentenceSection(stringResource(R.string.editor_chain_do), actionColor, last = true,
+                modifier = Modifier.alpha(if (keyPickerOpen) .4f else 1f)) {
+                val everyChatIndex = ActionEditorForms.everyChatReplyIndex(draft.automation, draft.constraints, draft.actions)
+                draft.actions.forEachIndexed { index, action ->
+                    key(index, action) {
+                        ActionChainCard(
+                            action = action, index = index, total = draft.actions.size,
+                            menuOpen = openMenuFor == index, advancedModeActive = advancedModeActive,
+                            startsFromNotification = ScriptConstraintCatalog.startsFromNotification(draft.automation, draft.constraints),
+                            onOpenMenu = { openMenuFor = index }, onDismissMenu = { openMenuFor = null },
+                            onConfigure = { onConfigureAction(index) },
+                            onRemove = { openMenuFor = null; onRemoveAction(index) },
+                            onMoveUp = { onMoveAction(index, index - 1) },
+                            onMoveDown = { onMoveAction(index, index + 1) },
+                            onTestAction = onTestAction,
+                            onTestResult = onTestResult,
+                            onSetUpAdvancedMode = onSetUpAdvancedMode,
+                        )
+                    }
+                    if (index == everyChatIndex) EveryChatWarning()
+                }
+                AddActionRow(onOpenAddAction)
+                if (draft.actions.isEmpty()) ChainHint(stringResource(R.string.editor_needs_action))
+            }
+        }
+        if (draft.automation) item { ChainHint(stringResource(R.string.automation_card_subtitle)) }
+        if (showHighlightHint) item { ChainHint(stringResource(R.string.editor_highlight_hint)) }
+        item {
+            Column(
+                Modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp)).background(colors.surface)
+                    .border(1.dp, colors.outline.copy(alpha = .4f), RoundedCornerShape(20.dp)),
+            ) {
+                Row(
+                    Modifier.fillMaxWidth().clickable { fineTuneExpanded = !fineTuneExpanded }
+                        .testTag("editor_fine_tune").padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(Icons.Outlined.Tune, null, tint = colors.onSurfaceVariant)
+                    Column(Modifier.weight(1f).padding(horizontal = 12.dp)) {
+                        Text(stringResource(R.string.editor_fine_tune), style = MaterialTheme.typography.titleSmall, color = colors.onSurface)
+                        Text(stringResource(R.string.editor_fine_tune_summary), style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
+                    }
+                    Icon(Icons.Outlined.ExpandMore, null, tint = colors.onSurfaceVariant)
+                }
+                if (fineTuneExpanded) Column(Modifier.padding(horizontal = 12.dp, vertical = 4.dp)) {
+                    ScriptNameField(draft.name, stringResource(R.string.editor_shortcut_name), onSetName, Modifier.fillMaxWidth())
+                    if (ModeHooks.showsRunsIn(draft.id, scripts, isPro)) ModeHooks.RunsInField(
+                        scriptId = draft.id, constraints = draft.constraints, scripts = scripts,
+                        isPro = isPro, onChange = onSetRunsIn,
+                    )
+                    TextButton(onClick = onOpenScriptSettings, modifier = Modifier.testTag("script_settings_button")) {
+                        Icon(Icons.Outlined.Settings, null, Modifier.size(18.dp))
+                        Spacer(Modifier.width(8.dp))
+                        Text(stringResource(R.string.editor_shortcut_settings))
+                    }
+                }
+            }
+        }
         if (!draft.isNew) {
             item { ChainLabel(stringResource(R.string.editor_chain_runs), topPadding = 6.dp) }
             item { RunHistoryCard(runs, draft.trigger?.keyCodes.orEmpty()) }
         }
     }
 }
+
+@Composable
+private fun ShortcutTypeSelector(draft: ScriptDraft, onToggleAutomation: () -> Unit, onClearSurfaceOnly: () -> Unit) {
+    val colors = MaterialTheme.colorScheme
+    val stacked = LocalDensity.current.fontScale >= 1.3f
+    val start = remember { Animatable(if (draft.automation) 1f else 0f) }
+    val end = remember { Animatable(if (draft.automation) 2f else 1f) }
+    LaunchedEffect(draft.automation, draft.surfaceOnly) {
+        val target = if (draft.automation) 1f else 0f
+        val towardEnd = target > start.value
+        launch { start.animateTo(target, if (towardEnd) SelectionTrailSpring else SelectionLeadSpring) }
+        launch { end.animateTo(target + 1f, if (towardEnd) SelectionLeadSpring else SelectionTrailSpring) }
+    }
+    val selectorModifier = Modifier.fillMaxWidth().padding(bottom = 12.dp).clip(RoundedCornerShape(18.dp))
+            .background(colors.surfaceVariant).padding(4.dp)
+            .drawBehind {
+                if (!draft.surfaceOnly) {
+                    val gap = 4.dp.toPx()
+                    val length = if (stacked) size.height else size.width
+                    val step = (length + gap) / 2f
+                    val left = start.value * step
+                    val right = end.value * step - gap
+                    val from = minOf(left, right).coerceIn(0f, length)
+                    val to = maxOf(left, right).coerceIn(from, length)
+                    val x = if (layoutDirection == androidx.compose.ui.unit.LayoutDirection.Rtl) size.width - to else from
+                    drawRoundRect(colors.surface,
+                        if (stacked) Offset(0f, from) else Offset(x, 0f),
+                        if (stacked) Size(size.width, to - from) else Size(to - from, size.height),
+                        CornerRadius(14.dp.toPx()))
+                }
+            }.testTag("shortcut_type_selector").selectableGroup()
+    val segment: @Composable (Boolean, Modifier) -> Unit = { automation, modifier ->
+            val selected = !draft.surfaceOnly && draft.automation == automation
+            val tint by animateColorAsState(
+                if (selected) colors.onSurface else colors.onSurfaceVariant,
+                animationSpec = tween(150), label = "shortcutTypeTint",
+            )
+            Row(
+                modifier.clip(RoundedCornerShape(14.dp))
+                    .selectable(selected, role = Role.RadioButton) {
+                        if (automation != draft.automation) onToggleAutomation()
+                        else if (!automation && draft.surfaceOnly) onClearSurfaceOnly()
+                    }
+                    .testTag(if (automation) "trigger_kind_automation" else "trigger_kind_key")
+                    .heightIn(min = MinTouchTarget).padding(horizontal = 8.dp, vertical = 10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+            ) {
+                Icon(if (automation) Icons.Outlined.AutoAwesome else Icons.Outlined.Keyboard, null, Modifier.size(18.dp), tint = tint)
+                Spacer(Modifier.width(6.dp))
+                Text(stringResource(if (automation) R.string.trigger_kind_automation else R.string.trigger_kind_key), style = MaterialTheme.typography.labelLarge, color = tint)
+            }
+    }
+    if (stacked) Column(selectorModifier, verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        listOf(false, true).forEach { segment(it, Modifier.fillMaxWidth()) }
+    } else Row(selectorModifier, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+        listOf(false, true).forEach { segment(it, Modifier.weight(1f)) }
+    }
+}
+
+@Composable
+internal fun SentenceSection(
+    title: String,
+    tint: Color,
+    last: Boolean = false,
+    modifier: Modifier = Modifier,
+    titleStyle: TextStyle = MaterialTheme.typography.bodyMedium,
+    titleColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    line: Color = MaterialTheme.colorScheme.outline.copy(alpha = .4f),
+    lineWidth: Dp = 1.5.dp,
+    content: @Composable () -> Unit,
+) {
+    Column(
+        modifier.fillMaxWidth().drawBehind {
+            val x = if (layoutDirection == androidx.compose.ui.unit.LayoutDirection.Rtl) size.width - 5.dp.toPx() else 5.dp.toPx()
+            drawCircle(tint, 5.dp.toPx(), Offset(x, 10.dp.toPx()))
+            if (!last) drawLine(line, Offset(x, 24.dp.toPx()), Offset(x, size.height), lineWidth.toPx())
+        }.padding(start = 24.dp, bottom = 20.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        AnimatedContent(
+            targetState = title,
+            transitionSpec = { fadeIn(tween(150)) togetherWith fadeOut(tween(100)) },
+            label = "shortcutClauseTitle",
+        ) { label ->
+            Text(label, style = titleStyle, fontWeight = FontWeight.SemiBold, color = titleColor)
+        }
+        content()
+    }
+}
+
+@Composable
+internal fun sentenceConditionColor(constraints: List<ScriptConstraint>): Color {
+    val category = constraints.firstOrNull()?.let { ScriptConstraintCatalog.descriptor(it.type)?.category }
+    return category?.let { categoryTileColors(constraintTileCategory(it)).second }
+        ?: MaterialTheme.colorScheme.onSurfaceVariant
+}
+
+@Composable
+internal fun sentenceActionColor(actions: List<ScriptAction>): Color =
+    categoryTileColors(actions.firstOrNull()?.let { ScriptActionCatalog.descriptor(it.type)?.category }).second
+
+/** "Tap a highlighted word" is for the first few editor visits only; after that it is learned. */
+private fun highlightHintStillShown(context: android.content.Context): Boolean {
+    val prefs = context.getSharedPreferences("editor_hints", android.content.Context.MODE_PRIVATE)
+    val seen = prefs.getInt("highlight_hint_seen", 0)
+    if (seen >= HIGHLIGHT_HINT_VISITS) return false
+    prefs.edit().putInt("highlight_hint_seen", seen + 1).apply()
+    return true
+}
+
+private const val HIGHLIGHT_HINT_VISITS = 3
 
 /** Why the Done button is greyed out, shown under whichever section is still empty. */
 @Composable
@@ -528,18 +833,17 @@ private fun AddActionRow(onClick: () -> Unit) {
     val colors = MaterialTheme.colorScheme
     Row(
         Modifier
-            .fillMaxWidth()
-            .dashedBorder(colors.outline, InnerShape)
+                        .dashedBorder(colors.outline, RoundedCornerShape(14.dp))
             .heightIn(min = MinTouchTarget)
             .clickable(onClickLabel = stringResource(R.string.editor_add_action), onClick = onClick)
             .testTag("add_action_button")
-            .padding(vertical = 14.dp),
+            .padding(horizontal = 12.dp, vertical = 12.dp),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(Icons.Filled.Add, null, tint = colors.primary, modifier = Modifier.size(18.dp))
+        Icon(Icons.Filled.Add, null, tint = colors.onSurfaceVariant, modifier = Modifier.size(18.dp))
         Spacer(Modifier.width(8.dp))
-        Text(stringResource(R.string.editor_add_action), color = colors.primary, style = MaterialTheme.typography.bodyLarge)
+        Text(stringResource(R.string.editor_add_action), color = colors.onSurfaceVariant, style = MaterialTheme.typography.bodyLarge)
     }
 }
 
@@ -562,122 +866,83 @@ private fun ChainLabel(text: String, topPadding: Dp = 0.dp) {
         text,
         Modifier.padding(top = topPadding),
         style = SectionLabel,
-        color = MaterialTheme.colorScheme.primary,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
 }
 
+@OptIn(ExperimentalLayoutApi::class, ExperimentalFoundationApi::class)
 @Composable
-private fun TriggerCard(
-    draft: ScriptDraft,
-    onOpenKeyPicker: () -> Unit,
-    onToggleAutomation: () -> Unit,
-    onClearSurfaceOnly: () -> Unit,
+internal fun TriggerCard(
+    draft: ScriptDraft, onOpenKeyPicker: () -> Unit, onClearSurfaceOnly: () -> Unit,
+    choosing: Boolean, recording: Boolean, heldKeys: List<Int>, onSetPressType: (TriggerPressType) -> Unit,
+    savedKeys: List<PhysicalKeyOption> = emptyList(),
 ) {
     val colors = MaterialTheme.colorScheme
     val res = LocalContext.current.resources
     val trigger = draft.trigger
-    when {
-        trigger != null -> Column {
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .clip(InnerShape)
-                    .background(colors.primary.copy(alpha = .12f))
-                    .heightIn(min = MinTouchTarget)
-                    .clickable(onClick = onOpenKeyPicker)
-                    .testTag("assign_key_card")
-                    .padding(14.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                IconTile(Icons.Filled.Bolt, size = 36.dp, selected = true)
-                Spacer(Modifier.width(12.dp))
-                Column(Modifier.weight(1f)) {
-                    Text(
-                        trigger.keyCodes.joinToString("+") { keyDisplayName(res, it) },
-                        style = MaterialTheme.typography.titleSmall,
-                        color = colors.onSurface,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                    Text(stringResource(trigger.pressType.titleRes), style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant)
-                }
-                Icon(Icons.Outlined.ChevronRight, null, tint = colors.onSurfaceVariant)
-            }
-            if (trigger.keyCodes.size >= 2) {
-                Text(
-                    stringResource(R.string.chord_consume_hint),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = colors.onSurfaceVariant,
-                    modifier = Modifier.padding(start = 14.dp, top = 6.dp, end = 14.dp),
+    val assistant = trigger?.keyCodes?.contains(KeyEventMapping.ASSISTANT_GESTURE) == true
+    val tint by animateColorAsState(if (recording) colors.error else colors.primary, label = "inlineKeyTint")
+    var pressMenu by remember { mutableStateOf(false) }
+    val keyFocus = remember { BringIntoViewRequester() }
+    LaunchedEffect(choosing, heldKeys) {
+        if (choosing) { delay(220); keyFocus.bringIntoView() }
+    }
+    if (draft.surfaceOnly) {
+        KeylessTriggerCard(Icons.Outlined.Widgets, stringResource(R.string.trigger_kind_surface), stringResource(R.string.surface_card_subtitle), onClearSurfaceOnly)
+        return
+    }
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text(stringResource(R.string.editor_press), style = MaterialTheme.typography.titleLarge, color = colors.onSurface, modifier = Modifier.padding(vertical = 8.dp))
+        Row(
+            Modifier.clip(RoundedCornerShape(14.dp)).background(tint.copy(alpha = .12f))
+                .then(if (choosing) Modifier.dashedBorder(tint, RoundedCornerShape(14.dp)) else Modifier)
+                .clickable(onClick = onOpenKeyPicker).testTag("assign_key_card")
+                .bringIntoViewRequester(keyFocus)
+                .semantics { liveRegion = LiveRegionMode.Polite }
+                .heightIn(min = MinTouchTarget).padding(horizontal = 10.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(if (assistant && !recording) Icons.Outlined.AutoAwesome else Icons.Outlined.Keyboard, null, Modifier.size(22.dp), tint = tint)
+            Spacer(Modifier.width(8.dp))
+            val shownKeys = if (recording) heldKeys else trigger?.keyCodes.orEmpty()
+            Text(if (shownKeys.isNotEmpty()) shownKeys.joinToString(" + ") { keyDisplayName(res, it, savedKeys) }
+                else stringResource(if (recording) R.string.inline_key_listening else R.string.inline_key_placeholder),
+                Modifier.weight(1f, fill = false), style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold), color = tint)
+            Icon(Icons.Outlined.ExpandMore, null, Modifier.size(18.dp), tint = tint)
+        }
+        Box {
+        Row(
+            Modifier.clip(RoundedCornerShape(14.dp)).background(colors.primary.copy(alpha = .12f))
+                .clickable(enabled = !assistant && !recording) { pressMenu = true }
+                .testTag("trigger_press_menu").heightIn(min = MinTouchTarget).padding(horizontal = 10.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(stringResource((trigger?.pressType ?: draft.pressType).titleRes), Modifier.weight(1f, fill = false), style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold), color = colors.primary)
+            Icon(if (assistant) Icons.Outlined.Lock else Icons.Outlined.ExpandMore, null, Modifier.size(18.dp), tint = colors.primary)
+        }
+        DropdownMenu(expanded = pressMenu && !assistant && !recording, onDismissRequest = { pressMenu = false }) {
+            TriggerPressType.entries.forEach { type ->
+                DropdownMenuItem(
+                    text = { Text(stringResource(type.titleRes)) },
+                    modifier = Modifier.testTag("press_type_${type.name}"),
+                    onClick = { pressMenu = false; onSetPressType(type) },
                 )
-                if (KeyEvent.KEYCODE_POWER in trigger.keyCodes) {
-                    Text(
-                        stringResource(R.string.chord_power_hint),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = colors.onSurfaceVariant,
-                        modifier = Modifier.padding(start = 14.dp, top = 4.dp, end = 14.dp),
-                    )
-                }
             }
         }
-        // Tapping the automation card clears it, back to the key/automation choice.
-        draft.automation -> KeylessTriggerCard(
-            Icons.Outlined.AutoAwesome,
-            stringResource(R.string.trigger_kind_automation),
-            stringResource(R.string.automation_card_subtitle),
-            onToggleAutomation,
-        )
-        // Same for a widget/tile shortcut: tapping the card returns to the choice.
-        draft.surfaceOnly -> KeylessTriggerCard(
-            Icons.Outlined.Widgets,
-            stringResource(R.string.trigger_kind_surface),
-            stringResource(R.string.surface_card_subtitle),
-            onClearSurfaceOnly,
-        )
-        else -> {
-            val keyLabel = stringResource(R.string.trigger_kind_key)
-            val automationLabel = stringResource(R.string.trigger_kind_automation)
-            val labelStyle = MaterialTheme.typography.bodyLarge
-            // Side by side, each half holds 16 + 18 + 8 + label + 16 dp. A label that does not fit
-            // stacks the two choices rather than breaking mid-word.
-            val halfWidth = maxOf(singleLineWidth(keyLabel, labelStyle), singleLineWidth(automationLabel, labelStyle)) + 58.dp
-            val divider = colors.outline.copy(alpha = .3f)
-            BoxWithConstraints(
-                Modifier
-                    .fillMaxWidth()
-                    .clip(InnerShape)
-                    .border(1.dp, colors.outline.copy(alpha = .6f), InnerShape)
-                    .testTag("assign_key_card"),
-            ) {
-                if (maxWidth >= halfWidth * 2 + 1.dp) {
-                    Row {
-                        TriggerKindOption(Icons.Outlined.Keyboard, keyLabel, Modifier.weight(1f).testTag("trigger_kind_key"), onOpenKeyPicker)
-                        Box(Modifier.width(1.dp).heightIn(min = MinTouchTarget).background(divider))
-                        TriggerKindOption(
-                            Icons.Outlined.AutoAwesome,
-                            automationLabel,
-                            Modifier.weight(1f).testTag("trigger_kind_automation"),
-                            onToggleAutomation,
-                        )
-                    }
-                } else {
-                    Column {
-                        TriggerKindOption(Icons.Outlined.Keyboard, keyLabel, Modifier.fillMaxWidth().testTag("trigger_kind_key"), onOpenKeyPicker)
-                        Box(Modifier.fillMaxWidth().height(1.dp).background(divider))
-                        TriggerKindOption(
-                            Icons.Outlined.AutoAwesome,
-                            automationLabel,
-                            Modifier.fillMaxWidth().testTag("trigger_kind_automation"),
-                            onToggleAutomation,
-                        )
-                    }
-                }
-            }
         }
+    }
+    if (recording) ChainHint(stringResource(R.string.inline_key_release))
+    else if (assistant) {
+        ChainHint(stringResource(R.string.assistant_trigger_hint))
+        AssistantSettingsRow()
+        Text(stringResource(R.string.assistant_voice_wakeup_warning), style = MaterialTheme.typography.bodySmall, color = colors.error)
+    } else if (trigger != null) ChainHint(stringResource(R.string.inline_key_edit))
+    if (trigger != null && trigger.keyCodes.size >= 2) {
+        ChainHint(stringResource(R.string.chord_consume_hint))
+        if (KeyEvent.KEYCODE_POWER in trigger.keyCodes) ChainHint(stringResource(R.string.chord_power_hint))
     }
 }
 
-/** The When card for a shortcut with no key: an automation, or one run from a widget or tile. */
 @Composable
 private fun KeylessTriggerCard(icon: ImageVector, title: String, subtitle: String, onClick: () -> Unit) {
     val colors = MaterialTheme.colorScheme
@@ -709,108 +974,96 @@ private fun KeylessTriggerCard(icon: ImageVector, title: String, subtitle: Strin
 }
 
 @Composable
-private fun TriggerKindOption(icon: ImageVector, label: String, modifier: Modifier, onClick: () -> Unit) {
-    val colors = MaterialTheme.colorScheme
-    Row(
-        modifier.heightIn(min = MinTouchTarget).clickable(onClickLabel = label, onClick = onClick).padding(16.dp),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Icon(icon, null, Modifier.size(18.dp), tint = colors.onSurfaceVariant)
-        Spacer(Modifier.width(8.dp))
-        Text(label, color = colors.onSurfaceVariant, style = MaterialTheme.typography.bodyLarge)
-    }
-}
-
-@Composable
-private fun ConstraintsCard(
-    scriptId: String,
-    scripts: List<ShortcutScript>,
-    isPro: Boolean,
+internal fun ConstraintsCard(
     constraints: List<ScriptConstraint>,
     onOpenPicker: () -> Unit,
     onRemove: (Int) -> Unit,
     onConfigure: (Int) -> Unit,
     installedApps: List<InstalledApp>,
+    automation: Boolean,
+    addTestTag: String = "add_constraint_button",
+    // The mode sheet lists conditions under a sentence that is not the page's subject, so smaller there.
+    titleStyle: TextStyle = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold),
+    onSetParams: ((Int, Map<String, String>) -> Unit)? = null,
 ) {
     val colors = MaterialTheme.colorScheme
     val resources = LocalContext.current.resources
     Column(
         Modifier
             .fillMaxWidth()
-            .clip(InnerShape)
-            .border(1.dp, colors.outline.copy(alpha = .6f), InnerShape)
             .testTag("constraints_card"),
     ) {
-        val visible = constraints.mapIndexedNotNull { index, constraint ->
-            if (ModeHooks.hidesFromEditor(constraint.type, scriptId, scripts, isPro)) null else index to constraint
-        }
+        val visible = constraints.mapIndexed { index, constraint -> index to constraint }
         if (visible.isEmpty()) {
             Text(
-                stringResource(R.string.editor_always_runs),
-                Modifier.padding(16.dp),
+                stringResource(if (automation) R.string.editor_add_constraint else R.string.editor_always_runs),
+                Modifier.padding(vertical = 4.dp),
                 color = colors.onSurfaceVariant,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold),
             )
         } else {
             visible.forEach { (index, constraint) ->
                 val descriptor = ScriptConstraintCatalog.descriptor(constraint.type)
-                val title = descriptor?.let { stringResource(it.titleRes) } ?: constraint.type
+                val title = resources.constraintLabel(constraint)
+                val incomplete = !ConstraintEditorForms.isComplete(constraint.type, constraint.params)
+                val outline by animateColorAsState(if (incomplete) colors.error else Color.Transparent, label = "constraintErrorOutline")
                 val configurable = ConstraintEditorForms.form(constraint.type) != null
-                val summary = ConstraintEditorForms.summarize(constraint, resources, installedApps)
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .clickable(enabled = configurable, onClickLabel = stringResource(R.string.editor_configure_action, title)) { onConfigure(index) }
-                        .testTag("constraint_row_$index")
-                        .padding(start = 16.dp, end = 4.dp, top = 2.dp, bottom = 2.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Icon(
-                        constraintIcon(constraint.type, descriptor?.category),
-                        null,
-                        tint = colors.primary,
-                        modifier = Modifier.size(18.dp),
-                    )
-                    Spacer(Modifier.width(10.dp))
-                    Column(Modifier.weight(1f)) {
-                        Text(title, color = colors.onSurface, style = MaterialTheme.typography.bodyLarge)
-                        if (summary != null) {
-                            Text(
-                                summary,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = colors.onSurfaceVariant,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                        }
-                    }
-                    IconButton(
-                        onClick = { onRemove(index) },
-                        modifier = Modifier.size(MinTouchTarget).testTag("remove_constraint_$index"),
-                    ) {
-                        Icon(
-                            Icons.Filled.Close,
-                            stringResource(R.string.editor_remove_constraint, title),
-                            Modifier.size(18.dp),
-                            tint = colors.error,
-                        )
+                val summary = ConstraintEditorForms.summarize(constraint, LocalContext.current)
+                val (fill, glyph) = categoryTileColors(descriptor?.category?.let(::constraintTileCategory))
+                val description: @Composable (Modifier) -> Unit = { modifier ->
+                    Column(modifier) {
+                        Text(title, color = glyph, style = titleStyle)
+                        if (summary != null) Text(summary, style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant)
                     }
                 }
+                val remove: @Composable () -> Unit = {
+                    if (ScriptConstraintCatalog.supportsNegation(constraint.type) && onSetParams != null) {
+                        ConstraintNegationToggle(
+                            ConstraintNegation.requested(constraint.params),
+                            { negated -> onSetParams(index, if (negated) constraint.params + ("negate" to "true") else constraint.params - "negate") },
+                            Modifier.testTag("constraint_negation_$index"),
+                        )
+                    }
+                    IconButton(onClick = { onRemove(index) }, modifier = Modifier.size(MinTouchTarget).testTag("remove_constraint_$index")) {
+                        Icon(Icons.Filled.Close, stringResource(R.string.editor_remove_constraint, title), Modifier.size(18.dp), tint = colors.error)
+                    }
+                }
+                BoxWithConstraints(
+                    Modifier.fillMaxWidth().animateContentSize().clip(RoundedCornerShape(14.dp)).background(fill)
+                        .border(1.dp, outline, RoundedCornerShape(14.dp))
+                        .clickable(enabled = configurable, onClickLabel = stringResource(R.string.editor_configure_action, title)) { onConfigure(index) }
+                        .testTag("constraint_row_$index"),
+                ) {
+                    if (maxWidth < 280.dp && LocalDensity.current.fontScale > 1.3f) Column(Modifier.padding(12.dp)) {
+                        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                            Icon(constraintIcon(constraint.type, descriptor?.category), null, Modifier.size(22.dp), tint = glyph)
+                            Spacer(Modifier.weight(1f))
+                            remove()
+                        }
+                        description(Modifier.fillMaxWidth())
+                    } else Row(Modifier.padding(start = 10.dp, top = 8.dp, bottom = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Icon(constraintIcon(constraint.type, descriptor?.category), null, Modifier.size(22.dp), tint = glyph)
+                        Spacer(Modifier.width(10.dp))
+                        description(Modifier.weight(1f))
+                        remove()
+                    }
+                }
+                RowConfigError(incomplete, action = false, Modifier.testTag("constraint_error_$index"))
+                Spacer(Modifier.height(8.dp))
             }
         }
         Row(
             Modifier
-                .fillMaxWidth()
+                .dashedBorder(colors.outline, RoundedCornerShape(14.dp))
                 .heightIn(min = MinTouchTarget)
                 .clickable(onClick = onOpenPicker)
-                .testTag("add_constraint_button")
+                .testTag(addTestTag)
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Icon(Icons.Filled.Add, null, tint = colors.primary, modifier = Modifier.size(18.dp))
+            Icon(Icons.Filled.Add, null, tint = colors.onSurfaceVariant, modifier = Modifier.size(18.dp))
             Spacer(Modifier.width(10.dp))
-            Text(stringResource(R.string.editor_add_constraint), color = colors.primary, style = MaterialTheme.typography.bodyLarge)
+            Text(stringResource(R.string.editor_add_constraint), color = colors.onSurfaceVariant, style = MaterialTheme.typography.bodyLarge)
         }
     }
 }
@@ -821,7 +1074,7 @@ private fun ConstraintsCard(
  * icon buttons competing with the text for space.
  */
 @Composable
-private fun ActionChainCard(
+internal fun ActionChainCard(
     action: ScriptAction,
     index: Int,
     total: Int,
@@ -834,6 +1087,9 @@ private fun ActionChainCard(
     onRemove: () -> Unit,
     onMoveUp: () -> Unit,
     onMoveDown: () -> Unit,
+    onTestAction: suspend (ScriptAction) -> ActionTestResult,
+    onTestResult: (EditorFeedback) -> Unit,
+    onSetUpAdvancedMode: () -> Unit,
 ) {
     val colors = MaterialTheme.colorScheme
     val descriptor = ScriptActionCatalog.descriptor(action.type)
@@ -843,147 +1099,131 @@ private fun ActionChainCard(
     // Scripts saved before configuration existed can be missing required params; surface that
     // rather than letting the action fail silently at run time.
     val incomplete = ActionEditorForms.missingRequired(action, startsFromNotification).isNotEmpty()
-    val summary = ActionEditorForms.summarize(action, LocalContext.current.resources)
-    val connectorColor = colors.outline.copy(alpha = .5f)
-    Box(
-        Modifier.fillMaxWidth().drawBehind {
-            // One continuous line down the chain, through every numbered badge's center (x=20dp,
-            // matching the badge's own math below). Each card only owns its own height, so a
-            // middle card's segment overshoots by half of ChainArea's 10dp item spacing in both
-            // directions to meet its neighbors' segments in the middle of the gap between cards;
-            // the first/last card stops at its own badge so the line never pokes past the chain's ends.
-            val lineX = 20.dp.toPx()
-            val halfGap = 5.dp.toPx()
-            val top = if (index == 0) size.height / 2f else -halfGap
-            val bottom = if (index == total - 1) size.height / 2f else size.height + halfGap
-            drawLine(connectorColor, Offset(lineX, top), Offset(lineX, bottom), strokeWidth = 2.dp.toPx())
-        },
-    ) {
-        Card(
-            Modifier.fillMaxWidth().padding(start = 10.dp).testTag("chain_action_$index"),
-            shape = ConsoleShape,
-            colors = CardDefaults.cardColors(containerColor = colors.surface),
-            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-            border = BorderStroke(1.dp, colors.outline.copy(alpha = .4f)),
-        ) {
+    val outline by animateColorAsState(if (incomplete) colors.error else Color.Transparent, label = "actionErrorOutline")
+    val summary = ActionEditorForms.summarize(action, LocalContext.current)
+    val (fill, glyph) = categoryTileColors(descriptor?.category)
+    val description: @Composable (Modifier) -> Unit = { modifier ->
+        Column(modifier) {
+            Text(
+                title,
+                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold),
+                color = glyph,
+            )
             Row(
-                Modifier
-                    .heightIn(min = MinTouchTarget)
-                    .clickable(enabled = configurable, onClickLabel = stringResource(R.string.editor_configure_action, title), onClick = onConfigure)
-                    .padding(start = 12.dp, top = 8.dp, bottom = 8.dp, end = 4.dp),
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                IconTile(actionIcon(action.type, descriptor?.category), category = descriptor?.category, size = 32.dp)
-                Spacer(Modifier.width(12.dp))
-                Column(Modifier.weight(1f)) {
-                    Text(
-                        title,
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = colors.onSurface,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
+                when {
+                    incomplete -> Text(
+                        stringResource(R.string.editor_tap_to_configure),
+                        Modifier.weight(1f, fill = false),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = colors.error,
                     )
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(6.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        when {
-                            incomplete -> Text(
-                                stringResource(R.string.editor_tap_to_configure),
-                                Modifier.weight(1f, fill = false),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = colors.error,
-                            )
-                            summary != null -> Text(
-                                summary,
-                                Modifier.weight(1f, fill = false),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = colors.onSurfaceVariant,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                        }
-                        if (ActionEditorForms.needsAdvancedMode(action.type)) AdvancedModeChip(advancedModeActive)
-                    }
-                    if (redirectsAssistant) {
-                        Text(
-                            stringResource(R.string.assistant_redirect_note),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = colors.onSurfaceVariant,
-                        )
-                    }
+                    summary != null -> Text(
+                        summary,
+                        Modifier.weight(1f, fill = false),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = colors.onSurfaceVariant,
+                    )
                 }
-                Box {
-                    IconButton(
-                        onClick = onOpenMenu,
-                        modifier = Modifier.size(MinTouchTarget).testTag("action_menu_$index"),
-                    ) {
-                        Icon(
-                            Icons.Filled.MoreVert,
-                            stringResource(R.string.editor_more_options, title),
-                            tint = if (incomplete) colors.error else colors.onSurfaceVariant,
-                        )
-                    }
-                    DropdownMenu(expanded = menuOpen, onDismissRequest = onDismissMenu) {
-                        if (configurable) {
-                            DropdownMenuItem(
-                                text = { Text(stringResource(R.string.editor_configure)) },
-                                leadingIcon = { Icon(Icons.Outlined.Settings, null) },
-                                modifier = Modifier.testTag("configure_action_$index"),
-                                onClick = {
-                                    onDismissMenu()
-                                    onConfigure()
-                                },
-                            )
-                        }
-                        DropdownMenuItem(
-                            text = { Text(stringResource(R.string.editor_move_up)) },
-                            leadingIcon = { Icon(Icons.Outlined.ArrowUpward, null) },
-                            enabled = index > 0,
-                            onClick = {
-                                onDismissMenu()
-                                onMoveUp()
-                            },
-                        )
-                        DropdownMenuItem(
-                            text = { Text(stringResource(R.string.editor_move_down)) },
-                            leadingIcon = { Icon(Icons.Outlined.ArrowDownward, null) },
-                            enabled = index < total - 1,
-                            onClick = {
-                                onDismissMenu()
-                                onMoveDown()
-                            },
-                        )
-                        DropdownMenuItem(
-                            text = { Text(stringResource(R.string.common_remove), color = colors.error) },
-                            leadingIcon = { Icon(Icons.Outlined.DeleteOutline, null, tint = colors.error) },
-                            modifier = Modifier.testTag("remove_action_$index"),
-                            onClick = {
-                                onDismissMenu()
-                                onRemove()
-                            },
-                        )
-                    }
-                }
+                if (action.type != "shell_command" && ActionEditorForms.needsAdvancedMode(action.type)) AdvancedModeChip(advancedModeActive)
+            }
+            if (redirectsAssistant) {
+                Text(
+                    stringResource(R.string.assistant_redirect_note),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = colors.onSurfaceVariant,
+                )
             }
         }
-        Box(
-            Modifier
-                .align(Alignment.CenterStart)
-                .offset(x = (-1).dp)
-                .size(22.dp)
-                .clip(CircleShape)
-                .background(colors.surfaceVariant)
-                .border(2.dp, colors.background, CircleShape),
-            contentAlignment = Alignment.Center,
-        ) {
-            Text(
-                "${index + 1}",
-                style = MaterialTheme.typography.labelSmall,
-                color = colors.onSurfaceVariant,
-            )
+    }
+    val menu: @Composable () -> Unit = {
+        if (canTestChainAction(action)) {
+            ChainActionTestButton(action, index, !incomplete, onTestAction, onTestResult)
+        }
+        Box {
+            IconButton(
+                onClick = onOpenMenu,
+                modifier = Modifier.size(MinTouchTarget).testTag("action_menu_$index"),
+            ) {
+                Icon(
+                    Icons.Filled.MoreVert,
+                    stringResource(R.string.editor_more_options, title),
+                    tint = if (incomplete) colors.error else colors.onSurfaceVariant,
+                )
+            }
+            DropdownMenu(expanded = menuOpen, onDismissRequest = onDismissMenu) {
+                if (configurable) {
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.editor_configure)) },
+                        leadingIcon = { Icon(Icons.Outlined.Settings, null) },
+                        modifier = Modifier.testTag("configure_action_$index"),
+                        onClick = {
+                            onDismissMenu()
+                            onConfigure()
+                        },
+                    )
+                }
+                DropdownMenuItem(
+                    text = { Text(stringResource(R.string.editor_move_up)) },
+                    leadingIcon = { Icon(Icons.Outlined.ArrowUpward, null) },
+                    enabled = index > 0,
+                    onClick = {
+                        onDismissMenu()
+                        onMoveUp()
+                    },
+                )
+                DropdownMenuItem(
+                    text = { Text(stringResource(R.string.editor_move_down)) },
+                    leadingIcon = { Icon(Icons.Outlined.ArrowDownward, null) },
+                    enabled = index < total - 1,
+                    onClick = {
+                        onDismissMenu()
+                        onMoveDown()
+                    },
+                )
+                DropdownMenuItem(
+                    text = { Text(stringResource(R.string.common_remove), color = colors.error) },
+                    leadingIcon = { Icon(Icons.Outlined.DeleteOutline, null, tint = colors.error) },
+                    modifier = Modifier.testTag("remove_action_$index"),
+                    onClick = {
+                        onDismissMenu()
+                        onRemove()
+                    },
+                )
+            }
         }
     }
+    BoxWithConstraints(
+        Modifier.fillMaxWidth().animateContentSize().clip(RoundedCornerShape(14.dp))
+            .border(1.dp, outline, RoundedCornerShape(14.dp))
+            .background(fill).testTag("chain_action_$index"),
+    ) {
+        val compact = maxWidth < 280.dp && LocalDensity.current.fontScale > 1.3f
+        val configure = if (configurable) onConfigure else onOpenMenu
+        val label = stringResource(if (configurable) R.string.editor_configure_action else R.string.editor_more_options, title)
+        if (compact) Column(Modifier.fillMaxWidth().clickable(onClickLabel = label, onClick = configure).padding(12.dp)) {
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                Icon(actionIcon(action.type, descriptor?.category), null, Modifier.size(22.dp), tint = glyph)
+                Spacer(Modifier.weight(1f))
+                menu()
+            }
+            description(Modifier.fillMaxWidth())
+        } else Row(
+            Modifier.heightIn(min = MinTouchTarget).clickable(onClickLabel = label, onClick = configure)
+                .padding(start = 12.dp, top = 8.dp, bottom = 8.dp, end = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(actionIcon(action.type, descriptor?.category), null, Modifier.size(22.dp), tint = glyph)
+            Spacer(Modifier.width(12.dp))
+            description(Modifier.weight(1f))
+            menu()
+        }
+    }
+    RowConfigError(incomplete, action = true, Modifier.testTag("action_error_$index"))
+    ShellLimitedWarning(action.type == "shell_command" && shellRunsIn(advancedModeActive) == ShellContext.APP_LIMITED, onSetUpAdvancedMode)
+    Spacer(Modifier.height(8.dp))
 }
 
 /**
@@ -1012,49 +1252,27 @@ private fun AdvancedModeChip(active: Boolean) {
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun BottomToolbar(
-    canRun: Boolean,
-    canDelete: Boolean,
-    onRunOnce: () -> Unit,
-    onDeleteScript: () -> Unit,
-    onShare: () -> Unit,
-) {
-    val colors = MaterialTheme.colorScheme
-    // Delete on the start edge, Share and Test run on the end. Where the three do not fit on one
-    // line, Share and Test run move to a second line (and wrap again if needed) instead of being
-    // squeezed into fragments.
+@OptIn(ExperimentalLayoutApi::class)
+private fun BottomToolbar(canRun: Boolean, onRunOnce: () -> Unit, onDone: () -> Unit) {
+    val largeText = LocalDensity.current.fontScale > 1.3f
+    val testDescription = stringResource(R.string.editor_test_run)
     FlowRow(
-        Modifier
-            .fillMaxWidth()
-            .background(colors.background)
-            .navigationBarsPadding()
-            .padding(horizontal = 16.dp, vertical = 10.dp),
-        horizontalArrangement = Arrangement.End,
+        Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.background).navigationBarsPadding()
+            .padding(horizontal = 22.dp, vertical = 10.dp),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+        maxItemsInEachRow = if (LocalDensity.current.fontScale > 2f && LocalConfiguration.current.screenWidthDp < 600) 1 else 2,
     ) {
-        // A draft that was never saved has nothing to delete; the close tile's discard guard is
-        // the way out of it.
-        if (canDelete) {
-            TextButton(onClick = onDeleteScript, modifier = Modifier.testTag("delete_script_button")) {
-                Icon(Icons.Outlined.DeleteOutline, null, tint = colors.error, modifier = Modifier.size(18.dp))
-                Spacer(Modifier.width(4.dp))
-                Text(stringResource(R.string.common_delete), color = colors.error, style = MaterialTheme.typography.labelLarge)
+        OutlinedButton(onClick = onRunOnce, enabled = canRun, contentPadding = PaddingValues(horizontal = 12.dp, vertical = 12.dp), modifier = Modifier.weight(1f).heightIn(min = 52.dp).testTag("run_once_button").semantics { contentDescription = testDescription }) {
+            if (!largeText) {
+                Icon(Icons.Outlined.PlayCircleOutline, null, Modifier.size(18.dp))
+                Spacer(Modifier.width(6.dp))
             }
+            Text(stringResource(R.string.editor_test), textAlign = TextAlign.Center)
         }
-        Spacer(Modifier.weight(1f))
-        FlowRow(horizontalArrangement = Arrangement.End) {
-            val tint = if (canRun) colors.primary else colors.onSurfaceVariant.copy(alpha = .4f)
-            TextButton(onClick = onShare, enabled = canRun, modifier = Modifier.testTag("share_script_button")) {
-                Icon(Icons.Outlined.Share, null, tint = tint, modifier = Modifier.size(18.dp))
-                Spacer(Modifier.width(4.dp))
-                Text(stringResource(R.string.share_action), color = tint, style = MaterialTheme.typography.labelLarge)
-            }
-            TextButton(onClick = onRunOnce, enabled = canRun, modifier = Modifier.testTag("run_once_button")) {
-                Icon(Icons.Outlined.PlayCircleOutline, null, tint = tint, modifier = Modifier.size(18.dp))
-                Spacer(Modifier.width(4.dp))
-                Text(stringResource(R.string.editor_test_run), color = tint, style = MaterialTheme.typography.labelLarge)
-            }
+        Button(onClick = onDone, contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp), modifier = Modifier.weight(1.8f).heightIn(min = 52.dp).testTag("script_done_button")) {
+            Text(stringResource(if (largeText) R.string.common_save else R.string.editor_save_shortcut), textAlign = TextAlign.Center)
         }
     }
 }
@@ -1071,6 +1289,7 @@ private fun AddActionScreen(
     onSelectCategory: (ActionCategory?) -> Unit,
     onPickAction: (String) -> Unit,
     onClose: () -> Unit,
+    advancedModeActive: Boolean = false,
 ) {
     val colors = MaterialTheme.colorScheme
     Column(Modifier.fillMaxSize().statusBarsPadding().testTag("action_picker_sheet")) {
@@ -1146,7 +1365,7 @@ private fun AddActionScreen(
                     )
                 }
                 items(entries.size, key = { "action_${entries[it].type}" }) { i ->
-                    ActionRow(entries[i], onPickAction)
+                    ActionRow(entries[i], onPickAction, advancedModeWarningRes(entries[i].type, advancedModeActive))
                 }
             }
         }
@@ -1247,7 +1466,7 @@ fun CategoryIconChip(
 }
 
 @Composable
-private fun ActionRow(descriptor: ActionDescriptor, onPickAction: (String) -> Unit) {
+private fun ActionRow(descriptor: ActionDescriptor, onPickAction: (String) -> Unit, @StringRes warningRes: Int? = null) {
     val colors = MaterialTheme.colorScheme
     val available = descriptor.availability == ActionAvailability.AVAILABLE
     Row(
@@ -1281,6 +1500,20 @@ private fun ActionRow(descriptor: ActionDescriptor, onPickAction: (String) -> Un
                     style = MaterialTheme.typography.bodySmall,
                     color = colors.onSurfaceVariant,
                 )
+            } else if (warningRes != null) {
+                Row(
+                    Modifier.padding(top = 1.dp).testTag("action_row_warning_${descriptor.type}"),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(Icons.Filled.Error, null, tint = colors.error, modifier = Modifier.size(12.dp))
+                    Spacer(Modifier.width(4.dp))
+                    Text(
+                        stringResource(warningRes),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = colors.error,
+                        maxLines = 2,
+                    )
+                }
             }
         }
         if (available) {

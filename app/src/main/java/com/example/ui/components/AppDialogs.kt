@@ -2,6 +2,17 @@ package com.example.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectVerticalDragGestures
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.Icon
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.input.pointer.pointerInput
+import com.example.ui.theme.LocalGlass
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,12 +21,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -30,7 +38,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
 import com.example.bridge.KeyEventMapping
-import com.example.ui.theme.MonoLabel
 import androidx.compose.ui.res.stringResource
 import io.github.nicholasarda.keysnap.R
 import androidx.compose.ui.unit.dp
@@ -64,14 +71,36 @@ fun AppAlertDialog(
     )
 }
 
+/**
+ * "Advanced Mode · Connected" in the bottom bar's glass. No OK button: it leaves on its own, on a
+ * tap, or when pushed back up. Sheet glass rather than the bar's frosted fill, since nothing blurs
+ * the page behind it.
+ */
 @Composable
 fun AdvancedActivationBanner(onDismiss: () -> Unit) {
     val colors = MaterialTheme.colorScheme
-    Card(Modifier.fillMaxWidth().border(1.dp, colors.primary.copy(alpha = .7f), ConsoleShape), shape = ConsoleShape, colors = CardDefaults.cardColors(containerColor = colors.surface)) {
-        Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-            Box(Modifier.size(9.dp).clip(CircleShape).background(colors.primary)); Spacer(Modifier.width(10.dp))
-            Text(stringResource(R.string.dialog_expert_connected), Modifier.weight(1f), style = MonoLabel, color = colors.onSurface)
-            TextButton(onClick = onDismiss) { Text(stringResource(R.string.common_ok)) }
+    val glass = LocalGlass.current
+    val shape = RoundedCornerShape(50)
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .shadow(12.dp, shape, ambientColor = glass.barShadow, spotColor = glass.barShadow)
+            .clip(shape)
+            .background(Brush.verticalGradient(listOf(glass.sheetTop, glass.sheetMid)))
+            .border(1.2.dp, glass.barRim, shape)
+            .clickable(onClickLabel = stringResource(R.string.common_close), onClick = onDismiss)
+            .pointerInput(onDismiss) { detectVerticalDragGestures { _, dy -> if (dy < -4f) onDismiss() } }
+            .testTag("advanced_connected_banner")
+            .padding(start = 8.dp, end = 18.dp, top = 8.dp, bottom = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Box(Modifier.size(36.dp).clip(CircleShape).background(colors.primary), contentAlignment = Alignment.Center) {
+            Icon(Icons.Filled.Check, null, Modifier.size(20.dp), tint = colors.onPrimary)
+        }
+        Column {
+            Text(stringResource(R.string.home_status_advanced), style = MaterialTheme.typography.titleSmall, color = colors.onSurface)
+            Text(stringResource(R.string.pairing_connected), style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant)
         }
     }
 }
@@ -98,20 +127,8 @@ fun NameKeyDialog(code: Int, onDismiss: () -> Unit, onSave: (String) -> Unit) {
     }, confirmButton = { Button(onClick = { if (customName.isNotBlank()) onSave(customName.trim()) }) { Text(stringResource(R.string.common_save_caps)) } }, dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.common_cancel_caps)) } }, containerColor = colors.surface, titleContentColor = colors.onSurface, textContentColor = colors.onSurfaceVariant)
 }
 
-/** Play's prominent-disclosure requirement for AccessibilityService: the app must say in its own
- *  UI what the service is used for, and get an affirmative tap, before sending the user to the
- *  system toggle. Reuses the service's own description so the two never disagree. */
+/** One prominent disclosure for every entry point. Settings opens only after explicit consent. */
 @Composable
-fun AccessibilityDisclosureDialog(onAgree: () -> Unit, onDismiss: () -> Unit) {
-    val colors = MaterialTheme.colorScheme
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.home_accessibility_service)) },
-        text = { Text(stringResource(R.string.accessibility_service_description)) },
-        confirmButton = { Button(onClick = onAgree) { Text(stringResource(R.string.accessibility_disclosure_agree)) } },
-        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.common_cancel)) } },
-        containerColor = colors.surface,
-        titleContentColor = colors.onSurface,
-        textContentColor = colors.onSurfaceVariant,
-    )
+fun AccessibilityDisclosureSheet(onAgree: () -> Unit, onDismiss: () -> Unit) {
+    com.example.ui.home.SetupStepSheet(com.example.ui.home.SetupStep.Accessibility, onAgree, onDismiss)
 }

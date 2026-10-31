@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="inline_key_choose">اختر زرًا</string>
+    <string name="inline_key_record">تسجيل زر</string>
+    <string name="inline_key_listening">اضغط على زر الآن</string>
+    <string name="inline_key_release">اضغط مطولًا على الأزرار معًا. اتركها للإنهاء.</string>
+    <string name="inline_key_edit">انقر على الزر لتسجيله مجددًا.</string>
+    <string name="inline_key_placeholder">زرًا</string>
+    <string name="inline_key_advanced_hint">تحتاج أزرار التشغيل وSnap Key وEssential Key وBixby والأزرار المشابهة إلى الوضع المتقدم.</string>
+    <string name="inline_key_set_up">إعداد</string>
+</resources>

@@ -20,6 +20,7 @@ import java.util.regex.Pattern;
  * .AndroidConstraintEvaluator} in the app module — both answer the same predicates about real
  * device state, just through different mechanisms.
  *
+ * <p>Negated predicates preserve unknown and fail closed. mode_is negation is unsupported.
  * <p>Mode predicates fail closed on unreadable state. Other predicates that cannot read or parse
  * their state answer {@code true}: a constraint the
  * bridge cannot evaluate never blocks a script. {@code no_app_open} is an exception: it needs
@@ -44,14 +45,28 @@ final class ConstraintEvaluator {
     private String audioCache;
     private long audioCacheAtNanos;
     private final BridgeModes modes;
+    interface CommandReader { String read(String... command); }
+    private final CommandReader knownReader;
+    private final java.util.function.Supplier<Boolean> knownTorchState;
 
     ConstraintEvaluator(TorchController torch) {
         this(torch, null);
     }
 
     ConstraintEvaluator(TorchController torch, BridgeModes modes) {
+        this(torch, modes, ConstraintEvaluator::knownShell);
+    }
+
+    ConstraintEvaluator(TorchController torch, BridgeModes modes, CommandReader knownReader) {
+        this(torch, modes, knownReader, () -> torch == null ? null : torch.knownState());
+    }
+
+    ConstraintEvaluator(TorchController torch, BridgeModes modes, CommandReader knownReader,
+                        java.util.function.Supplier<Boolean> knownTorchState) {
+        this.knownTorchState = knownTorchState;
         this.torch = torch;
         this.modes = modes;
+        this.knownReader = knownReader;
     }
 
     boolean isSatisfied(BridgeConfig.Constraint constraint) {
@@ -60,6 +75,17 @@ final class ConstraintEvaluator {
 
     boolean isSatisfied(BridgeConfig.Constraint constraint, boolean foregroundReadable) {
         Map<String, String> p = constraint.params;
+        if (ConstraintNegation.requested(p)) {
+            if (!ConstraintNegation.supported(constraint.type)) return false;
+            if (BridgeConfig.CONSTRAINT_COOLDOWN.equals(constraint.type)) return true;
+            Boolean state;
+            try {
+                state = knownState(ConstraintNegation.positiveType(constraint.type), p, foregroundReadable);
+            } catch (RuntimeException e) {
+                state = null;
+            }
+            return ConstraintNegation.apply(ConstraintNegation.predicate(constraint.type, state));
+        }
         switch (constraint.type) {
             case BridgeConfig.CONSTRAINT_MODE_IS:
                 // Never fall through to unknown=true: that would select every mode's shortcut.
@@ -192,6 +218,149 @@ final class ConstraintEvaluator {
                 return true;
         }
     }
+
+    /** Strict reads for negation only. A recognized field, not an empty/error dump, proves false. */
+    private Boolean knownState(String type, Map<String, String> p, boolean foregroundReadable) {
+        String out;
+        switch (type) {
+            case "screen_on":
+                out = knownReader.read("dumpsys", "power");
+                if (!has(out, "mWakefulness=(Awake|Asleep|Dozing|Dreaming)\\b")) return null;
+                return parseScreenOn(out);
+            case "wifi_on": return knownSetting("wifi_on", 1);
+            case "bluetooth_on": return knownSetting("bluetooth_on", 1);
+            case "mobile_data_on": return knownSetting("mobile_data", 1);
+            case "airplane_mode_on": return knownSetting("airplane_mode_on", 1);
+            case "battery_saver_on": return knownSetting("low_power", 1);
+            case "charging":
+                out = knownReader.read("dumpsys", "battery");
+                return has(out, "status:\\s*[1-5]\\b") ? parseCharging(out) : null;
+            case "in_phone_call": case "phone_ringing":
+                out = knownReader.read("dumpsys", "audio");
+                if (parseAudioMode(out) == null) return null;
+                return "phone_ringing".equals(type) ? parsePhoneRinging(out) : parseInPhoneCall(out);
+            case "flashlight_on": return knownTorchState.get();
+            case "app_in_foreground":
+                if (!foregroundReadable || blank(p.get("packageName"))) return null;
+                String resumed = parseResumedPackage(knownReader.read("dumpsys", "activity", "activities"));
+                return resumed == null ? null : resumed.equals(p.get("packageName").trim());
+            case "media_is_playing":
+                out = knownReader.read("dumpsys", "media_session");
+                return has(out, "(?i)MEDIA SESSION SERVICE|MediaSessionService|Sessions Stack|PlaybackState") ? parseMediaPlaying(out) : null;
+            case "bluetooth_device_connected":
+                if (blank(p.get("address")) && blank(p.get("name"))) return null;
+                out = knownReader.read("dumpsys", "bluetooth_manager");
+                // A row for this device carries explicit ACL Y/N evidence. An absent device is unknown.
+                String address = p.get("address");
+                String name = p.get("name");
+                for (String line : out.split("\\n")) {
+                    if (!has(line, "\\[ACL [^\\]]*\\]")) continue;
+                    String upper = line.toUpperCase(Locale.ROOT);
+                    boolean match = !blank(address) && (upper.contains(address.trim().toUpperCase(Locale.ROOT)) ||
+                            (address.trim().length() == 17 && upper.contains("XX:XX:XX:XX:" + address.trim().substring(12).toUpperCase(Locale.ROOT))));
+                    if (blank(address) && !blank(name)) match = line.trim().toLowerCase(Locale.ROOT).endsWith(" " + name.trim().toLowerCase(Locale.ROOT));
+                    if (match) return has(line, "\\[ACL [^\\]]*:Y[^\\]]*\\]");
+                }
+                return has(out, "(?i)enabled:\\s*false|state:\\s*OFF\\b") ? false : null;
+            case "screen_orientation":
+                out = knownReader.read("dumpsys", "display");
+                return has(out, "mCurrentOrientation=[0-3]\\b") &&
+                        ("portrait".equals(normalized(p.get("orientation"))) || "landscape".equals(normalized(p.get("orientation")))) ? parseOrientation(out, p.get("orientation")) : null;
+            case "dark_mode_on":
+                out = knownReader.read("cmd", "uimode", "night");
+                if (has(out, "Night mode:\\s*(yes|no)\\b")) return parseDarkMode(out);
+                Matcher uiMode = Pattern.compile("mCurUiMode=0x([0-9a-fA-F]+)").matcher(knownReader.read("dumpsys", "uimode"));
+                if (!uiMode.find()) return null;
+                int night = Integer.parseInt(uiMode.group(1), 16) & 0x30;
+                return night == 0x10 ? false : night == 0x20 ? true : null;
+            case "connected_to_wifi_network":
+                out = knownReader.read("cmd", "wifi", "status");
+                if (out.contains("Wifi is not connected") || out.contains("Wifi is disabled")) return false;
+                Matcher ssid = Pattern.compile("Wifi is connected to \"(.*)\"").matcher(out);
+                if (!ssid.find() || ssid.group(1).isEmpty() || "<unknown ssid>".equals(ssid.group(1))) return null;
+                return blank(p.get("ssid")) || ssid.group(1).equals(p.get("ssid").trim());
+            case "keyboard_showing":
+                out = knownReader.read("dumpsys", "input_method");
+                return has(out, "mInputShown=(true|false)\\b") ? parseKeyboardShowing(out) : null;
+            case "device_locked":
+                out = knownReader.read("dumpsys", "trust");
+                return has(out, "deviceLocked=[01]\\b") ? parseDeviceLocked(out) : null;
+            case "lock_screen_showing":
+                out = knownReader.read("dumpsys", "window", "policy");
+                return has(out, "KeyguardServiceDelegate\\s+showing=(true|false)\\b") ? lockScreenShowing(out) : null;
+            case "no_app_open": return knownNoAppOpen(foregroundReadable);
+            case "charging_wired": case "charging_wireless":
+                out = knownReader.read("dumpsys", "battery");
+                if ("charging_wireless".equals(type)) return has(out, "Wireless powered: (true|false)") ? parseChargingWireless(out) : null;
+                return has(out, "AC powered: (true|false)") && has(out, "USB powered: (true|false)") ? parseChargingWired(out) : null;
+            case "battery_above": case "battery_below":
+                out = knownReader.read("dumpsys", "battery");
+                Matcher level = Pattern.compile("level:\\s*(\\d+)").matcher(out);
+                try {
+                    if (!level.find()) return null;
+                    int actual = Integer.parseInt(level.group(1));
+                    int limit = Integer.parseInt(p.get("percent").trim());
+                    if (actual < 0 || actual > 100 || limit < 0 || limit > 100) return null;
+                    return "battery_above".equals(type) ? actual > limit : actual < limit;
+                } catch (RuntimeException e) { return null; }
+            case "location_on":
+                // Numeric location_mode distinguishes a disabled provider from a failed/empty command.
+                out = knownReader.read("settings", "get", "secure", "location_mode").trim();
+                return out.matches("[0-3]") ? !"0".equals(out) : null;
+            case "time":
+                return parseTime(p.get("start")) == null || parseTime(p.get("end")) == null ? null : isWithinTime(p.get("start"), p.get("end"), LocalTime.now());
+            case "day_of_week":
+                return !knownDays(p.get("days")) ? null : isDayOfWeek(p.get("days"), LocalDate.now().getDayOfWeek());
+            case "ringer_normal": case "ringer_vibrate": case "ringer_silent":
+                out = knownReader.read("settings", "get", "global", "mode_ringer").trim();
+                if (!out.matches("[0-2]")) return null;
+                return out.equals("ringer_normal".equals(type) ? "2" : "ringer_vibrate".equals(type) ? "1" : "0");
+            case "dnd_on": return knownSetting("zen_mode", 3);
+            case "headphones_connected":
+                out = knownReader.read("dumpsys", "audio");
+                return out.contains("Connected devices:") ? parseHeadphonesConnected(out) : null;
+            default: return null; // App-only, unknown, coming-soon, or unsupported mode_is.
+        }
+    }
+
+    private Boolean knownNoAppOpen(boolean foregroundReadable) {
+        if (!foregroundReadable) return null;
+        String audio = knownReader.read("dumpsys", "audio");
+        if (parseAudioMode(audio) == null) return null;
+        if (parseInPhoneCall(audio) || parsePhoneRinging(audio)) return false;
+        String activities = knownReader.read("dumpsys", "activity", "activities");
+        String policy = knownReader.read("dumpsys", "window", "policy");
+        Boolean locked = parseKeyguardControllerLocked(activities);
+        if (locked == null && has(policy, "KeyguardServiceDelegate\\s+showing=(true|false)\\b")) locked = lockScreenShowing(policy);
+        if (locked == null) return null;
+        if (locked) {
+            Boolean occluded = parseKeyguardOccluded(policy, activities);
+            return occluded == null ? null : !occluded;
+        }
+        String resumed = parseResumedPackage(activities);
+        String home = parseHomePackage(knownReader.read("cmd", "package", "resolve-activity", "--brief", "--user", "current",
+                "-a", "android.intent.action.MAIN", "-c", "android.intent.category.HOME"));
+        return resumed == null || home == null ? null : isHomeInForeground(resumed, home);
+    }
+
+    private Boolean knownSetting(String key, int max) {
+        try {
+            int value = Integer.parseInt(knownReader.read("settings", "get", "global", key).trim());
+            return value < 0 || value > max ? null : value != 0;
+        } catch (NumberFormatException e) { return null; }
+    }
+
+    private static boolean knownDays(String days) {
+        if (blank(days)) return false;
+        for (String day : days.split(",")) {
+            if (day.trim().toLowerCase(Locale.ROOT).matches("mon|tue|wed|thu|fri|sat|sun")) return true;
+        }
+        return false;
+    }
+
+    private static String normalized(String value) { return value == null ? "" : value.trim().toLowerCase(Locale.ROOT); }
+    private static boolean blank(String value) { return value == null || value.trim().isEmpty(); }
+    private static boolean has(String output, String regex) { return Pattern.compile(regex).matcher(output).find(); }
 
     /**
      * Mirrors cooldownAllows in app/src/main/java/com/example/service/ConstraintEvaluator.kt
@@ -694,6 +863,21 @@ final class ConstraintEvaluator {
         String section = end < 0 ? dumpsysAudioOutput.substring(start) : dumpsysAudioOutput.substring(start, end);
         return Pattern.compile("\\((wired_headset|wired_headphone|usb_headset|bt_a2dp\\w*|bt_sco\\w*|ble_headset)\\)")
                 .matcher(section).find();
+    }
+
+    /** Failed commands are unknown even if stderr looks like a recognizable state field. */
+    private static String knownShell(String... command) {
+        try {
+            Process process = new ProcessBuilder(command).redirectErrorStream(true).start();
+            StringBuilder out = new StringBuilder();
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                String line;
+                while ((line = reader.readLine()) != null) out.append(line).append('\n');
+            }
+            return process.waitFor() == 0 ? out.toString() : "";
+        } catch (Exception e) {
+            return "";
+        }
     }
 
     static String shell(String... command) {

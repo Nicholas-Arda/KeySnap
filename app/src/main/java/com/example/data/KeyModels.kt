@@ -3,6 +3,7 @@ package com.example.data
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.Resources
+import android.view.KeyCharacterMap
 import android.view.KeyEvent
 import androidx.annotation.StringRes
 import io.github.nicholasarda.keysnap.R
@@ -24,7 +25,9 @@ data class PhysicalKeyOption(
     val keyCode: Int,
     val displayName: String,
     val shortLabel: String,
-    val requiresHijack: Boolean = false
+    val requiresHijack: Boolean = false,
+    /** Named by the user in Saved keys, so the name wins even over Android's own label. */
+    val renamed: Boolean = false,
 )
 
 /** Every code Android gives a real label for. Anything else the user is asked to name. */
@@ -61,22 +64,44 @@ private const val UNLABELLED_KEY_PREFIX = "Key code #"
 private const val LEGACY_UNLABELLED_KEY_PREFIX = "Tuş Kodu #"
 
 fun getReadableKeyName(resources: Resources, keyCode: Int): String =
-    LABELLED_KEY_NAMES[keyCode]?.let(resources::getString) ?: "$UNLABELLED_KEY_PREFIX$keyCode"
+    LABELLED_KEY_NAMES[keyCode]?.let(resources::getString) ?: standardKeyName(keyCode) ?: "$UNLABELLED_KEY_PREFIX$keyCode"
+
+/**
+ * Android's own name for a standard keyboard or gamepad key: the character printed on it ("E",
+ * "\"), else its constant made readable ("Ctrl Left", "Button A"). Null for a code Android has no
+ * name for — an OEM button's synthetic code, a chord id, an app gesture.
+ */
+internal fun standardKeyName(keyCode: Int): String? {
+    if (keyCode <= 0 || keyCode > KeyEvent.getMaxKeyCode()) return null
+    val label = KeyCharacterMap.load(KeyCharacterMap.VIRTUAL_KEYBOARD).getDisplayLabel(keyCode)
+    if (label.code != 0 && !label.isWhitespace()) return label.toString()
+    val raw = KEYCODE_NAMES[keyCode] ?: return null
+    return raw.split('_').joinToString(" ") { part -> part.lowercase().replaceFirstChar(Char::uppercase) }
+}
+
+/** KeyEvent's own KEYCODE_ constants by value, read once; the same on every Android version we run on. */
+private val KEYCODE_NAMES: Map<Int, String> by lazy {
+    KeyEvent::class.java.fields
+        .filter { it.name.startsWith("KEYCODE_") && it.type == Int::class.javaPrimitiveType }
+        .associate { it.getInt(null) to it.name.removePrefix("KEYCODE_") }
+}
 
 /**
  * What the UI calls [keyCode]: Android's label, or for a key Android has no label for, the name the
  * user gave it. Never the raw code — a ten-digit number means nothing to anyone — so a key with no
  * name, or with only a generated placeholder saved, reads "Unnamed key". [getReadableKeyName] stays
  * for what is persisted and logged. A labelled key ignores its saved name, which was stored in
- * whatever language the app ran in when the key was recorded.
+ * whatever language the app ran in when the key was recorded — unless the user renamed it.
  */
 fun keyDisplayName(
     resources: Resources,
     keyCode: Int,
     savedKeys: List<PhysicalKeyOption> = KeyMappingRepository.currentSavedKeys(),
 ): String {
+    savedKeys.firstOrNull { it.keyCode == keyCode && it.renamed }?.let { return it.displayName }
     LABELLED_KEY_NAMES[keyCode]?.let { return resources.getString(it) }
     return savedKeys.firstOrNull { it.keyCode == keyCode && !isGeneratedKeyName(it.displayName) }?.displayName
+        ?: standardKeyName(keyCode)
         ?: resources.getString(R.string.key_unnamed)
 }
 
@@ -84,7 +109,7 @@ fun keyDisplayName(
  * True when Android gives this code no meaningful label, so the app should ask the user to name it
  * rather than saving a placeholder. Checking the code beats sniffing the returned string.
  */
-fun isUnlabelledKey(keyCode: Int): Boolean = keyCode !in LABELLED_KEY_NAMES
+fun isUnlabelledKey(keyCode: Int): Boolean = keyCode !in LABELLED_KEY_NAMES && standardKeyName(keyCode) == null
 
 /** True for a persisted name that an older or current build generated rather than the user. */
 fun isGeneratedKeyName(name: String): Boolean =
@@ -165,7 +190,12 @@ class KeyMappingRepository internal constructor(private val prefs: SharedPrefere
             val name = prefs.getString("saved_key_${i}_name", "") ?: ""
             if (code != -1 && name.isNotBlank()) {
                 val shortName = name
-                keys.add(PhysicalKeyOption(code, name, shortName, code == KeyEvent.KEYCODE_POWER || code == KeyEvent.KEYCODE_ASSIST))
+                keys.add(
+                    PhysicalKeyOption(
+                        code, name, shortName, code == KeyEvent.KEYCODE_POWER || code == KeyEvent.KEYCODE_ASSIST,
+                        renamed = prefs.getBoolean("saved_key_${i}_renamed", false),
+                    ),
+                )
             }
         }
         _savedKeys.value = keys
@@ -235,12 +265,25 @@ class KeyMappingRepository internal constructor(private val prefs: SharedPrefere
         if (current.none { it.keyCode == keyCode }) {
             val shortName = name
             current.add(PhysicalKeyOption(keyCode, name, shortName, keyCode == KeyEvent.KEYCODE_POWER || keyCode == KeyEvent.KEYCODE_ASSIST))
-            _savedKeys.value = current
-            prefs.edit().putInt("saved_keys_count", current.size).apply()
-            current.forEachIndexed { index, key ->
-                prefs.edit().putInt("saved_key_${index}_code", key.keyCode).apply()
-                prefs.edit().putString("saved_key_${index}_name", key.displayName).apply()
-            }
+            persistSavedKeys(current)
+        }
+    }
+
+    fun renameSavedKey(keyCode: Int, name: String) {
+        val trimmed = name.trim().takeIf { it.isNotEmpty() } ?: return
+        val current = _savedKeys.value.map {
+            if (it.keyCode == keyCode) it.copy(displayName = trimmed, shortLabel = trimmed, renamed = true) else it
+        }
+        if (current != _savedKeys.value) persistSavedKeys(current)
+    }
+
+    private fun persistSavedKeys(keys: List<PhysicalKeyOption>) {
+        _savedKeys.value = keys
+        prefs.edit().putInt("saved_keys_count", keys.size).apply()
+        keys.forEachIndexed { index, key ->
+            prefs.edit().putInt("saved_key_${index}_code", key.keyCode).apply()
+            prefs.edit().putString("saved_key_${index}_name", key.displayName).apply()
+            prefs.edit().putBoolean("saved_key_${index}_renamed", key.renamed).apply()
         }
     }
 

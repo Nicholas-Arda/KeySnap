@@ -2,7 +2,6 @@
 <resources>
     <string name="app_name">KeySnap</string>
     <string name="accessibility_service_description">Обнаруживает нажатия физических клавиш (громкость, питание и другие аппаратные кнопки), чтобы они могли запускать ваши сценарии. Только во время настройки Расширенного режима приложение также само открывает системный диалог с кодом сопряжения и считывает из него код. Оно не может читать экран какого-либо другого приложения.</string>
-    <string name="accessibility_disclosure_agree">Согласиться и открыть настройки</string>
 
     <!-- Категории действий -->
     <string name="action_category_input">Ввод</string>
@@ -268,6 +267,7 @@
 
     <!-- Редактор действий: значки требований -->
     <string name="badge_expert_mode">Требует Расширенный режим</string>
+    <string name="badge_advanced_full_access">Полный доступ требует Расширенный режим</string>
     <string name="badge_accessibility">Требует службу специальных возможностей</string>
     <string name="badge_notification_policy">Требует доступ к режиму «Не беспокоить»</string>
     <string name="badge_notification_access">Требует доступ к уведомлениям</string>
@@ -553,7 +553,6 @@
     <string name="settings_close">Закрыть настройки</string>
 
     <!-- Диалоги -->
-    <string name="dialog_expert_connected">РАСШИРЕННЫЙ РЕЖИМ ПОДКЛЮЧЁН</string>
     <string name="dialog_new_input_title">Обнаружен новый ввод</string>
     <string name="dialog_new_input_body">Дайте этому вводу короткое имя.</string>
     <string name="dialog_new_input_hint">например, кнопка сценария</string>
@@ -577,8 +576,6 @@
     <string name="trigger_picker_listening">Слушаем… нажмите, чтобы остановить</string>
     <string name="trigger_picker_tap_to_record">Коснитесь, затем нажмите клавишу или удерживайте несколько сразу</string>
     <string name="trigger_picker_save_combo">Сохранить клавишу</string>
-    <string name="trigger_picker_use_automation">Использовать вместо этого автоматизацию</string>
-    <string name="trigger_picker_use_key">Использовать %1$s</string>
 
     <!-- Настройки отдельного сценария -->
     <string name="script_settings_name">Название</string>
@@ -667,33 +664,12 @@
     <string name="home_triggers_session">Запусков за сеанс</string>
     <string name="home_last_from">Последнее от %1$s</string>
     <string name="home_open_label_settings">Открыть настройки %1$s</string>
-    <string name="home_setup_title_off">Ваши сценарии ещё не работают</string>
-    <string name="home_setup_subtitle_off">Три шага, все в настройках Android. Здесь написано, что нажать в каждом.</string>
-    <string name="home_setup_title_at_risk">Ваши сценарии могут перестать работать</string>
-    <string name="home_setup_subtitle_at_risk">Пока это выключено, Android может закрыть приложение в фоне.</string>
-    <string name="home_setup_progress">%1$d/3</string>
-    <string name="home_setup_step_accessibility">Включите службу специальных возможностей</string>
-    <string name="home_setup_why_accessibility">Через неё KeySnap считывает нажатия кнопок. Пока она выключена, ничего не работает.</string>
     <string name="home_setup_open_accessibility">Открыть настройки специальных возможностей</string>
-    <string name="home_setup_step_background">Разрешите KeySnap работать в фоне</string>
-    <string name="home_setup_why_background">Android закрывает приложения, которые считает спящими. Нажмите «Разрешить», когда он спросит, — с «Запретить» система сможет закрывать KeySnap.</string>
     <string name="home_setup_allow_background">Разрешить работу в фоне</string>
-    <string name="home_setup_done_background">Разрешено</string>
-    <string name="home_setup_step_notifications">Разрешите уведомления</string>
-    <string name="home_setup_why_notifications">Для настройки, чтобы сообщить, когда сценарий не удалось выполнить, и для уведомлений ваших собственных сценариев. Нажмите «Разрешить», когда Android спросит, — «Запретить» остановит настройку здесь.</string>
-    <string name="home_setup_ask_now">Спросить сейчас</string>
-    <string name="home_setup_done_notifications">Разрешены</string>
-    <string name="home_setup_all_done">Все три включены. Ваши кнопки работают.</string>
     <string name="home_setup_state_done">Выполнено</string>
     <string name="home_setup_state_current">Текущий шаг</string>
     <string name="home_setup_state_upcoming">Ещё не начат</string>
     <string name="home_setup_illo_downloaded_apps">Скачанные приложения</string>
-    <string name="home_setup_why">Почему?</string>
-    <string name="home_setup_why_expanded">Развёрнуто</string>
-    <string name="home_setup_why_collapsed">Свёрнуто</string>
-    <string name="home_setup_whytext_accessibility">Android показывает аппаратные кнопки только службе специальных возможностей, поэтому KeySnap использует её именно для этого: заметить нажатие и запустить ваш сценарий. Экраны других приложений она не читает. Только во время настройки Расширенного режима она также считывает код сопряжения на странице беспроводной отладки — и больше ничего.</string>
-    <string name="home_setup_whytext_background">Android закрывает приложения, которые считает бездействующими, а закрытое приложение не может выполнять ваши сценарии. Это оставляет KeySnap работать, пока телефон спит. В фоне он только ждёт нажатия кнопки.</string>
-    <string name="home_setup_whytext_notifications">Во время настройки Расширенного режима: код сопряжения и состояние службы. После этого — только когда сценарий не удалось выполнить, и почему, а также уведомления, которые вы добавили в свои сценарии. Никаких напоминаний от нас, никакой рекламы, ничего больше — никогда.</string>
     <string name="home_setup_illo_battery_dialog">Разрешить KeySnap всегда работать в фоне?</string>
     <string name="home_setup_illo_battery_body">Это может сократить время работы батареи.</string>
     <string name="home_setup_illo_battery_deny">Запретить</string>
@@ -703,6 +679,8 @@
     <string name="home_nudge_title">Создайте свой первый сценарий</string>
     <string name="home_nudge_subtitle">Фонарик — прямо под этим, в одно касание.</string>
     <string name="home_nudge_dismiss">Закрыть</string>
+    <string name="home_coloros_recents_title">Заблокируйте KeySnap в недавних приложениях</string>
+    <string name="home_coloros_recents_body">На этом телефоне смахивание KeySnap выключает специальные возможности, и кнопки сценариев делают ещё свою обычную работу. Откройте недавние приложения и потяните карточку KeySnap вниз, чтобы заблокировать её.</string>
 
     <!-- Продвижение Pro -->
     <string name="pro_card_subtitle">Бесплатно — не более %1$d включённых сценариев. Pro — все сразу.</string>
@@ -820,9 +798,6 @@
     <string name="wizard_title">Включить Расширенный режим</string>
     <string name="wizard_subtitle">Мастер настройки</string>
     <string name="wizard_continue">Продолжить</string>
-    <string name="wizard_finish_pairing">Завершить сопряжение</string>
-    <string name="wizard_step_intro">Введение</string>
-    <string name="wizard_step_pairing">Сопряжение</string>
     <string name="wizard_step_done">Готово</string>
     <string name="wizard_what_is_expert">Что такое Расширенный режим?</string>
     <string name="wizard_expert_explainer">KeySnap подключается к беспроводной отладке вашего же телефона и читает клавиши прямо из ядра — питание, ассистент, камера; кнопки, которые Android скрывает от приложений.</string>
@@ -834,7 +809,10 @@
     <string name="wizard_illo_action">↳ Фонарик включён</string>
     <string name="wizard_how_to_dev_options">Как включить режим разработчика?</string>
     <string name="wizard_auto_pairing">Автоматическое сопряжение ADB</string>
-    <string name="wizard_auto_pairing_explainer">Не нужно вводить код сопряжения вручную — мы считываем его в фоновом режиме и подключаемся автоматически. Если это не удастся, вы сможете ввести его из уведомления.</string>
+    <string-array name="wizard_auto_pairing_points">
+        <item>Не нужно вводить код сопряжения вручную — мы считываем его в фоновом режиме и подключаемся автоматически.</item>
+        <item>Если это не удастся, вы сможете ввести его из уведомления.</item>
+    </string-array>
     <string name="wizard_open_settings">Открыть настройки и начать сопряжение</string>
     <string name="wizard_expert_running">Расширенный режим запущен</string>
     <string name="wizard_expert_running_body">Все аппаратные клавиши Android (питание, ассистент, громкость, камера и т. д.) отслеживаются на уровне ядра Linux.</string>
@@ -843,7 +821,6 @@
     <string name="wizard_connecting">Подключение…</string>
     <string name="wizard_connecting_body">Расширенный режим запускается. Это занимает несколько секунд — не закрывайте этот экран.</string>
     <string name="wizard_kernel_stream">Поток событий ядра в реальном времени</string>
-    <string name="wizard_test_flash">Тестовый запуск фонарика</string>
 
     <!-- Статус сопряжения -->
     <string name="pairing_idle">Ожидание сопряжения…</string>
@@ -928,7 +905,6 @@
     <string name="widget_description">Запускайте любой свой сценарий одним касанием</string>
     <string name="trigger_kind_surface">Виджет или плитка</string>
     <string name="surface_card_subtitle">Срабатывает при нажатии на его виджет на главном экране или плитку в быстрых настройках</string>
-    <string name="trigger_picker_use_surface">Нет свободной клавиши? Используйте виджет или плитку</string>
     <string name="run_source_widget">Виджет</string>
     <string name="run_source_tile">Плитка быстрых настроек</string>
     <string name="widget_limit_reached">Бесплатный план: %1$d виджета на главном экране. Перейдите на Pro для неограниченного количества виджетов.</string>
@@ -1100,9 +1076,9 @@
     <string name="param_mode_pulse">Вибрация режима</string>
     <string name="param_mode_gap">Пауза между вибрациями</string>
     <string name="param_mode_lead_gap">Пауза перед вибрацией режима</string>
-    <string name="choice_mode_feedback_toast">Сообщение на экране</string>
+    <string name="choice_mode_feedback_toast">Сообщение</string>
     <string name="choice_mode_feedback_vibrate">Вибрация</string>
-    <string name="choice_mode_feedback_both">Сообщение и вибрация</string>
+    <string name="choice_mode_feedback_both">Оба</string>
     <string name="param_mode_number">Номер режима</string>
     <string name="constraint_mode_is">Текущий режим</string>
     <string name="mode_current">Режим %1$d</string>
@@ -1115,4 +1091,17 @@
     <string name="assistant_redirect_note">Ваш ассистент — KeySnap, поэтому это действие открывает другого ассистента на телефоне.</string>
     <string name="assistant_no_other_app">На этом телефоне нет другого доступного ассистента.</string>
     <string name="assistant_voice_wakeup_warning">Пока KeySnap — ваш ассистент, голосовое пробуждение предыдущего ассистента может перестать работать.</string>
+    <string name="script_settings_show_capsule">Показывать капсулу клавиш</string>
+    <string name="script_settings_show_capsule_description">Показывать отклик при выполнении этого сценария.</string>
+    <plurals name="home_recipes_show_more">
+        <item quantity="one">Показать ещё %d</item>
+        <item quantity="few">Показать ещё %d</item>
+        <item quantity="many">Показать ещё %d</item>
+        <item quantity="other">Показать ещё %d</item>
+    </plurals>
+    <string name="home_recipes_show_less">Показать меньше</string>
+    <string name="settings_saved_keys">Сохранённые кнопки</string>
+    <string name="settings_saved_keys_summary">Переименуйте кнопки или добавьте новую заранее</string>
+    <string name="settings_saved_keys_add">Добавить кнопку</string>
+    <string name="settings_saved_keys_rename">Переименовать кнопку</string>
 </resources>

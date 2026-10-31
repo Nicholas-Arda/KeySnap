@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name">KeySnap</string>
     <string name="accessibility_service_description">Rileva le pressioni dei tasti fisici (Volume, Accensione e altri pulsanti hardware) in modo che possano attivare le tue scorciatoie. Solo durante la configurazione della Modalità avanzata, apre anche per te la finestra di sistema del codice di accoppiamento e ne legge il codice. Non può leggere lo schermo di nessun\'altra app.</string>
-    <string name="accessibility_disclosure_agree">Accetto, apri le impostazioni</string>
 
     <!-- Categorie di azioni -->
     <string name="action_category_input">Input</string>
@@ -267,6 +266,7 @@
 
     <!-- Editor azioni: badge dei requisiti -->
     <string name="badge_expert_mode">Richiede la Modalità avanzata</string>
+    <string name="badge_advanced_full_access">L’accesso completo richiede la Modalità avanzata</string>
     <string name="badge_accessibility">Richiede il servizio di Accessibilità</string>
     <string name="badge_notification_policy">Richiede l\'accesso a Non disturbare</string>
     <string name="badge_notification_access">Richiede l\'accesso alle notifiche</string>
@@ -554,7 +554,6 @@
     <string name="settings_close">Chiudi impostazioni</string>
 
     <!-- Finestre di dialogo -->
-    <string name="dialog_expert_connected">MODALITÀ AVANZATA CONNESSA</string>
     <string name="dialog_new_input_title">Nuovo input rilevato</string>
     <string name="dialog_new_input_body">Assegna un nome breve a questo input.</string>
     <string name="dialog_new_input_hint">es. Tasto scorciatoia</string>
@@ -578,8 +577,6 @@
     <string name="trigger_picker_listening">In ascolto… tocca per interrompere</string>
     <string name="trigger_picker_tap_to_record">Tocca, poi premi un tasto, o tienine premuti diversi insieme</string>
     <string name="trigger_picker_save_combo">Salva tasto</string>
-    <string name="trigger_picker_use_automation">Usa invece un\'automazione</string>
-    <string name="trigger_picker_use_key">Usa %1$s</string>
 
     <!-- Impostazioni per scorciatoia -->
     <string name="script_settings_name">Nome</string>
@@ -668,33 +665,12 @@
     <string name="home_triggers_session">Esecuzioni in questa sessione</string>
     <string name="home_last_from">Ultimo da %1$s</string>
     <string name="home_open_label_settings">Apri le impostazioni di %1$s</string>
-    <string name="home_setup_title_off">Le tue scorciatoie non funzionano ancora</string>
-    <string name="home_setup_subtitle_off">Tre passaggi, tutti nelle impostazioni di Android. Ecco cosa toccare in ciascuno.</string>
-    <string name="home_setup_title_at_risk">Le tue scorciatoie potrebbero smettere di funzionare</string>
-    <string name="home_setup_subtitle_at_risk">Android può chiudere l\'app in background finché non attivi queste opzioni.</string>
-    <string name="home_setup_progress">%1$d/3</string>
-    <string name="home_setup_step_accessibility">Attiva il Servizio di Accessibilità</string>
-    <string name="home_setup_why_accessibility">KeySnap legge la pressione dei tuoi tasti attraverso di esso. Finché è spento non funziona nulla.</string>
     <string name="home_setup_open_accessibility">Apri le impostazioni di Accessibilità</string>
-    <string name="home_setup_step_background">Lascia KeySnap in esecuzione in background</string>
-    <string name="home_setup_why_background">Android chiude le app che crede addormentate. Tocca Consenti quando lo chiede — con Rifiuta Android può continuare a chiudere KeySnap.</string>
     <string name="home_setup_allow_background">Consenti l\'uso in background</string>
-    <string name="home_setup_done_background">Consentito</string>
-    <string name="home_setup_step_notifications">Consenti le notifiche</string>
-    <string name="home_setup_why_notifications">Per la configurazione, per avvisarti quando una scorciatoia non è stata eseguita e per le notifiche delle tue scorciatoie. Tocca Consenti quando Android lo chiede — Non consentire interrompe qui la configurazione.</string>
-    <string name="home_setup_ask_now">Chiedimelo ora</string>
-    <string name="home_setup_done_notifications">Consentite</string>
-    <string name="home_setup_all_done">Tutti e tre sono attivi. I tuoi tasti ora funzionano.</string>
     <string name="home_setup_state_done">Completato</string>
     <string name="home_setup_state_current">Passaggio attuale</string>
     <string name="home_setup_state_upcoming">Non ancora iniziato</string>
     <string name="home_setup_illo_downloaded_apps">App scaricate</string>
-    <string name="home_setup_why">Perché?</string>
-    <string name="home_setup_why_expanded">Espanso</string>
-    <string name="home_setup_why_collapsed">Compresso</string>
-    <string name="home_setup_whytext_accessibility">Android mostra i tasti fisici solo a un servizio di accessibilità, quindi KeySnap ne usa uno esattamente per questo: accorgersi di una pressione ed eseguire la tua scorciatoia. Non legge lo schermo delle altre app. Solo durante la configurazione della Modalità avanzata legge anche il codice di accoppiamento nella pagina del Debug wireless, e nient\'altro.</string>
-    <string name="home_setup_whytext_background">Android chiude le app che crede inattive, e un\'app chiusa non può eseguire le tue scorciatoie. Questo tiene vivo KeySnap mentre il telefono dorme. In background non fa altro che aspettare un tasto.</string>
-    <string name="home_setup_whytext_notifications">Durante la configurazione della Modalità avanzata: il codice di accoppiamento e se il servizio è attivo. Dopo, solo quando una scorciatoia non è stata eseguita, e perché, e le notifiche che metti nelle tue scorciatoie. Nessun promemoria da parte nostra, nessuna promozione, nient\'altro, mai.</string>
     <string name="home_setup_illo_battery_dialog">Consentire a KeySnap di essere sempre attivo in background?</string>
     <string name="home_setup_illo_battery_body">Potrebbe ridurre la durata della batteria.</string>
     <string name="home_setup_illo_battery_deny">Rifiuta</string>
@@ -704,6 +680,8 @@
     <string name="home_nudge_title">Crea la tua prima scorciatoia</string>
     <string name="home_nudge_subtitle">La torcia è qui sotto, a un tocco.</string>
     <string name="home_nudge_dismiss">Chiudi</string>
+    <string name="home_coloros_recents_title">Blocca KeySnap nelle app recenti</string>
+    <string name="home_coloros_recents_body">Su questo telefono, scorrere via KeySnap disattiva l’accessibilità: i tasti delle scorciatoie fanno anche il loro lavoro normale. Apri le app recenti e trascina in basso la scheda di KeySnap per bloccarla.</string>
 
     <!-- Promozione Pro -->
     <string name="pro_card_subtitle">La versione gratuita tiene attive %1$d scorciatoie. Pro le tiene attive tutte.</string>
@@ -821,9 +799,6 @@
     <string name="wizard_title">Attiva la Modalità avanzata</string>
     <string name="wizard_subtitle">Procedura guidata</string>
     <string name="wizard_continue">Continua</string>
-    <string name="wizard_finish_pairing">Completa l\'accoppiamento</string>
-    <string name="wizard_step_intro">Introduzione</string>
-    <string name="wizard_step_pairing">Accoppiamento</string>
     <string name="wizard_step_done">Fatto</string>
     <string name="wizard_what_is_expert">Cos\'è la Modalità avanzata?</string>
     <string name="wizard_expert_explainer">KeySnap si accoppia al Debug wireless del tuo telefono e legge i tasti direttamente dal kernel: Accensione, assistente, fotocamera, i pulsanti che Android nasconde alle app.</string>
@@ -835,7 +810,10 @@
     <string name="wizard_illo_action">↳ Torcia accesa</string>
     <string name="wizard_how_to_dev_options">Come attivare le Opzioni sviluppatore?</string>
     <string name="wizard_auto_pairing">Accoppiamento ADB automatico</string>
-    <string name="wizard_auto_pairing_explainer">Non serve digitare manualmente il codice di accoppiamento: lo leggiamo in background e ci connettiamo automaticamente. In caso di errore, puoi inserirlo dalla notifica.</string>
+    <string-array name="wizard_auto_pairing_points">
+        <item>Non serve digitare manualmente il codice di accoppiamento: lo leggiamo in background e ci connettiamo automaticamente.</item>
+        <item>In caso di errore, puoi inserirlo dalla notifica.</item>
+    </string-array>
     <string name="wizard_open_settings">Apri le impostazioni e avvia l\'accoppiamento</string>
     <string name="wizard_expert_running">La Modalità avanzata è in esecuzione</string>
     <string name="wizard_expert_running_body">Tutti i tasti hardware Android (Accensione, assistente, Volume, Fotocamera, ecc.) vengono rilevati a livello di kernel Linux.</string>
@@ -844,7 +822,6 @@
     <string name="wizard_connecting">Connessione in corso…</string>
     <string name="wizard_connecting_body">La Modalità avanzata si sta avviando. Richiede qualche secondo: tieni aperta questa schermata.</string>
     <string name="wizard_kernel_stream">Flusso eventi del kernel in diretta</string>
-    <string name="wizard_test_flash">Prova il trigger della torcia</string>
 
     <!-- Stato dell\'accoppiamento -->
     <string name="pairing_idle">In attesa di accoppiamento…</string>
@@ -930,7 +907,6 @@
     <string name="widget_description">Esegui una delle tue scorciatoie con un tocco</string>
     <string name="trigger_kind_surface">Widget o riquadro</string>
     <string name="surface_card_subtitle">Viene eseguita quando tocchi il suo widget nella schermata Home o il suo riquadro nelle impostazioni rapide</string>
-    <string name="trigger_picker_use_surface">Nessun tasto libero? Usa un widget o un riquadro</string>
     <string name="run_source_widget">Widget</string>
     <string name="run_source_tile">Riquadro delle impostazioni rapide</string>
     <string name="widget_limit_reached">Piano gratuito: %1$d widget nella schermata Home. Passa a Pro per widget illimitati.</string>
@@ -1102,9 +1078,9 @@
     <string name="param_mode_pulse">Vibrazione della modalità</string>
     <string name="param_mode_gap">Pausa tra le vibrazioni</string>
     <string name="param_mode_lead_gap">Pausa prima della vibrazione della modalità</string>
-    <string name="choice_mode_feedback_toast">Messaggio sullo schermo</string>
+    <string name="choice_mode_feedback_toast">Messaggio</string>
     <string name="choice_mode_feedback_vibrate">Vibrazione</string>
-    <string name="choice_mode_feedback_both">Messaggio e vibrazione</string>
+    <string name="choice_mode_feedback_both">Entrambi</string>
     <string name="param_mode_number">Numero della modalità</string>
     <string name="constraint_mode_is">La modalità è</string>
     <string name="mode_current">Modalità %1$d</string>
@@ -1117,4 +1093,16 @@
     <string name="assistant_redirect_note">KeySnap è il tuo assistente, quindi questa azione apre un altro assistente sul telefono.</string>
     <string name="assistant_no_other_app">Nessun altro assistente è disponibile su questo telefono.</string>
     <string name="assistant_voice_wakeup_warning">Finché KeySnap è il tuo assistente, l’attivazione vocale del tuo assistente precedente potrebbe smettere di funzionare.</string>
+    <string name="script_settings_show_capsule">Mostra capsula dei tasti</string>
+    <string name="script_settings_show_capsule_description">Mostra un riscontro quando viene eseguita questa scorciatoia.</string>
+    <plurals name="home_recipes_show_more">
+        <item quantity="one">Mostra %d in più</item>
+        <item quantity="many">Mostra %d in più</item>
+        <item quantity="other">Mostra %d in più</item>
+    </plurals>
+    <string name="home_recipes_show_less">Mostra meno</string>
+    <string name="settings_saved_keys">Tasti salvati</string>
+    <string name="settings_saved_keys_summary">Rinomina i tasti o aggiungine uno prima di usarlo</string>
+    <string name="settings_saved_keys_add">Aggiungi tasto</string>
+    <string name="settings_saved_keys_rename">Rinomina tasto</string>
 </resources>

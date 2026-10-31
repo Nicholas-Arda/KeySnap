@@ -1,6 +1,13 @@
 package com.example.ui.scripts
 
 import android.net.Uri
+import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,12 +22,15 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.selection.toggleable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.outlined.DeleteOutline
 import androidx.compose.material.icons.outlined.FileDownload
+import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.Menu
+import androidx.compose.material.icons.outlined.ChevronRight
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -31,10 +41,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -47,6 +56,10 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.semantics.toggleableState
+import androidx.compose.ui.state.ToggleableState
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.style.Hyphens
 import androidx.compose.ui.text.style.LineBreak
@@ -68,7 +81,6 @@ import com.example.ui.home.iconForScript
 import com.example.ui.theme.LocalGlass
 import com.example.ui.theme.ThemeMode
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import io.github.nicholasarda.keysnap.R
 import com.example.ui.components.MinTouchTarget
@@ -81,7 +93,6 @@ fun ScriptsScreen(
     themeMode: ThemeMode,
     onToggleScriptEnabled: (String, Boolean) -> Unit,
     onOpenScript: (String) -> Unit,
-    onDeleteScript: (String) -> Unit,
     onGoHome: () -> Unit,
     onImportText: (String) -> Unit,
     onImportUri: (Uri) -> Unit,
@@ -96,17 +107,53 @@ fun ScriptsScreen(
     onCancelRecording: () -> Unit = {},
     hapticDurationMs: Long = 60L,
     vibrateOnTrigger: Boolean = true,
+    onReorderScripts: (List<String>) -> Unit = {},
+    onRenameScript: (String, String) -> Unit = { _, _ -> },
+    onSetScriptMode: (String, Int?) -> Unit = { _, _ -> },
+    onDeleteScript: (String) -> Unit = {},
+    isPageVisible: Boolean = true,
 ) {
     var showImport by rememberSaveable { mutableStateOf(false) }
-    GroundedPage(themeMode, rememberScrollState()) {
+    var editing by rememberSaveable { mutableStateOf(false) }
+    var settingsId by rememberSaveable { mutableStateOf<String?>(null) }
+    val scrollState = rememberScrollState()
+    val haptic = LocalHapticFeedback.current
+    LaunchedEffect(scripts, settingsId) {
+        if (scripts.none { it.id == settingsId }) settingsId = null
+    }
+    BackHandler(isPageVisible && editing && settingsId == null && !showImport) { editing = false }
+    GroundedPage(themeMode, scrollState) {
         // New shortcuts start from the bottom bar's +. The end padding keeps the title clear of the
         // Settings gear, and the title's row is as tall as the gear so the two line up.
         Column(Modifier.fillMaxWidth().padding(top = 8.dp, end = 52.dp)) {
-            Box(Modifier.heightIn(min = MinTouchTarget), contentAlignment = Alignment.CenterStart) {
+            Row(Modifier.fillMaxWidth().heightIn(min = MinTouchTarget), verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     stringResource(R.string.scripts_title),
+                    modifier = Modifier.weight(1f),
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.onSurface,
+                )
+                IconButton(
+                    onClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        editing = !editing
+                    },
+                    modifier = Modifier.testTag("edit_shortcuts"),
+                ) {
+                    Crossfade(editing, animationSpec = tween(200), label = "editIcon") { isEditing ->
+                        Icon(
+                            if (isEditing) Icons.Filled.Check else Icons.Outlined.Edit,
+                            stringResource(if (isEditing) R.string.shortcuts_edit_done else R.string.shortcuts_edit),
+                            tint = MaterialTheme.colorScheme.primary,
+                        )
+                    }
+                }
+            }
+            AnimatedVisibility(editing) {
+                Text(
+                    stringResource(R.string.shortcuts_edit_hint),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
             if (!globallyEnabled && scripts.isNotEmpty()) {
@@ -137,6 +184,7 @@ fun ScriptsScreen(
             isPro = isPro,
             onUpsell = onUpsell,
             onUpdateScripts = onUpdateScripts,
+            onDeleteScript = onDeleteScript,
             onNewScriptId = onNewScriptId,
             savedKeys = savedKeys,
             isRecordingKey = isRecordingKey,
@@ -145,12 +193,39 @@ fun ScriptsScreen(
             hapticDurationMs = hapticDurationMs,
             vibrateOnTrigger = vibrateOnTrigger,
         )
-        if (scripts.isEmpty()) EmptyState(onGoHome)
-        shown.forEach { script ->
-            key(script.id) { ScriptCard(script, globallyEnabled, script.id in failedScriptIds, onToggleScriptEnabled, onOpenScript, onDeleteScript) }
-        }
+        if (scripts.isEmpty()) EmptyState(onGoHome, isPageVisible)
+        ReorderableShortcutCards(
+            scripts = shown,
+            editing = editing,
+            scrollState = scrollState,
+            globallyEnabled = globallyEnabled,
+            failedScriptIds = failedScriptIds,
+            onToggle = onToggleScriptEnabled,
+            onOpen = { if (editing) settingsId = it else onOpenScript(it) },
+            onReorder = onReorderScripts,
+            onEnterEditing = {
+                if (!editing) {
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    editing = true
+                }
+            },
+        )
     }
     if (showImport) ImportShortcutDialog(onImportText, onImportUri, onDismiss = { showImport = false })
+    scripts.firstOrNull { it.id == settingsId }?.let { script ->
+        ShortcutQuickSettingsSheet(
+            script = script,
+            scripts = scripts,
+            isPro = isPro,
+            onRename = { onRenameScript(script.id, it) },
+            onSetMode = { onSetScriptMode(script.id, it) },
+            onUpdateScripts = onUpdateScripts,
+            onNewScriptId = onNewScriptId,
+            onDelete = { onDeleteScript(script.id); settingsId = null },
+            onUpsell = { settingsId = null; onUpsell() },
+            onDismiss = { settingsId = null },
+        )
+    }
 }
 
 /**
@@ -158,7 +233,7 @@ fun ScriptsScreen(
  * only reporting that the list is empty. The tutorial below only exists while there is nothing here.
  */
 @Composable
-private fun EmptyState(onGoHome: () -> Unit) {
+private fun EmptyState(onGoHome: () -> Unit, isPageVisible: Boolean) {
     val colors = MaterialTheme.colorScheme
     Column(
         Modifier.fillMaxWidth().padding(top = 8.dp),
@@ -187,10 +262,11 @@ private fun EmptyState(onGoHome: () -> Unit) {
         // Last, because the tutorial card's height changes as its steps expand — above the link it
         // would push the link around and off short screens.
         Spacer(Modifier.height(16.dp))
-        ShortcutTutorialCard()
+        ShortcutTutorialCard(active = isPageVisible)
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun ScriptCard(
     script: ShortcutScript,
@@ -198,30 +274,40 @@ internal fun ScriptCard(
     lastRunFailed: Boolean,
     onToggle: (String, Boolean) -> Unit,
     onOpen: (String) -> Unit,
-    onDelete: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    editing: Boolean = false,
+    dragHandle: Modifier = Modifier,
+    onLongPress: () -> Unit = {},
 ) {
     val colors = MaterialTheme.colorScheme
     val firstAction = script.actions.firstOrNull()
-    var showDeleteConfirm by remember { mutableStateOf(false) }
-    if (showDeleteConfirm) {
-        DeleteShortcutDialog(
-            name = script.name.ifBlank { stringResource(R.string.scripts_unnamed) },
-            onDismiss = { showDeleteConfirm = false },
-            onConfirm = {
-                showDeleteConfirm = false
-                onDelete(script.id)
-            },
-        )
+    // Compact since 2026-10-29: the action-count row left every card half empty. A problem still
+    // shows, in red under the trigger; delete lives in the editor's menu.
+    val problem = when {
+        script.actions.isEmpty() -> stringResource(R.string.scripts_no_actions)
+        lastRunFailed -> stringResource(R.string.scripts_last_run_failed)
+        else -> null
     }
+    val cardRim = LocalGlass.current.cardRim
+    val rim by animateColorAsState(if (editing) cardRim.copy(alpha = 0f) else cardRim, tween(220), label = "rim")
+    val outline by animateFloatAsState(if (editing) 1f else 0f, tween(220), label = "outline")
     Card(
-        onClick = { onOpen(script.id) },
-        modifier = Modifier.fillMaxWidth().glassCard(LocalGlass.current).testTag("script_card_${script.id}"),
+        modifier = modifier.fillMaxWidth().glassCard(LocalGlass.current, rim = rim)
+            .shortcutEditOutline(colors.primary) { outline }
+            .clip(ConsoleShape)
+            // In edit mode the long press belongs to the drag gesture, so no long-click handler here.
+            .combinedClickable(
+                role = Role.Button,
+                onLongClick = if (editing) null else onLongPress,
+                onClick = { onOpen(script.id) },
+            )
+            .testTag("script_card_${script.id}"),
         shape = ConsoleShape,
         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
     ) {
-        BoxWithConstraints(Modifier.padding(14.dp)) {
+        BoxWithConstraints(Modifier.padding(horizontal = 14.dp, vertical = 10.dp)) {
             val stacked = maxWidth / LocalDensity.current.fontScale < 240.dp
-            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            Column {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     if (!stacked && firstAction != null) {
                         IconTile(iconForScript(script), category = ScriptActionCatalog.descriptor(firstAction.type)?.category)
@@ -246,45 +332,40 @@ internal fun ScriptCard(
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis,
                         )
-                    }
-                    if (!stacked) EnabledPill(
-                        name = script.name.ifBlank { stringResource(R.string.scripts_unnamed) },
-                        scriptEnabled = script.enabled,
-                        globallyEnabled = globallyEnabled,
-                        onToggle = { onToggle(script.id, !script.enabled) },
-                        modifier = Modifier.testTag("script_status_${script.id}"),
-                    )
-                }
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    if (stacked) EnabledPill(
-                        name = script.name.ifBlank { stringResource(R.string.scripts_unnamed) },
-                        scriptEnabled = script.enabled,
-                        globallyEnabled = globallyEnabled,
-                        onToggle = { onToggle(script.id, !script.enabled) },
-                        modifier = Modifier.padding(end = 8.dp).testTag("script_status_${script.id}"),
-                    )
-                    Text(
-                        when {
-                            script.actions.isEmpty() -> stringResource(R.string.scripts_no_actions)
-                            lastRunFailed -> stringResource(R.string.scripts_last_run_failed)
-                            else -> pluralStringResource(R.plurals.scripts_action_count, script.actions.size, script.actions.size)
-                        },
-                        Modifier.weight(1f),
-                        style = MaterialTheme.typography.bodySmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
-                        color = if (script.actions.isEmpty() || lastRunFailed) colors.error else colors.onSurfaceVariant,
-                        maxLines = 2,
-                    )
-                    IconButton(
-                        onClick = { showDeleteConfirm = true },
-                        modifier = Modifier.size(MinTouchTarget).testTag("delete_script_${script.id}"),
-                    ) {
-                        Icon(
-                            Icons.Outlined.DeleteOutline,
-                            contentDescription = stringResource(R.string.scripts_delete_label, script.name.ifBlank { stringResource(R.string.scripts_unnamed) }),
-                            Modifier.size(20.dp),
-                            tint = colors.onSurfaceVariant,
+                        if (problem != null) Text(
+                            problem,
+                            style = MaterialTheme.typography.bodySmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
+                            color = colors.error,
+                            maxLines = 2,
                         )
                     }
+                    Crossfade(editing, animationSpec = tween(200), label = "trailing") { isEditing ->
+                        if (isEditing) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Box(dragHandle.size(MinTouchTarget), contentAlignment = Alignment.Center) {
+                                    Icon(Icons.Outlined.Menu, stringResource(R.string.shortcuts_drag, script.name))
+                                }
+                                Icon(Icons.Outlined.ChevronRight, null, Modifier.size(20.dp), tint = colors.onSurfaceVariant)
+                            }
+                        } else if (!stacked) EnabledPill(
+                            name = script.name.ifBlank { stringResource(R.string.scripts_unnamed) },
+                            scriptEnabled = script.enabled,
+                            globallyEnabled = globallyEnabled,
+                            onToggle = { onToggle(script.id, !script.enabled) },
+                            onLongPress = onLongPress,
+                            modifier = Modifier.testTag("script_status_${script.id}"),
+                        )
+                    }
+                }
+                if (stacked) AnimatedVisibility(!editing) {
+                    EnabledPill(
+                        name = script.name.ifBlank { stringResource(R.string.scripts_unnamed) },
+                        scriptEnabled = script.enabled,
+                        globallyEnabled = globallyEnabled,
+                        onToggle = { onToggle(script.id, !script.enabled) },
+                        onLongPress = onLongPress,
+                        modifier = Modifier.padding(top = 8.dp).testTag("script_status_${script.id}"),
+                    )
                 }
             }
         }
@@ -315,12 +396,14 @@ fun triggerSummary(script: ShortcutScript): Pair<String, Boolean> {
  * so a tap always has a visible result; the global pause is announced once at the top of the screen
  * instead of being repeated as "Paused" on every card.
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun EnabledPill(
     name: String,
     scriptEnabled: Boolean,
     globallyEnabled: Boolean,
     onToggle: () -> Unit,
+    onLongPress: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val colors = MaterialTheme.colorScheme
@@ -340,10 +423,12 @@ private fun EnabledPill(
     Box(
         modifier
             .size(width = MinTouchTarget, height = MinTouchTarget)
-            .toggleable(value = scriptEnabled, role = Role.Switch, onValueChange = { onToggle() })
+            // A long press must reach the card (edit mode) and must not flip the switch on release.
+            .combinedClickable(role = Role.Switch, onLongClick = onLongPress, onClick = onToggle)
             .semantics {
                 contentDescription = name
                 stateDescription = state
+                toggleableState = ToggleableState(scriptEnabled)
             },
         contentAlignment = Alignment.Center,
     ) {

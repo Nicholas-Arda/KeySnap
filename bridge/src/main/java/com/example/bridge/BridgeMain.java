@@ -50,6 +50,7 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
 
     private final TorchController torch = new TorchController();
     private final RingerController ringer = new RingerController();
+    private BrightnessScale brightnessScale;
     private final BridgeModes modes;
     private final ConstraintEvaluator constraints;
     /** Script id -> elapsedRealtime of its last run, for the cooldown constraint. */
@@ -61,6 +62,7 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
 
     private volatile BridgeConfig config;
     private volatile long configLastModified;
+    private long lastFeedbackRunId;
     private final java.util.concurrent.atomic.AtomicBoolean feedbackWakePending =
             new java.util.concurrent.atomic.AtomicBoolean();
 
@@ -165,6 +167,7 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
         ringer.initialize();
 
         Context context = SystemContext.create();
+        brightnessScale = BrightnessSettings.scale(context);
         if (context != null) {
             torch.initialize(context);
         } else {
@@ -272,7 +275,7 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
         }
         // Lock order: chords, then pressTiming's own lock. onGesture never takes chords.
         synchronized (chords) {
-            for (ChordTracker.Command command : chords.onEvent(key.androidKeyCode, down, now, current.chords())) {
+            for (ChordTracker.Command command : chords.onEvent(key.androidKeyCode, down, now, current.chords(), current.soloKeys())) {
                 if (command.kind == ChordTracker.CANCEL) {
                     pressTiming.cancel(command.keyCode);
                 } else {
@@ -308,6 +311,9 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
         // Cooldowns use the physical gesture's time, even when earlier actions delay this task.
         long now = SystemClock.elapsedRealtime();
         actionExecutor.execute(() -> {
+            // The previous gesture's mode pulses may still be playing after its trigger report.
+            // Wait before matching, so mode_is and this gesture's own haptic keep their order.
+            if (!modes.awaitBuzz()) return;
             // Evaluate after earlier gestures finish, including a queued cycle_mode. Otherwise a
             // rapid second key could select the old mode while the first action is still queued.
             List<BridgeConfig.Script> matched = new ArrayList<>();
@@ -320,7 +326,20 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
             }
             // Select all shortcuts before running any: a mode change in this gesture must not
             // make another mode's shortcut on the SAME gesture match as well.
-            for (BridgeConfig.Script script : matched) runScript(script, keyCode, pressType);
+            List<Long> runIds = new ArrayList<>();
+            for (BridgeConfig.Script script : matched) {
+                long runId = lastFeedbackRunId = Math.max(lastFeedbackRunId + 1, SystemClock.uptimeMillis());
+                runIds.add(runId);
+                if (current.capsuleFeedbackEnabled) {
+                    server.broadcastPending(System.currentTimeMillis(), keyCode, pressType, script.id,
+                            BridgeProtocol.encodeActionResults(typesOf(script.actions), new boolean[script.actions.size()]), runId);
+                }
+            }
+            for (int i = 0; i < matched.size(); i++) {
+                runScript(matched.get(i), keyCode, pressType, runIds.get(i));
+                // The trigger is already out. Hold the queue so the next script cannot replace the pulses.
+                if (!modes.awaitBuzz()) return;
+            }
         });
     }
 
@@ -337,8 +356,8 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
     private boolean cooldownAllows(BridgeConfig.Script script, long now) {
         for (BridgeConfig.Constraint constraint : script.constraints) {
             if (BridgeConfig.CONSTRAINT_COOLDOWN.equals(constraint.type)
-                    && !ConstraintEvaluator.cooldownAllows(lastRunByScript.get(script.id),
-                            constraint.params.get("minutes"), now)) {
+                    && !ConstraintNegation.cooldownAllows(lastRunByScript.get(script.id),
+                            constraint.params, now)) {
                 return false;
             }
         }
@@ -351,7 +370,7 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
      * {@link #executeAction}. A leading "repeat_previous" (no previous action yet) fails safe.
      * Mirrors the equivalent expansion in the app's ScriptActionExecutor.execute(List).
      */
-    private void runScript(BridgeConfig.Script script, int keyCode, String pressType) {
+    private void runScript(BridgeConfig.Script script, int keyCode, String pressType, long runId) {
         // One result per configured action for the app's run log; a "repeat_previous" counts as ok
         // only if every repetition was.
         // The bridge owns the trigger haptic: the app process may be dead (OEM kill) and could not
@@ -373,7 +392,7 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
         // per-script counting in HardwareKeyTriggerCoordinator.executeActions — otherwise a
         // multi-action script vibrates and increments "Triggers today" once per action.
         server.broadcastTrigger(System.currentTimeMillis(), keyCode, pressType, script.id, true,
-                BridgeProtocol.encodeActionResults(typesOf(script.actions), ok));
+                BridgeProtocol.encodeActionResults(typesOf(script.actions), ok), runId);
     }
 
     private static List<String> typesOf(List<BridgeConfig.Action> actions) {
@@ -424,6 +443,34 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
      * per-action field a TRIGGER carries, for the automation's run log.
      */
     @Override
+    public String onTestActionRequested(String payloadJson) {
+        long start = System.nanoTime();
+        ActionTestResult result;
+        try {
+            List<BridgeConfig.Action> actions = BridgeConfig.parseActions(payloadJson);
+            if (actions.size() != 1) throw new IllegalArgumentException();
+            BridgeConfig.Action action = actions.get(0);
+            switch (action.type) {
+                case BridgeConfig.ACTION_SHELL_COMMAND:
+                    result = ShellKeyInjector.shellCommand(action.params, true);
+                    break;
+                case BridgeConfig.ACTION_HTTP_REQUEST:
+                    result = HttpAction.execute(action.params);
+                    break;
+                default:
+                    result = ActionTestResult.outcome(executeAction(action), start);
+            }
+        } catch (Exception ignored) {
+            result = ActionTestResult.outcome(false, start);
+        }
+        try {
+            return result.toWire();
+        } catch (Exception ignored) {
+            return "{}";
+        }
+    }
+
+    @Override
     public String onRunRequested(String payloadJson) {
         List<BridgeConfig.Action> actions;
         try {
@@ -440,6 +487,7 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
             ok[index] &= success;
             BridgeLog.i("Run from the app: action=" + action.type + " success=" + success);
         });
+        modes.awaitBuzz();
         return ran + "\t" + actions.size() + "\t" + BridgeProtocol.encodeActionResults(typesOf(actions), ok);
     }
 
@@ -467,6 +515,11 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
         return result;
     }
 
+    @Override
+    public boolean onShowAssistantRequested() {
+        return AssistantLauncher.show();
+    }
+
     private void logActionResult(BridgeConfig.Script script, int keyCode, String pressType,
             BridgeConfig.Action action, boolean success) {
         BridgeLog.i("Triggered script=" + script.id + " key=" + keyCode
@@ -488,6 +541,9 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
     }
 
     private boolean executeAction(BridgeConfig.Action action) {
+        // A cycle_mode earlier in this chain started its pulses without blocking the trigger.
+        // The next action waits here so it cannot replace that waveform.
+        if (!modes.awaitBuzz()) return false;
         try {
             return runAction(action);
         } catch (Throwable t) {
@@ -745,11 +801,11 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
             }
             return ShellKeyInjector.runShellUnlogged("am", "start", "-a", "android.intent.action.VIEW", "-d", url);
         }
-        // The app owns assistant discovery and the self-invocation guard. Shell launching the
-        // selected assistant would recurse when KeySnap holds the role. Mirror UNSUPPORTED_BY_BRIDGE.
+        // Open the active assistant without depending on a live app subscriber. The launcher
+        // rejects KeySnap's own voice service; the app then discovers an alternative instead.
         if (BridgeConfig.ACTION_LAUNCH_VOICE_ASSISTANT.equals(action.type)
                 || BridgeConfig.ACTION_LAUNCH_DEVICE_ASSISTANT.equals(action.type)) {
-            return false;
+            return AssistantLauncher.show();
         }
         if (BridgeConfig.ACTION_OPEN_CAMERA.equals(action.type)) {
             return ShellKeyInjector.runShell("am", "start", "-a", "android.media.action.STILL_IMAGE_CAMERA");
@@ -778,7 +834,7 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
             if (command == null || command.isEmpty()) {
                 return false;
             }
-            return ShellKeyInjector.runShellUnlogged("sh", "-c", command);
+            return ShellKeyInjector.shellCommand(action.params, false).ok;
         }
         if (BridgeConfig.ACTION_SCREEN_ON.equals(action.type)) {
             return ShellKeyInjector.sendKey(ShellKeyInjector.KEYCODE_WAKEUP);
@@ -808,17 +864,17 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
             if (value == null) {
                 return false;
             }
-            return setBrightness(value);
+            return setBrightness(brightnessScale.fromLegacy(value));
         }
         if (BridgeConfig.ACTION_TOGGLE_AUTO_BRIGHTNESS.equals(action.type)) {
             return ShellKeyInjector.runShell("settings", "put", "system", "screen_brightness_mode",
                     isAutoBrightnessOn() ? "0" : "1");
         }
         if (BridgeConfig.ACTION_INCREASE_BRIGHTNESS.equals(action.type)) {
-            return setBrightness(currentBrightness() + BRIGHTNESS_STEP);
+            return adjustBrightness(1);
         }
         if (BridgeConfig.ACTION_DECREASE_BRIGHTNESS.equals(action.type)) {
-            return setBrightness(currentBrightness() - BRIGHTNESS_STEP);
+            return adjustBrightness(-1);
         }
         if (BridgeConfig.ACTION_VIBRATE.equals(action.type)) {
             Integer duration = parseInt(action.params.get("duration"));
@@ -871,8 +927,6 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
         return false;
     }
 
-    private static final int BRIGHTNESS_STEP = 26;
-
     /** Locking rotation always disables auto-rotate first, matching the quick-settings tile. */
     private static boolean lockToRotation(int rotation) {
         boolean lockedAutoRotate = ShellKeyInjector.runShell("settings", "put", "system", "accelerometer_rotation", "0");
@@ -880,11 +934,17 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
         return lockedAutoRotate && setRotation;
     }
 
-    private static boolean setBrightness(int value) {
-        int clamped = Math.max(0, Math.min(255, value));
+    private boolean setBrightness(int value) {
+        if (!brightnessScale.contains(currentBrightness())) return false;
         boolean manualMode = ShellKeyInjector.runShell("settings", "put", "system", "screen_brightness_mode", "0");
-        boolean setValue = ShellKeyInjector.runShell("settings", "put", "system", "screen_brightness", String.valueOf(clamped));
+        if (!manualMode) return false;
+        boolean setValue = ShellKeyInjector.runShell("settings", "put", "system", "screen_brightness", String.valueOf(value));
         return manualMode && setValue;
+    }
+
+    private boolean adjustBrightness(int direction) {
+        int current = currentBrightness();
+        return brightnessScale.contains(current) && setBrightness(brightnessScale.step(current, direction));
     }
 
     private static boolean isAutoRotateOn() {
@@ -897,7 +957,7 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
 
     private static int currentBrightness() {
         Integer value = parseInt(ShellKeyInjector.runShellForOutput("settings", "get", "system", "screen_brightness").trim());
-        return value != null ? value : 128;
+        return value != null ? value : -1;
     }
 
     private static int currentUserRotation() {
@@ -917,78 +977,24 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
     }
 
     private static boolean modifySetting(BridgeConfig.Action action) {
-        String namespace = action.params.get("namespace");
-        String key = action.params.get("key");
-        String value = action.params.get("value");
-        if (key == null || key.isEmpty() || value == null
-                || !("system".equals(namespace) || "secure".equals(namespace) || "global".equals(namespace))) {
+        try {
+            return ShellKeyInjector.runShellUnlogged(ActionPayloads.settingCommand(action.params));
+        } catch (IllegalArgumentException ignored) {
             return false;
         }
-        return ShellKeyInjector.runShellUnlogged("settings", "put", namespace, key, value);
     }
 
     /** "key=value" pairs separated by ';', each sent as a String extra via `am broadcast --es`. */
     private static boolean sendIntent(BridgeConfig.Action action) {
-        String intentAction = action.params.get("action");
-        if (intentAction == null || intentAction.isEmpty()) {
+        try {
+            return ShellKeyInjector.runShellUnlogged(ActionPayloads.intentCommand(action.params));
+        } catch (IllegalArgumentException ignored) {
             return false;
         }
-        List<String> command = new ArrayList<>();
-        command.add("am");
-        command.add("broadcast");
-        command.add("-a");
-        command.add(intentAction);
-        String uri = action.params.get("uri");
-        if (uri != null && !uri.isEmpty()) {
-            command.add("-d");
-            command.add(uri);
-        }
-        String extras = action.params.get("extras");
-        if (extras != null && !extras.isEmpty()) {
-            for (String pair : extras.split(";")) {
-                int index = pair.indexOf('=');
-                if (index <= 0) {
-                    continue;
-                }
-                command.add("--es");
-                command.add(pair.substring(0, index).trim());
-                command.add(pair.substring(index + 1).trim());
-            }
-        }
-        return ShellKeyInjector.runShellUnlogged(command.toArray(new String[0]));
     }
 
     private static boolean httpRequest(BridgeConfig.Action action) {
-        String method = action.params.get("method");
-        String url = action.params.get("url");
-        String body = action.params.get("body");
-        if (method == null || method.isEmpty() || url == null || url.isEmpty()) {
-            return false;
-        }
-        java.net.HttpURLConnection connection = null;
-        try {
-            connection = (java.net.HttpURLConnection) new java.net.URL(url).openConnection();
-            connection.setRequestMethod(method.toUpperCase(java.util.Locale.ROOT));
-            connection.setConnectTimeout(10_000);
-            connection.setReadTimeout(10_000);
-            String upperMethod = method.toUpperCase(java.util.Locale.ROOT);
-            if (body != null && !body.isEmpty() && ("POST".equals(upperMethod) || "PUT".equals(upperMethod))) {
-                connection.setDoOutput(true);
-                try (java.io.OutputStream out = connection.getOutputStream()) {
-                    out.write(body.getBytes(java.nio.charset.StandardCharsets.UTF_8));
-                }
-            }
-            int code = connection.getResponseCode();
-            return code >= 200 && code < 400;
-        } catch (Exception e) {
-            // The URL can carry an API token in its query string; log only the failure kind.
-            BridgeLog.w("http_request failed: " + e.getClass().getSimpleName());
-            return false;
-        } finally {
-            if (connection != null) {
-                connection.disconnect();
-            }
-        }
+        return HttpAction.execute(action.params).ok;
     }
 
     /**

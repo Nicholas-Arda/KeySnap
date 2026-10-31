@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pro_card_pay_once">Betaal één keer, houd het voor altijd.</string>
+    <string name="pro_table_what_you_get">Dit krijg je</string>
+    <string name="pro_table_modes">Snelkoppelingsmodi</string>
+    <string name="pro_table_future">Toekomstige Pro-functies</string>
+    <string name="pro_table_everything_else">Alle andere functies</string>
+    <string name="pro_card_one_time">Eenmalige aankoop · Geen abonnement</string>
+</resources>

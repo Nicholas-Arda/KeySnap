@@ -48,6 +48,22 @@ class KeyMappingRepositoryTest {
         assertTrue(prefs.contains("haptic_duration_ms"))
     }
 
+    @Test
+    fun renamedKeyKeepsItsNameOverAndroidsLabel() {
+        val prefs = testPreferences()
+        val repository = KeyMappingRepository(prefs)
+        repository.addSavedKey(25, "Volume Down")
+
+        repository.renameSavedKey(25, "  Side down  ")
+        val restored = KeyMappingRepository(prefs).savedKeys.value
+        val res = RuntimeEnvironment.getApplication().resources
+
+        assertEquals("Side down", restored.single().displayName)
+        assertEquals("Side down", keyDisplayName(res, 25, restored))
+        repository.renameSavedKey(25, "   ")
+        assertEquals("Side down", KeyMappingRepository(prefs).savedKeys.value.single().displayName)
+    }
+
     private fun testPreferences() = RuntimeEnvironment
         .getApplication()
         .getSharedPreferences("timing_test_${System.nanoTime()}", Context.MODE_PRIVATE)

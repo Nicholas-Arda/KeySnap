@@ -83,6 +83,8 @@ object HardwareKeyTriggerCoordinator {
 
     private val _isRecordingKey = MutableStateFlow(false)
     val isRecordingKey: StateFlow<Boolean> = _isRecordingKey.asStateFlow()
+    private val _recordingKeys = MutableStateFlow<List<Int>>(emptyList())
+    val recordingKeys: StateFlow<List<Int>> = _recordingKeys.asStateFlow()
 
     /**
      * True while the detached privileged bridge is running. The bridge then owns execution
@@ -147,7 +149,7 @@ object HardwareKeyTriggerCoordinator {
     /** Mirrors BridgeMain.cooldownAllows(Script, long) in :bridge. */
     private fun passesCooldown(script: ShortcutScript, now: Long): Boolean =
         script.constraints.filter { it.type == ScriptConstraintCatalog.COOLDOWN }
-            .all { cooldownAllows(lastRunAt[script.id], it.params["minutes"], now) }
+            .all { com.example.bridge.ConstraintNegation.cooldownAllows(lastRunAt[script.id], it.params, now) }
 
     // Press Timing & Debounce Configuration
     private var keyGestureFeed: KeyGestureFeed? = null
@@ -155,6 +157,7 @@ object HardwareKeyTriggerCoordinator {
     fun initialize(context: Context, keyRepository: KeyMappingRepository) {
         keyGestureFeed?.reset()
         appContext = context.applicationContext
+        CapsuleHooks.prepare(context.applicationContext)
         repository = keyRepository
         scriptRepository = ScriptRepository.getInstance(context)
         actionExecutor = ScriptActionExecutor.android(context)
@@ -221,6 +224,7 @@ object HardwareKeyTriggerCoordinator {
         scriptId: String,
         success: Boolean,
         actionResults: List<Pair<String, Boolean>>? = null,
+        capsuleRunId: Long? = null,
     ) {
         if (DiagnosticRecorder.recording) {
             DiagnosticRecorder.gesture(
@@ -236,6 +240,9 @@ object HardwareKeyTriggerCoordinator {
         }
         val script = scriptRepository?.scripts?.value?.firstOrNull { it.id == scriptId }
         if (script != null) {
+            val feedbackId = if (!script.showCapsule) null else capsuleRunId ?: appContext?.let { context ->
+                runCatching { CapsuleHooks.onMatched(context, script.id, keyCode, pressType, script.actions.map { it.type }) }.getOrNull()
+            }
             // Runs the app's share (often nothing: executeEach calls no handler for the bridge's
             // actions) and records the whole run, the bridge's part included.
             coordinatorScope.launch {
@@ -243,8 +250,9 @@ object HardwareKeyTriggerCoordinator {
                     script.actions,
                     diagnosticScriptId = if (DiagnosticRecorder.recording) script.id.hashCode() else 0,
                     diagnosticPressType = if (DiagnosticRecorder.recording) TriggerPressType.entries.firstOrNull { it.name == pressType } else null,
+                    bridgeResults = actionResults,
                 ) ?: return@launch
-                recordRun(script, keyCode, pressType, appResults, actionResults)
+                recordRun(script, keyCode, pressType, appResults, actionResults, capsuleRunId = feedbackId)
             }
         }
         // No haptic here: the bridge buzzes itself (BridgeMain.runScript), so it still fires when
@@ -253,12 +261,18 @@ object HardwareKeyTriggerCoordinator {
     }
 
     fun startRecordingKey() {
-        synchronized(recordingHeld) { recordingHeld.clear() }
+        synchronized(recordingHeld) {
+            recordingHeld.clear()
+            _recordingKeys.value = emptyList()
+        }
         _isRecordingKey.value = true
     }
 
     fun cancelRecordingKey() {
-        synchronized(recordingHeld) { recordingHeld.clear() }
+        synchronized(recordingHeld) {
+            recordingHeld.clear()
+            _recordingKeys.value = emptyList()
+        }
         _isRecordingKey.value = false
     }
 
@@ -296,10 +310,12 @@ object HardwareKeyTriggerCoordinator {
             val released = synchronized(recordingHeld) {
                 if (isDown) {
                     recordingHeld += keyCode
+                    _recordingKeys.value = recordingHeld.sorted()
                     false
                 } else if (keyCode in recordingHeld) {
                     _recordedKey.tryEmit(recordingHeld.sorted())
                     recordingHeld.clear()
+                    _recordingKeys.value = emptyList()
                     true
                 } else {
                     if (DiagnosticRecorder.recording) recordKeyDiagnostic(keyCode, isDown, diagnosticPath, deduplicated = false, matched = false)
@@ -398,7 +414,7 @@ object HardwareKeyTriggerCoordinator {
             }
         }.filter { script ->
             val evaluator = constraintEvaluator
-            script.constraints.isEmpty() || evaluator == null || script.constraints.all(evaluator::isSatisfied)
+            script.constraints.all { evaluator?.isSatisfied(it) ?: !com.example.bridge.ConstraintNegation.requested(it.params) }
         }.filter { passesCooldown(it, SystemClock.elapsedRealtime()) }
         // While the bridge owns execution it reports its own gesture; logging this one too would
         // read as a double run.
@@ -524,10 +540,11 @@ object HardwareKeyTriggerCoordinator {
         val evaluator = constraintEvaluator
         val now = SystemClock.elapsedRealtime()
         surfaceGate(script, scriptsRepo.globallyEnabled.value, passesCooldown(script, now)) { candidate ->
-            evaluator == null || candidate.constraints.all(evaluator::isSatisfied)
+            candidate.constraints.all { evaluator?.isSatisfied(it) ?: !com.example.bridge.ConstraintNegation.requested(it.params) }
         }?.let { return it }
         lastRunAt[script.id] = now
 
+        ModeHooks.awaitPulseReservation()
         if (resolveVibrateForScript(script, defaults.vibrateOnTrigger)) {
             val duration = resolveHapticDurationForScript(script, defaults.hapticDurationMs)
             vibratePhone(context, duration)
@@ -555,6 +572,11 @@ object HardwareKeyTriggerCoordinator {
         // Marked before the launch, so a second trigger queued behind this one already sees it.
         val now = SystemClock.elapsedRealtime()
         scripts.forEach { lastRunAt[it.id] = now }
+        val feedbackIds = if (keyCode != null) scripts.associate { script ->
+            script.id to if (!script.showCapsule) null else runCatching {
+                CapsuleHooks.onMatched(context, script.id, keyCode, pressType?.name, script.actions.map { it.type })
+            }.getOrNull()
+        } else emptyMap()
         // Read now, while the match is still inside its window: the notification a reply with no
         // chat named should answer. A key run has none.
         val triggerNotifications = if (keyCode == null) {
@@ -564,6 +586,7 @@ object HardwareKeyTriggerCoordinator {
         }
         coordinatorScope.launch {
             scripts.forEach { script ->
+                ModeHooks.awaitPulseReservation()
                 if (resolveVibrateForScript(script, config.vibrateOnTrigger)) {
                     val duration = resolveHapticDurationForScript(script, config.hapticDurationMs)
                     vibratePhone(context, duration)
@@ -580,7 +603,7 @@ object HardwareKeyTriggerCoordinator {
                     } else {
                         ChainResults(executor.executeEach(script.actions, diagnosticScriptId = if (DiagnosticRecorder.recording) script.id.hashCode() else 0, diagnosticPressType = pressType), bridgeReport = null)
                     }
-                    recordRun(script, keyCode, pressType?.name, run.appResults, run.bridgeReport)
+                    recordRun(script, keyCode, pressType?.name, run.appResults, run.bridgeReport, capsuleRunId = feedbackIds[script.id])
                 }
                 _triggerCount.value = _triggerCount.value + 1
                 Log.d(TAG, "Trigger fired: script=${script.id}, action=$triggerLabel, total=${_triggerCount.value}")
@@ -596,6 +619,7 @@ object HardwareKeyTriggerCoordinator {
         appResults: List<Boolean?>,
         bridgeReport: List<Pair<String, Boolean>>?,
         source: String = if (keyCode != null) RunRecord.SOURCE_KEY else RunRecord.SOURCE_AUTOMATION,
+        capsuleRunId: Long? = null,
     ): RunRecord? {
         val context = appContext ?: return null
         val record = buildRunRecord(
@@ -612,8 +636,8 @@ object HardwareKeyTriggerCoordinator {
         RunLogRepository.getInstance(context).append(record)
         RunFailureNotifier.onRun(context, script, record)
         // Observe the completed, merged run once. Visual feedback must never drive execution.
-        if (source == RunRecord.SOURCE_KEY && keyCode != null) {
-            runCatching { CapsuleHooks.onRun(context, record, appResults, bridgeReport) }
+        if (script.showCapsule && source == RunRecord.SOURCE_KEY && keyCode != null) {
+            runCatching { CapsuleHooks.onRun(context, record, appResults, bridgeReport, capsuleRunId) }
         }
         Log.d(TAG, "Run recorded: script=${script.id} failed=${record.actions.filterNot { it.ok }.map { it.type }}")
         return record
@@ -673,7 +697,14 @@ internal suspend fun ScriptActionExecutor.executeAppShare(
     notificationKey: String? = null,
     diagnosticScriptId: Int = 0,
     diagnosticPressType: TriggerPressType? = null,
-): List<Boolean?> = executeEach(actions, notificationKey, diagnosticScriptId, diagnosticPressType) { it.type in ScriptActionCatalog.UNSUPPORTED_BY_BRIDGE }
+    bridgeResults: List<Pair<String, Boolean>>? = null,
+): List<Boolean?> = executeEach(actions, notificationKey, diagnosticScriptId, diagnosticPressType) { index, action ->
+    val assistant = action.type == "launch_voice_assistant" || action.type == "launch_device_assistant"
+    // Match by chain position (including repeat_previous), never by action type alone. A second
+    // assistant action may have failed even when the first succeeded. Missing reports fall back.
+    val shownByBridge = assistant && bridgeResults?.getOrNull(index) == (actions[index].type to true)
+    action.type in ScriptActionCatalog.UNSUPPORTED_BY_BRIDGE && !shownByBridge
+}
 
 /**
  * Runs a chain the way a key press would: [runOnBridge] runs what it supports, then the app runs
@@ -690,7 +721,7 @@ internal suspend fun runChain(
 ): ChainResults {
     val bridge = runOnBridge(actions) ?: return ChainResults(executor.executeEach(actions, notificationKey, diagnosticScriptId), bridgeReport = null)
     if (DiagnosticRecorder.recording) recordBridgeDiagnostics(diagnosticScriptId, null, bridge.actionResults)
-    return ChainResults(executor.executeAppShare(actions, notificationKey, diagnosticScriptId), bridge.actionResults)
+    return ChainResults(executor.executeAppShare(actions, notificationKey, diagnosticScriptId, bridgeResults = bridge.actionResults), bridge.actionResults)
 }
 
 internal fun recordBridgeDiagnostics(scriptId: Int, pressType: TriggerPressType?, results: List<Pair<String, Boolean>>?) {

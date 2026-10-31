@@ -127,6 +127,13 @@ fun ConstraintConfigSheet(
         ) {
             Text(stringResource(R.string.constraint_picker_configure_title), style = SectionLabel, color = colors.onSurfaceVariant)
             Text(typeTitle, style = MaterialTheme.typography.titleMedium, color = colors.onSurface)
+            if (ScriptConstraintCatalog.supportsNegation(constraintType)) {
+                ConstraintNegationToggle(
+                    values["negate"] == "true",
+                    { negated -> if (negated) values["negate"] = "true" else values.remove("negate") },
+                    Modifier.testTag("constraint_config_negation"),
+                )
+            }
             form.helperRes?.let { Text(stringResource(it), style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant) }
 
             PermissionHints(constraintType, values["ssid"].orEmpty(), context)
@@ -137,7 +144,7 @@ fun ConstraintConfigSheet(
                     is EditorField.Number -> NumberFieldRow(field, values)
                     is EditorField.Choice -> ChoiceFieldRow(field, values)
                     is EditorField.AppPick -> {
-                        AppFieldRow(field, values, installedApps) { showAppPickerFor = field.key }
+                        AppFieldRow(field, values) { showAppPickerFor = field.key }
                         // Add stays disabled until an app is picked; without this the button just
                         // looks broken.
                         if (values[field.key].isNullOrBlank()) {

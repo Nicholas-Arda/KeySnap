@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_editor_title">محرر اختصارات أبسط</string>
+    <string name="whats_new_editor_description">محرر أوضح مع تسجيل الأزرار داخله وانتقالات أكثر سلاسة عند الفتح والإغلاق.</string>
+    <string name="whats_new_fix_update_startup">تم إصلاح تعطل عند فتح KeySnap بعد التحديث</string>
+    <string name="whats_new_dutch_title">متاح الآن باللغة الهولندية</string>
+    <string name="whats_new_dutch_description">استخدم KeySnap باللغة الهولندية. اختر Nederlands من الإعدادات → اللغة.</string>
+</resources>
