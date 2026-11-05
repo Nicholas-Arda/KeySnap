@@ -1,0 +1,32 @@
+name: Installs badge
+on:
+  schedule: [{ cron: "17 5 */2 * *" }]   # every second day
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  badge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: google-github-actions/auth@c200f3691d83b41bf9bbd8638997a462592937ed # v2
+        with:
+          credentials_json: ${{ secrets.PLAY_STATS_SA }}
+      - uses: google-github-actions/setup-gcloud@e427ad8a34f8676edf47cf7d7925499adf3eb74f # v2
+      - name: Sum device installs
+        env:
+          BUCKET: ${{ secrets.PLAY_STATS_BUCKET }}   # e.g. pubsite_prod_rev_1234567890
+        run: |
+          PKG=io.github.nicholasarda.keysnap
+          mkdir csv
+          gcloud storage cp "gs://$BUCKET/stats/installs/installs_${PKG}_*_overview.csv" csv/
+          # Play exports UTF-16; column 3 = Daily Device Installs
+          total=$(for f in csv/*.csv; do iconv -f UTF-16 -t UTF-8 "$f" | tail -n +2 | cut -d, -f3; done | paste -sd+ | bc)
+          echo "total=$total"
+          printf '{"schemaVersion":1,"label":"installs","message":"%s","color":"006EFD"}\n' "$total" > installs.json
+      - name: Publish to badges branch
+        run: |
+          git config --global user.name  "github-actions"
+          git config --global user.email "actions@users.noreply.github.com"
+          git init -q out && cp installs.json out/ && cd out
+          git checkout -q -b badges && git add . && git commit -qm "Update installs badge"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" badges
