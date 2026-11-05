@@ -14,6 +14,10 @@
 </p>
 
 <p align="center">
+  <img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/Nicholas-Arda/KeySnap/badges/installs.json" alt="Downloads">
+</p>
+
+<p align="center">
   <b>Android 11+</b> &nbsp; · &nbsp; <b>No ads</b> &nbsp; · &nbsp; <b>No account</b> &nbsp; · &nbsp; <a href="LICENSE">GPL-3.0 core</a>
 </p>
 
