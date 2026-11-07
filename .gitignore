@@ -39,3 +39,11 @@ skills-lock.json
 
 # KeySnap Pro sources: a separate private repository, never part of this one
 /pro/
+
+# Release workflow and Play Console notes: owner-only, never public
+/docs/releasing.md
+/tools/release_snapshot.py
+/tools/tests/test_release_snapshot.py
+/store/release/
+/store/play-listing/listing.md
+/store/play-listing/full_description_tr.txt
