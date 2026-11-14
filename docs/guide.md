@@ -30,7 +30,7 @@ Shortcuts run in the background. Local actions work offline; web requests, links
 
 **Triggers.** Any hardware key Android reports: volume, power, camera, the assistant button, headset buttons, keys on a Bluetooth keyboard or game controller, and unlabelled OEM buttons you can name yourself. Each key can be a single press, a double press or a long press, and a trigger can also be several keys pressed together, such as Volume Up + Volume Down. There is also an **Automation** trigger with no key at all: it fires when its conditions become true. Any shortcut can also run from a **home-screen widget** or one of three **Quick Settings tiles**, and a shortcut can skip the key entirely and live only there, so a phone without a spare button still gets a one-tap way in.
 
-**Actions.** 90, in twelve groups: input and gestures, apps, flashlight, navigation, volume, display, media, connectivity, keyboard, device, sound and automation. Every action's settings are visible in the editor before it runs, and privileged ones such as shell commands, intents and HTTP requests show the exact command or URL they will execute.
+**Actions.** 91, in twelve groups: input and gestures, apps, flashlight, navigation, volume, display, media, connectivity, keyboard, device, sound and automation. Every action's settings are visible in the editor before it runs, and privileged ones such as shell commands, intents and HTTP requests show the exact command or URL they will execute.
 
 **Conditions.** Attach an *Only if* list to any shortcut: time of day, day of week, charging state, battery level, Wi‑Fi network, Bluetooth device, headphones, dark mode, Do Not Disturb, ringer mode, screen and lock state, orientation, which app is in the foreground, whether media is playing, a notification from an app you choose, a limit of once every so many minutes, and more. More than fifty in total. Automations can also start at a time of day or repeat every interval, wait for a calendar event to start, or for a new item in an RSS feed you follow; the feed is checked at most every 15 minutes, at exactly the address you typed.
 
@@ -40,11 +40,15 @@ Shortcuts run in the background. Local actions work offline; web requests, links
 
 **Run history.** Each shortcut remembers its last 20 runs: when it ran, which key or automation started it, and whether each action worked. When an action can't run, a notification says why, such as a missing permission or Advanced Mode being off, and opens the shortcut. The history holds no action contents and never leaves the phone.
 
-**Key capsule.** Optional visual feedback for physical key shortcuts, with Pixel, ColorOS and Nothing styles. Customize the appearance and motion, align each recorded key separately, and preview simulated results without running an action. Enable it under Settings → Key capsule and allow display over other apps. It stays hidden on the lock screen. Feedback requires the app process to be running; the independent Advanced Mode bridge can keep executing shortcuts without it.
+**Key capsule.** Optional visual feedback for physical key shortcuts, with Pixel, ColorOS, Nothing, One UI and HyperOS styles. Customize the appearance and motion, align each recorded key separately, and preview simulated results without running an action. Enable it under Settings → Key capsule and allow display over other apps. It stays hidden on the lock screen. Feedback requires the app process to be running; the independent Advanced Mode bridge can keep executing shortcuts without it.
 
-*Coming soon: Key capsule is in development and is not included in the current Google Play release.*
+*Key capsule is part of Pro.*
 
-**Appearance.** Follow the system theme or choose light, dark or sepia, with an OLED option for dark mode. The interface ships in English, Arabic, German, Spanish, French, Hindi, Italian, Portuguese (Brazil), Russian and Turkish.
+**Modes (Pro).** Keep several sets of shortcuts, such as Home, Work and Car, and switch between them with one press. Only the active mode's shortcuts run, plus any set to always run.
+
+**Describe a shortcut (Pro).** Type what you want in one sentence, such as "open the camera with a double press", and get a draft shortcut to review before saving. The model is downloaded once through Google Play when you choose, and runs on the phone; what you type never leaves it.
+
+**Appearance.** Follow the system theme or choose light, dark or sepia, with an OLED option for dark mode. The interface ships in English, Arabic, Dutch, Filipino, German, Spanish, French, Hindi, Indonesian, Italian, Korean, Portuguese (Brazil), Russian, Turkish and Vietnamese.
 
 ## Advanced Mode
 
@@ -59,7 +63,7 @@ Input capture is strictly read-only. The bridge listens to the kernel's event st
 KeySnap asks for a permission only when you use the feature that needs it, and each one is a switch you turn on yourself in Android's settings.
 
 - **Accessibility service.** The only way an app can see hardware key presses. It is restricted to reading screen content from the system Settings app alone, and uses that solely to read the pairing code from the Wireless Debugging dialog during Advanced Mode setup.
-- **Run in the background and notifications.** So Android does not put the app to sleep, so setup can show the pairing prompt, so a shortcut that can't run can tell you why, and so a shortcut can show a notification you wrote.
+- **Run in the background and notifications.** So Android does not put the app to sleep (the battery optimisation exemption is optional), so a short-lived foreground service can keep Advanced Mode's connection and notification alive while it starts or restarts, so setup can show the pairing prompt, so a shortcut that can't run can tell you why, and so a shortcut can show a notification you wrote.
 - **Location.** Android only reveals the Wi‑Fi network name to apps holding it, so the *connected to Wi‑Fi network* condition needs it. The app never reads your position.
 - **Calendar.** Read-only, and requested only when you add a *Calendar event in progress* condition. KeySnap reads the title, calendar name, start and end of your events, and whether each is all-day or cancelled, on the phone to check them against that condition, and never saves, logs or sends them.
 - **Alarms & reminders.** Optional, and asked only when you add a *Calendar event in progress* condition. Used only to wake KeySnap at the start or end of a matching event, so the automation runs on time; nothing is read or sent through it.
@@ -91,7 +95,7 @@ On Windows PowerShell, use `.\gradlew.bat` in place of `./gradlew`. The Gradle w
 
 ## FAQ
 
-**Is it free?** The free version allows three active shortcuts and two home-screen widgets. Pro is a one-time purchase through Google Play that removes those limits; there is no subscription. The three Quick Settings tiles are free.
+**Is it free?** The free version allows three active shortcuts. Pro is a one-time purchase through Google Play that removes that limit; there is no subscription. Home-screen widgets and the three Quick Settings tiles are free.
 
 **Does it need root?** No. Everyday shortcuts use the accessibility service; Advanced Mode uses Wireless Debugging, a feature already in Android's Developer options. Nothing on the phone is modified.
 
@@ -143,4 +147,4 @@ Translations live in `app/src/main/res/values-*/strings.xml`.
 
 ## Licence
 
-KeySnap is free software under the [GNU General Public License v3.0](../LICENSE). Google Play Billing is the only third-party SDK service, used only to process and check the Pro purchase. Network actions and RSS feeds connect only to destinations you configure.
+KeySnap is free software under the [GNU General Public License v3.0](../LICENSE). Google Play Billing is the only third-party SDK in the public-source edition, used only to process and check the Pro purchase. The Pro edition adds Google Play Asset Delivery and LiteRT-LM for the optional on-device AI model; neither receives your shortcuts or key presses. Network actions and RSS feeds connect only to destinations you configure.

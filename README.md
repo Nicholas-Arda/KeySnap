@@ -33,21 +33,19 @@
 ## A button. A shortcut. Done.
 
 <p align="center">
-  <img src="store/play-listing/keysnap_01.png" width="32%" alt="Home: your button shortcuts at a glance">
-  <img src="store/play-listing/keysnap_02.png" width="32%" alt="Editor: double-press volume to toggle the flashlight">
-  <img src="store/play-listing/keysnap_05.png" width="32%" alt="Conditions: run a shortcut only when you want">
+  <img src="store/play-listing/keysnap_01.png" width="24%" alt="Give every button a new job: double-press Volume Down for the flashlight">
+  <img src="store/play-listing/keysnap_05.png" width="24%" alt="90+ actions, one press away">
+  <img src="store/play-listing/keysnap_06.png" width="24%" alt="Only when you want: time, Wi-Fi, battery, headphones and more">
+  <img src="store/play-listing/keysnap_07.png" width="24%" alt="No account. No cloud. Open source.">
 </p>
 
-<details>
-<summary><b>See more: Advanced Mode, privacy and themes</b></summary>
+<p align="center"><b>With Pro</b></p>
 
 <p align="center">
-  <img src="store/play-listing/keysnap_04.png" width="32%" alt="Advanced Mode: reach additional hardware buttons">
-  <img src="store/play-listing/keysnap_06.png" width="32%" alt="No account, no cloud, open source">
-  <img src="store/play-listing/keysnap_07.png" width="32%" alt="Choose light, dark or sepia themes">
+  <img src="store/play-listing/keysnap_02.png" width="24%" alt="Describe a shortcut in one sentence and get it built">
+  <img src="store/play-listing/keysnap_03.png" width="24%" alt="Key capsule: see what just ran, in five styles">
+  <img src="store/play-listing/keysnap_04.png" width="24%" alt="Modes: Home, Work, Car — one press switches every shortcut">
 </p>
-
-</details>
 
 ## What you can do
 
@@ -58,11 +56,19 @@
   </tr>
   <tr>
     <td><h3>🕒 Add conditions</h3>Time, Wi-Fi, charging or apps. Automate without pressing a key.</td>
-    <td><h3>📌 Widgets & tiles</h3>Run shortcuts from your home screen or three Quick Settings tiles.</td>
+    <td><h3>📌 Widgets & tiles</h3>Run shortcuts or switch them on and off from your home screen and Quick Settings.</td>
   </tr>
   <tr>
     <td><h3>🧩 Pick a recipe</h3>Start with a ready-made shortcut. Customize, share or import.</td>
-    <td><h3>🎨 Your look</h3>System, light, dark and sepia. OLED option. Eleven languages.</td>
+    <td><h3>🎨 Your look</h3>System, light, dark and sepia. OLED option. Fifteen languages.</td>
+  </tr>
+  <tr>
+    <td><h3>✨ Describe it <sup>Pro</sup></h3>Type one sentence, get a shortcut. The model runs on your phone.</td>
+    <td><h3>💊 Know it worked <sup>Pro</sup></h3>A small capsule shows what just ran. Pixel, ColorOS, Nothing, One UI and HyperOS styles.</td>
+  </tr>
+  <tr>
+    <td><h3>🔁 Modes <sup>Pro</sup></h3>Home, Work, Car. One press switches every shortcut.</td>
+    <td><h3>🔒 Stays on your phone</h3>No account, no cloud, no analytics. Open-source core.</td>
   </tr>
 </table>
 
@@ -83,21 +89,21 @@ Some shortcuts need an extra permission or Advanced Mode. Key support varies by 
 2. **Set up** the accessibility service using the in-app guide.
 3. **Pick a recipe** or record a button and choose an action.
 
-**Need more keys?** Optional **Advanced Mode** uses your phone's Wireless Debugging to reach additional buttons and run supported actions through an independent helper. No root required. [How it works →](docs/guide.md#advanced-mode)
+**Need more keys?** Optional **Advanced Mode** uses your phone's Wireless Debugging to reach additional buttons and run supported actions through an independent helper. [How it works →](docs/guide.md#advanced-mode)
 
 ## Good to know
 
 <details>
 <summary><b>Free or Pro?</b></summary>
 
-Free includes **three active shortcuts**, **two home-screen widgets** and all **three Quick Settings tiles**. Pro removes the shortcut and widget limits with a **one-time purchase** through Google Play. No ads or subscription.
+Free includes **three active shortcuts**, every **home-screen widget** and all **three Quick Settings tiles**. Pro removes the shortcut limit with a **one-time purchase** through Google Play. Pro can also build a shortcut from a plain sentence with an on-device model, downloaded once through Google Play when you choose; you review the result before saving. No ads or subscription.
 
 </details>
 
 <details>
 <summary><b>Privacy and permissions</b></summary>
 
-No accounts, analytics or automatic crash uploads. Your key presses and shortcuts are not automatically uploaded. Local actions work offline; network actions and RSS feeds contact the destinations you configure. Pro purchases use Google Play Billing.
+No accounts, analytics or automatic crash uploads. Your key presses and shortcuts are not automatically uploaded. Local actions work offline; network actions and RSS feeds contact the destinations you configure. Pro purchases use Google Play Billing. The optional Pro AI model uses Google Play Asset Delivery and runs offline with LiteRT-LM; typed requests never leave your phone. These two SDKs are excluded from the public-source edition.
 
 The accessibility service reads screen content only from Android's Settings app for pairing setup; it cannot read other apps' screens. Other permissions are requested when a feature needs them.
 
@@ -119,11 +125,9 @@ A reboot stops the helper. Optional **Start after restart** brings it back after
 </details>
 
 <details>
-<summary><b>Coming soon: Key capsule</b></summary>
+<summary><b>What is not in this repository?</b></summary>
 
-Pro-only customizable visual feedback for physical button shortcuts, with different styles, motion and per-key positioning. State icons reflect readable device settings and media playback; unavailable or ambiguous readings stay Unknown. In development; not included in the current Google Play release.
-
-In Advanced Mode, the detached bridge can wake a short capsule feedback service inside KeySnap after the app process closes, without opening its screen or repeating the action.
+Pro features (AI builder, key capsule and modes) are not part of the public-source edition. Here they compile to no-op stubs, so the public build runs with every free feature.
 
 </details>
 
