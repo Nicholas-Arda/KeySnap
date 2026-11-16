@@ -686,6 +686,7 @@
     <string name="pro_progress_description">%1$d من %2$d اختصارات نشطة</string>
     <string name="pro_unlock">فتح Pro</string>
     <string name="pro_unlock_with_price">فتح Pro · %1$s</string>
+    <string name="pro_purchase_unavailable">الشراء غير متاح الآن</string>
     <string name="pro_table_free">مجاني</string>
     <string name="pro_table_pro">Pro</string>
     <string name="pro_table_unlimited">غير محدود</string>
@@ -821,7 +822,7 @@
 
     <!-- Pairing status -->
     <string name="pairing_idle">في انتظار الإقران…</string>
-    <string name="pairing_not_started">اضغط على الزر أعلاه لبدء الإقران</string>
+    <string name="pairing_not_started">بانتظار فتح الإعدادات</string>
     <string name="pairing_searching">جارٍ البحث عن شاشة الإقران…</string>
     <string name="pairing_captured">تم التقاط رمز الإقران…</string>
     <string name="pairing_in_progress">جارٍ الإقران…</string>
@@ -891,7 +892,7 @@
     <!-- Trigger kind picker -->
     <string name="trigger_kind_key">ضغطة مفتاح</string>
     <string name="trigger_kind_automation">أتمتة</string>
-    <string name="automation_card_subtitle">يعمل عندما تتحقق الشروط أدناه</string>
+    <string name="automation_card_subtitle">يعمل عندما تتحقق الشروط أعلاه</string>
     <!-- Home-screen widget and Quick Settings tiles -->
     <string name="surface_paused_global">KeySnap متوقف مؤقتًا. استأنفه من التطبيق لتشغيل الاختصارات.</string>
     <string name="surface_paused_script">«%1$s» معطَّل. فعِّله في KeySnap لتشغيله.</string>
@@ -904,19 +905,30 @@
     <string name="surface_card_subtitle">يعمل عند النقر على أداته في الشاشة الرئيسية أو مربعه في الإعدادات السريعة</string>
     <string name="run_source_widget">أداة</string>
     <string name="run_source_tile">مربع الإعدادات السريعة</string>
-    <string name="widget_limit_reached">الخطة المجانية: %1$d أداة على الشاشة الرئيسية. احصل على Pro لعدد غير محدود من الأدوات.</string>
     <!-- Widget style step -->
-    <string name="widget_style_title">نمط الأداة</string>
     <string name="widget_style_color">اللون</string>
     <string name="widget_color_blue">أزرق</string>
     <string name="widget_color_wallpaper">خلفية الشاشة</string>
     <string name="widget_color_dark">داكن</string>
     <string name="widget_color_light">فاتح</string>
     <string name="widget_style_opacity">عتامة الخلفية</string>
-    <string name="widget_style_show_label">إظهار الاسم</string>
     <string name="widget_style_custom_label">اسم مخصص</string>
     <string name="widget_style_custom_label_hint">اتركه فارغًا لاستخدام اسم الاختصار</string>
-    <string name="widget_style_show_icon">إظهار الأيقونة</string>
+    <string name="surface_all_shortcuts">كل الاختصارات</string>
+    <string name="surface_all_shortcuts_sub">تشغيل KeySnap أو إيقافه</string>
+    <string name="widget_tap_title">عند النقر</string>
+    <string name="widget_tap_run">تشغيله</string>
+    <string name="widget_tap_toggle">تشغيل أو إيقاف</string>
+    <string name="widget_style_look">المظهر</string>
+    <string name="widget_look_classic">كلاسيكي</string>
+    <string name="widget_style_on_color">لون التشغيل</string>
+    <string name="widget_form_title">النمط</string>
+    <string name="widget_form_tile">مربعات</string>
+    <string name="widget_form_state">حالة كبيرة</string>
+    <string name="widget_form_capsule">كبسولة</string>
+    <string name="widget_part_name">الاسم</string>
+    <string name="widget_part_icon">الأيقونة</string>
+    <string name="widget_color_auto">تلقائي</string>
     <!-- OEM key tip -->
     <string name="oem_key_tip">نصيحة: اضبط هذا الزر على “بلا” في إعدادات هاتفك، ليستجيب له KeySnap وحده.</string>
     <!-- Recipe gallery -->

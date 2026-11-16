@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="key_code_single_key_hint">Gửi một phím (vd. 66 = Enter). Để nhập số hoặc văn bản, hãy dùng %1$s.</string>
+    <string name="key_code_switch_to_input_text">Chuyển sang %1$s</string>
+</resources>

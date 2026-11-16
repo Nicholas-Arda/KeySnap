@@ -689,6 +689,7 @@
     <string name="pro_progress_description">%1$d sur %2$d raccourcis actifs</string>
     <string name="pro_unlock">Débloquer Pro</string>
     <string name="pro_unlock_with_price">Débloquer Pro · %1$s</string>
+    <string name="pro_purchase_unavailable">L\'achat n\'est pas disponible pour le moment</string>
     <string name="pro_table_free">Gratuit</string>
     <string name="pro_table_pro">Pro</string>
     <string name="pro_table_unlimited">Illimité</string>
@@ -824,7 +825,7 @@
 
     <!-- État de l\'appairage -->
     <string name="pairing_idle">En attente d\'appairage…</string>
-    <string name="pairing_not_started">Touchez le bouton ci-dessus pour lancer l\'appairage</string>
+    <string name="pairing_not_started">En attente de l\'ouverture des paramètres</string>
     <string name="pairing_searching">Recherche de l\'écran d\'appairage…</string>
     <string name="pairing_captured">Code d\'appairage capturé…</string>
     <string name="pairing_in_progress">Appairage…</string>
@@ -895,7 +896,7 @@
     <!-- Sélecteur de type de déclencheur -->
     <string name="trigger_kind_key">Appui sur une touche</string>
     <string name="trigger_kind_automation">Automatisation</string>
-    <string name="automation_card_subtitle">S\'exécute dès que les conditions ci-dessous sont remplies</string>
+    <string name="automation_card_subtitle">S\'exécute dès que les conditions ci-dessus sont remplies</string>
     <!-- Home-screen widget and Quick Settings tiles -->
     <string name="surface_paused_global">KeySnap est en pause. Réactivez-le dans l\'app pour exécuter des raccourcis.</string>
     <string name="surface_paused_script">« %1$s » est désactivé. Activez-le dans KeySnap pour l\'exécuter.</string>
@@ -908,19 +909,30 @@
     <string name="surface_card_subtitle">S\'exécute quand vous touchez son widget d\'écran d\'accueil ou sa tuile des paramètres rapides</string>
     <string name="run_source_widget">Widget</string>
     <string name="run_source_tile">Tuile des paramètres rapides</string>
-    <string name="widget_limit_reached">Offre gratuite : %1$d widgets d\'écran d\'accueil. Passez à Pro pour des widgets illimités.</string>
     <!-- Widget style step -->
-    <string name="widget_style_title">Style du widget</string>
     <string name="widget_style_color">Couleur</string>
     <string name="widget_color_blue">Bleu</string>
     <string name="widget_color_wallpaper">Fond d\'écran</string>
     <string name="widget_color_dark">Sombre</string>
     <string name="widget_color_light">Clair</string>
     <string name="widget_style_opacity">Opacité du fond</string>
-    <string name="widget_style_show_label">Afficher le nom</string>
     <string name="widget_style_custom_label">Nom personnalisé</string>
     <string name="widget_style_custom_label_hint">Laissez vide pour utiliser le nom du raccourci</string>
-    <string name="widget_style_show_icon">Afficher l\'icône</string>
+    <string name="surface_all_shortcuts">Tous les raccourcis</string>
+    <string name="surface_all_shortcuts_sub">Activer ou désactiver KeySnap</string>
+    <string name="widget_tap_title">Un appui pour</string>
+    <string name="widget_tap_run">L\'exécuter</string>
+    <string name="widget_tap_toggle">Activer ou désactiver</string>
+    <string name="widget_style_look">Apparence</string>
+    <string name="widget_look_classic">Classique</string>
+    <string name="widget_style_on_color">Couleur activé</string>
+    <string name="widget_form_title">Style</string>
+    <string name="widget_form_tile">Tuiles</string>
+    <string name="widget_form_state">Grand état</string>
+    <string name="widget_form_capsule">Capsule</string>
+    <string name="widget_part_name">Nom</string>
+    <string name="widget_part_icon">Icône</string>
+    <string name="widget_color_auto">Auto</string>
     <!-- OEM key tip -->
     <string name="oem_key_tip">Astuce : réglez ce bouton sur « Aucun » dans les paramètres du téléphone, pour que seul KeySnap y réagisse.</string>
     <!-- Recipe gallery -->

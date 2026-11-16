@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="whats_new_test_editors_title_120">Mga editor na puwedeng subukan</string>
+    <string name="whats_new_test_editors_description_120">Subukan ang alinmang hakbang gamit ang ▶ bago mag-save.</string>
+    <string name="whats_new_reorder_shortcuts_title_120">Ayusin at i-edit ang mga shortcut</string>
+    <string name="whats_new_reorder_shortcuts_description_120">I-tap ang ✎ o pindutin nang matagal ang isa. I-drag para ayusin ang pagkakasunod.</string>
+    <string name="whats_new_input_devices_title_120">Mga keyboard, mouse at gamepad</string>
+    <string name="whats_new_input_devices_description_120">Advanced Mode: tunay na pangalan ng mga button, Ctrl shortcut.</string>
+    <string name="whats_new_fix_setup_120">Setup sa dalawang hakbang, opsyonal ang mga notification</string>
+    <string name="whats_new_fix_conditions_120">Baligtarin ang anumang kondisyon gamit ang HINDI</string>
+    <string name="whats_new_fix_app_names_120">Ipinapakita ang mga app gamit ang pangalan nila</string>
+    <string name="whats_new_fix_side_power_keys_120">Mga side at power button: malinaw na gabay</string>
+    <string name="whats_new_fix_idle_battery_120">Mas matipid sa baterya kapag idle</string>
+    <string name="whats_new_fix_advanced_setup_120">Setup ng Advanced Mode sa isang pahina</string>
+    <string name="whats_new_fix_saved_keys_120">Palitan ang pangalan ng naka-save na button o magdagdag nang maaga</string>
+    <string name="whats_new_fix_shortcuts_page_120">Mas maayos na pahina ng mga shortcut, mas maiikling listahan</string>
+    <string name="whats_new_fix_modes_120">Mga mode: i-off o i-delete kahit kailan</string>
+</resources>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="key_code_single_key_hint">키 하나를 보내요(예: 66 = Enter). 숫자나 텍스트를 입력하려면 %1$s을(를) 쓰세요.</string>
+    <string name="key_code_switch_to_input_text">%1$s(으)로 전환</string>
+</resources>

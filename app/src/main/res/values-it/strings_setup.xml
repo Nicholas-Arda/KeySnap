@@ -14,14 +14,14 @@
     <string name="setup_background_why">Android chiude le app inattive\n→ le scorciatoie si fermano</string>
     <string name="setup_notifications_why">Solo quando serve il tuo intervento</string>
     <string name="setup_reads_keys">Leggere le pressioni dei tasti</string>
-    <string name="setup_reads_code">Aprire il dialogo d’associazione nelle Impostazioni\ne leggere il codice</string>
+    <string name="setup_reads_code">Aprire il dialogo d’associazione nelle Impostazioni e leggere il codice</string>
     <string name="setup_advanced_only">Solo durante configurazione della Modalità avanzata</string>
     <string name="setup_no_screens">Vedere schermate di altre app</string>
     <string name="setup_no_data">Salvare o inviare ciò che legge</string>
     <string name="setup_keeps_open">Tiene KeySnap aperto</string>
     <string name="setup_runs_key">Agisce quando premi un tasto</string>
-    <string name="setup_no_drain">Nessun consumo aggiuntivo di batteria</string>
-    <string name="setup_idle">Attende un tasto\no la tua automazione</string>
+    <string name="setup_no_drain">Consumare batteria in più</string>
+    <string name="setup_idle">Funzionare prima di un tasto\no della tua automazione</string>
     <string name="setup_needs_you">La configurazione ti aspetta</string>
     <string name="setup_shortcut_failed">Una scorciatoia non è riuscita</string>
     <string name="setup_own_alerts">I tuoi avvisi delle scorciatoie</string>
@@ -44,6 +44,6 @@
     <string name="setup_usage_why">Mostra quale app è in primo piano</string>
     <string name="setup_usage_sees">Vede l’app in primo piano</string>
     <string name="setup_usage_for">Per le tue condizioni app</string>
-    <string name="setup_no_content">Nessun contenuto dello schermo</string>
-    <string name="setup_nothing_saved">Niente salvato o inviato</string>
+    <string name="setup_no_content">Leggere il contenuto dello schermo</string>
+    <string name="setup_nothing_saved">Salvare o inviare qualcosa</string>
 </resources>

@@ -12,4 +12,8 @@
     <locale android:name="it" />
     <locale android:name="hi" />
     <locale android:name="nl" />
+    <locale android:name="fil" />
+    <locale android:name="ko" />
+    <locale android:name="id" />
+    <locale android:name="vi" />
 </locale-config>

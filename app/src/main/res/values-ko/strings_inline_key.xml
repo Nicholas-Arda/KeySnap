@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="inline_key_choose">키 선택</string>
+    <string name="inline_key_record">키 등록</string>
+    <string name="inline_key_listening">지금 키를 누르세요</string>
+    <string name="inline_key_release">키를 함께 누르고, 떼면 끝나요.</string>
+    <string name="inline_key_edit">키를 탭하면 다시 등록해요.</string>
+    <string name="inline_key_placeholder">키</string>
+    <string name="inline_key_advanced_hint">전원, Snap Key, Essential Key, Bixby 같은 키는 고급 모드가 필요해요.</string>
+    <string name="inline_key_set_up">설정</string>
+</resources>

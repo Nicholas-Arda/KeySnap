@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="list_widget_label">KeySnap शॉर्टकट</string>
+    <string name="list_widget_description">अपने शॉर्टकट चालू या बंद करें</string>
+    <string name="list_widget_show_live">लाइव बटन</string>
+    <string name="list_widget_show_keys">कुंजियाँ</string>
+    <string name="list_widget_show_header">नाम और आइकन</string>
+    <string name="list_widget_show">दिखाएं</string>
+    <string name="list_widget_previous_page">पिछला पेज</string>
+    <string name="list_widget_next_page">अगला पेज</string>
+</resources>

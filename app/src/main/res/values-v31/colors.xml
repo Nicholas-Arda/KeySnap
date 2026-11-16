@@ -3,4 +3,9 @@
     <!-- Material You primary (tone 40): white text stays readable on it. The launcher resolves it,
          so a widget follows a wallpaper change without being redrawn. -->
     <color name="widget_wallpaper">@android:color/system_accent1_600</color>
+    <!-- Pixel widget look: read when the widget is drawn, so a wallpaper change shows on its next redraw. -->
+    <color name="widget_pixel_surface">@android:color/system_neutral2_900</color>
+    <color name="widget_pixel_chip">@android:color/system_neutral2_800</color>
+    <color name="widget_pixel_on_surface">@android:color/system_neutral1_100</color>
+    <color name="widget_pixel_accent">@android:color/system_accent1_100</color>
 </resources>

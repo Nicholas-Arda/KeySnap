@@ -33,6 +33,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
@@ -43,6 +44,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,11 +55,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.ui.draw.blur
+import android.os.Build
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
+import com.example.ui.theme.AccentOnDark
+import com.example.ui.theme.AccentOnLight
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
@@ -93,6 +101,7 @@ import com.example.ui.scripts.InlineKeyPicker
 import com.example.ui.scripts.shareShortcutText
 import com.example.ui.settings.SettingsGear
 import com.example.capsule.CapsuleHooks
+import com.example.ai.AiHooks
 import com.example.data.keyDisplayName
 import com.example.ui.settings.SettingsScreen
 import com.example.ui.settings.SettingsSection
@@ -179,6 +188,8 @@ fun MainScreen(viewModel: MainViewModel) {
     var showScriptSettings by remember { mutableStateOf(false) }
     var shortcutFabCenter by remember { mutableStateOf<Offset?>(null) }
     var fabLaunchOrigin by remember { mutableStateOf<Offset?>(null) }
+    var aiWindowOpen by rememberSaveable { mutableStateOf(false) }
+    var aiModelsOpen by rememberSaveable { mutableStateOf(false) }
     var fabLaunchedScriptId by remember { mutableStateOf<String?>(null) }
     var showAccessibilityDisclosure by remember { mutableStateOf(false) }
     // A live bridge can redo Android's off/on switch for KeySnap's own entry; without it, the user does.
@@ -200,16 +211,23 @@ fun MainScreen(viewModel: MainViewModel) {
     val ratingHomeReady = pagerState.currentPage == 0 && !pagerState.isScrollInProgress && !settingsOpen &&
         editingScript == null && !showSetupWizard && whatsNew == null && browsedWhatsNew == null && pendingImport == null &&
         showNameKeyDialogForCode == null && !showAccessibilityDisclosure && !capsuleEditorOpen &&
-        !capsuleIntroOpen && !showTriggerPicker && !showScriptSettings
+        !capsuleIntroOpen && !showTriggerPicker && !showScriptSettings && !aiWindowOpen && !aiModelsOpen
     LaunchedEffect(ratingHomeReady, lifetimeSuccessfulRuns) {
         viewModel.updateRatingPromptVisibility(ratingHomeReady)
     }
     val homeScrollState = rememberScrollState()
+    val scriptsScrollState = rememberScrollState()
+    // The AI pill is wide only near the top of the visible page (32dp dead zone), a small icon anywhere below.
+    val aiTopZonePx = with(LocalDensity.current) { 32.dp.toPx() }
+    val aiNearTop by remember {
+        derivedStateOf { (if (pagerState.currentPage == 0) homeScrollState else scriptsScrollState).value < aiTopZonePx }
+    }
     var scrollHomeToProCard by remember { mutableStateOf(false) }
     // The snackbar lives in the shell, above the bottom bar, so a message raised anywhere shows on
     // whatever page the user is on. The "Home" action is only worth offering elsewhere.
     val snackbarHostState = remember { SnackbarHostState() }
     val homeAction = stringResource(R.string.scripts_snackbar_home)
+    val undoAction = stringResource(R.string.editor_undo)
     LaunchedEffect(scriptsMessage) {
         val message = scriptsMessage ?: return@LaunchedEffect
         val autoDismiss = launch {
@@ -219,17 +237,19 @@ fun MainScreen(viewModel: MainViewModel) {
         val result = snackbarHostState.showSnackbar(
             message.text,
             // Only the free-limit messages have somewhere to send the user; a confirmation does not.
-            actionLabel = homeAction.takeIf { message.showProAction && pagerState.currentPage != 0 },
+            actionLabel = if (message.undo != null) undoAction else homeAction.takeIf { message.showProAction && pagerState.currentPage != 0 },
         )
         autoDismiss.cancel()
-        if (result == SnackbarResult.ActionPerformed) {
+        if (result == SnackbarResult.ActionPerformed && message.undo != null) {
+            message.undo.invoke()
+        } else if (result == SnackbarResult.ActionPerformed) {
             pagerState.animateScrollToPage(0, animationSpec = PageSlide)
             scrollHomeToProCard = true
         }
         viewModel.consumeScriptsMessage()
     }
 
-    BoxWithConstraints(Modifier.fillMaxSize().then(if (capsuleEditorOpen || capsuleIntroOpen) Modifier.clearAndSetSemantics {} else Modifier)) {
+    BoxWithConstraints(Modifier.fillMaxSize().then(if (capsuleEditorOpen || capsuleIntroOpen || aiModelsOpen) Modifier.clearAndSetSemantics {} else Modifier)) {
         val density = LocalDensity.current
         val widthPx = with(density) { maxWidth.toPx() }
         val heightPx = with(density) { maxHeight.toPx() }
@@ -263,7 +283,17 @@ fun MainScreen(viewModel: MainViewModel) {
                         endY = heightPx * PageFloorStop,
                     ),
                 )
-        Box(Modifier.fillMaxSize().then(screenGround)) {
+        // Blur only the content, not the AI overlay; API 30 has no blur, so the overlay's scrim gets stronger there.
+        val aiBlur by animateDpAsState(if (aiWindowOpen && Build.VERSION.SDK_INT >= 31) 16.dp else 0.dp, tween(220), label = "aiBlur")
+        val aiAskVisible = editingScript == null && !settingsOpen && !showSetupWizard &&
+            whatsNew == null && browsedWhatsNew == null && pendingImport == null &&
+            !capsuleEditorOpen && !capsuleIntroOpen && !showAccessibilityDisclosure && !aiModelsOpen
+        Box(Modifier.fillMaxSize()) {
+        Box(
+            Modifier.fillMaxSize().then(screenGround).then(if (aiBlur > 0.dp) Modifier.blur(aiBlur) else Modifier)
+                // Behind the open AI window the pages, bar and gear are scenery, not something TalkBack should walk.
+                .then(if (aiWindowOpen && aiAskVisible) Modifier.clearAndSetSemantics {} else Modifier),
+        ) {
         val suggestionDraft = editingScript?.takeIf { it.fromSuggestion }
         ShortcutEditorTransition(
             editingScript?.takeUnless { it.fromSuggestion },
@@ -276,9 +306,9 @@ fun MainScreen(viewModel: MainViewModel) {
             val settingsMotion = rememberSettingsMotion(settingsOpen)
             val goToPage: (Int) -> Unit = { page -> pagerScope.launch { pagerState.animateScrollToPage(page, animationSpec = PageSlide) } }
             // Back from Shortcuts goes Home; on Home it falls through and exits.
-            BackHandler(enabled = pagerState.currentPage != 0) { goToPage(0) }
+            BackHandler(enabled = pagerState.currentPage != 0 && !aiModelsOpen) { goToPage(0) }
             // Registered after the pager's, so Back shuts the panel before it does anything else.
-            BackHandler(enabled = settingsOpen) { settingsOpen = false }
+            BackHandler(enabled = settingsOpen && !aiModelsOpen) { settingsOpen = false }
             // Pages run edge to edge: each draws its ground behind the system bars and pads its own content.
             // They are recorded as they draw, so the bottom bar can show them frosted through its glass.
             val pagesLayer = rememberGraphicsLayer()
@@ -359,6 +389,7 @@ fun MainScreen(viewModel: MainViewModel) {
                         onCancelRecording = viewModel::cancelRecordingKey,
                         hapticDurationMs = config.hapticDurationMs,
                         vibrateOnTrigger = config.vibrateOnTrigger,
+                        scrollState = scriptsScrollState,
                     )
                 }
             }
@@ -434,6 +465,7 @@ fun MainScreen(viewModel: MainViewModel) {
                     onAddKey = viewModel::startAddingSavedKey,
                     onCancelAddKey = viewModel::cancelRecordingKey,
                     onRenameKey = viewModel::renameSavedKey,
+                    onOpenAiModels = { aiModelsOpen = true },
                 )
             }
             val showAutoWhatsNew = !settingsOpen && pagerState.currentPage == 0 && suggestionDraft == null &&
@@ -464,6 +496,12 @@ fun MainScreen(viewModel: MainViewModel) {
                             WhatsNewDestination.SHORTCUTS -> {
                                 settingsOpen = false
                                 goToPage(1)
+                            }
+                            WhatsNewDestination.NEW_SHORTCUT -> {
+                                settingsOpen = false
+                                if (AiHooks.AVAILABLE) {
+                                    aiWindowOpen = true
+                                }
                             }
                             WhatsNewDestination.ADVANCED_MODE -> {
                                 settingsSection = SettingsSection.ADVANCED_MODE
@@ -801,6 +839,19 @@ fun MainScreen(viewModel: MainViewModel) {
             }
         }
         }
+        }
+        AiHooks.AskBar(
+            viewModel = viewModel,
+            visible = aiAskVisible,
+            open = aiWindowOpen,
+            collapsed = !aiNearTop,
+            onOpenChange = { aiWindowOpen = it },
+            themeMode = themeMode,
+            oledMode = oledMode,
+            onExplorePro = { viewModel.purchasePro(context as Activity) },
+            modifier = Modifier.align(Alignment.BottomCenter),
+            onOpenModels = { aiWindowOpen = false; aiModelsOpen = true },
+        )
         SnackbarHost(
             snackbarHostState,
             Modifier
@@ -811,7 +862,9 @@ fun MainScreen(viewModel: MainViewModel) {
         ) { data ->
             Snackbar(
                 action = data.visuals.actionLabel?.let { label ->
-                    { TextButton(onClick = { data.performAction() }) { Text(label) } }
+                    // The snackbar is the inverse surface, so the action takes the accent made for that ground.
+                    val onInverse = if (MaterialTheme.colorScheme.inverseSurface.luminance() < .5f) AccentOnDark else AccentOnLight
+                    { TextButton(onClick = { data.performAction() }, colors = ButtonDefaults.textButtonColors(contentColor = onInverse)) { Text(label) } }
                 },
             ) {
                 Text(data.visuals.message, modifier = Modifier.clickable { data.dismiss() })
@@ -893,6 +946,8 @@ fun MainScreen(viewModel: MainViewModel) {
             onDismiss = viewModel::dismissModesExplainer,
         )
     }
+    // Activity-hosted, like the Settings/Pro panels; registered last so Back closes this first.
+    AiHooks.ModelsOverlay(aiModelsOpen, { aiModelsOpen = false }, isPro)
 }
 
 /** The page slide, at the redesign's 1.25x pace. */

@@ -14,14 +14,14 @@
     <string name="setup_background_why">Android closes idle apps\n→ shortcuts stop</string>
     <string name="setup_notifications_why">Only when something needs you</string>
     <string name="setup_reads_keys">Read your button presses</string>
-    <string name="setup_reads_code">Open Settings’ pairing-code dialog\nand read the code</string>
+    <string name="setup_reads_code">Open Settings’ pairing-code dialog and read the code</string>
     <string name="setup_advanced_only">Advanced Mode setup only</string>
     <string name="setup_no_screens">See other apps’ screens</string>
     <string name="setup_no_data">Save or send anything it reads</string>
     <string name="setup_keeps_open">Keeps KeySnap open</string>
     <string name="setup_runs_key">Runs when you press a key</string>
-    <string name="setup_no_drain">No extra battery drain</string>
-    <string name="setup_idle">Idle until a key\nor your automation</string>
+    <string name="setup_no_drain">Drain extra battery</string>
+    <string name="setup_idle">Run until a key\nor your automation</string>
     <string name="setup_needs_you">Setup needs you</string>
     <string name="setup_shortcut_failed">A shortcut failed</string>
     <string name="setup_own_alerts">Your own shortcut alerts</string>
@@ -44,6 +44,6 @@
     <string name="setup_usage_why">Shows which app is in front</string>
     <string name="setup_usage_sees">Sees the app in front</string>
     <string name="setup_usage_for">For your app conditions</string>
-    <string name="setup_no_content">No screen content</string>
-    <string name="setup_nothing_saved">Nothing saved or sent</string>
+    <string name="setup_no_content">Read screen content</string>
+    <string name="setup_nothing_saved">Save or send anything</string>
 </resources>

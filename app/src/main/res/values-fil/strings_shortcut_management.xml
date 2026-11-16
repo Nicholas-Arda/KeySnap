@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="shortcuts_edit">I-edit ang mga shortcut</string>
+    <string name="shortcuts_edit_done">Tapos nang i-edit ang mga shortcut</string>
+    <string name="shortcuts_edit_hint">I-tap ang shortcut para i-edit ito</string>
+    <string name="shortcuts_drag">I-drag para ilipat ang %1$s sa pagkakasunod</string>
+    <string name="shortcuts_name_required">Maglagay ng pangalan</string>
+    <string name="shortcuts_delete">I-delete ang shortcut</string>
+    <string name="shortcuts_move_to_mode">Ilipat sa mode</string>
+    <string name="shortcuts_rename_cancel">Kanselahin ang pagpapalit ng pangalan</string>
+    <string name="shortcuts_name_apply">Ilapat ang pangalan</string>
+    <string name="shortcuts_rename">Palitan ang pangalan ng shortcut</string>
+</resources>

@@ -62,9 +62,10 @@ internal fun InlineKeyPicker(
     onSwitchToSurface: (() -> Unit)?,
     advancedModeActive: Boolean = false,
     onSetUpAdvancedMode: () -> Unit = {},
+    onDisposeRecording: () -> Unit = onCancelRecording,
 ) {
     val colors = MaterialTheme.colorScheme
-    val cancel by rememberUpdatedState(onCancelRecording)
+    val cancel by rememberUpdatedState(onDisposeRecording)
     DisposableEffect(Unit) { onDispose { cancel() } }
     Surface(
         shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),

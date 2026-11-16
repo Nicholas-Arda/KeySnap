@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="list_widget_label">Accesos directos de KeySnap</string>
+    <string name="list_widget_description">Activa o desactiva tus accesos directos</string>
+    <string name="list_widget_show_live">Botón Activo</string>
+    <string name="list_widget_show_keys">Teclas</string>
+    <string name="list_widget_show_header">Nombre e icono</string>
+    <string name="list_widget_show">Mostrar</string>
+    <string name="list_widget_previous_page">Página anterior</string>
+    <string name="list_widget_next_page">Página siguiente</string>
+</resources>

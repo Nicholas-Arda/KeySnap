@@ -719,6 +719,7 @@
     <string name="pro_progress_description">%1$d of %2$d active shortcuts</string>
     <string name="pro_unlock">Unlock Pro</string>
     <string name="pro_unlock_with_price">Unlock Pro · %1$s</string>
+    <string name="pro_purchase_unavailable">Purchase isn\'t available right now</string>
     <string name="pro_table_free">Free</string>
     <string name="pro_table_pro">Pro</string>
     <string name="pro_table_unlimited">Unlimited</string>
@@ -792,6 +793,10 @@
     <string name="language_italian" translatable="false">Italiano</string>
     <string name="language_hindi" translatable="false">हिन्दी</string>
     <string name="language_dutch" translatable="false">Nederlands</string>
+    <string name="language_filipino" translatable="false">Filipino</string>
+    <string name="language_korean" translatable="false">한국어</string>
+    <string name="language_indonesian" translatable="false">Bahasa Indonesia</string>
+    <string name="language_vietnamese" translatable="false">Tiếng Việt</string>
 
     <!-- Appearance -->
     <string name="theme_light">Light</string>
@@ -875,7 +880,7 @@
 
     <!-- Pairing status -->
     <string name="pairing_idle">Waiting for pairing…</string>
-    <string name="pairing_not_started">Tap the button above to start pairing</string>
+    <string name="pairing_not_started">Waiting for you to open settings</string>
     <string name="pairing_searching">Searching for the pairing screen…</string>
     <string name="pairing_captured">Pairing code captured…</string>
     <string name="pairing_in_progress">Pairing…</string>
@@ -945,7 +950,7 @@
     <!-- Trigger kind picker -->
     <string name="trigger_kind_key">Key press</string>
     <string name="trigger_kind_automation">Automation</string>
-    <string name="automation_card_subtitle">Runs when the conditions below become true</string>
+    <string name="automation_card_subtitle">Runs when the conditions above become true</string>
     <!-- Home-screen widget and Quick Settings tiles -->
     <string name="surface_paused_global">KeySnap is paused. Resume it in the app to run shortcuts.</string>
     <string name="surface_paused_script">\"%1$s\" is off. Turn it on in KeySnap to run it.</string>
@@ -957,24 +962,39 @@
     <string name="trigger_kind_surface">Widget or tile</string>
     <string name="surface_card_subtitle">Runs when you tap its home-screen widget or Quick Settings tile</string>
     <!-- Manifest labels of the three tiles; brand name plus a digit, the same in every language. -->
-    <string name="tile_label_1" translatable="false">KeySnap 1</string>
+    <string name="tile_label_1" translatable="false">KeySnap</string>
     <string name="tile_label_2" translatable="false">KeySnap 2</string>
     <string name="tile_label_3" translatable="false">KeySnap 3</string>
     <string name="run_source_widget">Widget</string>
     <string name="run_source_tile">Quick Settings tile</string>
-    <string name="widget_limit_reached">Free plan: %1$d home-screen widgets. Go Pro for unlimited widgets.</string>
     <!-- Widget style step -->
-    <string name="widget_style_title">Widget style</string>
     <string name="widget_style_color">Color</string>
     <string name="widget_color_blue">Blue</string>
     <string name="widget_color_wallpaper">Wallpaper</string>
     <string name="widget_color_dark">Dark</string>
     <string name="widget_color_light">Light</string>
     <string name="widget_style_opacity">Background opacity</string>
-    <string name="widget_style_show_label">Show name</string>
     <string name="widget_style_custom_label">Custom name</string>
     <string name="widget_style_custom_label_hint">Leave empty to use the shortcut\'s name</string>
-    <string name="widget_style_show_icon">Show icon</string>
+    <string name="surface_all_shortcuts">All shortcuts</string>
+    <string name="surface_all_shortcuts_sub">Turn KeySnap on or off</string>
+    <string name="widget_tap_title">Tap to</string>
+    <string name="widget_tap_run">Run it</string>
+    <string name="widget_tap_toggle">Turn on or off</string>
+    <string name="widget_style_look">Look</string>
+    <string name="widget_look_classic">Classic</string>
+    <string name="widget_style_on_color">On color</string>
+    <string name="widget_form_title">Style</string>
+    <string name="widget_form_tile">Tiles</string>
+    <string name="widget_form_state">Big state</string>
+    <string name="widget_form_capsule">Capsule</string>
+    <string name="widget_part_name">Name</string>
+    <string name="widget_part_icon">Icon</string>
+    <string name="widget_color_auto">Auto</string>
+    <string name="widget_look_pixel" translatable="false">Pixel</string>
+    <string name="widget_look_nothing" translatable="false">Nothing</string>
+    <string name="widget_look_one_ui" translatable="false">Samsung</string>
+    <string name="widget_look_hyper_os" translatable="false">Xiaomi</string>
     <string name="widget_style_percent" translatable="false">%1$d%%</string>
     <!-- OEM key tip -->
     <string name="oem_key_tip">Tip: set this button to “None” in your phone\'s settings, so only KeySnap reacts to it.</string>

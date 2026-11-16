@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Next page: both pages slide left, as in the approved mockup (the widget_rows_* layout animations). -->
+<translate xmlns:android="http://schemas.android.com/apk/res/android"
+    android:duration="380"
+    android:fromXDelta="100%"
+    android:interpolator="@interpolator/widget_page_ease"
+    android:toXDelta="0" />

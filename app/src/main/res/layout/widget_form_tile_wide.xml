@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The Tiles form at two cells or more (WidgetForms): icon in a chip, name and key, and the state in a pill. The whole widget is the tap target. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="68dp"
+        android:layout_gravity="center_vertical">
+
+        <ImageView
+            android:id="@+id/widget_body"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitXY"
+            android:src="@drawable/widget_shape_round_22"
+            android:importantForAccessibility="no" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp">
+
+            <FrameLayout
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginEnd="10dp">
+
+                <ImageView
+                    android:id="@+id/widget_chip"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/widget_shape_oval"
+                    android:importantForAccessibility="no" />
+
+                <ImageView
+                    android:id="@+id/widget_icon"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    android:importantForAccessibility="no" />
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/widget_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:fontFamily="sans-serif-medium"
+                    android:textSize="13sp" />
+
+                <ImageView
+                    android:id="@+id/widget_label_dot"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitStart"
+                    android:importantForAccessibility="no"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/widget_sub"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:alpha="0.7"
+                    android:textSize="10sp" />
+
+                <ImageView
+                    android:id="@+id/widget_sub_dot"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitStart"
+                    android:importantForAccessibility="no"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <!-- The tinted pill and its text both fill this box: a wrap_content FrameLayout
+                 re-measures match_parent children only when there are two or more. -->
+            <FrameLayout
+                android:id="@+id/widget_state_box"
+                android:layout_width="wrap_content"
+                android:layout_height="22dp"
+                android:layout_marginStart="6dp">
+
+                <ImageView
+                    android:id="@+id/widget_pill"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/widget_shape_pill"
+                    android:importantForAccessibility="no" />
+
+                <TextView
+                    android:id="@+id/widget_state"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:paddingStart="9dp"
+                    android:paddingEnd="9dp"
+                    android:maxLines="1"
+                    android:fontFamily="sans-serif-medium"
+                    android:textSize="10sp" />
+
+                <ImageView
+                    android:id="@+id/widget_state_dot"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitStart"
+                    android:importantForAccessibility="no"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:visibility="gone" />
+            </FrameLayout>
+        </LinearLayout>
+    </FrameLayout>
+</FrameLayout>

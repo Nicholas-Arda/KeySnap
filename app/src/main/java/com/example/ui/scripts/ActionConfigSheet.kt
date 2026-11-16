@@ -34,6 +34,8 @@ import androidx.compose.material.icons.outlined.Contacts
 import androidx.compose.material.icons.outlined.MyLocation
 import androidx.compose.material.icons.outlined.Photo
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -69,12 +71,15 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.platform.testTag
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.bridge.ActionTestResult
 import com.example.data.ActionEditorForms
@@ -231,10 +236,12 @@ fun ActionConfigSheet(
                 readSetting = readSetting,
                 writeSystemSetting = writeSystemSetting,
                 visibleChats = visibleChats,
+                modifier = Modifier.belowStatusBar(),
             )
         } else {
         Column(
             Modifier
+                .belowStatusBar()
                 .fillMaxWidth()
                 .navigationBarsPadding()
                 .padding(horizontal = 16.dp)
@@ -525,6 +532,28 @@ private fun KeyCodeFieldRow(
     }
 }
 
+/**
+ * Keeps the content of a [ModalBottomSheet] a [margin] clear of the status bar. Material already
+ * shrinks the sheet's area by the keyboard (imePadding on its root) and animates it with the
+ * keyboard, but it does not subtract the status bar, so content taller than the visible area slid
+ * its title row under the status bar. The incoming max height is that visible area (less the drag
+ * handle), so limiting it here follows the keyboard with no soft-input-mode change.
+ */
+@Composable
+internal fun Modifier.belowStatusBar(margin: Dp = 16.dp): Modifier {
+    val density = LocalDensity.current
+    val reserved = WindowInsets.statusBars.getTop(density) + with(density) { margin.roundToPx() }
+    return layout { measurable, constraints ->
+        val max = if (constraints.hasBoundedHeight) {
+            (constraints.maxHeight - reserved).coerceAtLeast(constraints.minHeight)
+        } else {
+            constraints.maxHeight
+        }
+        val placeable = measurable.measure(constraints.copy(maxHeight = max))
+        layout(placeable.width, placeable.height) { placeable.place(0, 0) }
+    }
+}
+
 @Composable
 internal fun AppFieldRow(
     field: EditorField.AppPick,
@@ -541,12 +570,17 @@ internal fun AppFieldRow(
         Row(
             Modifier
                 .fillMaxWidth()
+                .animateContentSize()
                 .border(1.dp, colors.outline.copy(alpha = .6f), InnerShape)
                 .clickable(onClick = onOpenPicker)
                 .testTag("config_app_pick_${field.key}")
                 .padding(14.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            if (selected.isNotEmpty()) {
+                AppIconTile(selected, app.label)
+                Spacer(Modifier.width(12.dp))
+            }
             Column(Modifier.weight(1f)) {
                 Text(
                     app.label.ifEmpty { stringResource(R.string.action_config_choose_app) },

@@ -1,6 +1,7 @@
 package com.example.data
 
 import androidx.annotation.StringRes
+import com.example.bridge.ConstraintNegation
 import com.example.mode.ModeHooks
 import com.squareup.moshi.JsonClass
 import com.squareup.moshi.Moshi
@@ -81,7 +82,7 @@ object ShortcutShare {
      * recipient's editor asks for their own. A message's contact is a third party's name and number:
      * personal data that means nothing on another phone, so it never leaves this one.
      */
-    private val PHONE_BOUND_PARAMS: Map<String, Set<String>> = mapOf(
+    internal val PHONE_BOUND_PARAMS: Map<String, Set<String>> = mapOf(
         "http_request" to setOf("headers"),
         "set_wallpaper" to setOf("imageUri"),
         "play_sound" to setOf("uri"),
@@ -112,14 +113,7 @@ object ShortcutShare {
             showCapsule = showCapsule,
             pressType = pressType.name,
             actions = actions.map { PersistedScriptAction(it.type, portableParams(it.type, it.params)) },
-            // A Bluetooth device's address and name identify this phone's pairing and mean nothing on
-            // another; the recipient's editor asks for their own device instead.
-            constraints = constraints.map {
-                PersistedScriptConstraint(
-                    it.type,
-                    if (it.type.startsWith("bluetooth_device_")) it.params - setOf("address", "name") else portableConstraintParams(it.type, it.params),
-                )
-            },
+            constraints = constraints.map { PersistedScriptConstraint(it.type, portableConstraintParams(it.type, it.params)) },
         ),
     )
 
@@ -155,7 +149,12 @@ object ShortcutShare {
         }
         val constraints = shared.constraints.map {
             if (!ScriptConstraintCatalog.isAvailable(it.type)) return unsupported
-            ScriptConstraint(it.type, portableConstraintParams(it.type, it.params))
+            val fields = ConstraintEditorForms.form(it.type)?.fields.orEmpty()
+            // As with actions: only what the editor writes, so nothing invisible reaches the review.
+            val declared = constraintParamKeys(it.type)
+            val params = portableConstraintParams(it.type, it.params.filterKeys { key -> key in declared })
+            if (!isValid(fields, params)) return invalid
+            ScriptConstraint(it.type, params)
         }
         val name = shared.name.filterNot { it.isISOControl() }.trim().take(MAX_NAME_LENGTH)
         // The public build cannot run mode actions or conditions. Reject the share, as with any
@@ -183,16 +182,18 @@ object ShortcutShare {
         return out.toString(Charsets.UTF_8.name())
     }
 
-    private fun portableParams(type: String, params: Map<String, String>): Map<String, String> =
+    internal fun portableParams(type: String, params: Map<String, String>): Map<String, String> =
         PHONE_BOUND_PARAMS[type]?.let { params - it } ?: params
 
     /**
      * A feed address can carry a private token, and from a crafted share it would make this phone
      * poll a host the user never typed every 15 minutes. A calendar's name is often its owner's
      * email address. Neither means anything on another phone; the recipient's editor asks for
-     * their own. An event-title filter is the shortcut's own logic and travels.
+     * their own. An event-title filter is the shortcut's own logic and travels. A Bluetooth device's
+     * address and name identify this phone's pairing; the recipient picks their own device.
      */
-    private fun portableConstraintParams(type: String, params: Map<String, String>): Map<String, String> = when (type) {
+    internal fun portableConstraintParams(type: String, params: Map<String, String>): Map<String, String> = when (type) {
+        "bluetooth_device_connected", "bluetooth_device_disconnected" -> params - setOf("address", "name")
         ScriptConstraintCatalog.RSS_NEW_ITEM -> params - "url"
         ScriptConstraintCatalog.CALENDAR_EVENT_ACTIVE -> params - "calendar"
         // A contact's name is a third party's data, like a message's recipient.
@@ -209,6 +210,29 @@ object ShortcutShare {
         if (null in items) return true
         val values: List<Any?> = shared.actions.flatMap { it.params.values } + shared.constraints.flatMap { it.params.values }
         return null in values
+    }
+
+    /** The param keys a constraint's editor writes, plus the negation flag where the type supports it. */
+    internal fun constraintParamKeys(type: String): Set<String> =
+        ConstraintEditorForms.form(type)?.fields.orEmpty().flatMap { it.keys }.toSet() +
+            if (ScriptConstraintCatalog.supportsNegation(type)) setOf(ConstraintNegation.PARAM) else emptySet()
+
+    /** The constraint counterpart of the check below: blank is allowed, anything else must parse as its field does. */
+    private fun isValid(fields: List<EditorField>, params: Map<String, String>): Boolean {
+        fun fits(key: String, test: (String) -> Boolean) = params[key].let { it.isNullOrBlank() || test(it.trim()) }
+        fun time(value: String) = ConstraintEditorForms.parseTime(value) != null
+        fun int(value: String) = value.toIntOrNull() != null
+        return fits(ConstraintNegation.PARAM) { it == "true" || it == "false" } && fields.all { field ->
+            when (field) {
+                is EditorField.Number -> fits(field.key, ::int)
+                is EditorField.Choice -> fits(field.key) { value -> field.options.any { it.first == value } }
+                is EditorField.Time -> fits(field.key, ::time)
+                is EditorField.TimeRange -> fits(field.startKey, ::time) && fits(field.endKey, ::time)
+                is EditorField.DaySet -> fits(field.key) { days -> days.split(',').all { ConstraintEditorForms.parseDays(it).isNotEmpty() } }
+                is EditorField.Interval -> fits(field.valueKey, ::int) && fits(field.unitKey) { ConstraintEditorForms.intervalRange(it) != null }
+                else -> true
+            }
+        }
     }
 
     /** Blank is allowed (the editor then shows "Tap to configure"); anything else must fit its kind. */

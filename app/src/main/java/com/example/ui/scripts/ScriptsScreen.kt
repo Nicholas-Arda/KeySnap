@@ -1,5 +1,6 @@
 package com.example.ui.scripts
 
+import android.content.res.Resources
 import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
@@ -49,7 +50,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
@@ -112,11 +115,11 @@ fun ScriptsScreen(
     onSetScriptMode: (String, Int?) -> Unit = { _, _ -> },
     onDeleteScript: (String) -> Unit = {},
     isPageVisible: Boolean = true,
+    scrollState: androidx.compose.foundation.ScrollState = rememberScrollState(),
 ) {
     var showImport by rememberSaveable { mutableStateOf(false) }
     var editing by rememberSaveable { mutableStateOf(false) }
     var settingsId by rememberSaveable { mutableStateOf<String?>(null) }
-    val scrollState = rememberScrollState()
     val haptic = LocalHapticFeedback.current
     LaunchedEffect(scripts, settingsId) {
         if (scripts.none { it.id == settingsId }) settingsId = null
@@ -306,7 +309,8 @@ internal fun ScriptCard(
         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
     ) {
         BoxWithConstraints(Modifier.padding(horizontal = 14.dp, vertical = 10.dp)) {
-            val stacked = maxWidth / LocalDensity.current.fontScale < 240.dp
+            // An icon tile and a pill leave room for the name down to 200dp; below that the pill drops under it.
+            val stacked = maxWidth / LocalDensity.current.fontScale < 200.dp
             Column {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     if (!stacked && firstAction != null) {
@@ -343,7 +347,7 @@ internal fun ScriptCard(
                         if (isEditing) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Box(dragHandle.size(MinTouchTarget), contentAlignment = Alignment.Center) {
-                                    Icon(Icons.Outlined.Menu, stringResource(R.string.shortcuts_drag, script.name))
+                                    Icon(Icons.Outlined.Menu, stringResource(R.string.shortcuts_drag, script.name), tint = colors.onSurfaceVariant)
                                 }
                                 Icon(Icons.Outlined.ChevronRight, null, Modifier.size(20.dp), tint = colors.onSurfaceVariant)
                             }
@@ -377,16 +381,18 @@ internal fun ScriptCard(
  * Home shortcut rows so the two pages never describe the same trigger differently.
  */
 @Composable
-fun triggerSummary(script: ShortcutScript): Pair<String, Boolean> {
-    val res = LocalContext.current.resources
+fun triggerSummary(script: ShortcutScript): Pair<String, Boolean> = triggerSummaryText(LocalContext.current.resources, script)
+
+/** [triggerSummary] outside Compose, for the list widget. */
+fun triggerSummaryText(res: Resources, script: ShortcutScript): Pair<String, Boolean> {
     val trigger = script.triggers.firstOrNull()
     val automationHasCondition = script.automation &&
         script.constraints.any { ScriptConstraintCatalog.isAutomation(it.type) }
     val text = when {
-        trigger != null -> "${trigger.keyCodes.joinToString("+") { keyDisplayName(res, it) }} · ${stringResource(trigger.pressType.shortBadgeRes)}"
-        automationHasCondition -> stringResource(R.string.trigger_kind_automation)
-        script.automation -> "${stringResource(R.string.trigger_kind_automation)} · ${stringResource(R.string.scripts_no_condition)}"
-        else -> stringResource(R.string.trigger_kind_surface)
+        trigger != null -> "${trigger.keyCodes.joinToString("+") { keyDisplayName(res, it) }} · ${res.getString(trigger.pressType.shortBadgeRes)}"
+        automationHasCondition -> res.getString(R.string.trigger_kind_automation)
+        script.automation -> "${res.getString(R.string.trigger_kind_automation)} · ${res.getString(R.string.scripts_no_condition)}"
+        else -> res.getString(R.string.trigger_kind_surface)
     }
     return text to (trigger != null || automationHasCondition || script.isSurfaceOnly)
 }
@@ -406,12 +412,7 @@ private fun EnabledPill(
     onLongPress: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val colors = MaterialTheme.colorScheme
-    // Off reads as neutral rather than as an alarm; the knob's side and the state description
-    // are what separate off from paused, so no third track colour is needed.
     val live = scriptEnabled && globallyEnabled
-    val trackColor = if (live) colors.primary else colors.surfaceVariant
-    val knobColor = if (live) colors.onPrimary else colors.onSurfaceVariant
     // Off and paused share a track, so without this TalkBack calls the paused one "on".
     val state = stringResource(
         when {
@@ -432,21 +433,38 @@ private fun EnabledPill(
             },
         contentAlignment = Alignment.Center,
     ) {
+        ShortcutSwitchTrack(knobOnEnd = scriptEnabled, live = live)
+    }
+}
+
+/**
+ * The look of the shortcut switch, also used by the Modes row so both read the same. Off reads as neutral
+ * rather than as an alarm: a see-through track with a light knob. The knob's side and the state description
+ * are what separate off from paused, so no third track colour is needed.
+ */
+@Composable
+fun ShortcutSwitchTrack(knobOnEnd: Boolean, live: Boolean) {
+    val colors = MaterialTheme.colorScheme
+    val trackColor = if (live) colors.primary else colors.onSurfaceVariant.copy(alpha = .22f)
+    val knobColor = when {
+        live -> colors.onPrimary
+        colors.surface.luminance() > .5f -> colors.surface
+        else -> colors.onSurface
+    }
+    Box(
+        Modifier
+            .size(width = 42.dp, height = 25.dp)
+            .clip(CircleShape)
+            .background(trackColor),
+    ) {
         Box(
             Modifier
-                .size(width = 42.dp, height = 25.dp)
-                .clip(CircleShape)
-                .background(trackColor),
-        ) {
-            Box(
-                Modifier
-                    .align(if (scriptEnabled) Alignment.CenterEnd else Alignment.CenterStart)
-                    .padding(3.dp)
-                    .size(19.dp)
-                    .clip(CircleShape)
-                    .background(knobColor),
-            )
-        }
+                .align(if (knobOnEnd) Alignment.CenterEnd else Alignment.CenterStart)
+                .padding(3.dp)
+                .size(19.dp)
+                .shadow(if (live) 0.dp else 1.dp, CircleShape)
+                .background(knobColor, CircleShape),
+        )
     }
 }
 

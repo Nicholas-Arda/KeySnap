@@ -229,10 +229,12 @@ fun ScriptEditorScreen(
 ) {
     val context = LocalContext.current
     var feedback by remember { mutableStateOf<EditorFeedback?>(null) }
+    var saveRefused by remember { mutableStateOf(false) }
     LaunchedEffect(feedback) {
         if (feedback != null) {
             delay(2_600)
             feedback = null
+            saveRefused = false
         }
     }
     LaunchedEffect(message) {
@@ -349,7 +351,7 @@ fun ScriptEditorScreen(
                             onConfigureConstraint = { onDismissKeyPicker(); onConfigureConstraint(it) },
                             onSetConstraintParams = onSetConstraintParams,
                             onTestAction = onTestAction,
-                            onTestResult = { feedback = it },
+                            onTestResult = { saveRefused = false; feedback = it },
                             onSetUpAdvancedMode = onSetUpAdvancedMode,
                             installedApps = installedApps,
                             savedKeys = savedKeys,
@@ -363,6 +365,7 @@ fun ScriptEditorScreen(
                             recordingKeys = recordingKeys,
                             onSetPressType = onSetPressType,
                             modifier = Modifier.weight(1f),
+                            flagMissing = saveRefused && feedback != null,
                         )
                         EditorFeedbackPill(feedback, Modifier.align(Alignment.CenterHorizontally).padding(horizontal = 16.dp))
                         AnimatedContent(
@@ -390,6 +393,7 @@ fun ScriptEditorScreen(
                                     draft.constraints.any { !ConstraintEditorForms.isComplete(it.type, it.params) } -> R.string.chain_condition_empty
                                     else -> null
                                 }
+                                saveRefused = error != null
                                 if (error == null) onDone() else feedback = EditorFeedback(context.getString(error), true)
                             },
                         )
@@ -584,6 +588,7 @@ private fun ChainArea(
     runs: List<RunRecord> = emptyList(),
     onSetName: (String) -> Unit,
     onOpenScriptSettings: () -> Unit,
+    flagMissing: Boolean = false,
 ) {
     var openMenuFor by remember { mutableStateOf<Int?>(null) }
     var fineTuneExpanded by remember { mutableStateOf(false) }
@@ -613,7 +618,7 @@ private fun ChainArea(
                 if (keyDraft != null) SentenceSection(stringResource(R.string.editor_chain_when), colors.onSurfaceVariant) {
                     TriggerCard(keyDraft, onOpenTriggerPicker, onClearSurfaceOnly,
                         keyPickerOpen, isRecordingKey, recordingKeys, onSetPressType, savedKeys = savedKeys)
-                    if (!keyDraft.hasTrigger()) ChainHint(stringResource(R.string.editor_needs_trigger))
+                    if (!keyDraft.hasTrigger()) ChainHint(stringResource(R.string.editor_needs_trigger), flagMissing)
                 }
             }
         }
@@ -651,11 +656,14 @@ private fun ChainArea(
                     if (index == everyChatIndex) EveryChatWarning()
                 }
                 AddActionRow(onOpenAddAction)
-                if (draft.actions.isEmpty()) ChainHint(stringResource(R.string.editor_needs_action))
+                if (draft.actions.isEmpty()) ChainHint(stringResource(R.string.editor_needs_action), flagMissing)
             }
         }
         if (draft.automation) item { ChainHint(stringResource(R.string.automation_card_subtitle)) }
-        if (showHighlightHint) item { ChainHint(stringResource(R.string.editor_highlight_hint)) }
+        // An empty automation has no highlighted word yet (the key clause is what a key press highlights).
+        if (showHighlightHint && (!draft.automation || draft.constraints.isNotEmpty())) {
+            item { ChainHint(stringResource(R.string.editor_highlight_hint)) }
+        }
         item {
             Column(
                 Modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp)).background(colors.surface)
@@ -808,11 +816,16 @@ private const val HIGHLIGHT_HINT_VISITS = 3
 
 /** Why the Done button is greyed out, shown under whichever section is still empty. */
 @Composable
-private fun ChainHint(text: String) {
+private fun ChainHint(text: String, flagged: Boolean = false) {
+    // A Save refused for this missing piece turns its hint red while the reason pill shows.
+    val color by animateColorAsState(
+        if (flagged) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
+        label = "chainHintColor",
+    )
     Text(
         text,
         style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        color = color,
     )
 }
 
@@ -876,6 +889,9 @@ internal fun TriggerCard(
     draft: ScriptDraft, onOpenKeyPicker: () -> Unit, onClearSurfaceOnly: () -> Unit,
     choosing: Boolean, recording: Boolean, heldKeys: List<Int>, onSetPressType: (TriggerPressType) -> Unit,
     savedKeys: List<PhysicalKeyOption> = emptyList(),
+    enabled: Boolean = true,
+    valueContent: @Composable (String, String, Color, @Composable (String, Color) -> Unit) -> Unit = { _, value, tint, content -> content(value, tint) },
+    textStyle: androidx.compose.ui.text.TextStyle = MaterialTheme.typography.titleLarge,
 ) {
     val colors = MaterialTheme.colorScheme
     val res = LocalContext.current.resources
@@ -892,35 +908,41 @@ internal fun TriggerCard(
         return
     }
     FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(stringResource(R.string.editor_press), style = MaterialTheme.typography.titleLarge, color = colors.onSurface, modifier = Modifier.padding(vertical = 8.dp))
+        Text(stringResource(R.string.editor_press), style = textStyle, color = colors.onSurface, modifier = Modifier.padding(vertical = 8.dp))
+        val shownKeys = if (recording) heldKeys else trigger?.keyCodes.orEmpty()
+        val keyText = if (shownKeys.isNotEmpty()) shownKeys.joinToString(" + ") { keyDisplayName(res, it, savedKeys) }
+            else stringResource(if (recording) R.string.inline_key_listening else R.string.inline_key_placeholder)
+        // An empty slot reads as pending: dashed outline, muted fill, placeholder ink.
+        val empty = shownKeys.isEmpty() && !recording
+        valueContent("keys", keyText, if (empty) colors.onSurfaceVariant else tint) { value, ink ->
         Row(
-            Modifier.clip(RoundedCornerShape(14.dp)).background(tint.copy(alpha = .12f))
-                .then(if (choosing) Modifier.dashedBorder(tint, RoundedCornerShape(14.dp)) else Modifier)
-                .clickable(onClick = onOpenKeyPicker).testTag("assign_key_card")
+            Modifier.clip(RoundedCornerShape(14.dp)).background(ink.copy(alpha = if (empty) .04f else .12f))
+                .then(if (choosing) Modifier.dashedBorder(tint, RoundedCornerShape(14.dp)) else if (empty) Modifier.dashedBorder(colors.outline, RoundedCornerShape(14.dp)) else Modifier)
+                .clickable(enabled = enabled, onClick = onOpenKeyPicker).testTag("assign_key_card")
                 .bringIntoViewRequester(keyFocus)
                 .semantics { liveRegion = LiveRegionMode.Polite }
                 .heightIn(min = MinTouchTarget).padding(horizontal = 10.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Icon(if (assistant && !recording) Icons.Outlined.AutoAwesome else Icons.Outlined.Keyboard, null, Modifier.size(22.dp), tint = tint)
+            Icon(if (assistant && !recording) Icons.Outlined.AutoAwesome else Icons.Outlined.Keyboard, null, Modifier.size(22.dp), tint = ink)
             Spacer(Modifier.width(8.dp))
-            val shownKeys = if (recording) heldKeys else trigger?.keyCodes.orEmpty()
-            Text(if (shownKeys.isNotEmpty()) shownKeys.joinToString(" + ") { keyDisplayName(res, it, savedKeys) }
-                else stringResource(if (recording) R.string.inline_key_listening else R.string.inline_key_placeholder),
-                Modifier.weight(1f, fill = false), style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold), color = tint)
-            Icon(Icons.Outlined.ExpandMore, null, Modifier.size(18.dp), tint = tint)
+            Text(value, Modifier.weight(1f, fill = false), style = textStyle.copy(fontWeight = FontWeight.SemiBold), color = ink)
+            Icon(Icons.Outlined.ExpandMore, null, Modifier.size(18.dp), tint = ink)
+        }
         }
         Box {
+        valueContent("press", stringResource((trigger?.pressType ?: draft.pressType).titleRes), colors.primary) { value, ink ->
         Row(
-            Modifier.clip(RoundedCornerShape(14.dp)).background(colors.primary.copy(alpha = .12f))
-                .clickable(enabled = !assistant && !recording) { pressMenu = true }
+            Modifier.clip(RoundedCornerShape(14.dp)).background(ink.copy(alpha = .12f))
+                .clickable(enabled = enabled && !assistant && !recording) { pressMenu = true }
                 .testTag("trigger_press_menu").heightIn(min = MinTouchTarget).padding(horizontal = 10.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(stringResource((trigger?.pressType ?: draft.pressType).titleRes), Modifier.weight(1f, fill = false), style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold), color = colors.primary)
-            Icon(if (assistant) Icons.Outlined.Lock else Icons.Outlined.ExpandMore, null, Modifier.size(18.dp), tint = colors.primary)
+            Text(value, Modifier.weight(1f, fill = false), style = textStyle.copy(fontWeight = FontWeight.SemiBold), color = ink, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Icon(if (assistant) Icons.Outlined.Lock else Icons.Outlined.ExpandMore, null, Modifier.size(18.dp), tint = ink)
         }
-        DropdownMenu(expanded = pressMenu && !assistant && !recording, onDismissRequest = { pressMenu = false }) {
+        }
+        DropdownMenu(expanded = pressMenu && enabled && !assistant && !recording, onDismissRequest = { pressMenu = false }) {
             TriggerPressType.entries.forEach { type ->
                 DropdownMenuItem(
                     text = { Text(stringResource(type.titleRes)) },
@@ -995,8 +1017,10 @@ internal fun ConstraintsCard(
     ) {
         val visible = constraints.mapIndexed { index, constraint -> index to constraint }
         if (visible.isEmpty()) {
-            Text(
-                stringResource(if (automation) R.string.editor_add_constraint else R.string.editor_always_runs),
+            // An empty automation shows only the "+ Add condition" button below; the same words as a
+            // headline above it read twice.
+            if (!automation) Text(
+                stringResource(R.string.editor_always_runs),
                 Modifier.padding(vertical = 4.dp),
                 color = colors.onSurfaceVariant,
                 style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold),
@@ -1044,7 +1068,8 @@ internal fun ConstraintsCard(
                     } else Row(Modifier.padding(start = 10.dp, top = 8.dp, bottom = 8.dp), verticalAlignment = Alignment.CenterVertically) {
                         Icon(constraintIcon(constraint.type, descriptor?.category), null, Modifier.size(22.dp), tint = glyph)
                         Spacer(Modifier.width(10.dp))
-                        description(Modifier.weight(1f))
+                        // A gap so a long wrapped title never touches the IS/NOT toggle.
+                        description(Modifier.weight(1f).padding(end = 8.dp))
                         remove()
                     }
                 }

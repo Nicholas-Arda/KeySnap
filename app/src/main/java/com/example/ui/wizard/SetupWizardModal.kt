@@ -98,7 +98,14 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat
@@ -188,13 +195,16 @@ fun SetupWizardModal(
         val bars = WindowInsets.systemBars.asPaddingValues()
         val topBar = bars.calculateTopPadding()
         val bottomBar = bars.calculateBottomPadding()
+        val density = LocalDensity.current
+        // Measured, not assumed: large text wraps the status line and makes the capsule taller.
+        var capsuleHeight by remember { mutableStateOf(64.dp) }
         Box(Modifier.fillMaxSize()) {
             PageGroundLayer(themeMode, Modifier.fillMaxSize())
             Column(
                 Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
-                    .padding(start = 16.dp, end = 16.dp, top = topBar + 12.dp, bottom = bottomBar + 120.dp),
+                    .padding(start = 16.dp, end = 16.dp, top = topBar + 12.dp, bottom = bottomBar + 56.dp + capsuleHeight),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 WizardHeader(onDismiss)
@@ -237,6 +247,7 @@ fun SetupWizardModal(
                                 onOpenSettings = { viewModel.openDeveloperSettings(context) },
                                 onSettingsOpened = { settingsOpened = true },
                                 onSubmitCode = viewModel::submitPairingCode,
+                                capsuleClearance = bottomBar + 32.dp + capsuleHeight,
                             )
                         }
                     }
@@ -256,7 +267,8 @@ fun SetupWizardModal(
                 onFinish = onDismiss,
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .padding(start = 16.dp, end = 16.dp, bottom = bottomBar + 16.dp),
+                    .padding(start = 16.dp, end = 16.dp, bottom = bottomBar + 16.dp)
+                    .onSizeChanged { capsuleHeight = with(density) { it.height.toDp() } },
             )
         }
     }
@@ -477,6 +489,7 @@ private fun WizardKernelIllustration(reduced: Boolean) {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun PairingContent(
     pairingStatus: PairingStatus,
@@ -484,9 +497,19 @@ private fun PairingContent(
     onOpenSettings: () -> Unit,
     onSettingsOpened: () -> Unit,
     onSubmitCode: (String) -> Unit,
+    capsuleClearance: Dp,
 ) {
     val colors = MaterialTheme.colorScheme
     val context = LocalContext.current
+    // The floating capsule sits over the bottom of the page; once the step has unfolded, scroll the
+    // button up clear of it instead of leaving it underneath.
+    val buttonInView = remember { BringIntoViewRequester() }
+    var buttonHeight by remember { mutableStateOf(0) }
+    val clearancePx = with(LocalDensity.current) { capsuleClearance.toPx() }
+    LaunchedEffect(Unit) {
+        kotlinx.coroutines.delay(320)
+        buttonInView.bringIntoView(Rect(0f, 0f, 1f, buttonHeight + clearancePx))
+    }
     val open = {
         onOpenSettings()
         onSettingsOpened()
@@ -513,7 +536,8 @@ private fun PairingContent(
                 open()
             }
         },
-        modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp).testTag("open_developer_options_button"),
+        modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp).testTag("open_developer_options_button")
+            .bringIntoViewRequester(buttonInView).onSizeChanged { buttonHeight = it.height },
         shape = RoundedCornerShape(50),
     ) {
         Icon(Icons.Filled.OpenInNew, null, Modifier.size(16.dp))

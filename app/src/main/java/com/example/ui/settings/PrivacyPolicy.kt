@@ -29,7 +29,7 @@ import com.example.ui.theme.MonoLabel
  */
 object PrivacyPolicy {
 
-    const val LAST_UPDATED = "24 October 2026"
+    const val LAST_UPDATED = "10 November 2026"
 
     /**
      * Left blank deliberately. A published policy needs a contact address, but which address to
@@ -50,7 +50,8 @@ object PrivacyPolicy {
             "choose, as described below." +
             " If you share a shortcut, the app hands its text to the app you pick in Android's share " +
             "sheet and sends it nowhere itself. Names of contacts and chats, phone numbers, RSS feed addresses " +
-            "and calendar names are left out of that text.",
+            "and calendar names are left out of that text. " +
+            "The optional AI model (Pro) is downloaded through Google Play and runs only on your phone; what you type never leaves it.",
 
         "Problem recordings (optional)" to
             "If something does not work on your phone, you can start a problem recording in Settings " +
@@ -84,7 +85,11 @@ object PrivacyPolicy {
             "automation follows, filed under the feed's address: one identifier for each item the " +
             "feed held at the last check (the item's own id, or its link or title when it has " +
             "none), so a new item can be told apart, and the time of that check; these are left " +
-            "out of Android's backup. All of this stays in " +
+            "out of Android's backup. With the Pro AI builder, the unfinished shortcut you are " +
+            "drafting and the requests you typed for it are kept in a file in the app's private " +
+            "no-backup storage on the phone. The file is never uploaded or backed up, and it is " +
+            "deleted when you save or delete the draft. The downloaded AI model is stored on the " +
+            "phone too. All of this stays in " +
             "the app's private storage on this device.",
 
         "The accessibility service" to
@@ -148,9 +153,9 @@ object PrivacyPolicy {
             "carries nothing from your shortcuts, only Android's standard headers, whose " +
             "user-agent names the phone's model and Android version. The feed's server may " +
             "redirect the request to another https address; it is never followed to an http one. " +
-            "The third is to Google Play, to process the Pro purchase and " +
-            "check whether you have bought Pro. The app makes no other requests of its " +
-            "own.",
+            "The third is to Google Play, to process the Pro purchase, " +
+            "check whether you have bought Pro, and, only if you choose Download, fetch the " +
+            "optional Pro AI model. The app makes no other requests of its own.",
 
         "Digital assistant (optional)" to
             "If you select KeySnap as your digital assistant in Android settings, assistant gestures " +
@@ -166,6 +171,11 @@ object PrivacyPolicy {
             "show the pairing code prompt and the setup notification, to tell you when a " +
             "shortcut's action could not run and why, and to show the notifications you put " +
             "into your own shortcuts. Vibrate: for the confirmation buzz when a shortcut fires. " +
+            "Battery optimisation exemption: optional, so Android does not put the app to sleep " +
+            "while it waits for your buttons. Foreground service: keeps a notification and the " +
+            "connection to your own device alive while Advanced Mode starts. Wake lock and data " +
+            "sync: used by Google Play's download service when you download the optional Pro AI " +
+            "model. " +
             "Set wallpaper: for the \"Set wallpaper\" action; the image comes from Android's photo " +
             "picker, so the app can read only the picture you choose, and only on this device. " +
             "Display over other apps: when you tap \"Pick on screen\" to choose tap coordinates, " +
@@ -217,7 +227,8 @@ object PrivacyPolicy {
             "Your shortcuts and preferences are included in Android's backup so they return if " +
             "you reinstall or move to a new phone. The ADB key pair and the bridge token are " +
             "excluded from both cloud backup and device-to-device transfer, because they " +
-            "authorise one specific device and must never leave it.",
+            "authorise one specific device and must never leave it. The downloaded AI model is " +
+            "excluded from both as well.",
 
         "Deleting your data" to
             "Settings > About > Erase all data removes every shortcut, preference, key and " +

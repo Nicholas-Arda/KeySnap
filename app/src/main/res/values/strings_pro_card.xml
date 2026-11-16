@@ -2,6 +2,7 @@
 <resources>
     <string name="pro_card_pay_once">Pay once, keep it forever.</string>
     <string name="pro_table_what_you_get">What you get</string>
+    <string name="pro_table_ai">Describe a shortcut (AI)</string>
     <string name="pro_table_modes">Shortcut modes</string>
     <string name="pro_table_future">Future Pro features</string>
     <string name="pro_table_everything_else">Every other feature</string>

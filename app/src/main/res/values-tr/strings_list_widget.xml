@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="list_widget_label">KeySnap kısayolları</string>
+    <string name="list_widget_description">Kısayollarını aç veya kapat</string>
+    <string name="list_widget_show_live">Aktif tuşu</string>
+    <string name="list_widget_show_keys">Tuşlar</string>
+    <string name="list_widget_show_header">Ad ve simge</string>
+    <string name="list_widget_show">Göster</string>
+    <string name="list_widget_previous_page">Önceki sayfa</string>
+    <string name="list_widget_next_page">Sonraki sayfa</string>
+</resources>

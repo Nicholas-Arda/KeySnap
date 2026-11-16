@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="pro_card_pay_once">Isang bayad, sa iyo na habambuhay.</string>
+    <string name="pro_table_what_you_get">Mga makukuha mo</string>
+    <string name="pro_table_ai">Ilarawan ang shortcut (AI)</string>
+    <string name="pro_table_modes">Mga mode ng shortcut</string>
+    <string name="pro_table_future">Mga susunod na Pro feature</string>
+    <string name="pro_table_everything_else">Lahat ng iba pang feature</string>
+    <string name="pro_card_one_time">Isang beses na pagbili · Walang subscription</string>
+</resources>

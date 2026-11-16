@@ -66,6 +66,18 @@ val edition: String = providers.gradleProperty("keysnap.edition").orNull
   ?: "oss"
 require(edition == "pro" || edition == "oss") { "keysnap.edition must be pro or oss, was '$edition'" }
 val proEdition = edition == "pro"
+// The Smart model's two packs (pro/docs/ai-smart-packs.md) are bundled only with -Pkeysnap.aiSmart=true.
+val aiPacks = listOf(":ai_model") +
+  if (providers.gradleProperty("keysnap.aiSmart").orNull == "true") listOf(":ai_smart_1", ":ai_smart_2") else emptyList()
+if (proEdition) {
+  tasks.matching { it.name.startsWith("bundle") && it.name.endsWith("Release") }.configureEach {
+    dependsOn(aiPacks.map { "$it:verifyReleaseModel" })
+  }
+  // The pack reads the staged file. Gradle requires that read to depend on the task that writes it.
+  tasks.matching { it.name.startsWith("assetPack") }.configureEach {
+    dependsOn(aiPacks.map { "$it:stageModel" })
+  }
+}
 val proSrc: File = rootProject.file("pro/app/src")
 if (proEdition) {
   val locales = file("src/main/res").listFiles().orEmpty()
@@ -73,7 +85,10 @@ if (proEdition) {
     .flatMap {
       listOf(
         "main/res/${it.name}/strings_capsule.xml",
+        "main/res/${it.name}/strings_capsule_release_117.xml",
         "main/res/${it.name}/strings_modes.xml",
+        "main/res/${it.name}/strings_modes_explainer.xml",
+        "main/res/${it.name}/strings_ai.xml",
       )
     }
   val missing = (listOf(
@@ -90,11 +105,23 @@ if (proEdition) {
     "main/java/com/example/mode/ModeShortcuts.kt",
     "main/java/com/example/mode/ModeSwitchSheet.kt",
     "main/java/com/example/service/ShortcutMode.kt",
+    "main/java/com/example/ai/AiHooks.kt",
+    "main/java/com/example/ai/AiBuilderScreen.kt",
+    "main/java/com/example/ai/AiModelDelivery.kt",
+    "main/java/com/example/ai/AiRuntime.kt",
+    "main/java/com/example/ai/AiPrompt.kt",
+    "main/java/com/example/ai/AiOutput.kt",
+    "main/java/com/example/ai/AiShortcuts.kt",
+    "main/java/com/example/ai/ShortcutVocabulary.kt",
   ) + locales).filterNot { File(proSrc, it).isFile }
   require(missing.isEmpty()) { "keysnap.edition=pro, but these Pro sources are missing under $proSrc: $missing" }
+  require(rootProject.file("pro/app/proguard-ai.pro").isFile) {
+    "keysnap.edition=pro requires pro/app/proguard-ai.pro for LiteRT-LM's JNI boundary"
+  }
 }
 
 android {
+  if (proEdition) assetPacks += aiPacks
   namespace = "io.github.nicholasarda.keysnap"
   compileSdk { version = release(36) { minorApiLevel = 1 } }
 
@@ -106,8 +133,8 @@ android {
     // Mode — is an Android 11 feature anyway, so nothing below 30 could use the app's core.
     minSdk = 30
     targetSdk = 36
-    versionCode = 20
-    versionName = "1.2.0"
+    versionCode = 23
+    versionName = "1.3.1"
     buildConfigField("boolean", "CAPSULE_ACCEPTANCE_PRO", capsuleAcceptancePro.toString())
 
     val autostartStateProbe = project.hasProperty("autostartStateProbe")
@@ -157,6 +184,7 @@ android {
       isMinifyEnabled = true
       isShrinkResources = true
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+      if (proEdition) proguardFiles(rootProject.file("pro/app/proguard-ai.pro"))
       signingConfig = signingConfigs.findByName("release")
       // Exercise R8/resource shrinking on the phone without replacing the Play install.
       // Reuse the dev signature so a debug .dev install can be updated without losing its data.
@@ -193,6 +221,7 @@ android {
   // PrivacyPolicyTest reads the published policy from outside this module. Without declaring it,
   // Gradle calls the test task up-to-date after that file changes and the drift check never runs.
   tasks.withType<Test>().configureEach {
+    if (proEdition) inputs.file(rootProject.file("pro/ai/train/common.py"))
     inputs.file(rootProject.file("docs/privacy-policy.md"))
       .withPropertyName("publishedPrivacyPolicy")
       .withPathSensitivity(PathSensitivity.RELATIVE)
@@ -215,6 +244,10 @@ android {
 }
 
 dependencies {
+  if (proEdition) {
+    implementation("com.google.ai.edge.litertlm:litertlm-android:0.19.0")
+    implementation("com.google.android.play:asset-delivery:2.3.0")
+  }
   // Shared, framework-free key mapping and protocol constants. The app and the detached bridge
   // must derive identical key codes, so both compile against the same classes.
   implementation(project(":bridge"))

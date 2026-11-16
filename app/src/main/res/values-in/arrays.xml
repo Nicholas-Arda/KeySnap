@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="guide_generic_steps">
+        <item>Buka aplikasi Setelan</item>
+        <item>Buka \"Tentang ponsel\" atau \"Informasi software\"</item>
+        <item>Ketuk \"Nomor build\" 7 kali berturut-turut</item>
+        <item>Saat muncul \"Anda sekarang adalah developer\", kembali ke Setelan</item>
+        <item>Buka \"Opsi developer\" lalu aktifkan \"Proses debug nirkabel\"</item>
+    </string-array>
+    <string-array name="guide_samsung_steps">
+        <item>Buka Setelan</item>
+        <item>Buka \"Tentang ponsel\" &gt; \"Informasi software\"</item>
+        <item>Ketuk \"Nomor build\" 7 kali berturut-turut</item>
+        <item>Kembali lalu buka \"Opsi developer\"</item>
+        <item>Aktifkan \"Proses debug nirkabel\"</item>
+        <item>Jika Proses debug nirkabel tidak mau aktif atau penyambungan tidak pernah dimulai, nonaktifkan Pemblokir Otomatis di Setelan &gt; Keamanan dan privasi</item>
+    </string-array>
+    <string-array name="guide_xiaomi_steps">
+        <item>Buka Setelan</item>
+        <item>Buka \"Tentang ponsel\"</item>
+        <item>Ketuk \"Semua spesifikasi\" &gt; \"Versi MIUI\" (atau \"Versi HyperOS\") 7 kali</item>
+        <item>Kembali ke Setelan utama, buka \"Setelan tambahan\" &gt; \"Opsi developer\"</item>
+        <item>Aktifkan \"Proses debug nirkabel\"</item>
+    </string-array>
+    <string-array name="guide_huawei_steps">
+        <item>Buka Setelan</item>
+        <item>Buka \"Tentang ponsel\" &gt; \"Versi software\"</item>
+        <item>Ketuk \"Nomor build\" 7 kali berturut-turut</item>
+        <item>Buka \"Opsi developer\" di \"Sistem &amp; pembaruan\" (atau di layar utama Setelan)</item>
+        <item>Aktifkan \"Proses debug nirkabel\"</item>
+    </string-array>
+    <string-array name="guide_coloros_steps">
+        <item>Buka Setelan</item>
+        <item>Buka \"Tentang ponsel\" &gt; \"Informasi versi\"</item>
+        <item>Ketuk \"Nomor build\" 7 kali berturut-turut</item>
+        <item>Kembali ke Setelan utama, buka \"Setelan tambahan\" &gt; \"Opsi developer\"</item>
+        <item>Aktifkan \"Proses debug nirkabel\"</item>
+    </string-array>
+    <string-array name="guide_vivo_steps">
+        <item>Buka Setelan</item>
+        <item>Buka \"Tentang ponsel\" (mungkin ada di \"Setelan lainnya\")</item>
+        <item>Ketuk \"Versi software\" 7 kali berturut-turut</item>
+        <item>Kembali, buka \"Manajemen sistem\" &gt; \"Opsi developer\"</item>
+        <item>Aktifkan \"Proses debug nirkabel\"</item>
+    </string-array>
+    <string-array name="guide_pixel_steps">
+        <item>Buka Setelan</item>
+        <item>Buka \"Tentang ponsel\"</item>
+        <item>Ketuk \"Nomor build\" 7 kali berturut-turut</item>
+        <item>Kembali ke Setelan utama, buka \"Sistem\" &gt; \"Opsi developer\"</item>
+        <item>Aktifkan \"Proses debug nirkabel\"</item>
+    </string-array>
+    <string-array name="wizard_can_do_lines">
+        <item>Membaca semua tombol hardware tanpa jeda</item>
+        <item>Menjalankan perubahan setelan dan perintah yang Anda tulis</item>
+        <item>Tetap bekerja saat aplikasi ditutup</item>
+    </string-array>
+    <string-array name="wizard_never_does_lines">
+        <item>Mengambil alih input dari aplikasi lain</item>
+        <item>Membaca layar aplikasi lain</item>
+        <item>Mengirim apa pun yang tidak Anda masukkan ke pintasan</item>
+    </string-array>
+    <string-array name="wizard_pairing_steps">
+        <item>Ketuk tombol di bawah untuk membuka setelan Proses debug nirkabel.</item>
+        <item>KeySnap mengetuk ‘Sambungkan perangkat dengan kode penyambungan’ untuk Anda; jika tidak, ketuk sendiri.</item>
+        <item>Kami akan membaca kode penyambungan dan terhubung otomatis.</item>
+    </string-array>
+</resources>

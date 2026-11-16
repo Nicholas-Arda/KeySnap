@@ -36,6 +36,7 @@ import com.example.service.HardwareKeyTriggerCoordinator
 import com.example.ui.MainScreen
 import com.example.ui.components.BottomBarClearance
 import com.example.ui.settings.RecordingIndicator
+import com.example.surface.ShortcutTileService
 import com.example.ui.theme.MyApplicationTheme
 import com.example.ui.theme.resolveThemeMode
 import com.example.viewmodel.MainViewModel
@@ -60,6 +61,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         requestFastestRefreshRate()
+        // A fresh install lists one KeySnap tile in the Quick Settings edit panel, not three.
+        ShortcutTileService.syncSlots(applicationContext)
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.RESUMED) {
                 while (true) {

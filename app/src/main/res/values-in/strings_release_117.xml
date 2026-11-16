@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_editor_title">Editor pintasan yang lebih simpel</string>
+    <string name="whats_new_editor_description">Editor pintasan yang lebih jelas, dengan perekaman tombol di tempat dan buka-tutup yang lebih mulus.</string>
+    <string name="whats_new_fix_update_startup">Memperbaiki crash saat membuka KeySnap setelah update</string>
+    <string name="whats_new_dutch_title">Kini dalam bahasa Belanda</string>
+    <string name="whats_new_dutch_description">Gunakan KeySnap dalam bahasa Belanda. Pilih Nederlands di Setelan → Bahasa.</string>
+</resources>

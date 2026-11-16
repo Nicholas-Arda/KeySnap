@@ -27,18 +27,24 @@ object AppLocale {
     /** Persisted tag to its label. The empty tag is "System default". */
     val options: List<Pair<String, Int>> = listOf(
         "" to R.string.language_system,
-        // Alphabetical by native name: Latin script first, then Cyrillic, Arabic, Devanagari.
+        // Alphabetical by native name: Latin script first, then Cyrillic, Arabic, Devanagari, Hangul.
+        // Android 11+ matches the BCP-47 "id" to the legacy values-in folder; keep "id" as the one choice.
+        "id" to R.string.language_indonesian,
         "de" to R.string.language_german,
         "en" to R.string.language_english,
         "es" to R.string.language_spanish,
+        // Android 11+ resource matching treats legacy "tl" as "fil" too; keep one catalog/choice.
+        "fil" to R.string.language_filipino,
         "fr" to R.string.language_french,
         "it" to R.string.language_italian,
         "nl" to R.string.language_dutch,
         "pt-BR" to R.string.language_portuguese,
+        "vi" to R.string.language_vietnamese,
         "tr" to R.string.language_turkish,
         "ru" to R.string.language_russian,
         "ar" to R.string.language_arabic,
         "hi" to R.string.language_hindi,
+        "ko" to R.string.language_korean,
     )
 
     @StringRes
@@ -58,6 +64,10 @@ object AppLocale {
         "it" -> "🇮🇹"
         "hi" -> "🇮🇳"
         "nl" -> "🇳🇱"
+        "fil" -> "🇵🇭"
+        "ko" -> "🇰🇷"
+        "id" -> "🇮🇩"
+        "vi" -> "🇻🇳"
         else -> ""
     }
 

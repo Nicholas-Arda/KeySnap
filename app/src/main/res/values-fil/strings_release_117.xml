@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="whats_new_editor_title">Mas simpleng shortcut editor</string>
+    <string name="whats_new_editor_description">Mas malinaw na shortcut editor na may pag-record ng button sa mismong editor at mas maayos na pagbukas at pagsara.</string>
+    <string name="whats_new_fix_update_startup">Naayos ang pag-crash kapag binubuksan ang KeySnap pagkatapos ng update</string>
+    <string name="whats_new_dutch_title">Available na sa Dutch</string>
+    <string name="whats_new_dutch_description">Gamitin ang KeySnap sa Dutch. Piliin ang Nederlands sa Settings → Wika.</string>
+</resources>

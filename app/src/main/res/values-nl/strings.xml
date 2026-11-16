@@ -632,6 +632,7 @@
     <string name="pro_progress_description">%1$d van %2$d actieve snelkoppelingen</string>
     <string name="pro_unlock">Pro ontgrendelen</string>
     <string name="pro_unlock_with_price">Pro ontgrendelen · %1$s</string>
+    <string name="pro_purchase_unavailable">Kopen is nu niet beschikbaar</string>
     <string name="pro_table_free">Gratis</string>
     <string name="pro_table_pro">Pro</string>
     <string name="pro_table_unlimited">Onbeperkt</string>
@@ -758,7 +759,7 @@
     <string name="wizard_connecting_body">De geavanceerde modus wordt gestart. Dit duurt enkele seconden. Houd dit scherm open.</string>
     <string name="wizard_kernel_stream">Live kernelgebeurtenissen</string>
     <string name="pairing_idle">Wachten op koppeling…</string>
-    <string name="pairing_not_started">Tik op de knop hierboven om te koppelen</string>
+    <string name="pairing_not_started">Wacht tot je de instellingen opent</string>
     <string name="pairing_searching">Koppelingsscherm zoeken…</string>
     <string name="pairing_captured">Koppelingscode gelezen…</string>
     <string name="pairing_in_progress">Koppelen…</string>
@@ -816,7 +817,7 @@
     <!-- Widgets en tegels -->
     <string name="trigger_kind_key">Knopdruk</string>
     <string name="trigger_kind_automation">Automatisering</string>
-    <string name="automation_card_subtitle">Wordt uitgevoerd wanneer de onderstaande voorwaarden waar worden</string>
+    <string name="automation_card_subtitle">Wordt uitgevoerd wanneer de bovenstaande voorwaarden waar worden</string>
     <string name="surface_paused_global">KeySnap is gepauzeerd. Hervat in de app om snelkoppelingen uit te voeren.</string>
     <string name="surface_paused_script">‘%1$s’ staat uit. Schakel deze in KeySnap in om deze uit te voeren.</string>
     <string name="surface_conditions_unmet">‘%1$s’ is niet uitgevoerd: niet aan de voorwaarden onder Alleen als voldaan.</string>
@@ -828,18 +829,29 @@
     <string name="surface_card_subtitle">Wordt uitgevoerd als je op de startschermwidget of de tegel in Snelle instellingen tikt</string>
     <string name="run_source_widget">Widget</string>
     <string name="run_source_tile">Tegel in Snelle instellingen</string>
-    <string name="widget_limit_reached">Gratis versie: %1$d startschermwidgets. Neem Pro voor onbeperkt widgets.</string>
-    <string name="widget_style_title">Widgetstijl</string>
     <string name="widget_style_color">Kleur</string>
     <string name="widget_color_blue">Blauw</string>
     <string name="widget_color_wallpaper">Achtergrond</string>
     <string name="widget_color_dark">Donker</string>
     <string name="widget_color_light">Licht</string>
     <string name="widget_style_opacity">Dekking achtergrond</string>
-    <string name="widget_style_show_label">Naam tonen</string>
     <string name="widget_style_custom_label">Eigen naam</string>
     <string name="widget_style_custom_label_hint">Laat leeg om de naam van de snelkoppeling te gebruiken</string>
-    <string name="widget_style_show_icon">Pictogram tonen</string>
+    <string name="surface_all_shortcuts">Alle snelkoppelingen</string>
+    <string name="surface_all_shortcuts_sub">KeySnap aan- of uitzetten</string>
+    <string name="widget_tap_title">Tik om</string>
+    <string name="widget_tap_run">Uitvoeren</string>
+    <string name="widget_tap_toggle">Aan- of uitzetten</string>
+    <string name="widget_style_look">Uiterlijk</string>
+    <string name="widget_look_classic">Klassiek</string>
+    <string name="widget_style_on_color">Kleur bij aan</string>
+    <string name="widget_form_title">Stijl</string>
+    <string name="widget_form_tile">Tegels</string>
+    <string name="widget_form_state">Grote status</string>
+    <string name="widget_form_capsule">Capsule</string>
+    <string name="widget_part_name">Naam</string>
+    <string name="widget_part_icon">Pictogram</string>
+    <string name="widget_color_auto">Automatisch</string>
     <string name="oem_key_tip">Tip: stel deze knop in de instellingen van je telefoon in op ‘Geen’, zodat alleen KeySnap erop reageert.</string>
 
     <!-- Kant-en-klare opdrachten en routines -->

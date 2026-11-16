@@ -271,8 +271,12 @@ internal fun SuggestedShortcut.matches(script: ShortcutScript): Boolean =
 fun iconForScript(script: ShortcutScript): ImageVector {
     val suggestion = SuggestedShortcuts.ordered.firstOrNull { it.matches(script) }
         ?: return actionIconFor(script.actions.firstOrNull()?.type.orEmpty())
-    return suggestionIcons[suggestion.id] ?: actionIconFor(suggestion.iconType)
+    return iconForSuggestion(suggestion)
 }
+
+/** The glyph Home shows for [suggestion]; the AI window's examples use it too, so one recipe has one icon. */
+fun iconForSuggestion(suggestion: SuggestedShortcut): ImageVector =
+    suggestionIcons[suggestion.id] ?: actionIconFor(suggestion.iconType)
 
 @Composable
 private fun SuggestionRow(suggestion: SuggestedShortcut, onPick: (SuggestedShortcut) -> Unit) {
@@ -299,7 +303,7 @@ private fun SuggestionRow(suggestion: SuggestedShortcut, onPick: (SuggestedShort
         val stacked = isNarrow(maxWidth)
         Row(verticalAlignment = Alignment.CenterVertically) {
             IconTile(
-                suggestionIcons[suggestion.id] ?: actionIconFor(suggestion.iconType),
+                iconForSuggestion(suggestion),
                 // Same rule as a built shortcut's row, so the colour does not change once it is built.
                 ScriptActionCatalog.descriptor(suggestion.actions.first().type)?.category,
                 // Narrow, a smaller tile and gutter leave "Воспроизведение" room for a line of its own.

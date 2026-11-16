@@ -131,7 +131,7 @@ fun UsageAccessSheet(onOpenSettings: () -> Unit, onDismiss: () -> Unit) {
                 FactColumn(R.string.setup_does, listOf(R.string.setup_usage_sees, R.string.setup_usage_for),
                     false, setupSuccess(), Modifier.weight(1f))
                 FactColumn(R.string.setup_does_not, listOf(R.string.setup_no_content, R.string.setup_nothing_saved),
-                    false, MaterialTheme.colorScheme.primary, Modifier.weight(1f))
+                    true, MaterialTheme.colorScheme.primary, Modifier.weight(1f))
             }
             Button(onClick = onOpenSettings, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.action_open_settings)) }
             TextButton(onClick = onDismiss, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.setup_not_now)) }
@@ -187,7 +187,7 @@ fun SetupStepSheet(step: SetupStep, onConfirm: () -> Unit, onDismiss: () -> Unit
                     SetupStep.Accessibility -> R.string.setup_cannot
                     SetupStep.Background -> R.string.setup_does_not
                     SetupStep.Notifications -> R.string.setup_promise
-                }, reassurance, step == SetupStep.Accessibility,
+                }, reassurance, step != SetupStep.Notifications,
                     if (step == SetupStep.Accessibility) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
                     Modifier.weight(1f))
             }

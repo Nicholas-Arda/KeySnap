@@ -55,7 +55,7 @@
     <string name="param_times">Anzahl</string>
 
     <!-- Aktionen: Taschenlampe -->
-    <string name="action_toggle_flashlight">Taschenlampe umschalten</string>
+    <string name="action_toggle_flashlight">Lampe an/aus</string>
     <string name="action_enable_flashlight">Taschenlampe einschalten</string>
     <string name="action_disable_flashlight">Taschenlampe ausschalten</string>
     <string name="action_change_flashlight_brightness">Taschenlampenhelligkeit ändern</string>
@@ -216,8 +216,8 @@
     <string name="constraint_flashlight_off">Taschenlampe ist aus</string>
     <string name="constraint_wifi_on">WLAN ist an</string>
     <string name="constraint_wifi_off">WLAN ist aus</string>
-    <string name="constraint_connected_to_wifi_network">Mit einem WLAN-Netzwerk verbunden</string>
-    <string name="constraint_disconnected_from_wifi_network">Nicht mit einem WLAN-Netzwerk verbunden</string>
+    <string name="constraint_connected_to_wifi_network">Mit WLAN verbunden</string>
+    <string name="constraint_disconnected_from_wifi_network">Nicht mit WLAN verbunden</string>
     <string name="constraint_input_method_chosen">Eingabemethode ist ausgewählt</string>
     <string name="constraint_input_method_not_chosen">Eingabemethode ist nicht ausgewählt</string>
     <string name="constraint_keyboard_showing">Tastatur wird angezeigt</string>
@@ -689,6 +689,7 @@
     <string name="pro_progress_description">%1$d von %2$d aktiven Kurzbefehlen</string>
     <string name="pro_unlock">Pro freischalten</string>
     <string name="pro_unlock_with_price">Pro freischalten · %1$s</string>
+    <string name="pro_purchase_unavailable">Kauf ist gerade nicht verfügbar</string>
     <string name="pro_table_free">Kostenlos</string>
     <string name="pro_table_pro">Pro</string>
     <string name="pro_table_unlimited">Unbegrenzt</string>
@@ -824,7 +825,7 @@
 
     <!-- Kopplungsstatus -->
     <string name="pairing_idle">Warten auf Kopplung…</string>
-    <string name="pairing_not_started">Tippe oben auf die Schaltfläche, um die Kopplung zu starten</string>
+    <string name="pairing_not_started">Warte darauf, dass du die Einstellungen öffnest</string>
     <string name="pairing_searching">Suche nach dem Kopplungsbildschirm…</string>
     <string name="pairing_captured">Kopplungscode erfasst…</string>
     <string name="pairing_in_progress">Koppeln…</string>
@@ -894,7 +895,7 @@
     <!-- Auslöserart-Auswahl -->
     <string name="trigger_kind_key">Tastendruck</string>
     <string name="trigger_kind_automation">Automatisierung</string>
-    <string name="automation_card_subtitle">Wird ausgeführt, sobald die Bedingungen unten eintreten</string>
+    <string name="automation_card_subtitle">Wird ausgeführt, sobald die Bedingungen oben eintreten</string>
     <!-- Home-screen widget and Quick Settings tiles -->
     <string name="surface_paused_global">KeySnap ist pausiert. Setze es in der App fort, um Kurzbefehle auszuführen.</string>
     <string name="surface_paused_script">„%1$s“ ist aus. Schalte ihn in KeySnap ein, um ihn auszuführen.</string>
@@ -907,19 +908,30 @@
     <string name="surface_card_subtitle">Wird ausgeführt, wenn du auf sein Startbildschirm-Widget oder seine Schnelleinstellungen-Kachel tippst</string>
     <string name="run_source_widget">Widget</string>
     <string name="run_source_tile">Schnelleinstellungen-Kachel</string>
-    <string name="widget_limit_reached">Kostenloser Plan: %1$d Startbildschirm-Widgets. Hol dir Pro für unbegrenzte Widgets.</string>
     <!-- Widget style step -->
-    <string name="widget_style_title">Widget-Stil</string>
     <string name="widget_style_color">Farbe</string>
     <string name="widget_color_blue">Blau</string>
     <string name="widget_color_wallpaper">Hintergrundbild</string>
     <string name="widget_color_dark">Dunkel</string>
     <string name="widget_color_light">Hell</string>
     <string name="widget_style_opacity">Deckkraft des Hintergrunds</string>
-    <string name="widget_style_show_label">Namen anzeigen</string>
     <string name="widget_style_custom_label">Eigener Name</string>
     <string name="widget_style_custom_label_hint">Leer lassen, um den Namen des Kurzbefehls zu verwenden</string>
-    <string name="widget_style_show_icon">Symbol anzeigen</string>
+    <string name="surface_all_shortcuts">Alle Kurzbefehle</string>
+    <string name="surface_all_shortcuts_sub">KeySnap ein- oder ausschalten</string>
+    <string name="widget_tap_title">Tippen zum</string>
+    <string name="widget_tap_run">Ausführen</string>
+    <string name="widget_tap_toggle">Ein- oder ausschalten</string>
+    <string name="widget_style_look">Aussehen</string>
+    <string name="widget_look_classic">Klassisch</string>
+    <string name="widget_style_on_color">Farbe wenn an</string>
+    <string name="widget_form_title">Stil</string>
+    <string name="widget_form_tile">Kacheln</string>
+    <string name="widget_form_state">Großer Status</string>
+    <string name="widget_form_capsule">Kapsel</string>
+    <string name="widget_part_name">Name</string>
+    <string name="widget_part_icon">Symbol</string>
+    <string name="widget_color_auto">Automatisch</string>
     <!-- OEM key tip -->
     <string name="oem_key_tip">Tipp: Stell diese Taste in den Einstellungen deines Telefons auf „Keine“, damit nur KeySnap darauf reagiert.</string>
     <!-- Recipe gallery -->

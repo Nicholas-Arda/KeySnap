@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_assistant_gesture_title">전원 키로 내 단축키 실행</string>
+    <string name="whats_new_assistant_gesture_description">KeySnap을 휴대전화의 어시스턴트로 설정하세요. 전원 키 길게 누르기를 어시스턴트로 보내는 휴대전화에서 “어시스턴트 제스처” 단축키가 실행돼요.</string>
+    <string name="whats_new_home_only_title">홈 또는 잠금 화면에서만</string>
+    <string name="whats_new_home_only_description">“조건”에 “열린 앱 없음”을 추가하면 앱 안에서는 볼륨 키가 평소대로 작동해요. 사용 정보 접근 권한이 필요해요.</string>
+    <string name="whats_new_fix_coloros_dnd">고급 모드에서 ColorOS의 방해 금지 동작이 작동해요</string>
+    <string name="whats_new_fix_conditional_volume">단축키 조건이 충족될 때만 볼륨 키를 가져와요</string>
+    <string name="rating_prompt_title">KeySnap이 제 역할을 하고 있나요?</string>
+    <string name="rating_prompt_body">Google Play 평가가 큰 도움이 돼요.</string>
+    <string name="rating_prompt_rate">평가하기</string>
+    <string name="rating_prompt_later">나중에</string>
+    <string name="rating_prompt_no_thanks">괜찮아요</string>
+</resources>

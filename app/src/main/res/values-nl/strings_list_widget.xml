@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="list_widget_label">KeySnap-snelkoppelingen</string>
+    <string name="list_widget_description">Zet je snelkoppelingen aan of uit</string>
+    <string name="list_widget_show_live">Knop Actief</string>
+    <string name="list_widget_show_keys">Toetsen</string>
+    <string name="list_widget_show_header">Naam en pictogram</string>
+    <string name="list_widget_show">Tonen</string>
+    <string name="list_widget_previous_page">Vorige pagina</string>
+    <string name="list_widget_next_page">Volgende pagina</string>
+</resources>

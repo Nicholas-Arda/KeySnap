@@ -687,6 +687,7 @@
     <string name="pro_progress_description">%2$d etkin kısayoldan %1$d tanesi</string>
     <string name="pro_unlock">Pro\'yu aç</string>
     <string name="pro_unlock_with_price">Pro\'yu aç · %1$s</string>
+    <string name="pro_purchase_unavailable">Satın alma şu anda kullanılamıyor</string>
     <string name="pro_table_free">Ücretsiz</string>
     <string name="pro_table_pro">Pro</string>
     <string name="pro_table_unlimited">Sınırsız</string>
@@ -822,7 +823,7 @@
 
     <!-- Eşleştirme durumu -->
     <string name="pairing_idle">Eşleştirme bekleniyor…</string>
-    <string name="pairing_not_started">Eşleştirmeyi başlatmak için yukarıdaki düğmeye dokunun</string>
+    <string name="pairing_not_started">Ayarları açmanız bekleniyor</string>
     <string name="pairing_searching">Eşleştirme ekranı aranıyor…</string>
     <string name="pairing_captured">Eşleştirme kodu alındı…</string>
     <string name="pairing_in_progress">Eşleştiriliyor…</string>
@@ -892,7 +893,7 @@
     <!-- Tetikleyici türü seçici -->
     <string name="trigger_kind_key">Tuş Basışı</string>
     <string name="trigger_kind_automation">Otomasyon</string>
-    <string name="automation_card_subtitle">Aşağıdaki koşullar sağlandığı anda çalışır</string>
+    <string name="automation_card_subtitle">Yukarıdaki koşullar sağlandığı anda çalışır</string>
     <!-- Home-screen widget and Quick Settings tiles -->
     <string name="surface_paused_global">KeySnap duraklatıldı. Kısayolları çalıştırmak için uygulamadan devam ettirin.</string>
     <string name="surface_paused_script">\"%1$s\" kapalı. Çalıştırmak için KeySnap\'te açın.</string>
@@ -905,19 +906,30 @@
     <string name="surface_card_subtitle">Ana ekran widget\'ına ya da Hızlı Ayarlar kutucuğuna dokununca çalışır</string>
     <string name="run_source_widget">Widget</string>
     <string name="run_source_tile">Hızlı Ayarlar kutucuğu</string>
-    <string name="widget_limit_reached">Ücretsiz plan: %1$d ana ekran widget\'ı. Sınırsız widget için Pro\'ya geçin.</string>
     <!-- Widget style step -->
-    <string name="widget_style_title">Widget stili</string>
     <string name="widget_style_color">Renk</string>
     <string name="widget_color_blue">Mavi</string>
     <string name="widget_color_wallpaper">Duvar kâğıdı</string>
     <string name="widget_color_dark">Koyu</string>
     <string name="widget_color_light">Açık</string>
     <string name="widget_style_opacity">Arka plan opaklığı</string>
-    <string name="widget_style_show_label">Adı göster</string>
     <string name="widget_style_custom_label">Özel ad</string>
     <string name="widget_style_custom_label_hint">Kısayolun adını kullanmak için boş bırakın</string>
-    <string name="widget_style_show_icon">Simgeyi göster</string>
+    <string name="surface_all_shortcuts">Tüm kısayollar</string>
+    <string name="surface_all_shortcuts_sub">KeySnap\'i aç veya kapat</string>
+    <string name="widget_tap_title">Dokununca</string>
+    <string name="widget_tap_run">Çalıştır</string>
+    <string name="widget_tap_toggle">Aç / kapat</string>
+    <string name="widget_style_look">Görünüm</string>
+    <string name="widget_look_classic">Klasik</string>
+    <string name="widget_style_on_color">Açıkken renk</string>
+    <string name="widget_form_title">Stil</string>
+    <string name="widget_form_tile">Kutucuk</string>
+    <string name="widget_form_state">Büyük durum</string>
+    <string name="widget_form_capsule">Kapsül</string>
+    <string name="widget_part_name">Ad</string>
+    <string name="widget_part_icon">Simge</string>
+    <string name="widget_color_auto">Otomatik</string>
     <!-- OEM key tip -->
     <string name="oem_key_tip">İpucu: Telefon ayarlarında bu tuşu “Yok” olarak ayarlayın; böylece yalnızca KeySnap tepki verir.</string>
     <!-- Recipe gallery -->

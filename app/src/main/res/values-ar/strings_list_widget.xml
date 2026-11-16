@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="list_widget_label">اختصارات KeySnap</string>
+    <string name="list_widget_description">شغّل اختصاراتك أو أوقفها</string>
+    <string name="list_widget_show_live">زر نشط</string>
+    <string name="list_widget_show_keys">المفاتيح</string>
+    <string name="list_widget_show_header">الاسم والأيقونة</string>
+    <string name="list_widget_show">إظهار</string>
+    <string name="list_widget_previous_page">الصفحة السابقة</string>
+    <string name="list_widget_next_page">الصفحة التالية</string>
+</resources>

@@ -690,6 +690,7 @@
     <string name="pro_progress_description">%1$d di %2$d scorciatoie attive</string>
     <string name="pro_unlock">Sblocca Pro</string>
     <string name="pro_unlock_with_price">Sblocca Pro · %1$s</string>
+    <string name="pro_purchase_unavailable">L\'acquisto non è disponibile al momento</string>
     <string name="pro_table_free">Gratis</string>
     <string name="pro_table_pro">Pro</string>
     <string name="pro_table_unlimited">Illimitate</string>
@@ -825,7 +826,7 @@
 
     <!-- Stato dell\'accoppiamento -->
     <string name="pairing_idle">In attesa di accoppiamento…</string>
-    <string name="pairing_not_started">Tocca il pulsante qui sopra per avviare l\'accoppiamento</string>
+    <string name="pairing_not_started">In attesa che apra le impostazioni</string>
     <string name="pairing_searching">Ricerca della schermata di accoppiamento…</string>
     <string name="pairing_captured">Codice di accoppiamento acquisito…</string>
     <string name="pairing_in_progress">Accoppiamento…</string>
@@ -896,7 +897,7 @@
     <!-- Selettore tipo di trigger -->
     <string name="trigger_kind_key">Pressione tasto</string>
     <string name="trigger_kind_automation">Automazione</string>
-    <string name="automation_card_subtitle">Viene eseguita quando le condizioni qui sotto diventano vere</string>
+    <string name="automation_card_subtitle">Viene eseguita quando le condizioni qui sopra diventano vere</string>
     <!-- Home-screen widget and Quick Settings tiles -->
     <string name="surface_paused_global">KeySnap è in pausa. Riprendilo nell\'app per eseguire le scorciatoie.</string>
     <string name="surface_paused_script">\"%1$s\" è disattivata. Attivala in KeySnap per eseguirla.</string>
@@ -909,19 +910,30 @@
     <string name="surface_card_subtitle">Viene eseguita quando tocchi il suo widget nella schermata Home o il suo riquadro nelle impostazioni rapide</string>
     <string name="run_source_widget">Widget</string>
     <string name="run_source_tile">Riquadro delle impostazioni rapide</string>
-    <string name="widget_limit_reached">Piano gratuito: %1$d widget nella schermata Home. Passa a Pro per widget illimitati.</string>
     <!-- Widget style step -->
-    <string name="widget_style_title">Stile del widget</string>
     <string name="widget_style_color">Colore</string>
     <string name="widget_color_blue">Blu</string>
     <string name="widget_color_wallpaper">Sfondo</string>
     <string name="widget_color_dark">Scuro</string>
     <string name="widget_color_light">Chiaro</string>
     <string name="widget_style_opacity">Opacità dello sfondo</string>
-    <string name="widget_style_show_label">Mostra nome</string>
     <string name="widget_style_custom_label">Nome personalizzato</string>
     <string name="widget_style_custom_label_hint">Lascia vuoto per usare il nome della scorciatoia</string>
-    <string name="widget_style_show_icon">Mostra icona</string>
+    <string name="surface_all_shortcuts">Tutte le scorciatoie</string>
+    <string name="surface_all_shortcuts_sub">Attiva o disattiva KeySnap</string>
+    <string name="widget_tap_title">Tocca per</string>
+    <string name="widget_tap_run">Eseguirla</string>
+    <string name="widget_tap_toggle">Attivare o disattivare</string>
+    <string name="widget_style_look">Aspetto</string>
+    <string name="widget_look_classic">Classico</string>
+    <string name="widget_style_on_color">Colore attivo</string>
+    <string name="widget_form_title">Stile</string>
+    <string name="widget_form_tile">Riquadri</string>
+    <string name="widget_form_state">Stato grande</string>
+    <string name="widget_form_capsule">Capsula</string>
+    <string name="widget_part_name">Nome</string>
+    <string name="widget_part_icon">Icona</string>
+    <string name="widget_color_auto">Automatico</string>
     <!-- OEM key tip -->
     <string name="oem_key_tip">Suggerimento: imposta questo tasto su “Nessuno” nelle impostazioni del telefono, così reagisce solo KeySnap.</string>
     <!-- Recipe gallery -->

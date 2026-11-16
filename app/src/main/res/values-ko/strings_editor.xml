@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="editor_chain_if">조건</string>
+    <string name="editor_fine_tune">세부 설정</string>
+    <string name="editor_fine_tune_summary">이름 · 모드 · 진동</string>
+    <string name="editor_highlight_hint">강조된 단어를 탭해 바꾸세요.</string>
+    <string name="editor_press">누르기</string>
+    <string name="editor_save_shortcut">단축키 저장</string>
+    <string name="editor_test">테스트</string>
+</resources>

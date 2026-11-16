@@ -10,7 +10,6 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.AirplanemodeActive
 import androidx.compose.material.icons.outlined.Android
@@ -47,6 +46,7 @@ import androidx.compose.material.icons.outlined.LastPage
 import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.LocationOff
 import androidx.compose.material.icons.outlined.LockOpen
+import androidx.compose.material.icons.outlined.Mic
 import androidx.compose.material.icons.outlined.MusicNote
 import androidx.compose.material.icons.outlined.Navigation
 import androidx.compose.material.icons.outlined.Nfc
@@ -115,7 +115,7 @@ private val perActionIcons: Map<String, ImageVector> = mapOf(
     "shell_command" to Icons.Outlined.Terminal,
     "send_intent" to Icons.Outlined.Code,
     "interact_with_app_element" to Icons.Outlined.TouchApp,
-    "launch_voice_assistant" to Icons.Filled.Send,
+    "launch_voice_assistant" to Icons.Outlined.Mic,
     "launch_device_assistant" to Icons.Outlined.Android,
     "open_camera" to Icons.Outlined.CameraAlt,
     "open_settings" to Icons.Filled.Settings,
@@ -230,6 +230,10 @@ private val categoryFallbackIcons: Map<ActionCategory, ImageVector> = mapOf(
     ActionCategory.SOUND to Icons.Outlined.MusicNote,
     ActionCategory.AUTOMATION to Icons.Outlined.AutoAwesome,
 )
+
+/** Every distinct action glyph, keyed by the first action type that draws it; a tile's icon is stored by that type. */
+fun actionIconChoices(): List<Pair<String, ImageVector>> =
+    perActionIcons.entries.distinctBy { it.value }.map { it.key to it.value }
 
 /** Falls back to a category icon, then to a generic glyph, so a new catalog entry never crashes the picker. */
 fun actionIcon(type: String, category: ActionCategory? = null): ImageVector =

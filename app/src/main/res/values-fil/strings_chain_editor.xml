@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="chain_is">AY</string>
+    <string name="chain_not">HINDI</string>
+    <string name="chain_action_empty">Hindi puwedeng walang laman ang aksyon</string>
+    <string name="chain_condition_empty">Suriin ang settings ng kondisyon</string>
+    <string name="chain_shell_limited">Limitado ang shell dito</string>
+    <string name="chain_set_up">I-set up</string>
+    <string name="chain_test_running">Sinusubukan ang aksyon</string>
+    <string name="chain_test_success">Matagumpay ang pagsubok</string>
+    <string name="chain_test_failure">Hindi nagtagumpay ang pagsubok</string>
+    <string name="chain_test_action">Subukan ang aksyon</string>
+    <string name="chain_test_timeout">Naubos ang oras</string>
+    <string name="chain_http_status">HTTP %1$d</string>
+    <string name="chain_exit_code">Exit %1$d</string>
+    <string name="chain_test_result">%1$s %2$s · %3$s · %4$s s</string>
+    <string name="chain_needs_condition">Magdagdag muna ng kondisyon</string>
+</resources>

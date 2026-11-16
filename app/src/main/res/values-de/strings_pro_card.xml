@@ -2,6 +2,7 @@
 <resources>
     <string name="pro_card_pay_once">Einmal zahlen, für immer behalten.</string>
     <string name="pro_table_what_you_get">Das bekommst du</string>
+    <string name="pro_table_ai">Kurzbefehl beschreiben (KI)</string>
     <string name="pro_table_modes">Kurzbefehl-Modi</string>
     <string name="pro_table_future">Künftige Pro-Funktionen</string>
     <string name="pro_table_everything_else">Alle anderen Funktionen</string>

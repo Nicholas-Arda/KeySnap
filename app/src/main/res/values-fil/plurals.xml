@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Filipino nouns do not take a plural ending, and the "one" category also covers 0, 2, 3 and
+     other amounts, so both quantities use the same wording. The number does the counting. -->
+<resources>
+    <plurals name="scripts_action_count">
+        <item quantity="one">%1$d aksyon</item>
+        <item quantity="other">%1$d aksyon</item>
+    </plurals>
+    <plurals name="home_suggestion_steps">
+        <item quantity="one">%1$d hakbang</item>
+        <item quantity="other">%1$d hakbang</item>
+    </plurals>
+    <plurals name="run_all">
+        <item quantity="one">Naisagawa ang lahat ng %1$d aksyon</item>
+        <item quantity="other">Naisagawa ang lahat ng %1$d aksyon</item>
+    </plurals>
+    <plurals name="settings_log_event_count">
+        <item quantity="one">%1$d event</item>
+        <item quantity="other">%1$d event</item>
+    </plurals>
+    <plurals name="saved_needs_config">
+        <item quantity="one">Na-save. Kailangan pang i-configure ang %1$d aksyon.</item>
+        <item quantity="other">Na-save. Kailangan pang i-configure ang %1$d aksyon.</item>
+    </plurals>
+</resources>

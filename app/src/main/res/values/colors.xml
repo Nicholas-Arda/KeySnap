@@ -14,4 +14,9 @@
     <color name="widget_dark">#FF1C1C1E</color>
     <color name="widget_light">#FFF4F5F7</color>
     <color name="widget_on_light">#FF1C1C1E</color>
+    <!-- The Pixel widget look (WidgetLook.PIXEL): Android 16 Quick Settings tones; dynamic on API 31+. -->
+    <color name="widget_pixel_surface">#FF13211F</color>
+    <color name="widget_pixel_chip">#FF2A3A39</color>
+    <color name="widget_pixel_on_surface">#FFDDE7E6</color>
+    <color name="widget_pixel_accent">#FF97F0FA</color>
 </resources>

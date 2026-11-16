@@ -690,6 +690,7 @@
     <string name="pro_progress_description">%1$d de %2$d accesos directos activos</string>
     <string name="pro_unlock">Desbloquear Pro</string>
     <string name="pro_unlock_with_price">Desbloquear Pro · %1$s</string>
+    <string name="pro_purchase_unavailable">La compra no está disponible ahora</string>
     <string name="pro_table_free">Gratis</string>
     <string name="pro_table_pro">Pro</string>
     <string name="pro_table_unlimited">Ilimitado</string>
@@ -825,7 +826,7 @@
 
     <!-- Estado del emparejamiento -->
     <string name="pairing_idle">Esperando emparejamiento…</string>
-    <string name="pairing_not_started">Toca el botón de arriba para iniciar el emparejamiento</string>
+    <string name="pairing_not_started">Esperando a que abras los ajustes</string>
     <string name="pairing_searching">Buscando la pantalla de emparejamiento…</string>
     <string name="pairing_captured">Código de emparejamiento capturado…</string>
     <string name="pairing_in_progress">Emparejando…</string>
@@ -895,7 +896,7 @@
     <!-- Selector de tipo de disparador -->
     <string name="trigger_kind_key">Pulsación de tecla</string>
     <string name="trigger_kind_automation">Automatización</string>
-    <string name="automation_card_subtitle">Se ejecuta cuando se cumplen las condiciones de abajo</string>
+    <string name="automation_card_subtitle">Se ejecuta cuando se cumplen las condiciones de arriba</string>
     <!-- Home-screen widget and Quick Settings tiles -->
     <string name="surface_paused_global">KeySnap está en pausa. Reanúdalo en la app para ejecutar accesos directos.</string>
     <string name="surface_paused_script">\"%1$s\" está desactivado. Actívalo en KeySnap para ejecutarlo.</string>
@@ -908,19 +909,30 @@
     <string name="surface_card_subtitle">Se ejecuta al tocar su widget de la pantalla de inicio o su icono de ajustes rápidos</string>
     <string name="run_source_widget">Widget</string>
     <string name="run_source_tile">Icono de ajustes rápidos</string>
-    <string name="widget_limit_reached">Plan gratuito: %1$d widgets en la pantalla de inicio. Pásate a Pro para widgets ilimitados.</string>
     <!-- Widget style step -->
-    <string name="widget_style_title">Estilo del widget</string>
     <string name="widget_style_color">Color</string>
     <string name="widget_color_blue">Azul</string>
     <string name="widget_color_wallpaper">Fondo de pantalla</string>
     <string name="widget_color_dark">Oscuro</string>
     <string name="widget_color_light">Claro</string>
     <string name="widget_style_opacity">Opacidad del fondo</string>
-    <string name="widget_style_show_label">Mostrar nombre</string>
     <string name="widget_style_custom_label">Nombre personalizado</string>
     <string name="widget_style_custom_label_hint">Déjalo vacío para usar el nombre del acceso directo</string>
-    <string name="widget_style_show_icon">Mostrar icono</string>
+    <string name="surface_all_shortcuts">Todos los accesos directos</string>
+    <string name="surface_all_shortcuts_sub">Activar o desactivar KeySnap</string>
+    <string name="widget_tap_title">Al tocar</string>
+    <string name="widget_tap_run">Ejecutarlo</string>
+    <string name="widget_tap_toggle">Activar o desactivar</string>
+    <string name="widget_style_look">Aspecto</string>
+    <string name="widget_look_classic">Clásico</string>
+    <string name="widget_style_on_color">Color activado</string>
+    <string name="widget_form_title">Estilo</string>
+    <string name="widget_form_tile">Mosaicos</string>
+    <string name="widget_form_state">Estado grande</string>
+    <string name="widget_form_capsule">Cápsula</string>
+    <string name="widget_part_name">Nombre</string>
+    <string name="widget_part_icon">Icono</string>
+    <string name="widget_color_auto">Automático</string>
     <!-- OEM key tip -->
     <string name="oem_key_tip">Consejo: configura este botón como “Ninguno” en los ajustes del teléfono para que solo KeySnap responda a él.</string>
     <!-- Recipe gallery -->
@@ -1017,7 +1029,7 @@
     <string name="notif_autostart_connect_failed">No se pudo conectar a la depuración inalámbrica. Abre KeySnap; puede ser necesario volver a emparejar.</string>
     <string name="settings_autostart_hint_pairing">Si Android caduca o elimina el emparejamiento, configura de nuevo el Modo avanzado. Las conexiones diarias pueden no mantenerlo activo en todos los teléfonos.</string>
     <string name="diagnostic_title">Registro del problema</string>
-    <string name="diagnostic_description">Incluye información del dispositivo, eventos de teclas y resultados de acciones. Solo se conserva en memoria; se detiene a los 10 minutos o 500 entradas. Se excluyen nombres de atajos, parámetros de acciones y detalles de red.</string>
+    <string name="diagnostic_description">Incluye información del dispositivo, eventos de teclas y resultados de acciones. Solo se conserva en memoria; se detiene a los 10 minutos o 500 entradas. Se excluyen nombres de accesos directos, parámetros de acciones y detalles de red.</string>
     <string name="diagnostic_start">Iniciar registro</string>
     <string name="diagnostic_stop">Detener registro</string>
     <string name="diagnostic_recording">Registrando · Detener</string>
@@ -1042,11 +1054,11 @@
     <string name="whats_new_try">Probar</string>
     <string name="whats_new_open">Abrir</string>
     <string name="whats_new_fix_assistant">Tu asistente vuelve a abrirse con una tecla en Modo avanzado</string>
-    <string name="whats_new_fix_vibration">La vibración de los atajos ya no deja de funcionar</string>
+    <string name="whats_new_fix_vibration">La vibración de los accesos directos ya no deja de funcionar</string>
     <string name="whats_new_fix_uninstall">Desinstalar ahora también detiene el Modo avanzado</string>
     <string name="whats_new_fix_search">Tocar cualquier parte del cuadro de búsqueda abre el teclado</string>
     <string name="whats_new_no_ads_title">Adiós a los anuncios</string>
-    <string name="whats_new_no_ads_description">KeySnap ya no tiene anuncios y 3 atajos siguen activos gratis.</string>
+    <string name="whats_new_no_ads_description">KeySnap ya no tiene anuncios y 3 accesos directos siguen activos gratis.</string>
     <string name="whats_new_fix_large_text">El texto ya no se corta ni se aprieta con tamaños grandes de pantalla y de letra</string>
     <string name="whats_new_fix_nav_bar">Los botones ya no quedan ocultos tras la barra de navegación de 3 botones</string>
     <string name="whats_new_got_it">Entendido</string>

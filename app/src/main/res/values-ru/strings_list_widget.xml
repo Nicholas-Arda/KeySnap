@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="list_widget_label">Сценарии KeySnap</string>
+    <string name="list_widget_description">Включайте и выключайте сценарии</string>
+    <string name="list_widget_show_live">Кнопка «Активно»</string>
+    <string name="list_widget_show_keys">Клавиши</string>
+    <string name="list_widget_show_header">Название и значок</string>
+    <string name="list_widget_show">Показывать</string>
+    <string name="list_widget_previous_page">Предыдущая страница</string>
+    <string name="list_widget_next_page">Следующая страница</string>
+</resources>

@@ -94,7 +94,7 @@ class WhatsNewDecisionTest {
     fun manualOpenUsesThisVersionOrTheNewestReleaseNotAfterIt() {
         assertEquals(whatsNewReleases.getValue(16L), whatsNewReleaseFor(16L))
         assertEquals(whatsNewReleases.getValue(17L), whatsNewReleaseFor(17L))
-        assertEquals(whatsNewReleases.getValue(20L), whatsNewReleaseFor(99L))
+        assertEquals(whatsNewReleases.maxBy { it.key }.value, whatsNewReleaseFor(99L))
         assertEquals(whatsNewReleases.getValue(17L), whatsNewReleaseFor(18L))
         if (whatsNewReleases[15L] == null) {
             val below = whatsNewReleases.keys.filter { it <= 15L }.maxOrNull()

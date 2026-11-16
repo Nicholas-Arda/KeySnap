@@ -76,6 +76,8 @@ import com.example.ui.settings.rememberSettingsMotion
 import com.example.ui.theme.MyApplicationTheme
 import com.example.ui.theme.ThemeMode
 import com.example.ui.theme.groundFor
+import com.github.takahirom.roborazzi.RoborazziOptions
+import com.github.takahirom.roborazzi.RoborazziTaskType
 import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.nicholasarda.keysnap.R
 import org.junit.Assert.assertEquals
@@ -102,7 +104,7 @@ class LargeScaleLayoutTest(private val language: String, private val fontScale: 
     companion object {
         @JvmStatic
         @Parameters(name = "{0}, font={1}, width=290, density=1.25")
-        fun cases(): List<Array<Any>> = listOf("en", "tr", "de", "es", "fr", "it", "pt-BR", "ru", "ar", "hi")
+        fun cases(): List<Array<Any>> = listOf("en", "tr", "de", "es", "fil", "fr", "it", "pt-BR", "ru", "ar", "hi", "ko", "id", "vi")
             .flatMap { language -> listOf(1.3f, 2f).map { arrayOf(language, it) } }
     }
 
@@ -176,6 +178,8 @@ class LargeScaleLayoutTest(private val language: String, private val fontScale: 
         for (line in 0 until layout.lineCount - 1) {
             val end = layout.getLineEnd(line)
             if (end == 0 || end == text.length || text[end - 1].isWhitespace() || text[end].isWhitespace()) continue
+            // Android breaks Korean between any two Hangul syllables; that is its normal line breaking, not an error.
+            if (text[end - 1] in '가'..'힣' && text[end] in '가'..'힣') continue
             // A word wider than the whole column has to break somewhere; on a device Hyphens.Auto
             // marks it with a hyphen (this renderer has no patterns for some languages).
             var wordStart = end
@@ -388,8 +392,10 @@ class LargeScaleLayoutTest(private val language: String, private val fontScale: 
     }
 
     private fun captureR2(name: String) {
+        // Record always: a plain test run skips the write, and a test reads these files back.
         rule.onNodeWithTag("review").captureRoboImage(
             "build/outputs/largescale-review-r2/$name-$language-$fontScale.png",
+            roborazziOptions = RoborazziOptions(taskType = RoborazziTaskType.Record),
         )
     }
 

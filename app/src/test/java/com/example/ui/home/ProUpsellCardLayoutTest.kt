@@ -54,7 +54,7 @@ class ProUpsellCardLayoutTest(private val language: String, private val fontScal
         @JvmStatic
         @Parameters(name = "{0}, font={1}, price={2}")
         fun cases(): List<Array<Any>> = buildList {
-            listOf("en", "ar", "pt-BR", "de", "es", "fr", "hi", "it", "nl", "ru", "tr").forEach { language ->
+            listOf("en", "ar", "pt-BR", "de", "es", "fil", "fr", "hi", "it", "nl", "ru", "tr", "ko", "id", "vi").forEach { language ->
                 listOf(1f, 2f).forEach { scale -> add(arrayOf(language, scale, "$2.99")) }
             }
             listOf("Rp 39.900,00", "COP 10.500,00", "UZS 31 900,00", "222.000,00 LBP").forEach { price ->

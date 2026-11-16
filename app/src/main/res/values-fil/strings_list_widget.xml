@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="list_widget_label">Mga shortcut ng KeySnap</string>
+    <string name="list_widget_description">I-on o i-off ang iyong mga shortcut</string>
+    <string name="list_widget_show_live">Button na Aktibo</string>
+    <string name="list_widget_show_keys">Mga key</string>
+    <string name="list_widget_show_header">Pangalan at icon</string>
+    <string name="list_widget_show">Ipakita</string>
+    <string name="list_widget_previous_page">Nakaraang pahina</string>
+    <string name="list_widget_next_page">Susunod na pahina</string>
+</resources>

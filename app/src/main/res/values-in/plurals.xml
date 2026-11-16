@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="scripts_action_count">
+        <item quantity="other">%1$d aksi</item>
+    </plurals>
+    <plurals name="home_suggestion_steps">
+        <item quantity="other">%1$d langkah</item>
+    </plurals>
+    <plurals name="run_all">
+        <item quantity="other">Semua %1$d aksi dijalankan</item>
+    </plurals>
+    <plurals name="settings_log_event_count">
+        <item quantity="other">%1$d peristiwa</item>
+    </plurals>
+    <plurals name="saved_needs_config">
+        <item quantity="other">Tersimpan. %1$d aksi masih perlu diatur.</item>
+    </plurals>
+</resources>

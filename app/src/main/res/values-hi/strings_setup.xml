@@ -14,14 +14,14 @@
     <string name="setup_background_why">Android निष्क्रिय ऐप बंद करता है\n→ शॉर्टकट रुकते हैं</string>
     <string name="setup_notifications_why">सिर्फ जब आपकी ज़रूरत हो</string>
     <string name="setup_reads_keys">आपके बटन दबाने को पढ़ना</string>
-    <string name="setup_reads_code">सेटिंग में पेयरिंग-कोड संवाद खोलना\nऔर कोड पढ़ना</string>
+    <string name="setup_reads_code">सेटिंग में पेयरिंग-कोड संवाद खोलना और कोड पढ़ना</string>
     <string name="setup_advanced_only">केवल उन्नत मोड सेटअप के दौरान</string>
     <string name="setup_no_screens">अन्य ऐप की स्क्रीन देखना</string>
     <string name="setup_no_data">पढ़ी जानकारी सहेजना या भेजना</string>
     <string name="setup_keeps_open">KeySnap को खुला रखता है</string>
     <string name="setup_runs_key">बटन दबाने पर काम करता है</string>
-    <string name="setup_no_drain">अतिरिक्त बैटरी खर्च नहीं</string>
-    <string name="setup_idle">बटन या आपके ऑटोमेशन\nका इंतज़ार करता है</string>
+    <string name="setup_no_drain">अतिरिक्त बैटरी खर्च करना</string>
+    <string name="setup_idle">बटन या आपके ऑटोमेशन से\nपहले चलना</string>
     <string name="setup_needs_you">सेटअप को आपकी ज़रूरत है</string>
     <string name="setup_shortcut_failed">एक शॉर्टकट विफल हुआ</string>
     <string name="setup_own_alerts">आपके अपने शॉर्टकट अलर्ट</string>
@@ -44,6 +44,6 @@
     <string name="setup_usage_why">दिखाता है कौन-सा ऐप सामने है</string>
     <string name="setup_usage_sees">सामने का ऐप देखता है</string>
     <string name="setup_usage_for">आपकी ऐप शर्तों के लिए</string>
-    <string name="setup_no_content">स्क्रीन की सामग्री नहीं</string>
-    <string name="setup_nothing_saved">कुछ सेव या भेजा नहीं जाता</string>
+    <string name="setup_no_content">स्क्रीन की सामग्री पढ़ना</string>
+    <string name="setup_nothing_saved">कुछ भी सेव करना या भेजना</string>
 </resources>

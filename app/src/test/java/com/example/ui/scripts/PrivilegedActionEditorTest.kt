@@ -131,13 +131,13 @@ class PrivilegedActionEditorTest {
         val preview = rule.onNodeWithTag("config_what_will_run").fetchSemanticsNode().config[SemanticsProperties.Text].first().text
         assertEquals("POST https://example.com/h · 1 header · JSON", preview)
         assertFalse(preview.contains("secret"))
-        rule.onNodeWithTag("action_test_button").performScrollTo().performClick()
+        rule.onNodeWithTag("action_test_button").performClick()
         rule.waitForIdle()
         rule.onNodeWithText("200 OK · 0.4 s").performScrollTo().assertIsDisplayed()
         assertEquals(1, ran.size)
         assertFalse(ran.single().params["headers"].orEmpty().contains("secret-body"))
         assertTrue(ran.single().params["headers"].orEmpty().contains("Authorization:Bearer secret"))
-        rule.onNodeWithTag("action_config_confirm").performScrollTo().performClick()
+        rule.onNodeWithTag("action_config_confirm").performClick()
         assertTrue(saved!!["headers"].orEmpty().contains("Authorization:Bearer secret"))
     }
 
@@ -154,7 +154,7 @@ class PrivilegedActionEditorTest {
                 runTest = { ActionTestResult(false, null, 500, 400, false, emptyList()) },
             )
         }
-        rule.onNodeWithTag("action_test_button").performScrollTo().performClick()
+        rule.onNodeWithTag("action_test_button").performClick()
         rule.waitForIdle()
         rule.onNodeWithText("500 · 0.4 s").performScrollTo().assertIsDisplayed()
         rule.onNodeWithText("500 OK", substring = true).assertDoesNotExist()
@@ -189,7 +189,7 @@ class PrivilegedActionEditorTest {
         rule.onNodeWithText("Record Screen for 30 s").performScrollTo().performClick()
         assertEquals(0, ran.size)
         assertEquals(ready.command, editable("config_field_command"))
-        rule.onNodeWithTag("action_test_button").performScrollTo().performClick()
+        rule.onNodeWithTag("action_test_button").performClick()
         rule.waitForIdle()
         assertEquals(ready.command, ran.single().params["command"])
         rule.onNodeWithText("Exit 0 · 0.2 s").performScrollTo().assertIsDisplayed()
@@ -245,7 +245,7 @@ class PrivilegedActionEditorTest {
         assertFalse(broadcast.contains("a;b"))
         rule.onNodeWithTag("config_choice_target_activity").performScrollTo().performClick()
         rule.onNodeWithText("am start -a com.example.ACTION -f 0x10000000 --es name Gym", substring = true).assertIsDisplayed()
-        rule.onNodeWithTag("action_test_button").performScrollTo().assertIsEnabled()
+        rule.onNodeWithTag("action_test_button").assertIsEnabled()
         rule.onNodeWithTag("action_test_button").performClick()
         rule.waitForIdle()
         assertEquals("name=Gym;note=a;b", ran.single().params["extras"])
@@ -427,7 +427,7 @@ class PrivilegedActionEditorTest {
         rule.mainClock.advanceTimeBy(400)
         rule.waitForIdle()
         rule.onNodeWithTag("config_field_value").performTextReplacement("15000")
-        rule.onNodeWithTag("action_test_button").performScrollTo().performClick()
+        rule.onNodeWithTag("action_test_button").performClick()
         rule.waitForIdle()
         rule.onNodeWithText("Written").performScrollTo().assertIsDisplayed()
         rule.onNodeWithTag("config_undo").performClick()

@@ -25,9 +25,6 @@ class EntitlementManager internal constructor(
         private const val KEY_IS_PRO = "is_pro"
         const val FREE_SCRIPT_LIMIT = 3
 
-        /** Home-screen widgets on the free plan. Quick Settings tiles are free: there are only three. */
-        const val FREE_WIDGET_LIMIT = 2
-
         @Volatile private var instance: EntitlementManager? = null
 
         fun getInstance(context: Context): EntitlementManager = instance ?: synchronized(this) {
@@ -45,20 +42,15 @@ class EntitlementManager internal constructor(
     val activeScriptLimit: Int
         get() = if (_isPro.value) Int.MAX_VALUE else FREE_SCRIPT_LIMIT
 
+    /** Whether one more script may be switched on without passing [activeScriptLimit]. */
+    fun mayEnableAnother(): Boolean =
+        _isPro.value || scriptRepository.scripts.value.count { it.enabled } < activeScriptLimit
+
     fun setPro(pro: Boolean) {
         _isPro.value = acceptancePro || pro
         // Persist only actual ownership, so installing a regular build removes test access.
         prefs.edit().putBoolean(KEY_IS_PRO, pro).apply()
     }
-
-    /**
-     * Whether home-screen widget [appWidgetId] may be bound or run, given the widgets already on the
-     * home screen with a shortcut ([boundWidgetIds]). Free keeps the first [FREE_WIDGET_LIMIT] by
-     * id: the widget host hands ids out in increasing order, so that is placement order and needs
-     * nothing stored. After a refund the later widgets stay put but refuse to run until Pro returns.
-     */
-    fun widgetAllowed(appWidgetId: Int, boundWidgetIds: Collection<Int>): Boolean =
-        _isPro.value || appWidgetId in (boundWidgetIds + appWidgetId).toSortedSet().take(FREE_WIDGET_LIMIT)
 
     /**
      * Pauses the newest scripts over the current limit, oldest-first kept. Called on app start,

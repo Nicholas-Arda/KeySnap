@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -23,6 +25,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.CacheDrawScope
 import androidx.compose.ui.draw.DrawResult
 import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.drawscope.clipRect
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.RoundRect
@@ -59,15 +64,19 @@ fun GroundedPage(
 ) {
     BoxWithConstraints(modifier.fillMaxSize()) {
         val screen = maxHeight
+        val statusBarTop = WindowInsets.statusBars.getTop(LocalDensity.current).toFloat()
         Box(Modifier.fillMaxSize().verticalScroll(scrollState)) {
             PageGroundLayer(themeMode, Modifier.matchParentSize())
             Column(
                 Modifier
                     .fillMaxWidth()
                     .heightIn(min = screen)
+                    // Scrolled content ends at the status bar's lower edge instead of running under the clock.
+                    // A plain cut, no fade or bar: the ground keeps running behind the status bar.
+                    .drawWithContent { clipRect(top = scrollState.value + statusBarTop) { this@drawWithContent.drawContent() } }
                     .statusBarsPadding()
                     .navigationBarsPadding()
-                    .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = BottomBarClearance + 16.dp),
+                    .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = BottomBarClearance + 16.dp + com.example.ai.AiHooks.contentClearance()),
                 verticalArrangement = Arrangement.spacedBy(14.dp),
                 content = content,
             )

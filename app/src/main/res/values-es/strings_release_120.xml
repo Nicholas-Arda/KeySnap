@@ -5,7 +5,7 @@
     <string name="whats_new_reorder_shortcuts_title_120">Ordena y edita accesos directos</string>
     <string name="whats_new_reorder_shortcuts_description_120">Toca ✎ o mantén pulsado un acceso directo; arrástralo para ordenar.</string>
     <string name="whats_new_input_devices_title_120">Teclados, ratones y mandos</string>
-    <string name="whats_new_input_devices_description_120">Modo avanzado: nombres reales, atajos con Ctrl.</string>
+    <string name="whats_new_input_devices_description_120">Modo avanzado: nombres reales, accesos directos con Ctrl.</string>
     <string name="whats_new_fix_setup_120">Configuración en dos pasos, notificaciones opcionales</string>
     <string name="whats_new_fix_conditions_120">Invierte cualquier condición con NO</string>
     <string name="whats_new_fix_app_names_120">Las apps aparecen por su nombre</string>

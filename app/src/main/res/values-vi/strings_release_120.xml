@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_test_editors_title_120">Trình chỉnh sửa chạy thử được</string>
+    <string name="whats_new_test_editors_description_120">Thử bất kỳ bước nào bằng ▶ trước khi lưu.</string>
+    <string name="whats_new_reorder_shortcuts_title_120">Sắp xếp và chỉnh sửa phím tắt</string>
+    <string name="whats_new_reorder_shortcuts_description_120">Nhấn ✎ hoặc giữ một phím tắt. Kéo để sắp xếp.</string>
+    <string name="whats_new_input_devices_title_120">Bàn phím, chuột và tay cầm chơi game</string>
+    <string name="whats_new_input_devices_description_120">Chế độ nâng cao: tên phím thật, phím tắt Ctrl.</string>
+    <string name="whats_new_fix_setup_120">Thiết lập hai bước, thông báo không bắt buộc</string>
+    <string name="whats_new_fix_conditions_120">Đảo bất kỳ điều kiện nào bằng KHÔNG</string>
+    <string name="whats_new_fix_app_names_120">Ứng dụng hiện theo tên</string>
+    <string name="whats_new_fix_side_power_keys_120">Phím bên hông và phím nguồn: gợi ý rõ ràng</string>
+    <string name="whats_new_fix_idle_battery_120">Nhẹ pin hơn khi rảnh</string>
+    <string name="whats_new_fix_advanced_setup_120">Thiết lập Chế độ nâng cao trên một trang</string>
+    <string name="whats_new_fix_saved_keys_120">Đổi tên phím đã lưu hoặc thêm trước</string>
+    <string name="whats_new_fix_shortcuts_page_120">Trang Phím tắt gọn hơn, danh sách ngắn hơn</string>
+    <string name="whats_new_fix_modes_120">Chế độ: tắt hoặc xóa bất cứ lúc nào</string>
+</resources>

@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="whats_new_assistant_gesture_title">Power button mo, shortcut mo</string>
+    <string name="whats_new_assistant_gesture_description">Itakda ang KeySnap bilang assistant ng iyong telepono. Sa mga teleponong ipinapasa sa assistant ang matagal na pindot sa power button, patatakbuhin nito ang iyong “Gesture ng assistant” na shortcut.</string>
+    <string name="whats_new_home_only_title">Sa home o lock screen lang</string>
+    <string name="whats_new_home_only_description">Idagdag ang “Walang bukas na app” sa “Kung” para gumana nang normal ang mga volume button sa loob ng mga app. Kailangan ng Usage access.</string>
+    <string name="whats_new_fix_coloros_dnd">Gumagana na ang mga aksyon ng Do Not Disturb sa ColorOS gamit ang Advanced Mode</string>
+    <string name="whats_new_fix_conditional_volume">Kinokontrol lang ang volume button kapag natugunan ang mga kondisyon ng shortcut</string>
+    <string name="rating_prompt_title">Gumagana ba nang maayos ang KeySnap?</string>
+    <string name="rating_prompt_body">Malaking tulong ang rating sa Google Play.</string>
+    <string name="rating_prompt_rate">Mag-rate</string>
+    <string name="rating_prompt_later">Mamaya</string>
+    <string name="rating_prompt_no_thanks">Hindi na, salamat</string>
+</resources>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The Capsule form at one cell (WidgetForms): a round shell, the icon in a core, and a ring that lights when on. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_gravity="center">
+
+        <ImageView
+            android:id="@+id/widget_body"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:elevation="3dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/widget_shape_oval"
+            android:importantForAccessibility="no" />
+
+        <ImageView
+            android:id="@+id/widget_ring"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:elevation="3dp"
+            android:padding="4dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/widget_shape_ring"
+            android:visibility="invisible"
+            android:importantForAccessibility="no" />
+
+        <FrameLayout
+            android:id="@+id/widget_chip_box"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_gravity="center"
+            android:elevation="3dp">
+
+            <ImageView
+                android:id="@+id/widget_chip"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitXY"
+                android:src="@drawable/widget_shape_oval"
+                android:importantForAccessibility="no" />
+
+            <ImageView
+                android:id="@+id/widget_icon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                android:importantForAccessibility="no" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/widget_label"
+            android:layout_width="52dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:elevation="3dp"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="2"
+            android:fontFamily="sans-serif-medium"
+            android:textSize="10sp" />
+
+        <ImageView
+            android:id="@+id/widget_label_dot"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:importantForAccessibility="no"
+            android:layout_width="52dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone" />
+    </FrameLayout>
+</FrameLayout>

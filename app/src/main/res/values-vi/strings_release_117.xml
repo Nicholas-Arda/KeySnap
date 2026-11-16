@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_editor_title">Trình chỉnh sửa phím tắt đơn giản hơn</string>
+    <string name="whats_new_editor_description">Trình chỉnh sửa phím tắt rõ ràng hơn, ghi phím ngay tại chỗ, mở và đóng mượt hơn.</string>
+    <string name="whats_new_fix_update_startup">Sửa lỗi văng ứng dụng khi mở KeySnap sau khi cập nhật</string>
+    <string name="whats_new_dutch_title">Giờ đã có tiếng Hà Lan</string>
+    <string name="whats_new_dutch_description">Dùng KeySnap bằng tiếng Hà Lan. Chọn Nederlands trong Cài đặt → Ngôn ngữ.</string>
+</resources>

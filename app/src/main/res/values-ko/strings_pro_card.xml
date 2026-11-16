@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pro_card_pay_once">한 번 결제로 평생 사용.</string>
+    <string name="pro_table_what_you_get">제공 기능</string>
+    <string name="pro_table_ai">단축키 설명하기 (AI)</string>
+    <string name="pro_table_modes">단축키 모드</string>
+    <string name="pro_table_future">향후 Pro 기능</string>
+    <string name="pro_table_everything_else">그 밖의 모든 기능</string>
+    <string name="pro_card_one_time">1회 구매 · 구독 없음</string>
+</resources>

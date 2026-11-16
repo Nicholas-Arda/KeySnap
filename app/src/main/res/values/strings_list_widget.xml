@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="list_widget_label">KeySnap shortcuts</string>
+    <string name="list_widget_description">Turn your shortcuts on or off</string>
+    <string name="list_widget_show_live">Live button</string>
+    <string name="list_widget_show_keys">Keys</string>
+    <string name="list_widget_show_header">Name &amp; icon</string>
+    <string name="list_widget_show">Show</string>
+    <string name="list_widget_previous_page">Previous page</string>
+    <string name="list_widget_next_page">Next page</string>
+</resources>

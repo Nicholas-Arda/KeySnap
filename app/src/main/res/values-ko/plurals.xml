@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="scripts_action_count">
+        <item quantity="other">동작 %1$d개</item>
+    </plurals>
+    <plurals name="home_suggestion_steps">
+        <item quantity="other">%1$d단계</item>
+    </plurals>
+    <plurals name="run_all">
+        <item quantity="other">동작 %1$d개를 모두 실행함</item>
+    </plurals>
+    <plurals name="settings_log_event_count">
+        <item quantity="other">이벤트 %1$d개</item>
+    </plurals>
+    <plurals name="saved_needs_config">
+        <item quantity="other">저장했어요. 동작 %1$d개는 아직 설정이 필요해요.</item>
+    </plurals>
+</resources>

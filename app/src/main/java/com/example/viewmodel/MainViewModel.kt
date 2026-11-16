@@ -197,8 +197,9 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
     val proPrice: StateFlow<com.example.billing.ProPrice?> = purchaseManager.proPrice
 
     /** One-shot shell-snackbar text. [showProAction] is carried alongside because only the free-limit
-     *  messages have somewhere for the snackbar's Home action to go; a plain confirmation does not. */
-    data class ScriptsMessage(val text: String, val showProAction: Boolean = false)
+     *  messages have somewhere for the snackbar's Home action to go; a plain confirmation does not.
+     *  [undo], when set, turns the action into Undo instead. */
+    data class ScriptsMessage(val text: String, val showProAction: Boolean = false, val undo: (() -> Unit)? = null)
 
     /** One-shot text for why a script toggle was refused — the Scripts screen has no other place to
      *  answer a tap that silently would have been reverted by [EntitlementManager.enforceLimit]. */
@@ -207,6 +208,11 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
 
     fun consumeScriptsMessage() {
         _scriptsMessage.value = null
+    }
+
+    /** A shell snackbar from outside the Scripts flow, optionally with Undo. */
+    fun showMessage(text: String, undo: (() -> Unit)? = null) {
+        _scriptsMessage.value = ScriptsMessage(text, undo = undo)
     }
 
     val isFlashlightOn: StateFlow<Boolean> = FlashlightController.isFlashlightOn
@@ -273,6 +279,16 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
     }
 
     fun newScriptId(): String = scriptRepository.newScriptId()
+
+    // Never in preferences, saved-state bundles, backups or logs; the Pro session keeps its draft in no_backup.
+    val aiSession = com.example.ai.AiHooks.Session(appContext)
+
+    /** Transfers an already reviewed draft to the normal editor/commit path. */
+    fun openDraftForReview(draft: ScriptDraft): Boolean {
+        if (_editingScript.value != null || !acceptsModeFeatures(draft.actions, draft.constraints)) return false
+        _editingScript.value = draft.copy(fromSuggestion = false)
+        return true
+    }
 
     fun reorderScripts(orderedIds: List<String>) = scriptRepository.reorder(orderedIds)
 
@@ -702,6 +718,7 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
                 showCapsule = draft.showCapsule,
             ),
         )
+        aiSession.onCommitted(draft.id)
         // The editor is closed by the time any of these is set, so they all go to the shell snackbar:
         // an _editorMessage here would be raised into a screen nobody is looking at. Only the two
         // validation failures above, which keep the editor open, still answer in the editor.
@@ -748,6 +765,7 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
             return
         }
         if (ModeHooks.offerRecordedKeys(listOf(keyCode))) return
+        if (offerDraftRecording(listOf(keyCode))) return
         if (_editingScript.value != null) draftSetTriggerKey(keyCode) else repository.setTargetKey(keyCode)
     }
 
@@ -850,7 +868,9 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
         when (whatsNewDecision(
             lastSeenVersionCode = lastSeen,
             currentVersionCode = currentVersionCode,
-            freshInstall = packageInfo.firstInstallTime == packageInfo.lastUpdateTime,
+            // Clearing storage keeps the install times, so an empty shortcut list also counts as fresh:
+            // without a previous version's data there is nothing to announce.
+            freshInstall = packageInfo.firstInstallTime == packageInfo.lastUpdateTime || scriptRepository.scripts.value.isEmpty(),
             // SetupWizardModal is also this version's onboarding; there is no separate onboarding gate.
             onboardingFinished = !_showSetupWizard.value,
             setupWizardShowing = _showSetupWizard.value,
@@ -1089,6 +1109,7 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
                         return@collect
                     }
                     if (ModeHooks.offerRecordedKeys(keyCodes)) return@collect
+                    if (offerDraftRecording(keyCodes)) return@collect
                     if (_editingScript.value != null) draftSetTriggerKeys(keyCodes)
                     return@collect
                 }
@@ -1151,27 +1172,28 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
     fun toggleEnabled(enabled: Boolean) {
         repository.setEnabled(enabled)
         scriptRepository.setGloballyEnabled(enabled)
+        // An "All shortcuts" widget shows this switch.
+        com.example.surface.ShortcutWidgetProvider.refreshAll(appContext)
     }
 
     /** Refuses a toggle past the free limit outright instead of flipping it on and letting
      *  [EntitlementManager.enforceLimit] silently flip it back — that left the switch bouncing with
      *  no explanation. */
     fun toggleScriptEnabled(id: String, enabled: Boolean) {
-        if (enabled && !entitlementManager.isPro.value) {
-            val activeCount = scriptRepository.scripts.value.count { it.enabled }
-            if (activeCount >= entitlementManager.activeScriptLimit) {
-                _scriptsMessage.value = ScriptsMessage(
-                    res.getString(R.string.free_limit_toggle_blocked, EntitlementManager.FREE_SCRIPT_LIMIT),
-                    showProAction = true,
-                )
-                return
-            }
+        if (enabled && !entitlementManager.mayEnableAnother()) {
+            _scriptsMessage.value = ScriptsMessage(
+                res.getString(R.string.free_limit_toggle_blocked, EntitlementManager.FREE_SCRIPT_LIMIT),
+                showProAction = true,
+            )
+            return
         }
         scriptRepository.setScriptEnabled(id, enabled)
     }
 
     fun purchasePro(activity: Activity) {
-        purchaseManager.purchasePro(activity)
+        if (!purchaseManager.purchasePro(activity)) {
+            _scriptsMessage.value = ScriptsMessage(res.getString(R.string.pro_purchase_unavailable))
+        }
     }
 
     fun refreshPurchases() {
@@ -1199,11 +1221,29 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
     }
 
     fun startRecordingKey() {
+        draftRecording = null
         addingSavedKey = false
         HardwareKeyTriggerCoordinator.startRecordingKey()
     }
 
+    private var draftRecording: ((List<Int>) -> Unit)? = null
+
+    /** Same coordinator and key naming as the editor, without changing the legacy target key. */
+    fun startRecordingForDraft(onRecorded: (List<Int>) -> Unit) {
+        startRecordingKey()
+        draftRecording = onRecorded
+    }
+
+    private fun offerDraftRecording(keys: List<Int>): Boolean {
+        val receiver = draftRecording ?: return false
+        draftRecording = null
+        receiver(keys)
+        return true
+    }
+
     fun cancelRecordingKey() {
+        if (draftRecording != null) _showNameKeyDialogForCode.value = null
+        draftRecording = null
         addingSavedKey = false
         HardwareKeyTriggerCoordinator.cancelRecordingKey()
     }

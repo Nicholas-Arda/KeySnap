@@ -2,6 +2,7 @@
 <resources>
     <string name="pro_card_pay_once">Payez une fois, gardez-le pour toujours.</string>
     <string name="pro_table_what_you_get">Ce que vous obtenez</string>
+    <string name="pro_table_ai">Décrire un raccourci (IA)</string>
     <string name="pro_table_modes">Modes de raccourcis</string>
     <string name="pro_table_future">Futures fonctionnalités Pro</string>
     <string name="pro_table_everything_else">Toutes les autres fonctionnalités</string>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A page turn forward: the old page slides out left as the new one slides in from the right. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/list_stage"
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_weight="1">
+
+    <!-- The page leaving: drawn once, under the new one, with no actions and hidden from
+         accessibility; its animation leaves it off screen. -->
+    <LinearLayout
+        android:id="@+id/list_out"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:importantForAccessibility="noHideDescendants"
+        android:layoutAnimation="@anim/widget_rows_out_left"
+        android:orientation="vertical" />
+
+    <LinearLayout
+        android:id="@+id/list_in"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layoutAnimation="@anim/widget_rows_in_right" />
+</FrameLayout>

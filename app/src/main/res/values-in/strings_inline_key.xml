@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="inline_key_choose">Pilih tombol</string>
+    <string name="inline_key_record">Rekam tombol</string>
+    <string name="inline_key_listening">Tekan tombol sekarang</string>
+    <string name="inline_key_release">Tahan tombol bersamaan. Lepas untuk selesai.</string>
+    <string name="inline_key_edit">Ketuk tombol untuk merekam ulang.</string>
+    <string name="inline_key_placeholder">sebuah tombol</string>
+    <string name="inline_key_advanced_hint">Tombol Daya, Snap Key, Essential Key, Bixby, dan sejenisnya perlu Mode Lanjutan.</string>
+    <string name="inline_key_set_up">Siapkan</string>
+</resources>

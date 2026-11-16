@@ -55,7 +55,7 @@ class ConsoleHeaderLayoutTest(
         @Parameters(name = "{2}, active={3}, width={0}, font={1}, density={4}")
         fun cases(): List<Array<Any>> = buildList {
             // 411 dp at the default density becomes about 328 dp at 1.25x display size.
-            listOf("en", "ar", "pt-BR", "de", "es", "fr", "hi", "it", "ru", "tr").forEach { language ->
+            listOf("en", "ar", "pt-BR", "de", "es", "fil", "fr", "hi", "it", "ru", "tr", "ko", "id", "vi").forEach { language ->
                 listOf(1f, 2f).forEach { fontScale ->
                     listOf(false, true).forEach { active ->
                         add(arrayOf(328, fontScale, language, active, 1.25f))

@@ -1,5 +1,6 @@
 package com.example.ui.home
 
+import com.example.ui.components.proBadgeLabel
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.SizeTransform
@@ -48,6 +49,7 @@ import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material.icons.outlined.AutoAwesome
+import androidx.compose.material.icons.outlined.AutoFixHigh
 import androidx.compose.material.icons.outlined.DoneAll
 import androidx.compose.material.icons.outlined.Keyboard
 import androidx.compose.material.icons.outlined.Tune
@@ -591,7 +593,7 @@ private fun FreeVsProTable(stacked: Boolean) {
             )
             if (!stacked) {
                 ComparisonPlanPill(stringResource(R.string.pro_table_free).uppercase(locale), pro = false)
-                ComparisonPlanPill(stringResource(R.string.pro_table_pro).uppercase(locale), pro = true)
+                ComparisonPlanPill(proBadgeLabel(), pro = true)
             }
         }
         ComparisonRow(
@@ -607,6 +609,9 @@ private fun FreeVsProTable(stacked: Boolean) {
                 stacked,
                 freeIncluded = false,
             )
+        }
+        if (com.example.ai.AiHooks.AVAILABLE) {
+            ComparisonRow(stringResource(R.string.pro_table_ai), Icons.Outlined.AutoFixHigh, stacked, freeIncluded = false)
         }
         if (com.example.mode.ModeHooks.AVAILABLE) {
             ComparisonRow(

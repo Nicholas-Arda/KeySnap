@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="list_widget_label">Phím tắt KeySnap</string>
+    <string name="list_widget_description">Bật hoặc tắt phím tắt của bạn</string>
+    <string name="list_widget_show_live">Nút trạng thái</string>
+    <string name="list_widget_show_keys">Phím</string>
+    <string name="list_widget_show_header">Tên &amp; biểu tượng</string>
+    <string name="list_widget_show">Hiện</string>
+    <string name="list_widget_previous_page">Trang trước</string>
+    <string name="list_widget_next_page">Trang sau</string>
+</resources>

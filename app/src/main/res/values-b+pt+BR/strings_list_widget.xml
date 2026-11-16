@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="list_widget_label">Atalhos do KeySnap</string>
+    <string name="list_widget_description">Ative ou desative seus atalhos</string>
+    <string name="list_widget_show_live">Botão Ativo</string>
+    <string name="list_widget_show_keys">Teclas</string>
+    <string name="list_widget_show_header">Nome e ícone</string>
+    <string name="list_widget_show">Mostrar</string>
+    <string name="list_widget_previous_page">Página anterior</string>
+    <string name="list_widget_next_page">Próxima página</string>
+</resources>

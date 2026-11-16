@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="list_widget_label">Raccourcis KeySnap</string>
+    <string name="list_widget_description">Activez ou désactivez vos raccourcis</string>
+    <string name="list_widget_show_live">Bouton Actif</string>
+    <string name="list_widget_show_keys">Touches</string>
+    <string name="list_widget_show_header">Nom et icône</string>
+    <string name="list_widget_show">Afficher</string>
+    <string name="list_widget_previous_page">Page précédente</string>
+    <string name="list_widget_next_page">Page suivante</string>
+</resources>

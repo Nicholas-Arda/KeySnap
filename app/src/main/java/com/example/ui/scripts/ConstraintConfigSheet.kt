@@ -18,6 +18,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,7 +29,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -468,6 +469,8 @@ private fun IntervalFieldRow(field: EditorField.Interval, values: MutableMap<Str
     }
 }
 
+// Wraps rather than scrolls: in a row the last days sat off the edge with nothing saying they were there.
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun DaySetFieldRow(field: EditorField.DaySet, values: MutableMap<String, String>) {
     val colors = MaterialTheme.colorScheme
@@ -477,9 +480,8 @@ internal fun DaySetFieldRow(field: EditorField.DaySet, values: MutableMap<String
     Column {
         Text(stringResource(field.labelRes), style = SectionLabel, color = colors.onSurfaceVariant)
         Spacer(Modifier.height(6.dp))
-        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            items(days.size) { index ->
-                val day = days[index]
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            days.forEach { day ->
                 val selected = day in chosen
                 FilterChip(
                     selected = selected,

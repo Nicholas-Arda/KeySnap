@@ -4,12 +4,15 @@ import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.ComponentName
 import android.content.Context
+import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.os.Bundle
 import android.view.View
 import android.widget.RemoteViews
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.PowerSettingsNew
 import androidx.compose.ui.graphics.asAndroidPath
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.VectorGroup
@@ -17,8 +20,10 @@ import androidx.compose.ui.graphics.vector.VectorPath
 import androidx.compose.ui.graphics.vector.toPath
 import androidx.core.graphics.createBitmap
 import com.example.data.AppLocale
+import com.example.data.KeyMappingRepository
 import com.example.data.ScriptRepository
 import com.example.ui.scripts.actionIconFor
+import com.example.ui.scripts.triggerSummaryText
 import io.github.nicholasarda.keysnap.R
 
 /**
@@ -48,56 +53,112 @@ class ShortcutWidgetProvider : AppWidgetProvider() {
     companion object {
         /**
          * The bound shortcut in the widget's [WidgetStyle], or "Choose a shortcut" (and a tap that
-         * opens the picker) once it is gone.
+         * opens the picker) once it is gone. A toggle widget shows the shortcut's on/off state, and
+         * an [SurfaceToggle.ALL] one the global switch.
          */
         fun render(context: Context, appWidgetId: Int) {
             val manager = AppWidgetManager.getInstance(context) ?: return
-            val script = SurfaceBindings.widgetScript(context, appWidgetId)?.let { id ->
+            // Key names (an OEM key the user named) live in the key repository; load it in a cold process.
+            KeyMappingRepository.getInstance(context)
+            val target = SurfaceBindings.widgetScript(context, appWidgetId)
+            val all = target == SurfaceToggle.ALL
+            val script = target?.takeUnless { all }?.let { id ->
                 ScriptRepository.getInstance(context).scripts.value.firstOrNull { it.id == id }
             }
+            val boundTo = target?.takeIf { all || script != null }
+            val toggles = boundTo != null && SurfaceBindings.widgetToggles(context, appWidgetId)
+            // A run button has no off state, so it wears the on colour; only "Choose a shortcut" stays plain.
+            val on = if (toggles) SurfaceToggle.isOn(context, boundTo!!) == true else boundTo != null
             val storedStyle = SurfaceBindings.widgetStyle(context, appWidgetId)
             val style = storedStyle ?: WidgetStyle()
-            val label = script?.let { style.customLabel.ifBlank { it.name } }
-                ?: AppLocale.wrap(context).getString(R.string.surface_choose_shortcut)
-            val click = if (script != null) {
-                ScriptRunReceiver.pendingIntent(context, appWidgetId, script.id)
+            val res = AppLocale.wrap(context).resources
+            val name = if (all) res.getString(R.string.app_name) else script?.name
+            val label = name?.let { style.customLabel.ifBlank { it } } ?: res.getString(R.string.surface_choose_shortcut)
+            val click = if (boundTo != null) {
+                ScriptRunReceiver.pendingIntent(context, appWidgetId, boundTo, toggles)
             } else {
                 ShortcutPickerActivity.widgetPendingIntent(context, appWidgetId)
             }
-            val content = context.getColor(style.color.content)
-            val views = RemoteViews(context.packageName, R.layout.widget_shortcut).apply {
-                setImageViewResource(R.id.widget_background, style.color.background)
-                setInt(R.id.widget_background, "setImageAlpha", style.opacity * 255 / 100)
-                setTextViewText(R.id.widget_label, label)
-                setTextColor(R.id.widget_label, content)
-                setContentDescription(R.id.widget_root, label)
-                setOnClickPendingIntent(R.id.widget_root, click)
-                if (storedStyle == null) {
-                    setImageViewResource(R.id.widget_icon, R.drawable.ic_launcher_foreground)
-                    setViewVisibility(R.id.widget_icon, View.VISIBLE)
-                    setViewVisibility(R.id.widget_label, View.VISIBLE)
-                } else {
-                    val widthDp = manager.getAppWidgetOptions(appWidgetId).getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH)
-                    // A widget whose shortcut is gone shows only "Choose a shortcut".
-                    val iconScript = script?.takeIf { style.showIcon }
-                    val (showIcon, showLabel) = style.copy(showIcon = iconScript != null)
-                        .parts(compact = widthDp < WidgetStyle.COMPACT_WIDTH_DP)
-                    if (iconScript != null) {
-                        val icon = actionIconFor(iconScript.actions.firstOrNull()?.type.orEmpty())
-                        val px = (ICON_DP * context.resources.displayMetrics.density).toInt()
-                        setImageViewBitmap(R.id.widget_icon, icon.toBitmap(px, content))
-                    }
-                    setViewVisibility(R.id.widget_icon, if (showIcon) View.VISIBLE else View.GONE)
-                    setViewVisibility(R.id.widget_label, if (showLabel) View.VISIBLE else View.GONE)
-                }
+            // A widget whose shortcut is gone shows only "Choose a shortcut".
+            val icon = when {
+                all -> Icons.Outlined.PowerSettingsNew
+                script != null -> actionIconFor(script.actions.firstOrNull()?.type.orEmpty())
+                else -> null
+            }?.takeIf { style.showIcon }
+            val widthDp = manager.getAppWidgetOptions(appWidgetId).getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH)
+            val compact = widthDp < WidgetStyle.COMPACT_WIDTH_DP
+            val state = stateText(res, toggles, all, on)
+            // The key that runs it, under the name at two cells.
+            val sub = script?.let { triggerSummaryText(res, it).first }
+            val views = if (storedStyle == null) {
+                classicViews(context, null, style, compact, toggles && !on, label, icon)
+            } else {
+                styleViews(context, style, compact, on, toggles, label, sub, state, icon)
             }
+            views.setContentDescription(R.id.widget_root, listOfNotNull(label, state).joinToString(", "))
+            views.setOnClickPendingIntent(R.id.widget_root, click)
             manager.updateAppWidget(appWidgetId, views)
         }
 
+        /** The widget in a stored [style]: the classic square, or a [WidgetForm] in a phone look. Also the preview's. */
+        internal fun styleViews(
+            context: Context,
+            style: WidgetStyle,
+            compact: Boolean,
+            on: Boolean,
+            toggles: Boolean,
+            label: String,
+            sub: String?,
+            state: String?,
+            icon: ImageVector?,
+        ): RemoteViews = if (style.look == WidgetLook.CLASSIC) {
+            classicViews(context, style, style, compact, toggles && !on, label, icon)
+        } else {
+            formViews(context, style, compact, on, toggles, label, sub, state, icon)
+        }
+
+        /** The original rounded square in a [WidgetColor]; an off toggle fades to [OFF_ALPHA]. */
+        private fun classicViews(
+            context: Context,
+            storedStyle: WidgetStyle?,
+            style: WidgetStyle,
+            compact: Boolean,
+            dimmed: Boolean,
+            label: String,
+            icon: ImageVector?,
+        ) = RemoteViews(context.packageName, R.layout.widget_shortcut).apply {
+            val content = context.getColor(style.color.content)
+            setImageViewResource(R.id.widget_background, style.color.background)
+            val alpha = style.opacity * 255 / 100
+            setInt(R.id.widget_background, "setImageAlpha", if (dimmed) (alpha * OFF_ALPHA).toInt() else alpha)
+            setTextViewText(R.id.widget_label, label)
+            setTextColor(R.id.widget_label, content)
+            if (storedStyle == null) {
+                setImageViewResource(R.id.widget_icon, R.drawable.ic_launcher_foreground)
+                setViewVisibility(R.id.widget_icon, View.VISIBLE)
+                setViewVisibility(R.id.widget_label, View.VISIBLE)
+            } else {
+                val (showIcon, showLabel) = style.copy(showIcon = icon != null).parts(compact)
+                if (icon != null) setImageViewBitmap(R.id.widget_icon, icon.toBitmap(context.px(ICON_DP), content))
+                setViewVisibility(R.id.widget_icon, if (showIcon) View.VISIBLE else View.GONE)
+                setViewVisibility(R.id.widget_label, if (showLabel) View.VISIBLE else View.GONE)
+            }
+        }
+
+        /** What a toggle widget says it is: KeySnap's own switch reads Live or Paused. */
+        internal fun stateText(res: Resources, toggles: Boolean, all: Boolean, on: Boolean): String? = when {
+            !toggles -> null
+            all -> res.getString(if (on) R.string.home_status_live else R.string.home_status_paused)
+            else -> res.getString(if (on) R.string.scripts_toggle_state_on else R.string.scripts_toggle_state_off)
+        }
+
+        internal fun Context.px(dp: Int): Int = (dp * resources.displayMetrics.density).toInt()
+
         private const val ICON_DP = 36
+        private const val OFF_ALPHA = 0.45f
 
         /** RemoteViews cannot take an [ImageVector], so the editor's action icon is painted into a bitmap. */
-        private fun ImageVector.toBitmap(sizePx: Int, color: Int): Bitmap {
+        internal fun ImageVector.toBitmap(sizePx: Int, color: Int): Bitmap {
             val bitmap = createBitmap(sizePx, sizePx)
             val canvas = Canvas(bitmap)
             canvas.scale(sizePx / viewportWidth, sizePx / viewportHeight)
@@ -119,6 +180,7 @@ class ShortcutWidgetProvider : AppWidgetProvider() {
 
         /** Called on every script-list change, so a rename or a delete shows on the home screen. */
         fun refreshAll(context: Context) {
+            ShortcutListWidget.refreshAll(context)
             val manager = AppWidgetManager.getInstance(context) ?: return
             manager.getAppWidgetIds(ComponentName(context, ShortcutWidgetProvider::class.java))
                 .forEach { render(context, it) }

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="list_widget_label">KeySnap 단축키</string>
+    <string name="list_widget_description">단축키 켜기/끄기</string>
+    <string name="list_widget_show_live">작동 버튼</string>
+    <string name="list_widget_show_keys">키</string>
+    <string name="list_widget_show_header">이름 및 아이콘</string>
+    <string name="list_widget_show">표시</string>
+    <string name="list_widget_previous_page">이전 페이지</string>
+    <string name="list_widget_next_page">다음 페이지</string>
+</resources>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="editor_chain_if">Nếu</string>
+    <string name="editor_fine_tune">Tinh chỉnh</string>
+    <string name="editor_fine_tune_summary">Tên · Chế độ · Rung</string>
+    <string name="editor_highlight_hint">Nhấn vào từ được tô sáng để đổi.</string>
+    <string name="editor_press">Nhấn</string>
+    <string name="editor_save_shortcut">Lưu phím tắt</string>
+    <string name="editor_test">Thử</string>
+</resources>

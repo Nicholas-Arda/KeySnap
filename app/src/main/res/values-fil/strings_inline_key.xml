@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="inline_key_choose">Pumili ng button</string>
+    <string name="inline_key_record">Mag-record ng button</string>
+    <string name="inline_key_listening">Pindutin ngayon ang button</string>
+    <string name="inline_key_release">Pindutin nang sabay ang mga button. Bitawan para matapos.</string>
+    <string name="inline_key_edit">I-tap ang button para mag-record muli.</string>
+    <string name="inline_key_placeholder">isang button</string>
+    <string name="inline_key_advanced_hint">Kailangan ng Advanced Mode para sa Power, Snap Key, Essential Key, Bixby at mga katulad na button.</string>
+    <string name="inline_key_set_up">I-set up</string>
+</resources>

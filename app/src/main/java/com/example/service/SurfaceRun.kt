@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.res.Resources
 import android.widget.Toast
 import com.example.data.AppLocale
-import com.example.data.EntitlementManager
 import com.example.data.ShortcutScript
 import io.github.nicholasarda.keysnap.R
 
@@ -18,8 +17,6 @@ sealed interface SurfaceRun {
     data class ScriptPaused(val name: String) : SurfaceRun
     data class ConditionsUnmet(val name: String) : SurfaceRun
 
-    /** A widget past the free plan's [EntitlementManager.FREE_WIDGET_LIMIT], e.g. after Pro was refunded. */
-    data object WidgetOverLimit : SurfaceRun
     data class Ran(val name: String, val ran: Int, val total: Int) : SurfaceRun
 }
 
@@ -49,7 +46,6 @@ fun SurfaceRun.message(res: Resources): String? = when (this) {
     SurfaceRun.GloballyPaused -> res.getString(R.string.surface_paused_global)
     is SurfaceRun.ScriptPaused -> res.getString(R.string.surface_paused_script, name)
     is SurfaceRun.ConditionsUnmet -> res.getString(R.string.surface_conditions_unmet, name)
-    SurfaceRun.WidgetOverLimit -> res.getString(R.string.widget_limit_reached, EntitlementManager.FREE_WIDGET_LIMIT)
     is SurfaceRun.Ran -> when {
         ran >= total -> null
         ran == 0 -> res.getString(R.string.run_nothing_ran)

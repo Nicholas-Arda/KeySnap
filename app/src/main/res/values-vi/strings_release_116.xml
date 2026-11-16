@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_assistant_gesture_title">Phím nguồn của bạn, phím tắt của bạn</string>
+    <string name="whats_new_assistant_gesture_description">Đặt KeySnap làm trợ lý của điện thoại. Trên điện thoại chuyển thao tác giữ phím nguồn đến trợ lý, nó sẽ chạy phím tắt “Cử chỉ trợ lý” của bạn.</string>
+    <string name="whats_new_home_only_title">Chỉ ở màn hình chính hoặc màn hình khóa</string>
+    <string name="whats_new_home_only_description">Thêm “Không mở ứng dụng nào” trong “Chỉ khi” để phím âm lượng hoạt động bình thường trong ứng dụng. Cần quyền truy cập dữ liệu sử dụng.</string>
+    <string name="whats_new_fix_coloros_dnd">Hành động Không làm phiền giờ hoạt động trên ColorOS ở Chế độ nâng cao</string>
+    <string name="whats_new_fix_conditional_volume">Phím âm lượng chỉ bị chiếm khi điều kiện của phím tắt được đáp ứng</string>
+    <string name="rating_prompt_title">KeySnap có làm tốt việc của nó không?</string>
+    <string name="rating_prompt_body">Một đánh giá trên Google Play giúp ích rất nhiều.</string>
+    <string name="rating_prompt_rate">Đánh giá</string>
+    <string name="rating_prompt_later">Để sau</string>
+    <string name="rating_prompt_no_thanks">Không, cảm ơn</string>
+</resources>

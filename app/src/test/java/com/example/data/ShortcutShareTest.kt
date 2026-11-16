@@ -65,6 +65,25 @@ class ShortcutShareTest {
 
     private fun error(text: String): Int = (ShortcutShare.decode(text) as ImportResult.Error).messageRes
 
+    @Test fun constraintParamsKeepOnlyWhatTheEditorWrites() {
+        val json = encode(constraints = listOf(ScriptConstraint("battery_below", mapOf("percent" to "15", "secret" to "x"))))
+        assertEquals(mapOf("percent" to "15"), ok(json).constraints.single().params)
+    }
+
+    @Test fun malformedConstraintParamsAreRejected() {
+        listOf(
+            ScriptConstraint("battery_below", mapOf("percent" to "low")),
+            ScriptConstraint("screen_orientation", mapOf("orientation" to "sideways")),
+            ScriptConstraint("time", mapOf("start" to "25:00", "end" to "07:00")),
+            ScriptConstraint("day_of_week", mapOf("days" to "mon,funday")),
+            ScriptConstraint("screen_on", mapOf("negate" to "yes")),
+        ).forEach { assertEquals(it.type, R.string.import_error_invalid, error(encode(constraints = listOf(it)))) }
+        listOf(
+            ScriptConstraint("interval", mapOf("every" to "5", "unit" to "d")),
+            ScriptConstraint("at_time", mapOf("time" to "7am")),
+        ).forEach { assertEquals(it.type, R.string.import_error_invalid, error(encode(constraints = listOf(it), automation = true))) }
+    }
+
     @Test fun capsulePreferenceTravelsAndOldSharesDefaultOn() {
         val json = ShortcutShare.encode("Torch", false, TriggerPressType.SINGLE_PRESS, listOf(torch), emptyList(), showCapsule = false)
         assertFalse(ok(json).showCapsule)

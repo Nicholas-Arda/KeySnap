@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="shortcuts_edit">Edit pintasan</string>
+    <string name="shortcuts_edit_done">Selesai mengedit pintasan</string>
+    <string name="shortcuts_edit_hint">Ketuk pintasan untuk mengeditnya</string>
+    <string name="shortcuts_drag">Seret untuk mengurutkan %1$s</string>
+    <string name="shortcuts_name_required">Masukkan nama</string>
+    <string name="shortcuts_delete">Hapus pintasan</string>
+    <string name="shortcuts_move_to_mode">Pindahkan ke mode</string>
+    <string name="shortcuts_rename_cancel">Batal ganti nama</string>
+    <string name="shortcuts_name_apply">Terapkan nama</string>
+    <string name="shortcuts_rename">Ganti nama pintasan</string>
+</resources>

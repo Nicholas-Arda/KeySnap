@@ -2,6 +2,7 @@
 <resources>
     <string name="pro_card_pay_once">Paghi una volta, è tuo per sempre.</string>
     <string name="pro_table_what_you_get">Cosa ottieni</string>
+    <string name="pro_table_ai">Descrivi una scorciatoia (IA)</string>
     <string name="pro_table_modes">Modalità scorciatoie</string>
     <string name="pro_table_future">Future funzionalità Pro</string>
     <string name="pro_table_everything_else">Tutte le altre funzionalità</string>

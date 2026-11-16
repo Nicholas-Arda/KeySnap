@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="widget_list_radius">@android:dimen/system_app_widget_background_radius</dimen>
+    <bool name="list_widget_enabled">true</bool>
+</resources>

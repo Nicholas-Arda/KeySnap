@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="chain_is">YA</string>
+    <string name="chain_not">BUKAN</string>
+    <string name="chain_action_empty">Aksi tidak boleh kosong</string>
+    <string name="chain_condition_empty">Periksa setelan kondisi</string>
+    <string name="chain_shell_limited">Shell berjalan terbatas di sini</string>
+    <string name="chain_set_up">Siapkan</string>
+    <string name="chain_test_running">Menguji aksi</string>
+    <string name="chain_test_success">Uji berhasil</string>
+    <string name="chain_test_failure">Uji gagal</string>
+    <string name="chain_test_action">Uji aksi</string>
+    <string name="chain_test_timeout">Waktu habis</string>
+    <string name="chain_http_status">HTTP %1$d</string>
+    <string name="chain_exit_code">Kode keluar %1$d</string>
+    <string name="chain_test_result">%1$s %2$s · %3$s · %4$s dtk</string>
+    <string name="chain_needs_condition">Tambahkan kondisi dulu</string>
+</resources>

@@ -162,7 +162,10 @@ object ConstraintEditorForms {
             summary = { res, params, _ ->
                 val time = formatTime(params.value("time"), res.locale())
                 val days = params.value("days")
-                if (days.isBlank()) {
+                // A blank time (an AI draft whose time could not be read) has no summary yet, like the time window.
+                if (time.isBlank()) {
+                    ""
+                } else if (days.isBlank()) {
                     res.getString(R.string.constraint_summary_at_time_every_day, time)
                 } else {
                     res.getString(R.string.constraint_summary_at_time_days, time, daysSummary(res, days))

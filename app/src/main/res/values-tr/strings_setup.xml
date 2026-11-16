@@ -14,14 +14,14 @@
     <string name="setup_background_why">Android boşta kalan uygulamaları kapatır\n→ kısayollar durur</string>
     <string name="setup_notifications_why">Yalnızca size ihtiyaç olduğunda</string>
     <string name="setup_reads_keys">Tuş basışlarınızı okur</string>
-    <string name="setup_reads_code">Ayarlar’ın eşleştirme kodu penceresini açar\nve kodu okur</string>
+    <string name="setup_reads_code">Ayarlar’ın eşleştirme kodu penceresini açar ve kodu okur</string>
     <string name="setup_advanced_only">Yalnızca Uzman Modu kurulurken</string>
     <string name="setup_no_screens">Diğer uygulamaların ekranlarını göremez</string>
     <string name="setup_no_data">Okuduklarını kaydetmez veya göndermez</string>
     <string name="setup_keeps_open">KeySnap’i açık tutar</string>
     <string name="setup_runs_key">Tuşa bastığınızda çalışır</string>
-    <string name="setup_no_drain">Ek pil tüketimi yok</string>
-    <string name="setup_idle">Tuş veya otomasyonunuz\ngelene kadar bekler</string>
+    <string name="setup_no_drain">Ek pil tüketmez</string>
+    <string name="setup_idle">Tuş veya otomasyonunuz\ngelene kadar çalışmaz</string>
     <string name="setup_needs_you">Kurulum sizi bekliyor</string>
     <string name="setup_shortcut_failed">Bir kısayol başarısız oldu</string>
     <string name="setup_own_alerts">Kendi kısayol bildirimleriniz</string>
@@ -44,6 +44,6 @@
     <string name="setup_usage_why">Hangi uygulamanın önde olduğunu gösterir</string>
     <string name="setup_usage_sees">Öndeki uygulamayı görür</string>
     <string name="setup_usage_for">Uygulama koşullarınız için</string>
-    <string name="setup_no_content">Ekran içeriği yok</string>
-    <string name="setup_nothing_saved">Hiçbir şey kaydedilmez veya gönderilmez</string>
+    <string name="setup_no_content">Ekran içeriğini okumaz</string>
+    <string name="setup_nothing_saved">Hiçbir şey kaydetmez veya göndermez</string>
 </resources>

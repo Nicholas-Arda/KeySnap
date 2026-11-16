@@ -55,7 +55,7 @@
     <string name="param_times">Количество раз</string>
 
     <!-- Действия: фонарик -->
-    <string name="action_toggle_flashlight">Переключить фонарик</string>
+    <string name="action_toggle_flashlight">Фонарик вкл/выкл</string>
     <string name="action_enable_flashlight">Включить фонарик</string>
     <string name="action_disable_flashlight">Выключить фонарик</string>
     <string name="action_change_flashlight_brightness">Изменить яркость фонарика</string>
@@ -141,7 +141,7 @@
     <string name="action_toggle_bluetooth">Переключить Bluetooth</string>
     <string name="action_enable_bluetooth">Включить Bluetooth</string>
     <string name="action_disable_bluetooth">Выключить Bluetooth</string>
-    <string name="action_toggle_mobile_data">Переключить мобильный интернет</string>
+    <string name="action_toggle_mobile_data">Мобильный интернет вкл/выкл</string>
     <string name="action_toggle_nfc">Переключить NFC</string>
     <string name="action_toggle_airplane_mode">Переключить режим полёта</string>
     <string name="action_toggle_location">Переключить геолокацию</string>
@@ -216,7 +216,7 @@
     <string name="constraint_flashlight_off">Фонарик выключен</string>
     <string name="constraint_wifi_on">Wi-Fi включён</string>
     <string name="constraint_wifi_off">Wi-Fi выключен</string>
-    <string name="constraint_connected_to_wifi_network">Подключено к сети Wi-Fi</string>
+    <string name="constraint_connected_to_wifi_network">В сети Wi-Fi</string>
     <string name="constraint_disconnected_from_wifi_network">Отключено от сети Wi-Fi</string>
     <string name="constraint_input_method_chosen">Метод ввода выбран</string>
     <string name="constraint_input_method_not_chosen">Метод ввода не выбран</string>
@@ -518,7 +518,7 @@
     <string name="editor_discard_changes">Отменить изменения</string>
     <string name="editor_unsaved_title">Отменить изменения?</string>
     <string name="editor_unsaved_body">Ваши изменения в этом сценарии не сохранены.</string>
-    <string name="editor_unsaved_discard">Отменить</string>
+    <string name="editor_unsaved_discard">Не сохранять</string>
     <string name="editor_shortcut_name">Название сценария</string>
     <string name="editor_shortcut_settings">Настройки сценария</string>
     <string name="editor_chain_when">Когда</string>
@@ -689,6 +689,7 @@
     <string name="pro_progress_description">%1$d из %2$d активных сценариев</string>
     <string name="pro_unlock">Открыть Pro</string>
     <string name="pro_unlock_with_price">Открыть Pro · %1$s</string>
+    <string name="pro_purchase_unavailable">Покупка сейчас недоступна</string>
     <string name="pro_table_free">Бесплатно</string>
     <string name="pro_table_pro">Pro</string>
     <string name="pro_table_unlimited">Без ограничений</string>
@@ -824,7 +825,7 @@
 
     <!-- Статус сопряжения -->
     <string name="pairing_idle">Ожидание сопряжения…</string>
-    <string name="pairing_not_started">Нажмите кнопку выше, чтобы начать сопряжение</string>
+    <string name="pairing_not_started">Ожидание: откройте настройки</string>
     <string name="pairing_searching">Поиск экрана сопряжения…</string>
     <string name="pairing_captured">Код сопряжения получен…</string>
     <string name="pairing_in_progress">Сопряжение…</string>
@@ -894,7 +895,7 @@
     <!-- Выбор типа триггера -->
     <string name="trigger_kind_key">Нажатие клавиши</string>
     <string name="trigger_kind_automation">Автоматизация</string>
-    <string name="automation_card_subtitle">Срабатывает, когда условия ниже становятся истинными</string>
+    <string name="automation_card_subtitle">Срабатывает, когда условия выше становятся истинными</string>
     <!-- Home-screen widget and Quick Settings tiles -->
     <string name="surface_paused_global">KeySnap приостановлен. Возобновите его в приложении, чтобы запускать сценарии.</string>
     <string name="surface_paused_script">«%1$s» выключен. Включите его в KeySnap, чтобы запустить.</string>
@@ -907,19 +908,30 @@
     <string name="surface_card_subtitle">Срабатывает при нажатии на его виджет на главном экране или плитку в быстрых настройках</string>
     <string name="run_source_widget">Виджет</string>
     <string name="run_source_tile">Плитка быстрых настроек</string>
-    <string name="widget_limit_reached">Бесплатный план: %1$d виджета на главном экране. Перейдите на Pro для неограниченного количества виджетов.</string>
     <!-- Widget style step -->
-    <string name="widget_style_title">Стиль виджета</string>
     <string name="widget_style_color">Цвет</string>
     <string name="widget_color_blue">Синий</string>
     <string name="widget_color_wallpaper">Обои</string>
     <string name="widget_color_dark">Тёмный</string>
     <string name="widget_color_light">Светлый</string>
     <string name="widget_style_opacity">Непрозрачность фона</string>
-    <string name="widget_style_show_label">Показывать название</string>
     <string name="widget_style_custom_label">Своё название</string>
     <string name="widget_style_custom_label_hint">Оставьте пустым, чтобы использовать название сценария</string>
-    <string name="widget_style_show_icon">Показывать значок</string>
+    <string name="surface_all_shortcuts">Все сценарии</string>
+    <string name="surface_all_shortcuts_sub">Включить или выключить KeySnap</string>
+    <string name="widget_tap_title">По нажатию</string>
+    <string name="widget_tap_run">Запустить</string>
+    <string name="widget_tap_toggle">Включить или выключить</string>
+    <string name="widget_style_look">Вид</string>
+    <string name="widget_look_classic">Классический</string>
+    <string name="widget_style_on_color">Цвет при включении</string>
+    <string name="widget_form_title">Стиль</string>
+    <string name="widget_form_tile">Плитки</string>
+    <string name="widget_form_state">Крупный статус</string>
+    <string name="widget_form_capsule">Капсула</string>
+    <string name="widget_part_name">Название</string>
+    <string name="widget_part_icon">Значок</string>
+    <string name="widget_color_auto">Авто</string>
     <!-- OEM key tip -->
     <string name="oem_key_tip">Совет: в настройках телефона выберите для этой кнопки «Нет», чтобы на неё реагировал только KeySnap.</string>
     <!-- Recipe gallery -->
@@ -1041,7 +1053,7 @@
     <string name="whats_new_try">Попробовать</string>
     <string name="whats_new_open">Открыть</string>
     <string name="whats_new_fix_assistant">Ваш ассистент снова открывается кнопкой в Расширенном режиме</string>
-    <string name="whats_new_fix_vibration">Вибрация ярлыков больше не пропадает</string>
+    <string name="whats_new_fix_vibration">Вибрация сценариев больше не пропадает</string>
     <string name="whats_new_fix_uninstall">Удаление приложения теперь останавливает и Расширенный режим</string>
     <string name="whats_new_fix_search">Нажатие в любом месте поля поиска открывает клавиатуру</string>
     <string name="whats_new_no_ads_title">Больше никакой рекламы</string>

@@ -168,7 +168,7 @@ internal fun canTestChainAction(action: ScriptAction): Boolean =
     action.type !in setOf("reply_to_notification", "reply_notification", "send_message")
 
 @Composable
-internal fun ConstraintNegationToggle(negated: Boolean, onChange: (Boolean) -> Unit, modifier: Modifier = Modifier) {
+internal fun ConstraintNegationToggle(negated: Boolean, onChange: (Boolean) -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true) {
     val colors = MaterialTheme.colorScheme
     val haptic = LocalHapticFeedback.current
     Row(modifier.selectableGroup().clip(InnerShape).background(colors.surfaceVariant), verticalAlignment = Alignment.CenterVertically) {
@@ -183,7 +183,7 @@ internal fun ConstraintNegationToggle(negated: Boolean, onChange: (Boolean) -> U
                 label = "negationInk",
             )
             Box(
-                Modifier.selectable(selected, role = Role.RadioButton, onClick = {
+                Modifier.selectable(selected, enabled = enabled, role = Role.RadioButton, onClick = {
                     if (!selected) {
                         haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                         onChange(option)

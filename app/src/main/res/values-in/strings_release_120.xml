@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_test_editors_title_120">Editor yang bisa diuji</string>
+    <string name="whats_new_test_editors_description_120">Uji langkah apa pun dengan ▶ sebelum menyimpan.</string>
+    <string name="whats_new_reorder_shortcuts_title_120">Urutkan dan edit pintasan</string>
+    <string name="whats_new_reorder_shortcuts_description_120">Ketuk ✎ atau tahan salah satu. Seret untuk mengurutkan.</string>
+    <string name="whats_new_input_devices_title_120">Keyboard, mouse, dan gamepad</string>
+    <string name="whats_new_input_devices_description_120">Mode Lanjutan: nama tombol asli, pintasan Ctrl.</string>
+    <string name="whats_new_fix_setup_120">Penyiapan dua langkah, notifikasi opsional</string>
+    <string name="whats_new_fix_conditions_120">Balik kondisi apa pun dengan BUKAN</string>
+    <string name="whats_new_fix_app_names_120">Aplikasi tampil dengan namanya</string>
+    <string name="whats_new_fix_side_power_keys_120">Tombol samping dan daya: petunjuk jelas</string>
+    <string name="whats_new_fix_idle_battery_120">Lebih hemat baterai saat diam</string>
+    <string name="whats_new_fix_advanced_setup_120">Penyiapan Mode Lanjutan dalam satu halaman</string>
+    <string name="whats_new_fix_saved_keys_120">Ganti nama tombol tersimpan atau tambah lebih dulu</string>
+    <string name="whats_new_fix_shortcuts_page_120">Halaman Pintasan lebih rapi, daftar lebih pendek</string>
+    <string name="whats_new_fix_modes_120">Mode: nonaktifkan atau hapus kapan saja</string>
+</resources>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="list_widget_label">KeySnap-Kurzbefehle</string>
+    <string name="list_widget_description">Kurzbefehle ein- oder ausschalten</string>
+    <string name="list_widget_show_live">Live-Taste</string>
+    <string name="list_widget_show_keys">Tasten</string>
+    <string name="list_widget_show_header">Name und Symbol</string>
+    <string name="list_widget_show">Anzeigen</string>
+    <string name="list_widget_previous_page">Vorherige Seite</string>
+    <string name="list_widget_next_page">Nächste Seite</string>
+</resources>

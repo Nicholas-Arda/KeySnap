@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="shortcuts_edit">Sửa phím tắt</string>
+    <string name="shortcuts_edit_done">Xong sửa phím tắt</string>
+    <string name="shortcuts_edit_hint">Nhấn vào phím tắt để sửa</string>
+    <string name="shortcuts_drag">Kéo để sắp xếp %1$s</string>
+    <string name="shortcuts_name_required">Nhập tên</string>
+    <string name="shortcuts_delete">Xóa phím tắt</string>
+    <string name="shortcuts_move_to_mode">Chuyển sang chế độ</string>
+    <string name="shortcuts_rename_cancel">Hủy đổi tên</string>
+    <string name="shortcuts_name_apply">Áp dụng tên</string>
+    <string name="shortcuts_rename">Đổi tên phím tắt</string>
+</resources>

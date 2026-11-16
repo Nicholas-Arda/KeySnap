@@ -14,14 +14,14 @@
     <string name="setup_background_why">Android sluit inactieve apps\n→ snelkoppelingen stoppen</string>
     <string name="setup_notifications_why">Alleen als iets je aandacht vraagt</string>
     <string name="setup_reads_keys">Je knopdrukken lezen</string>
-    <string name="setup_reads_code">Koppelcodedialoog in Instellingen openen\nen de code lezen</string>
+    <string name="setup_reads_code">Koppelcodedialoog in Instellingen openen en de code lezen</string>
     <string name="setup_advanced_only">Alleen bij instellen van Geavanceerde modus</string>
     <string name="setup_no_screens">Schermen van andere apps zien</string>
     <string name="setup_no_data">Gelezen gegevens opslaan of versturen</string>
     <string name="setup_keeps_open">Houdt KeySnap open</string>
     <string name="setup_runs_key">Werkt wanneer je een knop indrukt</string>
-    <string name="setup_no_drain">Geen extra batterijverbruik</string>
-    <string name="setup_idle">Wacht op een knop\nof je automatisering</string>
+    <string name="setup_no_drain">Extra batterij verbruiken</string>
+    <string name="setup_idle">Draaien vóór een knop\nof je automatisering</string>
     <string name="setup_needs_you">Instellen vraagt je aandacht</string>
     <string name="setup_shortcut_failed">Een snelkoppeling is mislukt</string>
     <string name="setup_own_alerts">Je eigen snelkoppelingsmeldingen</string>
@@ -44,6 +44,6 @@
     <string name="setup_usage_why">Toont welke app vooraan staat</string>
     <string name="setup_usage_sees">Ziet de app op de voorgrond</string>
     <string name="setup_usage_for">Voor je app-voorwaarden</string>
-    <string name="setup_no_content">Geen schermcontent</string>
-    <string name="setup_nothing_saved">Niets opgeslagen of verzonden</string>
+    <string name="setup_no_content">Scherminhoud lezen</string>
+    <string name="setup_nothing_saved">Iets opslaan of versturen</string>
 </resources>

@@ -1,0 +1,68 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string-array name="guide_generic_steps">
+        <item>Buksan ang Settings app</item>
+        <item>Pumunta sa \"About Phone\" o \"Software Information\"</item>
+        <item>I-tap ang \"Build Number\" nang 7 beses na sunod-sunod</item>
+        <item>Kapag lumabas ang \"You are now a developer\", bumalik sa Settings</item>
+        <item>Buksan ang \"Developer Options\" at i-on ang \"Wireless Debugging\"</item>
+    </string-array>
+    <string-array name="guide_samsung_steps">
+        <item>Buksan ang Settings</item>
+        <item>Pumunta sa \"About Phone\" &gt; \"Software Information\"</item>
+        <item>I-tap ang \"Build Number\" nang 7 beses na sunod-sunod</item>
+        <item>Bumalik at buksan ang \"Developer Options\"</item>
+        <item>I-on ang \"Wireless Debugging\"</item>
+        <item>Kung ayaw mag-on ng Wireless Debugging o hindi nagsisimula ang pag-pair, i-off ang Auto Blocker sa Settings &gt; Security and privacy</item>
+    </string-array>
+    <string-array name="guide_xiaomi_steps">
+        <item>Buksan ang Settings</item>
+        <item>Pumunta sa \"About Phone\"</item>
+        <item>I-tap ang \"All Specs\" &gt; \"MIUI Version\" (o \"HyperOS Version\") nang 7 beses</item>
+        <item>Bumalik sa pangunahing Settings, buksan ang \"Additional Settings\" &gt; \"Developer Options\"</item>
+        <item>I-on ang \"Wireless Debugging\"</item>
+    </string-array>
+    <string-array name="guide_huawei_steps">
+        <item>Buksan ang Settings</item>
+        <item>Pumunta sa \"About Phone\" &gt; \"Software Version\"</item>
+        <item>I-tap ang \"Build Number\" nang 7 beses na sunod-sunod</item>
+        <item>Buksan ang \"Developer Options\" sa \"System and Updates\" (o sa pangunahing screen ng Settings)</item>
+        <item>I-on ang \"Wireless Debugging\"</item>
+    </string-array>
+    <string-array name="guide_coloros_steps">
+        <item>Buksan ang Settings</item>
+        <item>Pumunta sa \"About Phone\" &gt; \"Version Information\"</item>
+        <item>I-tap ang \"Build Number\" nang 7 beses na sunod-sunod</item>
+        <item>Bumalik sa pangunahing Settings, buksan ang \"Additional Settings\" &gt; \"Developer Options\"</item>
+        <item>I-on ang \"Wireless Debugging\"</item>
+    </string-array>
+    <string-array name="guide_vivo_steps">
+        <item>Buksan ang Settings</item>
+        <item>Pumunta sa \"About Phone\" (maaaring nasa \"Other Settings\")</item>
+        <item>I-tap ang \"Software Version\" nang 7 beses na sunod-sunod</item>
+        <item>Bumalik, buksan ang \"System Management\" &gt; \"Developer Options\"</item>
+        <item>I-on ang \"Wireless Debugging\"</item>
+    </string-array>
+    <string-array name="guide_pixel_steps">
+        <item>Buksan ang Settings</item>
+        <item>Pumunta sa \"About Phone\"</item>
+        <item>I-tap ang \"Build Number\" nang 7 beses na sunod-sunod</item>
+        <item>Bumalik sa pangunahing Settings, buksan ang \"System\" &gt; \"Developer Options\"</item>
+        <item>I-on ang \"Wireless Debugging\"</item>
+    </string-array>
+    <string-array name="wizard_can_do_lines">
+        <item>Basahin ang bawat pisikal na button, nang walang delay</item>
+        <item>Isagawa ang mga pagbabago sa settings at command na isinulat mo</item>
+        <item>Patuloy na gumana kahit sarado ang app</item>
+    </string-array>
+    <string-array name="wizard_never_does_lines">
+        <item>Agawin ang input mula sa ibang app</item>
+        <item>Basahin ang screen ng ibang app</item>
+        <item>Magpadala ng anumang hindi mo inilagay sa shortcut</item>
+    </string-array>
+    <string-array name="wizard_pairing_steps">
+        <item>I-tap ang button sa ibaba para buksan ang Wireless Debugging settings.</item>
+        <item>Ita-tap ng KeySnap ang ‘Pair device with pairing code’ para sa iyo; kung hindi, ikaw mismo ang mag-tap nito.</item>
+        <item>Babasahin namin ang pairing code at awtomatikong kokonekta.</item>
+    </string-array>
+</resources>

@@ -14,14 +14,14 @@
     <string name="setup_background_why">يغلق Android التطبيقات الخاملة\n← تتوقف الاختصارات</string>
     <string name="setup_notifications_why">فقط عندما يحتاج شيء إلى تدخلك</string>
     <string name="setup_reads_keys">قراءة ضغطات الأزرار</string>
-    <string name="setup_reads_code">فتح نافذة رمز الاقتران في الإعدادات\nوقراءة الرمز</string>
+    <string name="setup_reads_code">فتح نافذة رمز الاقتران في الإعدادات وقراءة الرمز</string>
     <string name="setup_advanced_only">أثناء إعداد الوضع المتقدم فقط</string>
     <string name="setup_no_screens">رؤية شاشات التطبيقات الأخرى</string>
     <string name="setup_no_data">حفظ أو إرسال ما يقرؤه</string>
     <string name="setup_keeps_open">يبقي KeySnap مفتوحًا</string>
     <string name="setup_runs_key">يعمل عند ضغط زر</string>
-    <string name="setup_no_drain">لا استهلاك إضافي للبطارية</string>
-    <string name="setup_idle">ينتظر زرًا\nأو التشغيل الآلي الخاص بك</string>
+    <string name="setup_no_drain">استهلاك بطارية إضافي</string>
+    <string name="setup_idle">العمل قبل زر\nأو التشغيل الآلي الخاص بك</string>
     <string name="setup_needs_you">الإعداد يحتاج إليك</string>
     <string name="setup_shortcut_failed">فشل اختصار</string>
     <string name="setup_own_alerts">تنبيهات اختصاراتك الخاصة</string>
@@ -44,6 +44,6 @@
     <string name="setup_usage_why">يُظهر أي تطبيق في المقدمة</string>
     <string name="setup_usage_sees">يرى التطبيق في المقدمة</string>
     <string name="setup_usage_for">لشروط تطبيقاتك</string>
-    <string name="setup_no_content">بدون محتوى الشاشة</string>
-    <string name="setup_nothing_saved">لا شيء يُحفظ أو يُرسل</string>
+    <string name="setup_no_content">قراءة محتوى الشاشة</string>
+    <string name="setup_nothing_saved">حفظ أو إرسال أي شيء</string>
 </resources>

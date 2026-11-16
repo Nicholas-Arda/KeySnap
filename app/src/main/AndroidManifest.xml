@@ -60,6 +60,11 @@
          READ_MEDIA_IMAGES is deliberately not declared, because it would put "photos and videos" on
          the store listing and require Play's photo-permissions declaration. -->
     <uses-permission android:name="android.permission.SET_WALLPAPER" />
+    <!-- libadb-android's manifest has no targetSdkVersion, so the merger implies these legacy
+         permissions for it. Nothing here uses them; without the removal they reach the store listing. -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" tools:node="remove" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" tools:node="remove" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" tools:node="remove" />
 
     <!-- The torch runs through CameraManager.setTorchMode, which needs no permission. CAMERA is
          deliberately not declared: it would put "take pictures and videos" on the store listing
@@ -231,6 +236,21 @@
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/shortcut_widget_info" />
+        </receiver>
+
+        <!-- The shortcut list widget: switches only, through ScriptRunReceiver. API 31+ (it needs
+             RemoteViews switches), so it is off on Android 11. -->
+        <receiver
+            android:name="com.example.surface.ShortcutListWidgetProvider"
+            android:enabled="@bool/list_widget_enabled"
+            android:exported="true"
+            android:label="@string/list_widget_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/shortcut_list_widget_info" />
         </receiver>
 
         <receiver

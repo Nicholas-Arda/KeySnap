@@ -92,7 +92,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -118,6 +125,8 @@ import com.example.data.AccessibilityStatus
 import com.example.data.LiveKeyEvent
 import com.example.data.TriggerTimingSpecs
 import com.example.capsule.CapsuleHooks
+import com.example.ai.AiHooks
+import com.example.ui.components.proBadgeLabel
 import com.example.service.adb.secureSettingsCommand
 import com.example.ui.components.AppAlertDialog
 import com.example.ui.components.ConsoleShape
@@ -193,6 +202,7 @@ fun SettingsScreen(
     onAddKey: () -> Unit = {},
     onCancelAddKey: () -> Unit = {},
     onRenameKey: (Int, String) -> Unit = { _, _ -> },
+    onOpenAiModels: () -> Unit = {},
 ) {
     val listState = rememberLazyListState()
     var keysExpanded by rememberSaveable { mutableStateOf(false) }
@@ -277,6 +287,10 @@ fun SettingsScreen(
                     SettingsDivider()
                 }
                 LanguageRow()
+                if (AiHooks.AVAILABLE) {
+                    SettingsDivider()
+                    AiHooks.ModelSettings(onOpenAiModels)
+                }
                 if (CapsuleHooks.AVAILABLE) {
                     SettingsDivider()
                     Box(Modifier.testTag("key_capsule")) {
@@ -285,7 +299,7 @@ fun SettingsScreen(
                             subtitle = "${stringResource(if (capsuleEnabled) R.string.scripts_toggle_state_on else R.string.home_status_off)} · ${stringResource(R.string.settings_experimental)}",
                             icon = Icons.Outlined.SmartButton,
                             testTag = "open_key_capsule",
-                            badge = stringResource(R.string.pro_table_pro),
+                            badge = proBadgeLabel(),
                             onClick = onOpenKeyCapsule,
                         )
                     }
@@ -424,16 +438,18 @@ private fun SettingsCard(testTag: String, modifier: Modifier = Modifier, content
 }
 
 @Composable
-private fun SettingsDivider() = HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = .35f))
+internal fun SettingsDivider() = HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = .35f))
 
 @Composable
 @OptIn(ExperimentalLayoutApi::class)
-private fun SettingsNavRow(
+internal fun SettingsNavRow(
     title: String,
     subtitle: String,
     icon: ImageVector,
     testTag: String,
     badge: String? = null,
+    /** Replaces [icon] when the row needs a drawn (multicolour) icon. */
+    iconContent: (@Composable () -> Unit)? = null,
     /** Non-null when the row opens in place rather than navigating. */
     expanded: Boolean? = null,
     onClick: () -> Unit,
@@ -451,7 +467,7 @@ private fun SettingsNavRow(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            if (!compact) Icon(icon, null, Modifier.size(24.dp), tint = colors.primary)
+            if (!compact) { if (iconContent != null) iconContent() else Icon(icon, null, Modifier.size(24.dp), tint = colors.primary) }
             Column(Modifier.weight(1f)) {
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                     Text(title, Modifier.testTag("${testTag}_label"), style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium, hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph))
@@ -1069,7 +1085,7 @@ private fun EventRow(event: LiveKeyEvent) {
 
 @Composable
 @OptIn(ExperimentalLayoutApi::class)
-private fun SettingsSwitchRow(
+internal fun SettingsSwitchRow(
     title: String,
     description: String,
     checked: Boolean,
@@ -1091,7 +1107,8 @@ private fun SettingsSwitchRow(
             .testTag(testTag)
             .padding(vertical = 4.dp),
     ) {
-        val stacked = maxWidth / LocalDensity.current.fontScale < 240.dp
+        // A switch is narrow: the text keeps room beside it down to 180dp, even in an indented row.
+        val stacked = maxWidth / LocalDensity.current.fontScale < 180.dp
         FlowRow(
             Modifier.fillMaxWidth(),
             maxItemsInEachRow = if (stacked) 1 else 2,
@@ -1177,8 +1194,30 @@ private fun LanguagePickerDialog(selected: String, onSelect: (String) -> Unit, o
         icon = { Icon(Icons.Outlined.Language, null) },
         title = { Text(stringResource(R.string.settings_language_panel)) },
         text = {
+            val scroll = rememberScrollState()
             Column(
-                modifier = Modifier.fillMaxWidth().selectableGroup().verticalScroll(rememberScrollState()),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .selectableGroup()
+                    // Twelve languages do not fit: a cut-off edge fades so the list reads as "more here",
+                    // otherwise Arabic and Hindi sat below a gap that looked like the end of the list.
+                    .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
+                    .drawWithContent {
+                        drawContent()
+                        val edge = 40.dp.toPx()
+                        if (scroll.canScrollBackward) drawRect(
+                            Brush.verticalGradient(listOf(Color.Transparent, Color.Black), startY = 0f, endY = edge),
+                            size = Size(size.width, edge),
+                            blendMode = BlendMode.DstIn,
+                        )
+                        if (scroll.canScrollForward) drawRect(
+                            Brush.verticalGradient(listOf(Color.Black, Color.Transparent), startY = size.height - edge, endY = size.height),
+                            topLeft = Offset(0f, size.height - edge),
+                            size = Size(size.width, edge),
+                            blendMode = BlendMode.DstIn,
+                        )
+                    }
+                    .verticalScroll(scroll),
             ) {
                 AppLocale.options.forEach { (tag, labelRes) ->
                     val isSelected = tag == selected

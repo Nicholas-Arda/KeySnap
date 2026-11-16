@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="chain_is">맞음</string>
+    <string name="chain_not">아님</string>
+    <string name="chain_action_empty">동작이 비어 있을 수 없어요</string>
+    <string name="chain_condition_empty">조건 설정을 확인하세요</string>
+    <string name="chain_shell_limited">여기서는 셸이 제한적으로 실행돼요</string>
+    <string name="chain_set_up">설정</string>
+    <string name="chain_test_running">동작 테스트 중</string>
+    <string name="chain_test_success">테스트 성공</string>
+    <string name="chain_test_failure">테스트 실패</string>
+    <string name="chain_test_action">동작 테스트</string>
+    <string name="chain_test_timeout">시간 초과</string>
+    <string name="chain_http_status">HTTP %1$d</string>
+    <string name="chain_exit_code">종료 코드 %1$d</string>
+    <string name="chain_test_result">%1$s %2$s · %3$s · %4$s초</string>
+    <string name="chain_needs_condition">먼저 조건을 추가하세요</string>
+</resources>

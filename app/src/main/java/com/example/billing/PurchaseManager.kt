@@ -114,8 +114,13 @@ class PurchaseManager private constructor(context: Context, private val entitlem
         }
     }
 
-    fun purchasePro(activity: Activity) {
-        val details = proProductDetails ?: return
+    /** False when Play cannot show the purchase now (no Billing, product not found yet, or the flow
+     *  refused to launch), so the caller can tell the user instead of leaving a dead button. */
+    fun purchasePro(activity: Activity): Boolean {
+        val details = proProductDetails ?: run {
+            refresh()
+            return false
+        }
         // The offer token is what applies a Play Console discount; without it Play charges full price.
         val productParams = BillingFlowParams.ProductDetailsParams.newBuilder()
             .setProductDetails(details)
@@ -124,7 +129,7 @@ class PurchaseManager private constructor(context: Context, private val entitlem
         val flowParams = BillingFlowParams.newBuilder()
             .setProductDetailsParamsList(listOf(productParams))
             .build()
-        billingClient.launchBillingFlow(activity, flowParams)
+        return billingClient.launchBillingFlow(activity, flowParams).responseCode == BillingClient.BillingResponseCode.OK
     }
 
     private fun handlePurchase(purchase: Purchase) {

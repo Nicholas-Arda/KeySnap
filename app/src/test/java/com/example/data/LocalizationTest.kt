@@ -54,6 +54,74 @@ class LocalizationTest {
         }
     }
 
+    @Test
+    @Config(sdk = [30, 34])
+    fun filipinoAndLegacyTagalogTagsResolveFilipinoResources() {
+        // Android treats tl and fil as equivalent; one canonical values-fil catalog serves both.
+        listOf("fil", "fil-PH", "tl", "tl-PH").forEach { tag ->
+            val res = contextFor(tag).resources
+            assertEquals("[$tag] action", "I-on/i-off ang flashlight", res.getString(R.string.action_toggle_flashlight))
+            assertEquals("[$tag] setup", "I-on ang Advanced Mode", res.getString(R.string.wizard_title))
+            assertEquals("[$tag] condition", "May natanggap na notification", res.getString(R.string.constraint_notification_received))
+            assertEquals("[$tag] guide", "Buksan ang Settings", res.getStringArray(R.array.guide_pixel_steps).first())
+            assertEquals("[$tag] editor", "Isasagawa", res.getString(R.string.editor_will_run))
+            assertEquals("[$tag] release", "Mga editor na puwedeng subukan", res.getString(R.string.whats_new_test_editors_title_120))
+            assertEquals("[$tag] formatted", "Naisagawa ang 2 sa 3 aksyon", res.getString(R.string.run_partial, 2, 3))
+            listOf(0, 1, 2, 4, 6, 10).forEach { count ->
+                assertEquals("[$tag] plural $count", "$count aksyon", res.getQuantityString(R.plurals.scripts_action_count, count, count))
+                // Filipino's "one" category also covers numbers such as 0 and 2.
+                assertEquals("[$tag] all $count", "Naisagawa ang lahat ng $count aksyon", res.getQuantityString(R.plurals.run_all, count, count))
+            }
+        }
+    }
+
+    @Test
+    @Config(sdk = [30, 34])
+    fun filipinoSelectionPersistsAndMirrorsWhereSupported() {
+        val previous = AppLocale.stored(base)
+        try {
+            AppLocale.set(base, "fil")
+            assertEquals("fil", AppLocale.stored(base))
+            assertEquals("I-on ang Advanced Mode", AppLocale.wrap(base).getString(R.string.wizard_title))
+            assertEquals(R.string.language_filipino, AppLocale.labelFor("fil"))
+            assertEquals("Filipino", base.getString(AppLocale.labelFor("fil")))
+            assertEquals("🇵🇭", AppLocale.flagFor("fil"))
+            if (android.os.Build.VERSION.SDK_INT >= 33) {
+                assertEquals("fil", base.getSystemService(LocaleManager::class.java).applicationLocales[0].language)
+            }
+        } finally {
+            AppLocale.set(base, previous)
+        }
+    }
+
+    @Test
+    @Config(sdk = [30, 34])
+    fun koreanIndonesianAndVietnameseResolveTheirOwnResources() {
+        // Indonesian resources live in the legacy values-in folder; the BCP-47 "id" tag must reach them.
+        val expected = mapOf(
+            listOf("ko", "ko-KR") to Triple("고급 모드 켜기", "동작 2개를 모두 실행함", "🇰🇷"),
+            listOf("id", "id-ID", "in") to Triple("Aktifkan Mode Lanjutan", "Semua 2 aksi dijalankan", "🇮🇩"),
+            listOf("vi", "vi-VN") to Triple("Bật Chế độ nâng cao", "Đã chạy cả 2 hành động", "🇻🇳"),
+        )
+        expected.forEach { (tags, values) ->
+            val (wizard, ranAll, flag) = values
+            tags.forEach { tag ->
+                val res = contextFor(tag).resources
+                assertEquals("[$tag] setup", wizard, res.getString(R.string.wizard_title))
+                assertEquals("[$tag] plural", ranAll, res.getQuantityString(R.plurals.run_all, 2, 2))
+            }
+            assertEquals(flag, AppLocale.flagFor(tags.first()))
+            assertTrue("[${tags.first()}] label", AppLocale.labelFor(tags.first()) != R.string.language_system)
+        }
+        val previous = AppLocale.stored(base)
+        try {
+            AppLocale.set(base, "id")
+            assertEquals("Aktifkan Mode Lanjutan", AppLocale.wrap(base).getString(R.string.wizard_title))
+        } finally {
+            AppLocale.set(base, previous)
+        }
+    }
+
     @Test fun dutchSystemVariantsResolveDutchInsteadOfEnglishFallback() {
         listOf("nl", "nl-NL", "nl-BE").forEach { tag ->
             val res = contextFor(tag).resources
@@ -216,5 +284,7 @@ class LocalizationTest {
             }
         }
         assertEquals(shippedLocales.sorted(), declared.sorted())
+        assertEquals("No duplicate language choices", shippedLocales.toSet().size, shippedLocales.size)
+        assertTrue("Filipino uses one canonical tag", "fil" in declared && "tl" !in declared)
     }
 }

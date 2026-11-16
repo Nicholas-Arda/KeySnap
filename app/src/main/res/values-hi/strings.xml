@@ -516,9 +516,9 @@
 
     <!-- शॉर्टकट एडिटर -->
     <string name="editor_discard_changes">बदलाव रद्द करें</string>
-    <string name="editor_unsaved_title">बदलाव रद्द करें?</string>
+    <string name="editor_unsaved_title">बदलाव खारिज करें?</string>
     <string name="editor_unsaved_body">इस शॉर्टकट में किए गए आपके बदलाव सेव नहीं हुए हैं।</string>
-    <string name="editor_unsaved_discard">रद्द करें</string>
+    <string name="editor_unsaved_discard">खारिज करें</string>
     <string name="editor_shortcut_name">शॉर्टकट का नाम</string>
     <string name="editor_shortcut_settings">शॉर्टकट सेटिंग</string>
     <string name="editor_chain_when">जब</string>
@@ -689,6 +689,7 @@
     <string name="pro_progress_description">%2$d में से %1$d सक्रिय शॉर्टकट</string>
     <string name="pro_unlock">Pro अनलॉक करें</string>
     <string name="pro_unlock_with_price">Pro अनलॉक करें · %1$s</string>
+    <string name="pro_purchase_unavailable">खरीदारी अभी उपलब्ध नहीं है</string>
     <string name="pro_table_free">फ़्री</string>
     <string name="pro_table_pro">Pro</string>
     <string name="pro_table_unlimited">अनलिमिटेड</string>
@@ -824,7 +825,7 @@
 
     <!-- पेयरिंग स्टेटस -->
     <string name="pairing_idle">पेयरिंग का इंतज़ार हो रहा है…</string>
-    <string name="pairing_not_started">पेयरिंग शुरू करने के लिए ऊपर दिए बटन पर टैप करें</string>
+    <string name="pairing_not_started">सेटिंग खोलने का इंतज़ार है</string>
     <string name="pairing_searching">पेयरिंग स्क्रीन खोजी जा रही है…</string>
     <string name="pairing_captured">पेयरिंग कोड मिल गया…</string>
     <string name="pairing_in_progress">पेयरिंग हो रही है…</string>
@@ -894,7 +895,7 @@
     <!-- ट्रिगर टाइप चयनकर्ता -->
     <string name="trigger_kind_key">बटन दबाना</string>
     <string name="trigger_kind_automation">ऑटोमेशन</string>
-    <string name="automation_card_subtitle">नीचे की शर्तें पूरी होते ही चलता है</string>
+    <string name="automation_card_subtitle">ऊपर की शर्तें पूरी होते ही चलता है</string>
     <!-- Home-screen widget and Quick Settings tiles -->
     <string name="surface_paused_global">KeySnap रुका हुआ है। शॉर्टकट चलाने के लिए ऐप में इसे फिर से शुरू करें।</string>
     <string name="surface_paused_script">\"%1$s\" बंद है। इसे चलाने के लिए KeySnap में चालू करें।</string>
@@ -907,19 +908,30 @@
     <string name="surface_card_subtitle">होम स्क्रीन विजेट या क्विक सेटिंग टाइल पर टैप करने पर चलता है</string>
     <string name="run_source_widget">विजेट</string>
     <string name="run_source_tile">क्विक सेटिंग टाइल</string>
-    <string name="widget_limit_reached">फ़्री प्लान: होम स्क्रीन पर %1$d विजेट। अनलिमिटेड विजेट के लिए Pro लें।</string>
     <!-- Widget style step -->
-    <string name="widget_style_title">विजेट स्टाइल</string>
     <string name="widget_style_color">रंग</string>
     <string name="widget_color_blue">नीला</string>
     <string name="widget_color_wallpaper">वॉलपेपर</string>
     <string name="widget_color_dark">डार्क</string>
     <string name="widget_color_light">लाइट</string>
     <string name="widget_style_opacity">बैकग्राउंड की अपारदर्शिता</string>
-    <string name="widget_style_show_label">नाम दिखाएं</string>
     <string name="widget_style_custom_label">कस्टम नाम</string>
     <string name="widget_style_custom_label_hint">शॉर्टकट का नाम इस्तेमाल करने के लिए खाली छोड़ें</string>
-    <string name="widget_style_show_icon">आइकन दिखाएं</string>
+    <string name="surface_all_shortcuts">सभी शॉर्टकट</string>
+    <string name="surface_all_shortcuts_sub">KeySnap चालू या बंद करें</string>
+    <string name="widget_tap_title">टैप करने पर</string>
+    <string name="widget_tap_run">चलाएं</string>
+    <string name="widget_tap_toggle">चालू या बंद करें</string>
+    <string name="widget_style_look">रूप</string>
+    <string name="widget_look_classic">क्लासिक</string>
+    <string name="widget_style_on_color">चालू होने का रंग</string>
+    <string name="widget_form_title">स्टाइल</string>
+    <string name="widget_form_tile">टाइलें</string>
+    <string name="widget_form_state">बड़ी स्थिति</string>
+    <string name="widget_form_capsule">कैप्सूल</string>
+    <string name="widget_part_name">नाम</string>
+    <string name="widget_part_icon">आइकन</string>
+    <string name="widget_color_auto">अपने आप</string>
     <!-- OEM key tip -->
     <string name="oem_key_tip">टिप: फ़ोन की सेटिंग में इस बटन को “कोई नहीं” पर सेट करें, ताकि सिर्फ़ KeySnap इस पर प्रतिक्रिया दे।</string>
     <!-- Recipe gallery -->

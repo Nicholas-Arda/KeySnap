@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="editor_chain_if">Kung</string>
+    <string name="editor_fine_tune">Ayusin ang detalye</string>
+    <string name="editor_fine_tune_summary">Pangalan · Mga mode · Vibration</string>
+    <string name="editor_highlight_hint">I-tap ang naka-highlight na salita para palitan ito.</string>
+    <string name="editor_press">Pindutin</string>
+    <string name="editor_save_shortcut">I-save ang shortcut</string>
+    <string name="editor_test">Subukan</string>
+</resources>

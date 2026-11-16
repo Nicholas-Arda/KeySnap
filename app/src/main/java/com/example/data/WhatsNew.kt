@@ -1,6 +1,7 @@
 package com.example.data
 
 import androidx.annotation.StringRes
+import com.example.ai.AiHooks
 import com.example.capsule.CapsuleHooks
 import com.example.mode.ModeHooks
 import io.github.nicholasarda.keysnap.R
@@ -32,6 +33,7 @@ enum class WhatsNewDestination {
     ABOUT,
     KEY_CAPSULE,
     SHORTCUTS,
+    NEW_SHORTCUT,
 }
 
 data class WhatsNewFeature(
@@ -78,6 +80,40 @@ private val release112Fixes = listOf(
 )
 
 /** Add the next release under its version code; a version without an entry has no dialog. */
+private val release120 = WhatsNewRelease(
+    features = listOf(
+        WhatsNewFeature(
+            R.string.whats_new_test_editors_title_120,
+            R.string.whats_new_test_editors_description_120,
+            R.string.whats_new_try,
+            WhatsNewDestination.SHORTCUTS,
+        ),
+        WhatsNewFeature(
+            R.string.whats_new_reorder_shortcuts_title_120,
+            R.string.whats_new_reorder_shortcuts_description_120,
+            R.string.whats_new_try,
+            WhatsNewDestination.SHORTCUTS,
+        ),
+        WhatsNewFeature(
+            R.string.whats_new_input_devices_title_120,
+            R.string.whats_new_input_devices_description_120,
+            R.string.whats_new_try,
+            WhatsNewDestination.SHORTCUTS,
+        ),
+    ),
+    fixes = listOfNotNull(
+        R.string.whats_new_fix_setup_120,
+        R.string.whats_new_fix_conditions_120,
+        R.string.whats_new_fix_app_names_120,
+        R.string.whats_new_fix_side_power_keys_120,
+        R.string.whats_new_fix_idle_battery_120,
+        R.string.whats_new_fix_advanced_setup_120,
+        R.string.whats_new_fix_saved_keys_120,
+        R.string.whats_new_fix_shortcuts_page_120,
+        R.string.whats_new_fix_modes_120.takeIf { ModeHooks.AVAILABLE },
+    ),
+)
+
 val whatsNewReleases = mapOf(
     12L to WhatsNewRelease(release112Features, release112Fixes),
     // 1.1.3 repeats 1.1.2's news: most updates skip straight past 1.1.2.
@@ -131,40 +167,23 @@ val whatsNewReleases = mapOf(
             R.string.whats_new_fix_key_code_118,
         ),
     ),
-    20L to WhatsNewRelease(
-        features = listOf(
-            WhatsNewFeature(
-                R.string.whats_new_test_editors_title_120,
-                R.string.whats_new_test_editors_description_120,
-                R.string.whats_new_try,
-                WhatsNewDestination.SHORTCUTS,
-            ),
-            WhatsNewFeature(
-                R.string.whats_new_reorder_shortcuts_title_120,
-                R.string.whats_new_reorder_shortcuts_description_120,
-                R.string.whats_new_try,
-                WhatsNewDestination.SHORTCUTS,
-            ),
-            WhatsNewFeature(
-                R.string.whats_new_input_devices_title_120,
-                R.string.whats_new_input_devices_description_120,
-                R.string.whats_new_try,
-                WhatsNewDestination.SHORTCUTS,
-            ),
+    20L to release120,
+    21L to release120.copy(fixes = listOf(R.string.whats_new_fix_filipino_121) + release120.fixes),
+    // 1.2.1 never reached Play (1.2.0 shipped 2026-10-31), so 1.3.0 carries its new language. The AI builder is Pro-only.
+    22L to WhatsNewRelease(features = AiHooks.whatsNewFeatures(22L), fixes = listOf(R.string.whats_new_fix_filipino_121)),
+    // 1.3.0's rollout was halted early, so most phones come from 1.2.0 and 1.3.1 carries its news too.
+    23L to WhatsNewRelease(
+        features = AiHooks.whatsNewFeatures(22L),
+        fixes = listOf(
+            R.string.whats_new_fix_colors_131,
+            // One item lists every language added since 1.2.0, Filipino included.
+            R.string.whats_new_fix_languages_131,
         ),
-        fixes = listOfNotNull(
-            R.string.whats_new_fix_setup_120,
-            R.string.whats_new_fix_conditions_120,
-            R.string.whats_new_fix_app_names_120,
-            R.string.whats_new_fix_side_power_keys_120,
-            R.string.whats_new_fix_idle_battery_120,
-            R.string.whats_new_fix_advanced_setup_120,
-            R.string.whats_new_fix_saved_keys_120,
-            R.string.whats_new_fix_shortcuts_page_120,
-            R.string.whats_new_fix_modes_120.takeIf { ModeHooks.AVAILABLE },
-        ),
+        highlightTitle = R.string.whats_new_widgets_title_131,
+        highlightDescription = R.string.whats_new_widgets_description_131,
     ),
-) + listOf(14L, 15L).mapNotNull { code -> CapsuleHooks.whatsNewRelease(code)?.let { code to it } }.toMap()
+).filterValues { it.features.isNotEmpty() || it.fixes.isNotEmpty() || it.highlightTitle != null } +
+    listOf(14L, 15L).mapNotNull { code -> CapsuleHooks.whatsNewRelease(code)?.let { code to it } }.toMap()
 
 fun whatsNewVersionLabel(versionName: String): String = versionName.substringBefore("-dev")
 

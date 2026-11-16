@@ -2,7 +2,8 @@
 <resources>
     <string name="pro_card_pay_once">Заплатите один раз — пользуйтесь всегда.</string>
     <string name="pro_table_what_you_get">Что вы получаете</string>
-    <string name="pro_table_modes">Режимы ярлыков</string>
+    <string name="pro_table_ai">Описать сценарий (ИИ)</string>
+    <string name="pro_table_modes">Режимы сценариев</string>
     <string name="pro_table_future">Будущие функции Pro</string>
     <string name="pro_table_everything_else">Все остальные функции</string>
     <string name="pro_card_one_time">Разовая покупка · Без подписки</string>

@@ -22,7 +22,7 @@ class ConstraintLabelTest {
         val title = resources.getString(R.string.constraint_screen_on)
         assertEquals(title,resources.constraintLabel(ScriptConstraint("screen_on")))
         assertEquals("Not: $title",resources.constraintLabel(ScriptConstraint("screen_on",mapOf("negate" to "true"))))
-        for (language in listOf("tr","de","es","fr","it","nl","ru","ar","hi","pt-BR")) {
+        for (language in listOf("tr","de","es","fr","it","nl","fil","ru","ar","hi","pt-BR","ko","id","vi")) {
             val configuration = android.content.res.Configuration(resources.configuration).apply { setLocale(Locale.forLanguageTag(language)) }
             val localized = RuntimeEnvironment.getApplication().createConfigurationContext(configuration).resources
             val prefix = localized.getString(R.string.constraint_not_prefix)

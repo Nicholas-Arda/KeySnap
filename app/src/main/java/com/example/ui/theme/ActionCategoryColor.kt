@@ -34,20 +34,41 @@ fun colorFor(category: ActionCategory): Color = when (category) {
 }
 
 /**
+ * The resting tone of [category]: its [colorFor] swatch lifted 7 points lighter and 18 points more
+ * saturated in HSL, so washed tiles and editor rows stop melting into the ground. Two are hand-set:
+ * flashlight stays near the old gold so its title still reads on the light wash, and sound is calmed
+ * from neon magenta. It is for the glyph and the wash only; a white glyph still sits on [colorFor].
+ */
+fun restingColorFor(category: ActionCategory): Color = when (category) {
+    ActionCategory.FLASHLIGHT -> Color(0xFF9A7600)
+    ActionCategory.INPUT -> Color(0xFF576DFF)
+    ActionCategory.APPS -> Color(0xFF0CA754)
+    ActionCategory.NAVIGATION -> Color(0xFFA85FF1)
+    ActionCategory.VOLUME -> Color(0xFF0A8AE6)
+    ActionCategory.DISPLAY -> Color(0xFFD66400)
+    ActionCategory.MEDIA -> Color(0xFFD34A8F)
+    ActionCategory.CONNECTIVITY -> Color(0xFF2883FB)
+    ActionCategory.KEYBOARD -> Color(0xFF6A6AA9)
+    ActionCategory.DEVICE -> Color(0xFFAB8349)
+    ActionCategory.SOUND -> Color(0xFFC93BC4)
+    ActionCategory.AUTOMATION -> Color(0xFF36ABA7)
+}
+
+/**
  * Tile fill and glyph for [category], or the theme accent where a tile has no category of its own.
  *
- * A resting tile is a wash of the swatch over the surface behind it, carrying the swatch itself as
- * the glyph; a dark appearance needs more wash to separate from its own ground, and a glyph lifted
- * toward white to clear that wash. Every resulting pair measures 3.7-4.3:1 on light and sepia and
- * 5.6-6.2:1 on dark, clear of the 3:1 floor for a meaningful graphic. Only a [selected] tile takes
- * the solid swatch, which is the one [colorFor] was solved to carry a white glyph on.
+ * A resting tile is a wash of the [restingColorFor] tone over the surface behind it, carrying that
+ * tone as the glyph; a dark appearance needs more wash to separate
+ * from its own ground, and a glyph lifted toward white to clear that wash. Only a [selected] tile
+ * takes the solid swatch, which is the one [colorFor] was solved to carry a white glyph on.
  */
 @Composable
 fun categoryTileColors(category: ActionCategory?, selected: Boolean = false): Pair<Color, Color> {
     val colors = MaterialTheme.colorScheme
-    val base = category?.let(::colorFor) ?: colors.primary
-    if (selected) return base to if (category == null) colors.onPrimary else Color.White
+    if (selected) return (category?.let(::colorFor) ?: colors.primary) to if (category == null) colors.onPrimary else Color.White
+    val base = category?.let(::restingColorFor) ?: colors.primary
     val dark = colors.surface.luminance() < 0.5f
-    return base.copy(alpha = if (dark) 0.18f else 0.14f).compositeOver(colors.surface) to
+    return base.copy(alpha = if (dark) 0.30f else 0.18f).compositeOver(colors.surface) to
         if (dark) lerp(base, Color.White, 0.42f) else base
 }
+

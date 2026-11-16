@@ -2,14 +2,12 @@ package com.example.service
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
-import com.example.data.EntitlementManager
 import com.example.data.ScriptAction
 import com.example.data.ScriptConstraint
 import com.example.data.ShortcutScript
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -77,12 +75,7 @@ class SurfaceRunTest {
             SurfaceRun.GloballyPaused,
             SurfaceRun.ScriptPaused("Torch"),
             SurfaceRun.ConditionsUnmet("Torch"),
-            SurfaceRun.WidgetOverLimit,
         ).forEach { assertFalse("$it", it.message(res).isNullOrBlank()) }
     }
 
-    @Test fun anOverLimitWidgetNamesTheFreeLimitAndPro() {
-        val text = SurfaceRun.WidgetOverLimit.message(res).orEmpty()
-        assertTrue(text, "${EntitlementManager.FREE_WIDGET_LIMIT}" in text && "Pro" in text)
-    }
 }

@@ -282,6 +282,10 @@ class ConstraintEvaluatorTest {
 
     @Test fun unknownStateNeverBlocks() {
         // No Accessibility service instance in a JVM test, no Usage Access, no location grant.
+        // Deny Usage Access explicitly: the foreground cache is process-wide, so an earlier test's events would leak in.
+        shadowOf(context.getSystemService(android.app.AppOpsManager::class.java)).setMode(
+            android.app.AppOpsManager.OPSTR_GET_USAGE_STATS, android.os.Process.myUid(), context.packageName, android.app.AppOpsManager.MODE_IGNORED,
+        )
         assertTrue(evaluator.isSatisfied(ScriptConstraint("keyboard_showing")))
         assertTrue(evaluator.isSatisfied(ScriptConstraint("keyboard_not_showing")))
         assertTrue(evaluator.isSatisfied(ScriptConstraint("app_in_foreground", mapOf("packageName" to "com.example.other"))))

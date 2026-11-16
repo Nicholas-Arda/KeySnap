@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="inline_key_choose">Chọn phím</string>
+    <string name="inline_key_record">Ghi phím</string>
+    <string name="inline_key_listening">Nhấn phím ngay</string>
+    <string name="inline_key_release">Giữ các phím cùng lúc. Nhả ra để xong.</string>
+    <string name="inline_key_edit">Nhấn vào phím để ghi lại.</string>
+    <string name="inline_key_placeholder">một phím</string>
+    <string name="inline_key_advanced_hint">Nguồn, Snap Key, Essential Key, Bixby và các phím tương tự cần Chế độ nâng cao.</string>
+    <string name="inline_key_set_up">Thiết lập</string>
+</resources>

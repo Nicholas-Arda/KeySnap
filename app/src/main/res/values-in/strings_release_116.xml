@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_assistant_gesture_title">Tombol daya Anda, pintasan Anda</string>
+    <string name="whats_new_assistant_gesture_description">Jadikan KeySnap asisten ponsel Anda. Di ponsel yang mengirim tahan tombol daya ke asisten, ini menjalankan pintasan “Gestur asisten” Anda.</string>
+    <string name="whats_new_home_only_title">Hanya di layar utama atau layar kunci</string>
+    <string name="whats_new_home_only_description">Tambahkan “Tidak ada aplikasi terbuka” di “Hanya jika” agar tombol volume berfungsi normal di dalam aplikasi. Perlu akses penggunaan.</string>
+    <string name="whats_new_fix_coloros_dnd">Aksi Jangan Ganggu kini berfungsi di ColorOS dengan Mode Lanjutan</string>
+    <string name="whats_new_fix_conditional_volume">Tombol volume hanya diambil alih saat kondisi pintasan terpenuhi</string>
+    <string name="rating_prompt_title">Apakah KeySnap bekerja dengan baik?</string>
+    <string name="rating_prompt_body">Rating di Google Play sangat membantu.</string>
+    <string name="rating_prompt_rate">Beri rating</string>
+    <string name="rating_prompt_later">Nanti</string>
+    <string name="rating_prompt_no_thanks">Tidak, terima kasih</string>
+</resources>

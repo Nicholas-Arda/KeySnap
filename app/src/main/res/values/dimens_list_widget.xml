@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- The list widget's corner on API 30; 31+ takes the launcher's own (values-v31). -->
+    <dimen name="widget_list_radius">24dp</dimen>
+    <!-- The list widget needs RemoteViews switches and collection items (API 31). -->
+    <bool name="list_widget_enabled">false</bool>
+</resources>

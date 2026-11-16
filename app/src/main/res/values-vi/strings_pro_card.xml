@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pro_card_pay_once">Trả một lần, dùng mãi mãi.</string>
+    <string name="pro_table_what_you_get">Bạn nhận được</string>
+    <string name="pro_table_ai">Mô tả phím tắt (AI)</string>
+    <string name="pro_table_modes">Chế độ phím tắt</string>
+    <string name="pro_table_future">Tính năng Pro sắp tới</string>
+    <string name="pro_table_everything_else">Mọi tính năng khác</string>
+    <string name="pro_card_one_time">Mua một lần · Không đăng ký</string>
+</resources>

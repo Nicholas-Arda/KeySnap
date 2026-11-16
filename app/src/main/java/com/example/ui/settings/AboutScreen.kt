@@ -56,6 +56,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.ui.components.AppAlertDialog
+import com.example.ui.components.EdgeToEdgeDialogWindow
 import com.example.ui.components.ConsoleShape
 import com.example.ui.components.InnerShape
 import com.example.ui.components.MinTouchTarget
@@ -93,8 +94,9 @@ fun AboutDialog(
 
     Dialog(
         onDismissRequest = onDismiss,
-        properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false),
+        properties = DialogProperties(decorFitsSystemWindows = false),
     ) {
+        EdgeToEdgeDialogWindow()
         Column(
             Modifier
                 .fillMaxSize()

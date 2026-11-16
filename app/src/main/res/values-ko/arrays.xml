@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="guide_generic_steps">
+        <item>설정 앱 열기</item>
+        <item>\"휴대전화 정보\" 또는 \"소프트웨어 정보\"로 이동</item>
+        <item>\"빌드번호\"를 연속으로 7번 탭</item>
+        <item>\"개발자가 되었습니다\"가 보이면 설정으로 돌아가기</item>
+        <item>\"개발자 옵션\"을 열고 \"무선 디버깅\" 켜기</item>
+    </string-array>
+    <string-array name="guide_samsung_steps">
+        <item>설정 열기</item>
+        <item>\"휴대전화 정보\" &gt; \"소프트웨어 정보\"로 이동</item>
+        <item>\"빌드번호\"를 연속으로 7번 탭</item>
+        <item>돌아가서 \"개발자 옵션\" 열기</item>
+        <item>\"무선 디버깅\" 켜기</item>
+        <item>무선 디버깅이 켜지지 않거나 페어링이 시작되지 않으면 설정 &gt; 보안 및 개인정보 보호에서 자동 차단을 끄세요</item>
+    </string-array>
+    <string-array name="guide_xiaomi_steps">
+        <item>설정 열기</item>
+        <item>\"휴대전화 정보\"로 이동</item>
+        <item>\"전체 사양\" &gt; \"MIUI 버전\"(또는 \"HyperOS 버전\")을 7번 탭</item>
+        <item>설정 첫 화면으로 돌아가 \"추가 설정\" &gt; \"개발자 옵션\" 열기</item>
+        <item>\"무선 디버깅\" 켜기</item>
+    </string-array>
+    <string-array name="guide_huawei_steps">
+        <item>설정 열기</item>
+        <item>\"휴대전화 정보\" &gt; \"소프트웨어 버전\"으로 이동</item>
+        <item>\"빌드번호\"를 연속으로 7번 탭</item>
+        <item>\"시스템 및 업데이트\"(또는 설정 첫 화면)에서 \"개발자 옵션\" 열기</item>
+        <item>\"무선 디버깅\" 켜기</item>
+    </string-array>
+    <string-array name="guide_coloros_steps">
+        <item>설정 열기</item>
+        <item>\"휴대전화 정보\" &gt; \"버전 정보\"로 이동</item>
+        <item>\"빌드번호\"를 연속으로 7번 탭</item>
+        <item>설정 첫 화면으로 돌아가 \"추가 설정\" &gt; \"개발자 옵션\" 열기</item>
+        <item>\"무선 디버깅\" 켜기</item>
+    </string-array>
+    <string-array name="guide_vivo_steps">
+        <item>설정 열기</item>
+        <item>\"휴대전화 정보\"로 이동(\"기타 설정\" 안에 있을 수 있음)</item>
+        <item>\"소프트웨어 버전\"을 연속으로 7번 탭</item>
+        <item>돌아가서 \"시스템 관리\" &gt; \"개발자 옵션\" 열기</item>
+        <item>\"무선 디버깅\" 켜기</item>
+    </string-array>
+    <string-array name="guide_pixel_steps">
+        <item>설정 열기</item>
+        <item>\"휴대전화 정보\"로 이동</item>
+        <item>\"빌드번호\"를 연속으로 7번 탭</item>
+        <item>설정 첫 화면으로 돌아가 \"시스템\" &gt; \"개발자 옵션\" 열기</item>
+        <item>\"무선 디버깅\" 켜기</item>
+    </string-array>
+    <string-array name="wizard_can_do_lines">
+        <item>모든 하드웨어 키를 지연 없이 읽기</item>
+        <item>직접 작성한 설정 변경과 명령 실행</item>
+        <item>앱을 닫아도 계속 작동</item>
+    </string-array>
+    <string-array name="wizard_never_does_lines">
+        <item>다른 앱의 입력 가로채기</item>
+        <item>다른 앱의 화면 읽기</item>
+        <item>단축키에 넣지 않은 것을 전송하기</item>
+    </string-array>
+    <string-array name="wizard_pairing_steps">
+        <item>아래 버튼을 눌러 무선 디버깅 설정을 여세요.</item>
+        <item>KeySnap이 ‘페어링 코드로 기기 페어링’을 대신 탭해요. 안 되면 직접 탭하세요.</item>
+        <item>페어링 코드를 읽고 자동으로 연결해요.</item>
+    </string-array>
+</resources>

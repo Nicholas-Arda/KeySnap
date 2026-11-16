@@ -204,7 +204,7 @@ class CalendarAutomationTest {
                             Instances.STATUS -> CalendarContract.Events.STATUS_CONFIRMED
                             else -> null
                         }
-                    }.toTypedArray(),
+                    }.toTypedArray<Any?>(),
                 )
             }
             return cursor

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="list_widget_label">Scorciatoie KeySnap</string>
+    <string name="list_widget_description">Attiva o disattiva le scorciatoie</string>
+    <string name="list_widget_show_live">Pulsante Attiva</string>
+    <string name="list_widget_show_keys">Tasti</string>
+    <string name="list_widget_show_header">Nome e icona</string>
+    <string name="list_widget_show">Mostra</string>
+    <string name="list_widget_previous_page">Pagina precedente</string>
+    <string name="list_widget_next_page">Pagina successiva</string>
+</resources>

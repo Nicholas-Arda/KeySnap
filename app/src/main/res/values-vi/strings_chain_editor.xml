@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="chain_is">LÀ</string>
+    <string name="chain_not">KHÔNG</string>
+    <string name="chain_action_empty">Hành động không được để trống</string>
+    <string name="chain_condition_empty">Kiểm tra cài đặt điều kiện</string>
+    <string name="chain_shell_limited">Shell chạy hạn chế ở đây</string>
+    <string name="chain_set_up">Thiết lập</string>
+    <string name="chain_test_running">Đang thử hành động</string>
+    <string name="chain_test_success">Thử thành công</string>
+    <string name="chain_test_failure">Thử thất bại</string>
+    <string name="chain_test_action">Thử hành động</string>
+    <string name="chain_test_timeout">Hết thời gian</string>
+    <string name="chain_http_status">HTTP %1$d</string>
+    <string name="chain_exit_code">Mã thoát %1$d</string>
+    <string name="chain_test_result">%1$s %2$s · %3$s · %4$s giây</string>
+    <string name="chain_needs_condition">Thêm điều kiện trước</string>
+</resources>

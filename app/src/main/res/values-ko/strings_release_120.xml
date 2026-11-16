@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_test_editors_title_120">테스트할 수 있는 편집기</string>
+    <string name="whats_new_test_editors_description_120">저장하기 전에 ▶로 어떤 단계든 테스트하세요.</string>
+    <string name="whats_new_reorder_shortcuts_title_120">단축키 순서 변경 및 편집</string>
+    <string name="whats_new_reorder_shortcuts_description_120">✎을 탭하거나 길게 누르세요. 끌어서 순서를 바꿔요.</string>
+    <string name="whats_new_input_devices_title_120">키보드, 마우스, 게임패드</string>
+    <string name="whats_new_input_devices_description_120">고급 모드: 실제 키 이름, Ctrl 단축키.</string>
+    <string name="whats_new_fix_setup_120">두 단계 설정, 알림은 선택 사항</string>
+    <string name="whats_new_fix_conditions_120">아님으로 어떤 조건이든 뒤집기</string>
+    <string name="whats_new_fix_app_names_120">앱이 이름으로 표시돼요</string>
+    <string name="whats_new_fix_side_power_keys_120">측면 키와 전원 키: 명확한 안내</string>
+    <string name="whats_new_fix_idle_battery_120">대기 중 배터리 사용 감소</string>
+    <string name="whats_new_fix_advanced_setup_120">고급 모드 설정을 한 페이지에서</string>
+    <string name="whats_new_fix_saved_keys_120">저장된 키 이름 변경 또는 미리 추가</string>
+    <string name="whats_new_fix_shortcuts_page_120">더 깔끔한 단축키 페이지, 더 짧은 목록</string>
+    <string name="whats_new_fix_modes_120">모드: 언제든 끄거나 삭제</string>
+</resources>

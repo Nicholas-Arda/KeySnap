@@ -4,6 +4,7 @@ import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
+import android.content.pm.PackageManager
 import androidx.test.core.app.ApplicationProvider
 import io.github.nicholasarda.keysnap.R
 import org.junit.Assert.assertEquals
@@ -32,6 +33,29 @@ class SurfaceWiringTest {
         assertEquals("script-a", shadowOf(first).savedIntent.getStringExtra(ScriptRunReceiver.EXTRA_SCRIPT_ID))
         assertEquals("script-b", shadowOf(second).savedIntent.getStringExtra(ScriptRunReceiver.EXTRA_SCRIPT_ID))
         assertTrue(shadowOf(first).flags and PendingIntent.FLAG_IMMUTABLE != 0)
+    }
+
+    @Test fun theEditPanelOffersOnlyTheNextFreeTile() {
+        fun enabled(slot: Int) = context.packageManager.getComponentEnabledSetting(
+            ComponentName(context, ShortcutTileService.classFor(slot)),
+        ) != PackageManager.COMPONENT_ENABLED_STATE_DISABLED
+        ShortcutTileService.syncSlots(context)
+        assertEquals(listOf(true, false, false), (1..3).map(::enabled))
+        SurfaceBindings.setTileAdded(context, 1, true)
+        ShortcutTileService.syncSlots(context)
+        assertEquals(listOf(true, true, false), (1..3).map(::enabled))
+        // Removing the first offers it again and hides the second; an added tile is never hidden.
+        SurfaceBindings.setTileAdded(context, 1, false)
+        SurfaceBindings.setTileAdded(context, 3, true)
+        ShortcutTileService.syncSlots(context)
+        assertEquals(listOf(true, false, true), (1..3).map(::enabled))
+    }
+
+    @Test fun aTileGivenAShortcutBeforeTrackingCountsAsAdded() {
+        SurfaceBindings.bindTile(context, 2, "script-a")
+        ShortcutTileService.syncSlots(context)
+        assertTrue(SurfaceBindings.tileAdded(context, 2))
+        assertFalse(SurfaceBindings.tileAdded(context, 1))
     }
 
     @Test fun onlyTheAppCanReachTheRunReceiver() {

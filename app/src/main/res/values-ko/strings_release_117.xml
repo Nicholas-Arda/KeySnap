@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_editor_title">더 간단한 단축키 편집기</string>
+    <string name="whats_new_editor_description">제자리에서 키를 등록하고 더 부드럽게 열고 닫히는, 더 깔끔한 단축키 편집기.</string>
+    <string name="whats_new_fix_update_startup">업데이트 후 KeySnap을 열 때 생기던 오류 수정</string>
+    <string name="whats_new_dutch_title">이제 네덜란드어 지원</string>
+    <string name="whats_new_dutch_description">KeySnap을 네덜란드어로 쓰세요. 설정 → 언어에서 Nederlands를 고르세요.</string>
+</resources>

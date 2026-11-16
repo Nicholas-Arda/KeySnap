@@ -39,6 +39,7 @@ import com.example.data.ScriptRepository
 import com.example.service.DiagnosticRecorder
 import com.example.service.HardwareKeyTriggerCoordinator
 import com.example.service.KeyMapperAccessibilityService
+import com.example.ui.components.EdgeToEdgeDialogWindow
 import com.example.ui.theme.MonoLabel
 import io.github.nicholasarda.keysnap.BuildConfig
 import io.github.nicholasarda.keysnap.R
@@ -86,7 +87,8 @@ fun ProblemRecordingSection() {
         }
     }
     preview?.let { text ->
-        Dialog(onDismissRequest = { preview = null }, properties = DialogProperties(usePlatformDefaultWidth = false)) {
+        Dialog(onDismissRequest = { preview = null }, properties = DialogProperties(decorFitsSystemWindows = false)) {
+            EdgeToEdgeDialogWindow()
             Column(
                 Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).systemBarsPadding().padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),

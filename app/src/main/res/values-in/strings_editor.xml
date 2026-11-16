@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="editor_chain_if">Jika</string>
+    <string name="editor_fine_tune">Atur detail</string>
+    <string name="editor_fine_tune_summary">Nama · Mode · Getaran</string>
+    <string name="editor_highlight_hint">Ketuk kata yang disorot untuk mengubahnya.</string>
+    <string name="editor_press">Tekan</string>
+    <string name="editor_save_shortcut">Simpan pintasan</string>
+    <string name="editor_test">Uji</string>
+</resources>

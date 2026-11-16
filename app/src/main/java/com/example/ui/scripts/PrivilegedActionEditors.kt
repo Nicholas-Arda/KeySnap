@@ -63,7 +63,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
@@ -151,6 +150,7 @@ internal fun PrivilegedEditorPage(
     readSetting: (suspend (String, String) -> String?)? = null,
     writeSystemSetting: (suspend (String, String) -> ActionTestResult)? = null,
     visibleChats: ((String) -> List<String>)? = null,
+    modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
     val colors = MaterialTheme.colorScheme
@@ -231,7 +231,6 @@ internal fun PrivilegedEditorPage(
     val preview = previewCommand(
         ScriptAction(actionType, PrivilegedEditor.previewParams(actionType, values.toMap(), headerRows.toList(), extraRows.toList())),
     )
-    val cap = (LocalConfiguration.current.screenHeightDp * 0.92f).dp
     val caution = cautionOn(colors.surface)
     val success = successOn(colors.surface)
 
@@ -261,16 +260,15 @@ internal fun PrivilegedEditorPage(
         }
     }
 
+    // Title row and Test/Save stay pinned; only the fields between them scroll, so neither can end
+    // up under the status bar or behind the keyboard. The height limit comes from the sheet's own
+    // constraints (see belowStatusBar), which already shrink with the keyboard.
     Column(
-        Modifier
+        modifier
             .fillMaxWidth()
             .navigationBarsPadding()
             .padding(horizontal = 16.dp)
-            .heightIn(max = cap)
-            .nestedScroll(rememberSheetContentScroll())
-            .verticalScroll(rememberScrollState())
             .testTag("action_config_sheet")
-            .animateContentSize()
             .padding(bottom = 12.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
@@ -288,108 +286,117 @@ internal fun PrivilegedEditorPage(
             }
         }
 
-        when (actionType) {
-            PrivilegedEditor.HTTP -> HttpFields(values, headerRows, revealed, { revealed = it }, ::touch)
-            PrivilegedEditor.SHELL -> ShellFields(values, advancedActive, caution, success, onSetUpAdvancedMode, ::touch)
-            PrivilegedEditor.INTENT -> IntentFields(values, extraRows, { picking = true }, ::touch)
-            PrivilegedEditor.REPLY -> ReplyFields(
-                values = values,
-                chats = liveChats,
-                typeName = typeName,
-                everyChatWarning = everyChatWarning,
-                showCooldown = everyChatWarning && values["chat"].isNullOrBlank() && !cooldownRemoved && !cooldownDismissed &&
-                    (existingCooldownMinutes == null || existingCooldownMinutes == "10"),
-                startsFromNotification = startsFromNotification,
-                accessGranted = notificationAccessGranted,
-                onPickApp = { picking = true },
-                onTypeName = {
-                    touch {
-                        typeName = true
-                        values["chat"] = ""
-                    }
-                },
-                onChat = { chat ->
-                    touch {
-                        typeName = false
-                        values["chat"] = chat
-                    }
-                },
-                onChatText = { touch { values["chat"] = it } },
-                onText = { touch { values["text"] = it } },
-                onDismissCooldown = {
-                    cooldownDismissed = true
-                    onRemoveReplyCooldown()
-                },
-                onOpenAccess = { NotificationEventListener.openAccessSettings(context) },
-                pristine = !appPickerTried,
-            )
-            PrivilegedEditor.SETTING -> SettingFields(
-                values = values,
-                query = settingQuery,
-                onQuery = { settingQuery = it },
-                probed = probed,
-                advancedActive = advancedActive,
-                canWrite = canWriteSettings,
-                caution = caution,
-                onAllow = onRequestWriteSettings,
-                onEdit = ::touch,
-            )
-        }
-
-        AnimatedVisibility(visible = preview.isNotEmpty(), enter = Enter, exit = Exit) {
-            Column(
-                Modifier.fillMaxWidth().background(backgroundFor(ThemeMode.DARK), InnerShape).padding(10.dp),
-            ) {
-                Text(stringResource(R.string.editor_will_run), style = MaterialTheme.typography.labelSmall, color = TextSecondary)
-                Text(preview, Modifier.testTag("config_what_will_run"), style = MonoBody, color = TextPrimary)
+        Column(
+            Modifier
+                .weight(1f, fill = false)
+                .nestedScroll(rememberSheetContentScroll())
+                .verticalScroll(rememberScrollState())
+                .animateContentSize(),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            when (actionType) {
+                PrivilegedEditor.HTTP -> HttpFields(values, headerRows, revealed, { revealed = it }, ::touch)
+                PrivilegedEditor.SHELL -> ShellFields(values, advancedActive, caution, success, onSetUpAdvancedMode, ::touch)
+                PrivilegedEditor.INTENT -> IntentFields(values, extraRows, { picking = true }, ::touch)
+                PrivilegedEditor.REPLY -> ReplyFields(
+                    values = values,
+                    chats = liveChats,
+                    typeName = typeName,
+                    everyChatWarning = everyChatWarning,
+                    showCooldown = everyChatWarning && values["chat"].isNullOrBlank() && !cooldownRemoved && !cooldownDismissed &&
+                        (existingCooldownMinutes == null || existingCooldownMinutes == "10"),
+                    startsFromNotification = startsFromNotification,
+                    accessGranted = notificationAccessGranted,
+                    onPickApp = { picking = true },
+                    onTypeName = {
+                        touch {
+                            typeName = true
+                            values["chat"] = ""
+                        }
+                    },
+                    onChat = { chat ->
+                        touch {
+                            typeName = false
+                            values["chat"] = chat
+                        }
+                    },
+                    onChatText = { touch { values["chat"] = it } },
+                    onText = { touch { values["text"] = it } },
+                    onDismissCooldown = {
+                        cooldownDismissed = true
+                        onRemoveReplyCooldown()
+                    },
+                    onOpenAccess = { NotificationEventListener.openAccessSettings(context) },
+                    pristine = !appPickerTried,
+                )
+                PrivilegedEditor.SETTING -> SettingFields(
+                    values = values,
+                    query = settingQuery,
+                    onQuery = { settingQuery = it },
+                    probed = probed,
+                    advancedActive = advancedActive,
+                    canWrite = canWriteSettings,
+                    caution = caution,
+                    onAllow = onRequestWriteSettings,
+                    onEdit = ::touch,
+                )
             }
-        }
-        AnimatedContent(targetState = shown, label = "test-result") { current ->
-            if (current != null) {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    ResultLine(current, success, if (current.kind == "written" && undo != null) {
-                        {
-                            val restore = undo ?: return@ResultLine
-                            if (testing) return@ResultLine
-                            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                            testing = true
-                            scope.launch {
-                                try {
-                                    val ns = values["namespace"].orEmpty()
-                                    val key = values["key"].orEmpty()
-                                    val result = if (!advancedActive && ns == "system") {
-                                        writer(key, restore)
-                                    } else {
-                                        runner(ScriptAction(PrivilegedEditor.SETTING, mapOf("namespace" to ns, "key" to key, "value" to restore)))
+
+            AnimatedVisibility(visible = preview.isNotEmpty(), enter = Enter, exit = Exit) {
+                Column(
+                    Modifier.fillMaxWidth().background(backgroundFor(ThemeMode.DARK), InnerShape).padding(10.dp),
+                ) {
+                    Text(stringResource(R.string.editor_will_run), style = MaterialTheme.typography.labelSmall, color = TextSecondary)
+                    Text(preview, Modifier.testTag("config_what_will_run"), style = MonoBody, color = TextPrimary)
+                }
+            }
+            AnimatedContent(targetState = shown, label = "test-result") { current ->
+                if (current != null) {
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        ResultLine(current, success, if (current.kind == "written" && undo != null) {
+                            {
+                                val restore = undo ?: return@ResultLine
+                                if (testing) return@ResultLine
+                                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                testing = true
+                                scope.launch {
+                                    try {
+                                        val ns = values["namespace"].orEmpty()
+                                        val key = values["key"].orEmpty()
+                                        val result = if (!advancedActive && ns == "system") {
+                                            writer(key, restore)
+                                        } else {
+                                            runner(ScriptAction(PrivilegedEditor.SETTING, mapOf("namespace" to ns, "key" to key, "value" to restore)))
+                                        }
+                                        if (result.ok) {
+                                            undo = null
+                                            shown = null
+                                            probeEpoch++
+                                        }
+                                    } catch (cancelled: CancellationException) {
+                                        throw cancelled
+                                    } catch (_: Exception) {
+                                        shown = Shown(false, "fail", null, null, 0, emptyList())
+                                    } finally {
+                                        testing = false
                                     }
-                                    if (result.ok) {
-                                        undo = null
-                                        shown = null
-                                        probeEpoch++
-                                    }
-                                } catch (cancelled: CancellationException) {
-                                    throw cancelled
-                                } catch (_: Exception) {
-                                    shown = Shown(false, "fail", null, null, 0, emptyList())
-                                } finally {
-                                    testing = false
                                 }
                             }
+                        } else {
+                            null
+                        })
+                        if (current.kind == "shell") {
+                            Text(
+                                if (current.output.isEmpty()) stringResource(R.string.editor_no_output) else current.output.joinToString("\n"),
+                                Modifier
+                                    .fillMaxWidth()
+                                    .background(backgroundFor(ThemeMode.DARK), InnerShape)
+                                    .padding(10.dp)
+                                    .testTag("config_shell_output"),
+                                style = MonoBody,
+                                color = TextPrimary,
+                            )
                         }
-                    } else {
-                        null
-                    })
-                    if (current.kind == "shell") {
-                        Text(
-                            if (current.output.isEmpty()) stringResource(R.string.editor_no_output) else current.output.joinToString("\n"),
-                            Modifier
-                                .fillMaxWidth()
-                                .background(backgroundFor(ThemeMode.DARK), InnerShape)
-                                .padding(10.dp)
-                                .testTag("config_shell_output"),
-                            style = MonoBody,
-                            color = TextPrimary,
-                        )
                     }
                 }
             }
@@ -1060,9 +1067,7 @@ private fun AppSelectRow(
             .padding(horizontal = 12.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(Modifier.size(36.dp).background(colors.primary.copy(alpha = .12f), InnerShape), contentAlignment = Alignment.Center) {
-            Text(shown.firstOrNull()?.uppercaseChar()?.toString() ?: "•", color = colors.primary, style = MaterialTheme.typography.labelLarge)
-        }
+        AppIconTile(packageName, shown)
         Spacer(Modifier.width(10.dp))
         Column(Modifier.weight(1f)) {
             Text(title, style = MaterialTheme.typography.labelSmall, color = colors.onSurfaceVariant)

@@ -49,6 +49,7 @@ import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.outlined.Apps
 import androidx.compose.material.icons.outlined.BatteryChargingFull
 import androidx.compose.material.icons.outlined.Block
+import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material.icons.outlined.BugReport
 import androidx.compose.material.icons.outlined.Build
 import androidx.compose.material.icons.outlined.Checklist
@@ -308,6 +309,7 @@ internal fun WhatsNewFeatureCard(feature: WhatsNewFeature, accent: Color = Mater
         WhatsNewDestination.ABOUT -> Icons.Outlined.BugReport
         WhatsNewDestination.KEY_CAPSULE -> Icons.Outlined.TouchApp
         WhatsNewDestination.SHORTCUTS -> Icons.Outlined.TouchApp
+        WhatsNewDestination.NEW_SHORTCUT -> Icons.Outlined.AutoAwesome
     }
     BoxWithConstraints(Modifier.fillMaxWidth().padding(12.dp)) {
         // At larger text/display sizes keep the action trailing, on its own line, rather than crush text.
