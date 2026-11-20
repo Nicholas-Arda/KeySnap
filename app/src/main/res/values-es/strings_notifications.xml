@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_notifications_summary">Lo que KeySnap puede avisarte</string>
+    <string name="notif_group_working">Mantiene KeySnap funcionando</string>
+    <string name="notif_group_shortcuts">Tus atajos</string>
+    <string name="notif_group_places">Lugares</string>
+    <string name="notif_failures_desc">Cuando una acción no se ejecutó</string>
+    <string name="notif_runs_desc">Se activa en cada automatización</string>
+    <string name="notif_action_desc">Su texto se define en cada atajo</string>
+    <string name="notif_place_desc">Visible mientras el modo rápido funciona</string>
+    <string name="notif_autostart_row">No se inició tras reiniciar</string>
+    <string name="notif_autostart_desc">Te dice qué arreglar</string>
+    <string name="notif_setup_row">Configuración y vinculación</string>
+    <string name="notif_setup_desc">Solo durante la configuración</string>
+    <string name="notif_required">Obligatoria</string>
+    <string name="notif_system_settings">Ajustes de notificaciones de Android</string>
+    <string name="notif_runs_hint">Predeterminado para cada automatización. Su propio texto tiene prioridad. {name} es el nombre del atajo.</string>
+    <string name="notif_place_hint">Se usa cuando un lugar no tiene texto propio.</string>
+    <string name="notif_preview">Vista previa</string>
+    <string name="notif_sample_name">Mañana</string>
+</resources>

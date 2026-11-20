@@ -1,28 +1,18 @@
 package com.example.ui.home
 
-import android.content.Intent
-import android.net.Uri
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.border
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.size
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.Hyphens
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.unit.Dp
-import androidx.compose.material.icons.outlined.Campaign
-import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material.icons.outlined.ExpandLess
 import androidx.compose.material.icons.outlined.ExpandMore
 import androidx.compose.material3.Icon
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.graphics.PathEffect
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -90,6 +80,7 @@ import com.example.data.SuggestedShortcuts
 import com.example.ui.components.ConsolePanel
 import com.example.ui.components.IconTile
 import com.example.ui.components.MinTouchTarget
+import com.example.ui.components.TwoColumns
 import com.example.ui.scripts.actionIconFor
 import com.example.ui.theme.SectionLabel
 
@@ -100,7 +91,7 @@ import com.example.ui.theme.SectionLabel
  * [RecipeCategory] shelves, with a chip row on top that filters to one shelf.
  */
 @Composable
-fun SuggestedShortcutsPanel(isPro: Boolean, scripts: List<ShortcutScript>, onPick: (SuggestedShortcut) -> Unit) {
+fun SuggestedShortcutsPanel(scripts: List<ShortcutScript>, onPick: (SuggestedShortcut) -> Unit) {
     val colors = MaterialTheme.colorScheme
     // "Already built" without a persisted suggestion id: a saved script with the same shape. A
     // hand-built shortcut with that shape counts as built too, which is the honest reading —
@@ -119,12 +110,10 @@ fun SuggestedShortcutsPanel(isPro: Boolean, scripts: List<ShortcutScript>, onPic
     val shown = groups.filter { active == null || it.first == active }.map { (category, items) ->
         category to if (active == null && category.name !in expandedShelves) items.take(3) else items
     }
-    val shownCount = shown.sumOf { it.second.size }
+    val wide = com.example.ui.components.isWideLayout()
     ConsolePanel(label = stringResource(R.string.home_suggested_shortcuts), testTag = "suggested_shortcuts") {
         Column(Modifier.animateContentSize(spring(dampingRatio = 0.9f))) {
             RecipeCategoryChips(groups.map { it.first }, active) { selected = it }
-            // Count only visible recipes across shelves; expansion controls do not consume ad slots.
-            var row = 0
             shown.forEachIndexed { groupIndex, (category, items) ->
                 Text(
                     stringResource(category.titleRes),
@@ -132,12 +121,11 @@ fun SuggestedShortcutsPanel(isPro: Boolean, scripts: List<ShortcutScript>, onPic
                     style = SectionLabel,
                     color = colors.onSurfaceVariant,
                 )
-                items.forEachIndexed { index, suggestion ->
+                if (wide) {
+                    TwoColumns(items, rowGap = 4.dp) { SuggestionRow(it, onPick) }
+                } else items.forEachIndexed { index, suggestion ->
                     if (index > 0) HorizontalDivider(color = colors.outline.copy(alpha = .45f))
                     SuggestionRow(suggestion, onPick)
-                    row++
-                    // Where the AdMob cards used to be: the panel's 2nd and 9th row, never its last item.
-                    if (!isPro && (row == 1 || row == 8) && row < shownCount) AdSlotRow()
                 }
                 val shelfSize = groups.first { it.first == category }.second.size
                 if (active == null && shelfSize > 3) {
@@ -369,69 +357,6 @@ private fun TileBadge(suggestion: SuggestedShortcut, modifier: Modifier = Modifi
     }
     RecipePill(label, modifier.testTag("suggestion_badge_${suggestion.id}"))
 }
-
-/**
- * A house "your ad here" slot, not an ad: no SDK, nothing loaded, nothing sent. A tap only opens the
- * user's own mail app addressed to [AD_SLOT_EMAIL].
- */
-@Composable
-private fun AdSlotRow() {
-    val colors = MaterialTheme.colorScheme
-    val context = LocalContext.current
-    val dash = colors.outline
-    BoxWithConstraints(
-        Modifier
-            .padding(vertical = 8.dp)
-            .fillMaxWidth()
-            .heightIn(min = MinTouchTarget)
-            .testTag("ad_slot")
-            .clip(RoundedCornerShape(14.dp))
-            .drawBehind {
-                drawRoundRect(
-                    dash,
-                    cornerRadius = CornerRadius(14.dp.toPx()),
-                    style = Stroke(1.5.dp.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(6.dp.toPx(), 4.dp.toPx()))),
-                )
-            }
-            .clickable(role = Role.Button) {
-                val uri = Uri.parse("mailto:$AD_SLOT_EMAIL?subject=${Uri.encode("Advertising on KeySnap")}")
-                runCatching { context.startActivity(Intent(Intent.ACTION_SENDTO, uri)) }
-            }
-            .padding(10.dp),
-    ) {
-        // Narrow, the icon's gutter cost the title a line and the address its last half; even at
-        // 28 dp "ardasenn.com" no longer fit a line at the largest text size, so the icon goes.
-        val narrow = isNarrow(maxWidth)
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            if (!narrow) {
-                Box(
-                    Modifier.size(38.dp).clip(RoundedCornerShape(12.dp)).background(colors.primary.copy(alpha = .16f)),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Icon(Icons.Outlined.Campaign, null, Modifier.size(20.dp), tint = colors.primary)
-                }
-            }
-            Column(Modifier.weight(1f).padding(start = if (narrow) 2.dp else 12.dp, end = if (narrow) 4.dp else 8.dp)) {
-                RecipePill(stringResource(R.string.ad_slot_tag), Modifier.padding(bottom = 4.dp).testTag("ad_slot_tag"))
-                Text(
-                    stringResource(R.string.ad_slot_title),
-                    style = MaterialTheme.typography.bodyLarge.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
-                    color = colors.onSurface,
-                )
-                // In full, wrapping after the @ when it must: a cut-off address is no address at all.
-                Text(
-                    AD_SLOT_EMAIL.replace("@", "@​"),
-                    Modifier.testTag("ad_slot_email"),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = colors.onSurfaceVariant,
-                )
-            }
-            Icon(Icons.Outlined.ChevronRight, null, tint = colors.onSurfaceVariant)
-        }
-    }
-}
-
-private const val AD_SLOT_EMAIL = "business@ardasenn.com"
 
 @Composable
 private fun RecipePill(label: String, modifier: Modifier = Modifier) {

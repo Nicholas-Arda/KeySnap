@@ -4,6 +4,7 @@ import android.content.Context
 import android.hardware.camera2.CameraAccessException
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
+import android.os.Build
 import android.util.Log
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -92,6 +93,34 @@ object FlashlightController {
         val newState = !_isFlashlightOn.value
         return setTorchMode(context, newState)
     }
+
+    /**
+     * Torch on at [percent] of the strongest level. A phone without levels (before Android 13, or
+     * a single level) just turns the torch on.
+     */
+    fun setStrength(context: Context, percent: Int): Boolean {
+        initialize(context)
+        val cm = cameraManager ?: return false
+        val id = cameraId ?: return false
+        val max = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            runCatching { cm.getCameraCharacteristics(id).get(CameraCharacteristics.FLASH_INFO_STRENGTH_MAXIMUM_LEVEL) }.getOrNull() ?: 1
+        } else {
+            1
+        }
+        if (max <= 1 || Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return setTorchMode(context, true)
+        return try {
+            cm.turnOnTorchWithStrengthLevel(id, strengthLevel(percent, max))
+            stateKnown = true
+            _isFlashlightOn.value = true
+            true
+        } catch (e: Exception) {
+            Log.e(TAG, "Could not set the torch strength", e)
+            false
+        }
+    }
+
+    /** 1..[max]; any percent above 0 gives at least the weakest level. */
+    internal fun strengthLevel(percent: Int, max: Int): Int = ((percent.coerceIn(1, 100) * max + 99) / 100).coerceIn(1, max)
 
     fun setTorchMode(context: Context, enabled: Boolean): Boolean {
         initialize(context)

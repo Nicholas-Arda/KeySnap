@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_dark_mode">Modo oscuro</string>
+    <string name="action_night_light">Luz nocturna</string>
+    <string name="action_extra_dim">Atenuación extra</string>
+    <string name="action_screen_timeout">Tiempo de espera de pantalla</string>
+    <string name="param_screen_timeout">Apagar la pantalla tras</string>
+    <string name="choice_timeout_15s">15 segundos</string>
+    <string name="choice_timeout_30s">30 segundos</string>
+    <string name="choice_timeout_1m">1 minuto</string>
+    <string name="choice_timeout_2m">2 minutos</string>
+    <string name="choice_timeout_5m">5 minutos</string>
+    <string name="choice_timeout_10m">10 minutos</string>
+    <string name="choice_timeout_30m">30 minutos</string>
+</resources>

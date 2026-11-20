@@ -9,6 +9,15 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.graphics.Color
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.shrinkVertically
@@ -135,6 +144,8 @@ import com.example.ui.components.GroundedPage
 import com.example.ui.components.IconTile
 import com.example.ui.components.InnerShape
 import com.example.ui.components.MinTouchTarget
+import com.example.ui.components.LeftColumn
+import com.example.ui.components.isWideLayout
 import com.example.ui.scripts.triggerSummary
 import com.example.ui.theme.ThemeMode
 import com.example.data.AccessibilityStatus
@@ -175,8 +186,12 @@ fun HomeScreen(
     onRatingChoice: (RatingPromptChoice) -> Unit = {},
     showColorOsRecentsTip: Boolean = false,
     onDismissColorOsRecentsTip: () -> Unit = {},
+    failedScriptIds: Set<String> = emptySet(),
+    onToggleScriptEnabled: (String, Boolean) -> Unit = { _, _ -> },
+    onGiveJob: (List<Int>, com.example.data.TriggerPressType) -> Unit = { _, _ -> },
 ) {
     val scope = rememberCoroutineScope()
+    val wide = isWideLayout()
     val permissionGaps = rememberPermissionGaps()
     val context = androidx.compose.ui.platform.LocalContext.current
     val prefs = remember(context) { context.getSharedPreferences("keysnap_setup", android.content.Context.MODE_PRIVATE) }
@@ -192,6 +207,18 @@ fun HomeScreen(
     val openNext: () -> Unit = {
         if (setup.nextStep == SetupStep.Accessibility) onOpenAccessibility() else sheet = setup.nextStep
     }
+    var autoLaunchDismissed by remember { mutableStateOf(prefs.getBoolean("auto_launch_dismissed", false)) }
+    // Once the service was found dead, the Auto launch row says that is what it prevents.
+    var stoppedBefore by remember { mutableStateOf(prefs.getBoolean("accessibility_stopped_seen", false)) }
+    LaunchedEffect(accessibilityStatus) {
+        if (accessibilityStatus == AccessibilityStatus.NEEDS_RECONNECT && !stoppedBefore) {
+            stoppedBefore = true
+            prefs.edit().putBoolean("accessibility_stopped_seen", true).apply()
+        }
+    }
+    // Without "Auto launch" these phones never restart a swiped-away KeySnap: keys and automations stop.
+    val showAutoLaunch = !autoLaunchDismissed && hasAutoLaunchSwitch(android.os.Build.MANUFACTURER) &&
+        setup.nextStep == null
     val showNudge = setup.nextStep == null && scripts.isEmpty() && !nudgeDismissed
     if (sheet != null) {
         val current = sheet!!
@@ -240,7 +267,7 @@ fun HomeScreen(
             }
         }
         if (setup.nextStep != null) {
-            SetupCard(permissionGaps, isServiceActive, openNext)
+            SetupCard(permissionGaps, isServiceActive, openNext, stopped = accessibilityStatus == AccessibilityStatus.NEEDS_RECONNECT)
         }
         AnimatedVisibility(setup.showNotifications, enter = fadeIn() + expandVertically(), exit = fadeOut() + shrinkVertically()) {
             NotificationsCard(onTurnOn = { sheet = SetupStep.Notifications }, onClose = { dismissNotifications() })
@@ -248,6 +275,16 @@ fun HomeScreen(
         AnimatedVisibility(!permissionGaps.usageAccess && com.example.service.needsUsageAccess(scripts),
             enter = fadeIn() + expandVertically(), exit = fadeOut() + shrinkVertically()) {
             UsageAccessBanner { showUsageSheet = true }
+        }
+        AnimatedVisibility(showAutoLaunch, enter = fadeIn() + expandVertically(), exit = fadeOut() + shrinkVertically()) {
+            AutoLaunchCard(
+                stoppedBefore = stoppedBefore,
+                onTurnOn = { openAutoLaunchSettings(context, android.os.Build.MANUFACTURER) },
+                onClose = {
+                    autoLaunchDismissed = true
+                    prefs.edit().putBoolean("auto_launch_dismissed", true).apply()
+                },
+            )
         }
         LiveStatusPanel(
             isServiceActive = isServiceActive,
@@ -260,18 +297,23 @@ fun HomeScreen(
             showColorOsRecentsTip = showColorOsRecentsTip,
             onDismissColorOsRecentsTip = onDismissColorOsRecentsTip,
         )
-        if (scripts.isNotEmpty()) YourShortcutsPanel(scripts, onOpenScript)
+        if (scripts.isNotEmpty() && wide) {
+            WideShortcutSections(scripts, isMappingEnabled, failedScriptIds, onOpenScript, onToggleScriptEnabled, onGiveJob)
+        } else if (scripts.isNotEmpty()) YourShortcutsPanel(scripts, onOpenScript)
         if (showRatingPrompt) RatingPromptCard(onRatingChoice)
         if (showNudge) FirstShortcutNudge(onDismiss = onDismissNudge)
-        SuggestedShortcutsPanel(isPro = isPro, scripts = scripts, onPick = onPickSuggestion)
+        SuggestedShortcutsPanel(scripts = scripts, onPick = onPickSuggestion)
         if (!isPro) {
-            ProUpsellCard(
-                activeCount = activeScriptCount,
-                limit = activeScriptLimit,
-                proPrice = proPrice?.price,
-                sale = proPrice?.sale,
-                onOpenProScreen = onOpenProScreen,
-            )
+            val proCard = @Composable {
+                ProUpsellCard(
+                    activeCount = activeScriptCount,
+                    limit = activeScriptLimit,
+                    proPrice = proPrice?.price,
+                    sale = proPrice?.sale,
+                    onOpenProScreen = onOpenProScreen,
+                )
+            }
+            if (wide) LeftColumn { proCard() } else proCard()
         }
     }
 }
@@ -282,12 +324,35 @@ private fun HomeSaleStrip(proPrice: ProPrice, onClick: () -> Unit) {
     val colors = MaterialTheme.colorScheme
     val now = rememberSaleNow(sale.endsAtMillis)
     val parts = sale.endsAtMillis?.let { saleTimeLeft(it, now) ?: return }
+    // Black Friday: the Play offer carries the tag, so no date lives in the app.
+    val bf = sale.blackFriday
+    val ground = if (bf) BlackFridayInk else colors.primary
+    val ink = if (bf) Color.White else colors.onPrimary
+    val reduced = rememberReducedMotion()
+    val shine = if (bf && !reduced) {
+        rememberInfiniteTransition(label = "bfShine").animateFloat(
+            -1f, 2f, infiniteRepeatable(tween(3200, easing = LinearEasing)), label = "bfShineX",
+        )
+    } else null
     Row(
         Modifier
             .fillMaxWidth()
             .heightIn(min = MinTouchTarget)
             .clip(ConsoleShape)
-            .background(colors.primary)
+            .background(ground)
+            .drawWithContent {
+                drawContent()
+                val x = shine?.value ?: return@drawWithContent
+                if (x > 1f) return@drawWithContent // pause between sweeps
+                val w = size.width
+                drawRect(
+                    Brush.linearGradient(
+                        listOf(Color.Transparent, Color.White.copy(alpha = .14f), Color.Transparent),
+                        start = Offset(w * x - w * .3f, 0f),
+                        end = Offset(w * x + w * .3f, size.height),
+                    ),
+                )
+            }
             .testTag("home_sale_strip")
             .semantics(mergeDescendants = true) {}
             .clickable(role = Role.Button, onClick = onClick)
@@ -298,24 +363,28 @@ private fun HomeSaleStrip(proPrice: ProPrice, onClick: () -> Unit) {
         sale.percentOff?.let {
             Text(
                 ("−" + NumberFormat.getPercentInstance().format(it / 100.0)).unbroken(),
-                Modifier.clip(InnerShape).background(colors.onPrimary.copy(alpha = .18f)).padding(6.dp),
+                Modifier.clip(InnerShape).background(if (bf) BlackFridayYellow else ink.copy(alpha = .18f)).padding(6.dp),
                 style = MaterialTheme.typography.labelSmall,
-                color = colors.onPrimary,
+                fontWeight = if (bf) FontWeight.ExtraBold else null,
+                color = if (bf) BlackFridayInk else ink,
             )
         }
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            val title = stringResource(if (bf) R.string.home_sale_strip_black_friday else R.string.home_sale_strip_title)
             Text(
-                stringResource(R.string.home_sale_strip_title),
+                title,
                 style = MaterialTheme.typography.labelLarge,
-                fontWeight = FontWeight.Bold,
-                color = colors.onPrimary,
+                fontWeight = if (bf) FontWeight.ExtraBold else FontWeight.Bold,
+                // Spacing breaks joined scripts (Arabic, Devanagari), so only letters that stand alone get it.
+                letterSpacing = if (bf && title.none { it.isJoinedScript() }) 2.sp else TextUnit.Unspecified,
+                color = ink,
                 maxLines = 2,
             )
             if (parts != null) {
                 Text(
                     stringResource(R.string.pro_sale_ends_in, formatTimeLeft(parts)),
                     style = MaterialTheme.typography.labelSmall,
-                    color = colors.onPrimary,
+                    color = ink,
                 )
             }
         }
@@ -324,18 +393,25 @@ private fun HomeSaleStrip(proPrice: ProPrice, onClick: () -> Unit) {
                 sale.fullPrice.unbroken(),
                 style = MaterialTheme.typography.labelSmall,
                 textDecoration = TextDecoration.LineThrough,
-                color = colors.onPrimary.copy(alpha = .7f),
+                color = ink.copy(alpha = .7f),
             )
             Text(
                 proPrice.price.unbroken(),
                 style = MaterialTheme.typography.labelLarge,
                 fontWeight = FontWeight.Bold,
-                color = colors.onPrimary,
+                color = ink,
             )
         }
-        Icon(Icons.Outlined.ChevronRight, null, Modifier.size(18.dp), tint = colors.onPrimary)
+        Icon(Icons.Outlined.ChevronRight, null, Modifier.size(18.dp), tint = ink)
     }
 }
+
+private fun Char.isJoinedScript() = Character.UnicodeScript.of(code).let {
+    it == Character.UnicodeScript.ARABIC || it == Character.UnicodeScript.DEVANAGARI
+}
+
+private val BlackFridayInk = Color(0xFF0B0B0D)
+private val BlackFridayYellow = Color(0xFFFFD60A)
 
 /**
  * Explains the free limit beside its usage count and opens the existing Pro purchase dialog.

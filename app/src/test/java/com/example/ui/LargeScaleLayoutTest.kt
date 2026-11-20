@@ -420,7 +420,7 @@ class LargeScaleLayoutTest(private val language: String, private val fontScale: 
     @Test fun suggestionTitlesKeepHalfTheRowAndWholeWords() {
         content {
             Column(Modifier.verticalScroll(rememberScrollState()).padding(horizontal = 16.dp)) {
-                SuggestedShortcutsPanel(isPro = false, scripts = emptyList(), onPick = {})
+                SuggestedShortcutsPanel(scripts = emptyList(), onPick = {})
             }
         }
         // Keep checking every recipe, including rows initially trimmed in the All view.
@@ -438,13 +438,7 @@ class LargeScaleLayoutTest(private val language: String, private val fontScale: 
             assertTrue("title of $id gets ${column}px of ${row.width}px", column >= row.width / 2)
             assertWholeWords(layoutOf(tag))
         }
-        (tagged("suggestion_badge_") + tagged("recipe_advanced_") + "ad_slot_tag").forEach { layoutsOf(it).forEach(::assertWholeWords) }
-        layoutsOf("ad_slot_email").forEach { email ->
-            assertEquals("business@ardasenn.com", email.layoutInput.text.text.replace("​", ""))
-            assertWholeWords(email)
-        }
-        rule.onAllNodesWithTag("ad_slot", useUnmergedTree = true).onFirst().performScrollTo()
-        captureR2("suggestions-adslot")
+        (tagged("suggestion_badge_") + tagged("recipe_advanced_")).forEach { layoutsOf(it).forEach(::assertWholeWords) }
         val automation = SuggestedShortcuts.ordered.first { it.automation }
         rule.onNodeWithTag("suggestion_${automation.id}").performScrollTo()
         captureR2("suggestions-automation")
@@ -456,7 +450,7 @@ class LargeScaleLayoutTest(private val language: String, private val fontScale: 
         val fourthRow = "suggestion_${shelf.value[3].id}"
         content {
             Column(Modifier.verticalScroll(rememberScrollState()).padding(horizontal = 16.dp)) {
-                SuggestedShortcutsPanel(isPro = true, scripts = emptyList(), onPick = {})
+                SuggestedShortcutsPanel(scripts = emptyList(), onPick = {})
             }
         }
         rule.onNodeWithTag(fourthRow).assertDoesNotExist()

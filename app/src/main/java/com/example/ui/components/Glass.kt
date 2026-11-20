@@ -76,7 +76,8 @@ fun GroundedPage(
                     .drawWithContent { clipRect(top = scrollState.value + statusBarTop) { this@drawWithContent.drawContent() } }
                     .statusBarsPadding()
                     .navigationBarsPadding()
-                    .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = BottomBarClearance + 16.dp + com.example.ai.AiHooks.contentClearance()),
+                    .padding(horizontal = if (isWideLayout()) WidePagePadding else 16.dp)
+                    .padding(top = 8.dp, bottom = BottomBarClearance + 16.dp + com.example.ai.AiHooks.contentClearance()),
                 verticalArrangement = Arrangement.spacedBy(14.dp),
                 content = content,
             )

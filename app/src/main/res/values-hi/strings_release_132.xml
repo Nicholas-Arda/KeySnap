@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_teach_title_132">सेटिंग सिखाएं</string>
+    <string name="whats_new_teach_description_132">KeySnap को एक बार स्विच दिखाएं, फिर किसी भी शॉर्टकट से बदलें।</string>
+    <string name="whats_new_place_title_132">नई शर्त: किसी जगह पर</string>
+    <string name="whats_new_place_description_132">पहुंचने या निकलने पर चलता है। आपकी लोकेशन फ़ोन से बाहर नहीं जाती। प्रयोगात्मक।</string>
+    <string name="whats_new_actions_title_132">25+ नई क्रियाएं</string>
+    <string name="whats_new_actions_description_132">कॉल उठाएं और काटें, टाइमर, अलार्म, डार्क मोड, नाइट लाइट और भी बहुत कुछ।</string>
+    <string name="whats_new_fix_conditions_132">नई शर्तें: बाकी सूचना, मीडिया चल रहा है, फ़ोन की दिशा</string>
+    <string name="whats_new_fix_undo_132">खत्म होने पर पहले जैसा करें: बदली हुई सेटिंग्स वापस</string>
+    <string name="whats_new_fix_vibration_132">वाइब्रेशन पैटर्न</string>
+    <string name="whats_new_fix_foldable_132">फ़ोल्डेबल और टैबलेट पर ज़्यादा जगह</string>
+    <string name="whats_new_also_new_132">और भी नया</string>
+</resources>

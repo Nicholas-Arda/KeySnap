@@ -23,6 +23,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
 import java.util.concurrent.atomic.AtomicBoolean
@@ -224,6 +225,16 @@ object BridgeController {
     }
 
     /**
+     * For a key-less run in a process an alarm or a place alert may have just started: adopts a
+     * running bridge first. Skipped (no socket probe, no thread hop) when Advanced Mode left no
+     * config behind, which is every phone that never turned it on.
+     */
+    suspend fun adoptIfInstalled(context: Context) {
+        if (_state.value != BridgeState.STOPPED || !BridgePayload(context).hasConfig()) return
+        withContext(Dispatchers.IO) { ensureAdopted(context.applicationContext) }
+    }
+
+    /**
      * For a widget or tile tap, which can start this process cold: nothing has adopted a running
      * bridge yet, so without this probe every bridge-only action in the chain would run in the app
      * and fail. Probes only from STOPPED; ERROR and STARTING are left for the wizard to report.
@@ -333,11 +344,29 @@ object BridgeController {
         return true
     }
 
+    /**
+     * For a state the app decides on its own (a place's side), possibly in a process a location
+     * alert just started, where [initialize] never ran. Rewrites only a config that is already on
+     * disk: after "Off" there is none, and none may come back. The bridge polls the file, so no
+     * reload request is needed.
+     */
+    @Synchronized
+    fun publishConfigIfInstalled(context: Context) {
+        if (payload != null) return publishConfig()
+        val cold = BridgePayload(context)
+        if (!cold.hasConfig()) return
+        val scripts = ScriptRepository.getInstance(context)
+        cold.writeConfig(scripts.scripts.value, scripts.globallyEnabled.value, KeyMappingRepository.getInstance(context).config.value)
+    }
+
     /** Rewrites the bridge's config from the current repositories and asks it to reload. */
     @Synchronized
     fun publishConfig() {
         val context = appContext ?: return
         val current = payload ?: return
+        // After "Off" the payload is gone and must stay gone; only a start (or a running or adopted
+        // bridge, whose config is on disk) may write one.
+        if (_state.value == BridgeState.STOPPED && !current.hasConfig()) return
         val scriptRepository = ScriptRepository.getInstance(context)
         val keyRepository = KeyMappingRepository.getInstance(context)
         val written = current.writeConfig(
@@ -374,6 +403,18 @@ object BridgeController {
         if (_state.value != BridgeState.RUNNING) return null
         val payload = JSONObject().put("actions", JSONArray().put(action.toBridgeJson()))
         return client()?.requestTestAction(payload.toString())
+    }
+
+    /** "Teach a setting" step; null while Advanced Mode is off or no answer came. Never log the reply. */
+    suspend fun teach(step: String): String? {
+        if (_state.value != BridgeState.RUNNING) return null
+        return client()?.requestTeach(step)
+    }
+
+    /** One app's launcher shortcuts for the editor; null while Advanced Mode is off or unreadable. */
+    suspend fun appShortcuts(packageName: String): List<Pair<String, String>>? {
+        if (_state.value != BridgeState.RUNNING) return null
+        return client()?.requestShortcuts(packageName)
     }
 
     /** Called only after the app has ruled out KeySnap holding the assistant role. */

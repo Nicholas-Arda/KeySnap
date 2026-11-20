@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_dark_mode">डार्क मोड</string>
+    <string name="action_night_light">नाइट लाइट</string>
+    <string name="action_extra_dim">एक्स्ट्रा डिम</string>
+    <string name="action_screen_timeout">स्क्रीन टाइमआउट</string>
+    <string name="param_screen_timeout">इतनी देर बाद स्क्रीन बंद करें</string>
+    <string name="choice_timeout_15s">15 सेकंड</string>
+    <string name="choice_timeout_30s">30 सेकंड</string>
+    <string name="choice_timeout_1m">1 मिनट</string>
+    <string name="choice_timeout_2m">2 मिनट</string>
+    <string name="choice_timeout_5m">5 मिनट</string>
+    <string name="choice_timeout_10m">10 मिनट</string>
+    <string name="choice_timeout_30m">30 मिनट</string>
+</resources>

@@ -21,6 +21,16 @@ public class ConstraintNegationRulesTest {
         for (String type : List.of("mode_is","notification_received","rss_new_item","calendar_event_active","at_time","interval","future_type"))
             assertFalse(type, e.isSatisfied(new BridgeConfig.Constraint(type, Map.of("negate","true"))));
     }
+    /** The app writes only the side; not known is neither here nor away. */
+    @Test public void aPlaceIsDecidedByTheSideTheAppWrote() {
+        ConstraintEvaluator e = new ConstraintEvaluator(null);
+        assertTrue(e.isSatisfied(new BridgeConfig.Constraint("at_place", Map.of("inside","true"))));
+        assertFalse(e.isSatisfied(new BridgeConfig.Constraint("at_place", Map.of("inside","false"))));
+        assertFalse(e.isSatisfied(new BridgeConfig.Constraint("at_place", Map.of())));
+        assertTrue(e.isSatisfied(new BridgeConfig.Constraint("at_place", Map.of("inside","false","negate","true"))));
+        assertFalse(e.isSatisfied(new BridgeConfig.Constraint("at_place", Map.of("negate","true"))));
+        assertTrue(e.isKnownTrue(new BridgeConfig.Constraint("at_place", Map.of("inside","true")), true));
+    }
     @Test public void automaticNightModeUsesTheEffectiveConfiguration() {
         for (String mode : List.of("11", "21")) {
             ConstraintEvaluator e = new ConstraintEvaluator(null,null, command ->

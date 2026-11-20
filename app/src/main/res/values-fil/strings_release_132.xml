@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_teach_title_132">Magturo ng setting</string>
+    <string name="whats_new_teach_description_132">Ipakita sa KeySnap ang isang switch nang minsan, saka i-flip ito mula sa kahit anong shortcut.</string>
+    <string name="whats_new_place_title_132">Bagong kondisyon: Nasa isang lugar</string>
+    <string name="whats_new_place_description_132">Tumatakbo pagdating o pag-alis mo. Nananatili sa phone mo ang lokasyon mo. Eksperimental.</string>
+    <string name="whats_new_actions_title_132">25+ bagong aksyon</string>
+    <string name="whats_new_actions_description_132">Sumagot at magbaba ng tawag, timer, alarm, dark mode, night light at iba pa.</string>
+    <string name="whats_new_fix_conditions_132">Mga bagong kondisyon: naghihintay na notification, nagpe-play na media, oryentasyon</string>
+    <string name="whats_new_fix_undo_132">Ibinabalik ng I-undo kapag natapos ang mga binagong setting</string>
+    <string name="whats_new_fix_vibration_132">Mga pattern ng vibration</string>
+    <string name="whats_new_fix_foldable_132">Mas maluwag sa mga foldable at tablet</string>
+    <string name="whats_new_also_new_132">Bago rin</string>
+</resources>

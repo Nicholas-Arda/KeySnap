@@ -219,9 +219,11 @@ class LocalizationTest {
                         is EditorField.Choice -> listOf(field.labelRes) + field.options.map { it.second }
                         is EditorField.KeyCodePick -> listOf(field.labelRes)
                         is EditorField.AppPick -> listOf(field.labelRes)
+                        is EditorField.AppList -> listOf(field.labelRes)
                         is EditorField.Point -> listOf(field.labelRes)
                         is EditorField.TwoPoints -> listOf(field.labelARes, field.labelBRes)
                         is EditorField.BluetoothDevicePick -> listOf(field.labelRes)
+                        is EditorField.AppShortcutPick -> listOf(field.labelRes, R.string.shortcut_needs_advanced, R.string.shortcut_none, R.string.shortcut_may_change)
                         is EditorField.TimeRange -> listOf(field.startLabelRes, field.endLabelRes)
                         is EditorField.DaySet -> listOf(field.labelRes)
                         is EditorField.Time -> listOf(field.labelRes)
@@ -229,6 +231,11 @@ class LocalizationTest {
                         is EditorField.ImagePick -> listOf(field.labelRes)
                         is EditorField.ContactPick -> listOf(field.labelRes)
                         is EditorField.Switch -> listOf(field.labelRes)
+                        EditorField.RingerPattern -> listOf(
+                            R.string.param_ringer_cycle, R.string.ringer_cycle_hint, R.string.ringer_pattern, R.string.ringer_feel,
+                            R.string.ringer_legend_shortcut, R.string.ringer_legend_mode, R.string.ringer_piece_lead,
+                            R.string.ringer_shortcut_buzz, R.string.ringer_reset, R.string.ringer_less, R.string.ringer_more,
+                        )
                     }
                     labels.forEach { assertTrue("[$tag] $type field label", res.getString(it).isNotBlank()) }
                 }

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_dark_mode">Mode gelap</string>
+    <string name="action_night_light">Cahaya malam</string>
+    <string name="action_extra_dim">Ekstra redup</string>
+    <string name="action_screen_timeout">Waktu tunggu layar</string>
+    <string name="param_screen_timeout">Matikan layar setelah</string>
+    <string name="choice_timeout_15s">15 detik</string>
+    <string name="choice_timeout_30s">30 detik</string>
+    <string name="choice_timeout_1m">1 menit</string>
+    <string name="choice_timeout_2m">2 menit</string>
+    <string name="choice_timeout_5m">5 menit</string>
+    <string name="choice_timeout_10m">10 menit</string>
+    <string name="choice_timeout_30m">30 menit</string>
+</resources>

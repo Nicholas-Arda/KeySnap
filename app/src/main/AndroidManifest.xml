@@ -18,6 +18,8 @@
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" />
+    <!-- "At a place" in Fast (GPS) mode only, with its notification showing. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
     <!-- Reads a connected/paired Bluetooth device's address and name for the automation trigger
          picker and its device-connected/disconnected events. -->
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
@@ -41,6 +43,9 @@
          unknown. -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <!-- "At a place": Android's proximity alert reports arriving and leaving only with this while
+         KeySnap is closed. The location never leaves the phone and is not stored. -->
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <!-- Read-only, for the calendar_event_active condition; requested when the user adds it.
          Events are matched on the device and are never stored, logged or sent. -->
     <uses-permission android:name="android.permission.READ_CALENDAR" />
@@ -60,6 +65,9 @@
          READ_MEDIA_IMAGES is deliberately not declared, because it would put "photos and videos" on
          the store listing and require Play's photo-permissions declaration. -->
     <uses-permission android:name="android.permission.SET_WALLPAPER" />
+    <!-- Normal permission, granted at install: the clock app's AlarmClock intents (set_timer,
+         set_alarm) require it of the caller. -->
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
     <!-- libadb-android's manifest has no targetSdkVersion, so the merger implies these legacy
          permissions for it. Nothing here uses them; without the removal they reach the store listing. -->
     <uses-permission android:name="android.permission.READ_PHONE_STATE" tools:node="remove" />
@@ -80,6 +88,8 @@
         <intent><action android:name="android.intent.action.ASSIST" /></intent>
         <intent><action android:name="android.intent.action.VOICE_ASSIST" /></intent>
         <intent><action android:name="android.intent.action.VOICE_COMMAND" /></intent>
+        <!-- Keyboards, for the "Input method is chosen" condition's picker. -->
+        <intent><action android:name="android.view.InputMethod" /></intent>
         <!-- Default home resolution for the home-or-lock-screen constraint on Android 11+. -->
         <intent>
             <action android:name="android.intent.action.MAIN" />
@@ -89,6 +99,8 @@
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />
         </intent>
+        <!-- "Default payment app": which apps have a contactless payment service. Visibility only. -->
+        <intent><action android:name="android.nfc.cardemulation.action.HOST_APDU_SERVICE" /></intent>
         <!-- "Send a message": which picked app opens an smsto: chat. Visibility only, not a permission. -->
         <intent>
             <action android:name="android.intent.action.SENDTO" />
@@ -126,6 +138,14 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="text/plain" />
                 <data android:mimeType="application/json" />
+            </intent-filter>
+            <!-- The place picker page's answer (keysnap://place?lat=..&lng=..&r=..). Untrusted:
+                 PlacePick takes it only while a pick is open, and only coordinates in range. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="keysnap" android:host="place" />
             </intent-filter>
         </activity>
 
@@ -195,13 +215,28 @@
         </receiver>
 
         <!-- Re-evaluates automations at the next "At a time", "Repeat every" or time-window boundary, and
-             re-arms that alarm as an exact one when "Alarms & reminders" is granted. The system sends
-             the grant broadcast, so the receiver stays unexported. -->
+             re-arms that alarm as an exact one when "Alarms & reminders" is granted, and for the new
+             wall clock after a clock or time-zone change or a reboot. The system sends all of these,
+             so the receiver stays unexported. -->
+        <receiver android:name="com.example.service.PlaceAlertReceiver" android:exported="false" />
+        <!-- "Launch app shortcut": the Advanced Mode bridge (shell) hands a shortcut's PendingIntent here.
+             Exported only to holders of START_ACTIVITIES_FROM_BACKGROUND (shell, system), never to apps. -->
+        <receiver
+            android:name="com.example.service.ShortcutLaunchReceiver"
+            android:exported="true"
+            android:permission="android.permission.START_ACTIVITIES_FROM_BACKGROUND" />
+        <service
+            android:name="com.example.service.PlaceTrackingService"
+            android:exported="false"
+            android:foregroundServiceType="location" />
         <receiver
             android:name="com.example.service.TimeAlarmReceiver"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.app.action.SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 

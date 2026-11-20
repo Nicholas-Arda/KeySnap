@@ -111,4 +111,13 @@ class ScriptTimingTest {
         assertEquals(70L, resolveHapticDurationForScript(hapticScript(null, null), 65L))
         assertEquals(30L, resolveHapticDurationForScript(hapticScript(null, 25L), 60L))
     }
+
+    @Test
+    fun hapticPatternCases() {
+        // Same cases as BridgeConfigHapticTest.hapticPatternCases.
+        assertEquals(listOf(60L), resolveHapticPatternForScript(hapticScript(null, null), 60L))
+        assertEquals(listOf(100L), resolveHapticPatternForScript(hapticScript(null, 100L), 60L))
+        assertEquals(listOf(60L, 150L, 120L), resolveHapticPatternForScript(hapticScript(null, 100L).copy(hapticPattern = "60,150,120"), 60L))
+        assertEquals(listOf(100L), resolveHapticPatternForScript(hapticScript(null, 100L).copy(hapticPattern = ""), 60L))
+    }
 }

@@ -6,6 +6,8 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.WallpaperManager
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.graphics.Path
@@ -16,6 +18,7 @@ import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
+import android.provider.AlarmClock
 import android.provider.MediaStore
 import android.provider.Settings
 import android.provider.Telephony
@@ -24,6 +27,8 @@ import android.telephony.TelephonyManager
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import androidx.core.app.NotificationCompat
+import com.example.bridge.AlarmIntents
+import com.example.bridge.RingerBuzz
 import com.example.data.AppLocale
 import com.example.data.ScriptAction
 import com.example.data.ScriptActionCatalog
@@ -105,22 +110,18 @@ internal fun ringerModeFor(mode: String?): Int? = when (mode) {
  * The zen filter a DND action should land on: priority-only for on, all-through for off, matching
  * the bridge's `settings put global zen_mode 1/0`. [enabled] null toggles, reading [current] --
  * anything other than ALL counts as "DND is on" so an OEM's alarms-only or none filter turns off
- * rather than flipping to priority. Pure so it can be unit-tested without a live
+ * rather than flipping to priority. [type] is the action's "filter" param ("alarms", "none", else
+ * priority), mirrored by `BridgeMain.dndArgument`. Pure so it can be unit-tested without a live
  * NotificationManager.
  */
-internal fun dndFilterFor(current: Int, enabled: Boolean?): Int {
+internal fun dndFilterFor(current: Int, enabled: Boolean?, type: String? = null): Int {
     val turnOn = enabled ?: (current == NotificationManager.INTERRUPTION_FILTER_ALL)
-    return if (turnOn) NotificationManager.INTERRUPTION_FILTER_PRIORITY else NotificationManager.INTERRUPTION_FILTER_ALL
-}
-
-/**
- * Normal -> Vibrate -> Silent -> Normal, matching the Sound quick-settings tile's cycle order.
- * Pure so it can be unit-tested without a live AudioManager.
- */
-internal fun nextRingerMode(current: Int): Int = when (current) {
-    AudioManager.RINGER_MODE_NORMAL -> AudioManager.RINGER_MODE_VIBRATE
-    AudioManager.RINGER_MODE_VIBRATE -> AudioManager.RINGER_MODE_SILENT
-    else -> AudioManager.RINGER_MODE_NORMAL
+    if (!turnOn) return NotificationManager.INTERRUPTION_FILTER_ALL
+    return when (type) {
+        "alarms" -> NotificationManager.INTERRUPTION_FILTER_ALARMS
+        "none" -> NotificationManager.INTERRUPTION_FILTER_NONE
+        else -> NotificationManager.INTERRUPTION_FILTER_PRIORITY
+    }
 }
 
 /**
@@ -383,17 +384,23 @@ class ScriptActionExecutor(
             return ScriptActionExecutor(singleActionTest = { action ->
                 val start = System.nanoTime()
                 // Once sent to the bridge, a lost reply must never run the action a second time.
-                if (BridgeController.state.value == com.example.service.bridge.BridgeState.RUNNING &&
+                val viaBridge = BridgeController.state.value == com.example.service.bridge.BridgeState.RUNNING &&
                     action.type !in ScriptActionCatalog.UNSUPPORTED_BY_BRIDGE
-                ) {
-                    BridgeController.runSingleActionForTest(action) ?: ActionTestResult.outcome(false, start)
-                } else {
-                    when (action.type) {
-                        "shell_command" -> withContext(Dispatchers.IO) { ShellKeyInjector.shellCommand(action.params, true) }
-                        "http_request" -> withContext(Dispatchers.IO) { HttpAction.execute(action.params) }
-                        else -> ActionTestResult.outcome(handler.execute(action), start)
-                    }
+                val reply = if (viaBridge) BridgeController.runSingleActionForTest(action) else null
+                val result = when {
+                    viaBridge -> reply ?: ActionTestResult.outcome(false, start)
+                    action.type == "shell_command" -> withContext(Dispatchers.IO) { ShellKeyInjector.shellCommand(action.params, true) }
+                    action.type == "http_request" -> withContext(Dispatchers.IO) { HttpAction.execute(action.params) }
+                    else -> ActionTestResult.outcome(handler.execute(action), start)
                 }
+                if (DiagnosticRecorder.recording) {
+                    DiagnosticRecorder.test(
+                        ScriptActionCatalog.all.indexOfFirst { it.type == action.type }, result.ok, result.exitCode, result.durationMs,
+                        if (viaBridge) DiagnosticRecorder.ActionPath.ADVANCED_MODE_BRIDGE else DiagnosticRecorder.ActionPath.APP,
+                        bridgeReplied = !viaBridge || reply != null,
+                    )
+                }
+                result
             }, handler = handler)
         }
 
@@ -404,6 +411,7 @@ class ScriptActionExecutor(
                 "toggle_flashlight" -> FlashlightController.toggle(ctx)
                 "enable_flashlight" -> FlashlightController.setTorchMode(ctx, true)
                 "disable_flashlight" -> FlashlightController.setTorchMode(ctx, false)
+                "change_flashlight_brightness" -> FlashlightController.setStrength(ctx, action.params["strength"]?.toIntOrNull() ?: 100)
                 // Arbitrary key-code injection needs INJECT_EVENTS, a signature permission no app
                 // holds and no Accessibility API grants; only reachable through Advanced Mode/the
                 // bridge's shell `input keyevent`.
@@ -427,11 +435,15 @@ class ScriptActionExecutor(
                 "volume_down" -> adjustVolume(ctx, AudioManager.ADJUST_LOWER)
                 "show_volume_dialog" -> adjustVolume(ctx, AudioManager.ADJUST_SAME)
                 "change_volume_stream" -> changeVolumeStream(ctx, action.params)
-                "cycle_ringer_mode" -> cycleRingerMode(ctx)
+                "cycle_ringer_mode" -> cycleRingerMode(ctx, action.params)
                 "change_ringer_mode" -> changeRingerMode(ctx, action.params["mode"])
                 "go_back" -> KeyMapperAccessibilityService.performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
                 "go_home" -> KeyMapperAccessibilityService.performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME)
                 "open_recents" -> KeyMapperAccessibilityService.performGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS)
+                // Recents pressed twice switches to the previous app; the gap lets the overview open first.
+                "go_last_app" -> KeyMapperAccessibilityService.performGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS) &&
+                    run { delay(GO_LAST_APP_GAP_MS); KeyMapperAccessibilityService.performGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS) }
+                "hide_keyboard" -> KeyMapperAccessibilityService.hideKeyboard()
                 "expand_notification_drawer" -> KeyMapperAccessibilityService.performGlobalAction(AccessibilityService.GLOBAL_ACTION_NOTIFICATIONS)
                 "expand_quick_settings" -> KeyMapperAccessibilityService.performGlobalAction(AccessibilityService.GLOBAL_ACTION_QUICK_SETTINGS)
                 "collapse_status_bar" ->
@@ -452,12 +464,23 @@ class ScriptActionExecutor(
                 // BluetoothAdapter.enable()/disable() have been no-ops for non-privileged apps since
                 // Android 13; only reachable through Advanced Mode/the bridge's shell `svc bluetooth`.
                 "toggle_bluetooth", "enable_bluetooth", "disable_bluetooth" -> false
+                // PowerManager.setPowerSaveMode needs DEVICE_POWER; only the bridge's `cmd power`.
+                "toggle_battery_saver", "enable_battery_saver", "disable_battery_saver" -> false
+                // Secure/brand settings from the bridge's known-keys list (PresetSettings).
+                "always_on_display", "grayscale", "charge_limit", "bedtime", "learned_setting" -> false
+                // UiModeManager.setNightMode, the secure display keys and NFC power need the shell UID.
+                "dark_mode", "night_light", "extra_dim", "screen_timeout", "toggle_nfc" -> false
+                // Whether the shade is open is only readable from the shell (`dumpsys window`).
+                "toggle_notification_drawer", "toggle_quick_settings" -> false
+                "dismiss_all_notifications" -> NotificationEventListener.dismissAll()
+                // The WALLET role / nfc_payment_default_component need the shell UID (PaymentApp).
+                "set_payment_app" -> false
                 "lock_device" ->
                     KeyMapperAccessibilityService.performGlobalAction(AccessibilityService.GLOBAL_ACTION_LOCK_SCREEN)
                 "power_dialog" ->
                     KeyMapperAccessibilityService.performGlobalAction(AccessibilityService.GLOBAL_ACTION_POWER_DIALOG)
-                "toggle_dnd" -> setDndEnabled(ctx, null)
-                "enable_dnd" -> setDndEnabled(ctx, true)
+                "toggle_dnd" -> setDndEnabled(ctx, null, action.params["filter"])
+                "enable_dnd" -> setDndEnabled(ctx, true, action.params["filter"])
                 "disable_dnd" -> setDndEnabled(ctx, false)
                 "show_notification" -> showNotification(ctx, action.params)
                 "text_cut" -> KeyMapperAccessibilityService.performFocusedEditAction(AccessibilityNodeInfo.ACTION_CUT)
@@ -474,6 +497,28 @@ class ScriptActionExecutor(
                 "launch_device_assistant" -> com.example.assistant.AssistantIntegration.launch(ctx)
                 "open_camera" -> startActivitySafely(ctx, Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA))
                 "open_settings" -> startActivitySafely(ctx, Intent(Settings.ACTION_SETTINGS))
+                "set_timer" -> AlarmIntents.timerSeconds(action.params)?.let { seconds ->
+                    startActivitySafely(
+                        ctx,
+                        Intent(AlarmClock.ACTION_SET_TIMER).putExtra(AlarmClock.EXTRA_LENGTH, seconds).putExtra(AlarmClock.EXTRA_SKIP_UI, true),
+                    )
+                } ?: false
+                "set_alarm" -> AlarmIntents.alarmTime(action.params)?.let { (hour, minute) ->
+                    startActivitySafely(
+                        ctx,
+                        Intent(AlarmClock.ACTION_SET_ALARM).putExtra(AlarmClock.EXTRA_HOUR, hour)
+                            .putExtra(AlarmClock.EXTRA_MINUTES, minute).putExtra(AlarmClock.EXTRA_SKIP_UI, true),
+                    )
+                } ?: false
+                // User-typed text, often a password: never logged.
+                "copy_to_clipboard" -> action.params["text"]?.takeIf { it.isNotEmpty() }?.let { text ->
+                    runCatching {
+                        ctx.getSystemService(ClipboardManager::class.java).setPrimaryClip(ClipData.newPlainText("KeySnap", text))
+                    }.isSuccess
+                } ?: false
+                // The AOSP hotspot page; a phone without it gets the network settings.
+                "open_hotspot_settings" -> startActivitySafely(ctx, Intent("com.android.settings.WIFI_TETHER_SETTINGS")) ||
+                    startActivitySafely(ctx, Intent(Settings.ACTION_WIRELESS_SETTINGS))
                 "send_intent" -> sendIntent(ctx, action.params)
                 "reply_to_notification" -> NotificationEventListener.reply(ctx, action.params)
                 // The chat opens with the text typed in; the user taps Send, or the bridge does.
@@ -485,17 +530,21 @@ class ScriptActionExecutor(
                 // has an app-UID API since Android 10+ (FORCE_STOP_PACKAGES and WRITE_SECURE_SETTINGS
                 // are signature permissions); only reachable through Advanced Mode/the bridge's shell
                 // `am force-stop`/`settings put`.
-                "force_stop_app", "modify_setting" -> false
+                "force_stop_app", "close_and_clear_app", "launch_app_shortcut", "modify_setting" -> false
                 // Forcing the screen on or off needs privilege an app never holds (there is no
                 // public "turn screen off" API short of Device Admin); only reachable through
                 // Advanced Mode/the bridge's shell `input keyevent`.
                 "screen_on", "screen_off", "toggle_screen" -> false
+                // Answering or ending a call from an app needs ANSWER_PHONE_CALLS, a permission the app
+                // does not hold; only reachable through Advanced Mode/the bridge's `input keyevent`.
+                "answer_call", "end_call" -> false
                 "toggle_auto_rotate" -> toggleSystemFlag(ctx, Settings.System.ACCELEROMETER_ROTATION)
                 "portrait_mode" -> lockRotation(ctx, 0)
                 "landscape_mode" -> lockRotation(ctx, 1)
                 "cycle_rotations" -> lockRotation(ctx, nextUserRotation(systemInt(ctx, Settings.System.USER_ROTATION, 0)))
                 "change_brightness" -> setBrightness(ctx, action.params["value"]?.trim()?.toIntOrNull())
                 "toggle_auto_brightness" -> toggleSystemFlag(ctx, Settings.System.SCREEN_BRIGHTNESS_MODE)
+                "keep_screen_awake" -> KeepAwake.apply(ctx, action.params["state"])
                 "increase_brightness" -> adjustBrightness(ctx, 1)
                 "decrease_brightness" -> adjustBrightness(ctx, -1)
                 "set_wallpaper" -> setWallpaper(ctx, action.params)
@@ -579,10 +628,16 @@ class ScriptActionExecutor(
          * all-through for off. Needs the same user-granted DND access as the ringer-mode actions,
          * and fails safe the same way when it hasn't been granted. [enabled] null means toggle.
          */
-        private fun setDndEnabled(context: Context, enabled: Boolean?): Boolean {
+        private fun setDndEnabled(context: Context, enabled: Boolean?, filter: String? = null): Boolean {
             if (!hasNotificationPolicyAccess(context)) return false
             val manager = context.getSystemService(NotificationManager::class.java) ?: return false
-            manager.setInterruptionFilter(dndFilterFor(manager.currentInterruptionFilter, enabled))
+            val current = manager.currentInterruptionFilter
+            val target = dndFilterFor(current, enabled, filter)
+            // Alarms/none straight to another type strands the ringer on Silent; see BridgeMain.setDnd.
+            if (current != NotificationManager.INTERRUPTION_FILTER_ALL && target != NotificationManager.INTERRUPTION_FILTER_ALL && current != target) {
+                manager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_ALL)
+            }
+            manager.setInterruptionFilter(target)
             return true
         }
 
@@ -607,7 +662,9 @@ class ScriptActionExecutor(
                 ).apply { description = localized.getString(R.string.notif_channel_shortcuts_description) },
             )
             // POST_NOTIFICATIONS denied (13+), the app's notifications off, or this channel muted.
-            if (!shortcutNotificationsAllowed(manager)) return false
+            if (!shortcutNotificationsAllowed(manager) ||
+                !NotificationPrefs.enabled(context, NotificationPrefs.Kind.SHORTCUT_ACTION)
+            ) return false
             val id = notificationIds.incrementAndGet()
             val tap = when (params["onTap"]) {
                 "url" -> params["url"]?.takeIf { it.isNotBlank() }?.let { Intent(Intent.ACTION_VIEW, Uri.parse(it)) }
@@ -638,10 +695,13 @@ class ScriptActionExecutor(
             return true
         }
 
-        private fun cycleRingerMode(context: Context): Boolean {
+        // AudioManager's RINGER_MODE_* values are RingerBuzz's SILENT/VIBRATE/NORMAL (0/1/2).
+        private fun cycleRingerMode(context: Context, params: Map<String, String>): Boolean {
             if (!hasNotificationPolicyAccess(context)) return false
             val audio = context.getSystemService(AudioManager::class.java) ?: return false
-            audio.ringerMode = nextRingerMode(audio.ringerMode)
+            val target = RingerBuzz.next(audio.ringerMode, params["modes"])
+            audio.ringerMode = target
+            RingerBuzz.waveform(params, target).takeIf { it.isNotEmpty() }?.let { HardwareKeyTriggerCoordinator.vibratePhone(context, it) }
             return true
         }
 
@@ -702,6 +762,7 @@ class ScriptActionExecutor(
         }
 
         private const val TAP_DURATION_MS = 50L
+        private const val GO_LAST_APP_GAP_MS = 350L
         private const val MAX_TAP_COUNT = 20
         private const val DEFAULT_TAP_INTERVAL_MS = 100L
         private const val DEFAULT_SWIPE_DURATION_MS = 300L

@@ -18,7 +18,7 @@ public final class BridgeProtocol {
     /** Bumped whenever the on-disk payload or the socket protocol changes incompatibly, or when
      *  :bridge behavior changes at all — an already-running detached bridge has no way to pick up
      *  a source-only fix otherwise. */
-    public static final int VERSION = 38;
+    public static final int VERSION = 62;
 
     /** Process name given to app_process, used by `pidof` for liveness checks. */
     public static final String NICE_NAME = "arda_bridge";
@@ -85,6 +85,17 @@ public final class BridgeProtocol {
     public static final String CMD_PRESS_SEND = "PRESS_SEND";
     /** Opens the selected assistant's voice-interaction session, after the app's role guard. */
     public static final String CMD_SHOW_ASSISTANT = "SHOW_ASSISTANT";
+    /**
+     * TEACH start|changed|back|clear: "Teach a setting" snapshots, held in memory only. start and
+     * clear answer "ok"; changed answers how many keys moved; back answers the
+     * {@link SettingsTeach} result JSON and forgets the snapshots.
+     */
+    public static final String CMD_TEACH = "TEACH";
+    /**
+     * SHORTCUTS <package>: that app's launcher shortcuts for the "Launch app shortcut" picker,
+     * answered with OK and a one-line JSON array of {"id","label"}, or "unavailable".
+     */
+    public static final String CMD_SHORTCUTS = "SHORTCUTS";
     public static final String PRESS_SEND_OK = "ok";
     /** Send was tapped but the field did not visibly empty: the message may have gone out. */
     public static final String PRESS_SEND_UNCONFIRMED = "unconfirmed";

@@ -2,10 +2,12 @@ package com.example.service.bridge
 
 import android.content.Context
 import android.util.Log
+import com.example.bridge.BridgeConfig
 import com.example.bridge.BridgeProtocol
 import com.example.data.KeyMappingConfig
 import com.example.data.ScriptAction
 import com.example.data.ScriptActionCatalog
+import com.example.data.ScriptConstraintCatalog
 import com.example.data.ShortcutScript
 import org.json.JSONArray
 import org.json.JSONObject
@@ -96,6 +98,10 @@ class BridgePayload(context: Context) {
     }
 
     fun configFile(): File? = payloadDir()?.let { File(it, BridgeProtocol.CONFIG_NAME) }
+
+    /** Whether a config is on disk, without creating the directory to find out. */
+    fun hasConfig(): Boolean =
+        appContext.getExternalFilesDir(null)?.let { File(File(it, PAYLOAD_DIR), BridgeProtocol.CONFIG_NAME).exists() } == true
 
     fun startScriptFile(): File? = payloadDir()?.let { File(it, BridgeProtocol.START_SCRIPT_NAME) }
 
@@ -202,7 +208,16 @@ class BridgePayload(context: Context) {
                 val constraints = JSONArray()
                 script.constraints.forEach { constraint ->
                     val paramsJson = JSONObject()
-                    constraint.params.forEach { (key, value) -> paramsJson.put(key, value) }
+                    // A place goes in as its side alone: the shell can read this file, and where
+                    // someone's home is has no business in it. Rewritten on every side change.
+                    val params = if (constraint.type == ScriptConstraintCatalog.AT_PLACE) {
+                        val inside = com.example.service.PlaceCondition.knownInside(appContext, constraint.params)
+                        constraint.params.filterKeys { it == com.example.bridge.ConstraintNegation.PARAM } +
+                            (inside?.let { mapOf(BridgeConfig.PARAM_INSIDE to it.toString()) } ?: emptyMap())
+                    } else {
+                        constraint.params
+                    }
+                    params.forEach { (key, value) -> paramsJson.put(key, value) }
                     constraints.put(JSONObject().put("type", constraint.type).put("params", paramsJson))
                 }
                 val scriptJson = JSONObject()
@@ -215,6 +230,8 @@ class BridgePayload(context: Context) {
                 // Absent = defer to the global default, like the null override in the app.
                 script.vibrateOnTrigger?.let { scriptJson.put("vibrateOnTrigger", it) }
                 script.hapticDurationMs?.let { scriptJson.put("hapticDurationMs", it) }
+                script.hapticPattern?.let { scriptJson.put("hapticPattern", it) }
+                if (script.matchAny) scriptJson.put("matchAny", true)
                 scriptArray.put(scriptJson)
             }
             root.put("scripts", scriptArray)

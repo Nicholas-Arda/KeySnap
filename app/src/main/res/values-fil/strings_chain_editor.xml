@@ -6,6 +6,9 @@
     <string name="chain_condition_empty">Suriin ang settings ng kondisyon</string>
     <string name="chain_shell_limited">Limitado ang shell dito</string>
     <string name="chain_set_up">I-set up</string>
+    <string name="chain_bt_prompt">May saglit na Bluetooth prompt</string>
+    <string name="chain_bt_prompt_hide">Para itago: Developer options → I-disable ang system optimization</string>
+    <string name="chain_open_developer_options">Buksan</string>
     <string name="chain_test_running">Sinusubukan ang aksyon</string>
     <string name="chain_test_success">Matagumpay ang pagsubok</string>
     <string name="chain_test_failure">Hindi nagtagumpay ang pagsubok</string>

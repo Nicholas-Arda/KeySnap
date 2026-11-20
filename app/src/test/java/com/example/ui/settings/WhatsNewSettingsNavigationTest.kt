@@ -86,7 +86,7 @@ class WhatsNewSettingsNavigationTest {
             }
         }
         if (tag != null) rule.onNodeWithTag(tag).assertIsDisplayed()
-        else rule.onNodeWithText("Problem recording").assertIsDisplayed()
+        else rule.onNodeWithText("Problem log").assertIsDisplayed()
         assertEquals(0, changes)
         assertEquals(1, shown)
     }

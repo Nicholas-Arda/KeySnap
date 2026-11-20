@@ -11,15 +11,12 @@ import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.gestures.scrollBy
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,6 +52,12 @@ import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.unit.Constraints
+import com.example.ui.components.WideGutter
+import com.example.ui.components.isWideLayout
 import com.example.data.ShortcutScript
 import com.example.data.moveShortcut
 import com.example.ui.components.ConsoleShape
@@ -105,12 +108,14 @@ internal fun ReorderableShortcutCards(
     onEnterEditing: () -> Unit = {},
 ) {
     val ids = scripts.map { it.id }
+    // Two columns on a wide screen; the drag then moves in both directions.
+    val columns = if (isWideLayout()) 2 else 1
     // Changing the filter cancels any unfinished drag (leaving edit mode does too, below).
-    key(ids.toSet()) {
+    key(ids.toSet(), columns) {
         var order by remember { mutableStateOf(ids) }
         val latestIds by rememberUpdatedState(ids)
         var dragged by remember { mutableStateOf<String?>(null) }
-        var center by remember { mutableFloatStateOf(0f) }
+        var center by remember { mutableStateOf(Offset.Zero) }
         val bounds = remember { mutableStateMapOf<String, Rect>() }
         val latestCommit by rememberUpdatedState(onReorder)
         val density = LocalDensity.current
@@ -122,17 +127,22 @@ internal fun ReorderableShortcutCards(
         fun start(id: String) {
             val rect = bounds[id] ?: return
             dragged = id
-            center = rect.center.y
+            center = rect.center
             haptic.performHapticFeedback(HapticFeedbackType.LongPress)
         }
-        fun move(delta: Float) {
+        fun move(delta: Offset) {
             val id = dragged ?: return
-            center += delta
+            center += if (columns == 1) Offset(0f, delta.y) else delta
             val index = order.indexOf(id)
-            val target = order.take(index).firstOrNull { other ->
-                bounds[other]?.center?.y?.let { center < it } == true
-            } ?: order.drop(index + 1).lastOrNull { other ->
-                bounds[other]?.center?.y?.let { center > it } == true
+            val target = if (columns == 1) {
+                order.take(index).firstOrNull { other ->
+                    bounds[other]?.center?.y?.let { center.y < it } == true
+                } ?: order.drop(index + 1).lastOrNull { other ->
+                    bounds[other]?.center?.y?.let { center.y > it } == true
+                }
+            } else {
+                // In a grid the card takes the slot it is held over.
+                order.firstOrNull { other -> other != id && bounds[other]?.contains(center) == true }
             }
             if (target != null) {
                 order = moveShortcut(order, id, target)
@@ -148,82 +158,113 @@ internal fun ReorderableShortcutCards(
         LaunchedEffect(dragged) {
             while (dragged != null) {
                 val scroll = when {
-                    center < edge -> -step
-                    center > view.height - edge -> step
+                    center.y < edge -> -step
+                    center.y > view.height - edge -> step
                     else -> 0f
                 }
                 if (scroll != 0f) {
                     scrollState.scrollBy(scroll)
-                    move(0f)
+                    move(Offset.Zero)
                 }
                 delay(16)
             }
         }
         val moveUp = stringResource(R.string.editor_move_up)
         val moveDown = stringResource(R.string.editor_move_down)
-        Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(14.dp)) {
-            order.forEachIndexed { index, id ->
-                val script = scripts.firstOrNull { it.id == id } ?: return@forEachIndexed
-                key(id) {
-                    val active = dragged == id
-                    val dragY = if (active) center - (bounds[id]?.center?.y ?: center) else 0f
-                    val lastDragY = remember { floatArrayOf(0f) }
-                    if (active) lastDragY[0] = dragY
-                    // On drop the card eases from where the finger left it into its slot.
-                    val settle = remember { Animatable(0f) }
-                    LaunchedEffect(active) {
-                        if (!active && lastDragY[0] != 0f) {
-                            settle.snapTo(lastDragY[0])
-                            lastDragY[0] = 0f
-                            settle.animateTo(0f, tween(220, easing = FastOutSlowInEasing))
-                        }
-                    }
-                    val lift by animateFloatAsState(if (active) 1f else 0f, tween(160), label = "lift")
-                    val gesture = if (!editing) Modifier else Modifier
-                        .pointerInput(id) {
-                            detectDragGesturesAfterLongPress(
-                                onDragStart = { start(id) },
-                                onDragEnd = { finish(true) },
-                                onDragCancel = { finish(false) },
-                                onDrag = { change, amount -> change.consume(); move(amount.y) },
-                            )
-                        }
-                        .semantics {
-                            customActions = buildList {
-                                if (index > 0) add(CustomAccessibilityAction(moveUp) {
-                                    latestCommit(moveShortcut(order, id, order[index - 1])); true
-                                })
-                                if (index < order.lastIndex) add(CustomAccessibilityAction(moveDown) {
-                                    latestCommit(moveShortcut(order, id, order[index + 1])); true
-                                })
+        val shown = order.mapNotNull { id -> scripts.firstOrNull { it.id == id } }
+        // One parent for every card, so a card keeps its state and slides when it changes row or column.
+        Layout(
+            content = {
+                shown.forEachIndexed { index, script ->
+                    val id = script.id
+                    key(id) {
+                        val active = dragged == id
+                        val drag = if (active) center - (bounds[id]?.center ?: center) else Offset.Zero
+                        val lastDrag = remember { arrayOf(Offset.Zero) }
+                        if (active) lastDrag[0] = drag
+                        // On drop the card eases from where the finger left it into its slot.
+                        val settle = remember { Animatable(Offset.Zero, Offset.VectorConverter) }
+                        LaunchedEffect(active) {
+                            if (!active && lastDrag[0] != Offset.Zero) {
+                                settle.snapTo(lastDrag[0])
+                                lastDrag[0] = Offset.Zero
+                                settle.animateTo(Offset.Zero, tween(220, easing = FastOutSlowInEasing))
                             }
                         }
-                    val handle = Modifier.draggable(
-                        state = rememberDraggableState { move(it) },
-                        orientation = Orientation.Vertical,
-                        enabled = editing,
-                        startDragImmediately = true,
-                        onDragStarted = { start(id) },
-                        onDragStopped = { finish(true) },
-                    )
-                    // Measure a stationary wrapper, not the translated card, to avoid feedback drift.
-                    Box(Modifier.zIndex(if (active || settle.isRunning) 1f else 0f).onGloballyPositioned {
-                        bounds[id] = Rect(it.positionInRoot(), Size(it.size.width.toFloat(), it.size.height.toFloat()))
-                    }.animatePlacement(enabled = !active)) {
-                        ScriptCard(
-                            script, globallyEnabled, id in failedScriptIds, onToggle, onOpen,
-                            modifier = Modifier.graphicsLayer {
-                                translationY = if (active) dragY else settle.value
-                                // No shadow: on the translucent glass card it shows through as grey bands.
-                                scaleX = 1f + .03f * lift
-                                scaleY = scaleX
-                                shape = ConsoleShape
-                            }.then(gesture),
-                            editing = editing,
-                            dragHandle = handle,
-                            onLongPress = onEnterEditing,
-                        )
+                        val lift by animateFloatAsState(if (active) 1f else 0f, tween(160), label = "lift")
+                        val gesture = if (!editing) Modifier else Modifier
+                            .pointerInput(id) {
+                                detectDragGesturesAfterLongPress(
+                                    onDragStart = { start(id) },
+                                    onDragEnd = { finish(true) },
+                                    onDragCancel = { finish(false) },
+                                    onDrag = { change, amount -> change.consume(); move(amount) },
+                                )
+                            }
+                            .semantics {
+                                customActions = buildList {
+                                    if (index > 0) add(CustomAccessibilityAction(moveUp) {
+                                        latestCommit(moveShortcut(order, id, order[index - 1])); true
+                                    })
+                                    if (index < order.lastIndex) add(CustomAccessibilityAction(moveDown) {
+                                        latestCommit(moveShortcut(order, id, order[index + 1])); true
+                                    })
+                                }
+                            }
+                        val handle = when {
+                            columns == 1 -> Modifier.draggable(
+                                state = rememberDraggableState { move(Offset(0f, it)) },
+                                orientation = Orientation.Vertical,
+                                enabled = editing,
+                                startDragImmediately = true,
+                                onDragStarted = { start(id) },
+                                onDragStopped = { finish(true) },
+                            )
+                            !editing -> Modifier
+                            else -> Modifier.pointerInput(id) {
+                                detectDragGestures(
+                                    onDragStart = { start(id) },
+                                    onDragEnd = { finish(true) },
+                                    onDragCancel = { finish(false) },
+                                    onDrag = { change, amount -> change.consume(); move(amount) },
+                                )
+                            }
+                        }
+                        // Measure a stationary wrapper, not the translated card, to avoid feedback drift.
+                        Box(Modifier.zIndex(if (active || settle.isRunning) 1f else 0f).onGloballyPositioned {
+                            bounds[id] = Rect(it.positionInRoot(), Size(it.size.width.toFloat(), it.size.height.toFloat()))
+                        }.animatePlacement(enabled = !active)) {
+                            ScriptCard(
+                                script, globallyEnabled, id in failedScriptIds, onToggle, onOpen,
+                                modifier = Modifier.graphicsLayer {
+                                    val offset = if (active) drag else settle.value
+                                    translationX = offset.x
+                                    translationY = offset.y
+                                    // No shadow: on the translucent glass card it shows through as grey bands.
+                                    scaleX = 1f + .03f * lift
+                                    scaleY = scaleX
+                                    shape = ConsoleShape
+                                }.then(gesture),
+                                editing = editing,
+                                dragHandle = handle,
+                                onLongPress = onEnterEditing,
+                            )
+                        }
                     }
+                }
+            },
+            modifier = Modifier.fillMaxWidth(),
+        ) { measurables, constraints ->
+            val gap = if (columns == 1) 0 else WideGutter.roundToPx()
+            val rowGap = 14.dp.roundToPx()
+            val width = (constraints.maxWidth - gap * (columns - 1)) / columns
+            val rows = measurables.map { it.measure(Constraints.fixedWidth(width)) }.chunked(columns)
+            val height = rows.sumOf { row -> row.maxOf { it.height } } + rowGap * (rows.size - 1).coerceAtLeast(0)
+            layout(constraints.maxWidth, height) {
+                var y = 0
+                rows.forEach { row ->
+                    row.forEachIndexed { column, placeable -> placeable.placeRelative(column * (width + gap), y) }
+                    y += row.maxOf { it.height } + rowGap
                 }
             }
         }

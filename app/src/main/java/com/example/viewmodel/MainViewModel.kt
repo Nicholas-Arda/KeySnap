@@ -62,6 +62,7 @@ import com.example.data.keyDisplayName
 import com.example.data.isSurfaceOnly
 import com.example.service.AccessibilityReconnect
 import com.example.service.CalendarCondition
+import com.example.service.PlaceCondition
 import com.example.service.ReconnectResult
 import com.example.service.reconnectWarnsAfterwards
 import com.example.service.showColorOsRecentsLockTip
@@ -124,6 +125,9 @@ data class ScriptDraft(
     val consumeOriginalEvent: Boolean? = null,
     val vibrateOnTrigger: Boolean? = null,
     val hapticDurationMs: Long? = null,
+    val hapticPattern: String? = null,
+    val matchAny: Boolean = false,
+    val notice: com.example.data.RunNotice = com.example.data.RunNotice(),
     val exactTiming: Boolean = true,
     val showCapsule: Boolean = true,
     /** The recipe's own instructions and limits, kept on screen while the user fills it in. */
@@ -340,6 +344,9 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
             consumeOriginalEvent = script.consumeOriginalEvent,
             vibrateOnTrigger = script.vibrateOnTrigger,
             hapticDurationMs = script.hapticDurationMs,
+            hapticPattern = script.hapticPattern,
+            matchAny = script.matchAny,
+            notice = script.notice,
             exactTiming = script.exactTiming,
             showCapsule = script.showCapsule,
         )
@@ -418,6 +425,20 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
         )
     }
 
+    fun draftSetMatchAny(any: Boolean) = updateDraft { it.copy(matchAny = any) }
+
+    fun draftSetNotice(notice: com.example.data.RunNotice) = updateDraft { it.copy(notice = notice) }
+
+    fun draftSetActionUndo(index: Int, undo: Boolean) = updateDraft { draft ->
+        if (index !in draft.actions.indices) return@updateDraft draft
+        draft.copy(actions = draft.actions.mapIndexed { i, action -> if (i == index) action.copy(undoOnEnd = undo) else action })
+    }
+
+    /** The "Undo when it ends" switch: every action that can be undone at once. */
+    fun draftSetAllUndo(undo: Boolean) = updateDraft { draft ->
+        draft.copy(actions = draft.actions.map { if (com.example.service.AutomationUndo.canUndo(it)) it.copy(undoOnEnd = undo) else it })
+    }
+
     private val installedAppsRepository = InstalledAppsRepository(appContext)
     private val _installedApps = MutableStateFlow<List<InstalledApp>>(emptyList())
     val installedApps: StateFlow<List<InstalledApp>> = _installedApps.asStateFlow()
@@ -493,6 +514,9 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
     fun draftSetShowCapsule(show: Boolean) = updateDraft { it.copy(showCapsule = show) }
 
     fun draftSetHapticDurationMs(value: Long?) = updateDraft { it.copy(hapticDurationMs = value) }
+
+    /** Null = back to the global default buzz, which also drops an older single-length override. */
+    fun draftSetHapticPattern(value: String?) = updateDraft { it.copy(hapticPattern = value, hapticDurationMs = if (value == null) null else it.hapticDurationMs) }
 
     fun draftSetExactTiming(exact: Boolean) = updateDraft { it.copy(exactTiming = exact) }
 
@@ -653,6 +677,7 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
             actions = imported.actions,
             constraints = imported.constraints,
             showCapsule = imported.showCapsule,
+            matchAny = imported.matchAny,
             isNew = true,
         )
     }
@@ -714,6 +739,9 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
                 consumeOriginalEvent = draft.consumeOriginalEvent,
                 vibrateOnTrigger = draft.vibrateOnTrigger,
                 hapticDurationMs = draft.hapticDurationMs,
+                hapticPattern = draft.hapticPattern,
+                matchAny = draft.matchAny,
+                notice = draft.notice,
                 exactTiming = draft.exactTiming,
                 showCapsule = draft.showCapsule,
             ),
@@ -1138,6 +1166,8 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
         // The calendar permission may have been granted (or revoked) after a calendar condition was
         // saved; nothing else would arm or cancel its alarm until the next edit.
         CalendarCondition.sync(appContext, scriptRepository.scripts.value)
+        // Same for location: a place's proximity alert needs it to be added at all.
+        PlaceCondition.sync(appContext, scriptRepository.scripts.value)
     }
 
     /** Foreground health checks do not restart the service or repeat unrelated permission work. */

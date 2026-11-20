@@ -27,6 +27,9 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -64,6 +67,7 @@ import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
+import com.example.bridge.BuzzPattern
 import com.example.ui.theme.AccentOnDark
 import com.example.ui.theme.AccentOnLight
 import androidx.compose.ui.platform.LocalContext
@@ -88,7 +92,11 @@ import com.example.ui.components.AccessibilityDisclosureSheet
 import com.example.ui.components.BottomBarClearance
 import com.example.ui.components.NameKeyDialog
 import com.example.ui.components.WhatsNewDialog
+import com.example.ui.components.PhonePanelWidth
+import com.example.ui.components.isWideLayout
 import com.example.ui.home.HomeScreen
+import com.example.ui.home.ReconnectSheet
+import com.example.service.reconnectWarnsAfterwards
 import com.example.ui.scripts.ASSISTANT_SETTINGS_ACTION_TYPES
 import com.example.ui.scripts.ActionConfigSheet
 import com.example.ui.scripts.ConstraintConfigSheet
@@ -192,6 +200,7 @@ fun MainScreen(viewModel: MainViewModel) {
     var aiModelsOpen by rememberSaveable { mutableStateOf(false) }
     var fabLaunchedScriptId by remember { mutableStateOf<String?>(null) }
     var showAccessibilityDisclosure by remember { mutableStateOf(false) }
+    var showReconnectSheet by remember { mutableStateOf(false) }
     // A live bridge can redo Android's off/on switch for KeySnap's own entry; without it, the user does.
     val canReconnect = accessibilityStatus == AccessibilityStatus.NEEDS_RECONNECT && isAdvancedModeRunning
     val accessibilityButton = when {
@@ -203,6 +212,8 @@ fun MainScreen(viewModel: MainViewModel) {
         when {
             // While our entry is briefly off mid-reconnect, a tap must not reopen the first-time disclosure.
             accessibilityReconnecting -> Unit
+            // Already agreed once: a dead service only needs the off/on, named before it runs.
+            canReconnect -> showReconnectSheet = true
             else -> showAccessibilityDisclosure = true
         }
     }
@@ -222,6 +233,9 @@ fun MainScreen(viewModel: MainViewModel) {
     val aiNearTop by remember {
         derivedStateOf { (if (pagerState.currentPage == 0) homeScrollState else scriptsScrollState).value < aiTopZonePx }
     }
+    // "Teach a setting": the save or "Couldn't learn" sheet once the circle brings the user back,
+    // over whatever is open (usually the action picker).
+    com.example.ui.scripts.TeachHandoffSheets()
     var scrollHomeToProCard by remember { mutableStateOf(false) }
     // The snackbar lives in the shell, above the bottom bar, so a message raised anywhere shows on
     // whatever page the user is on. The "Home" action is only worth offering elsewhere.
@@ -254,6 +268,7 @@ fun MainScreen(viewModel: MainViewModel) {
         val widthPx = with(density) { maxWidth.toPx() }
         val heightPx = with(density) { maxHeight.toPx() }
         val settingsClearance = settingsBottomClearance(maxHeight)
+        val wide = isWideLayout()
         val accent = MaterialTheme.colorScheme.primary
         // The colour scheme crossfades over ThemeTransitionMs; the ground has to move on the same
         // clock or it snaps to the new theme while the cards are still fading.
@@ -363,6 +378,14 @@ fun MainScreen(viewModel: MainViewModel) {
                             viewModel.answerRatingPrompt(choice)
                             if (choice == RatingPromptChoice.RATE) openKeySnapPlayListing(context)
                         },
+                        failedScriptIds = remember(runLog) { latestFailedScriptIds(runLog) },
+                        onToggleScriptEnabled = viewModel::toggleScriptEnabled,
+                        // An empty press on a Home key card: a new shortcut with that key and press set.
+                        onGiveJob = { keys, press ->
+                            viewModel.createScript(ModeHooks.modeForNewShortcut(false))
+                            viewModel.draftSetPressType(press)
+                            viewModel.draftSetTriggerKeys(keys)
+                        },
                     )
                     else -> ScriptsScreen(
                         scripts = scripts,
@@ -417,7 +440,10 @@ fun MainScreen(viewModel: MainViewModel) {
             SettingsSheet(
                 settingsMotion,
                 Modifier
-                    .fillMaxSize()
+                    // On a wide screen it stays a phone-size panel under the gear.
+                    .align(Alignment.TopEnd)
+                    .then(if (wide) Modifier.width(PhonePanelWidth) else Modifier.fillMaxWidth())
+                    .fillMaxHeight()
                     .statusBarsPadding()
                     .navigationBarsPadding()
                     .padding(start = 12.dp, end = 12.dp, top = SheetTopGap, bottom = settingsClearance),
@@ -523,7 +549,7 @@ fun MainScreen(viewModel: MainViewModel) {
                 settingsMotion,
                 settingsOpen,
                 onClick = { settingsOpen = !settingsOpen },
-                modifier = Modifier.align(Alignment.TopEnd).statusBarsPadding().padding(top = 16.dp, end = 14.dp),
+                modifier = Modifier.align(Alignment.TopEnd).statusBarsPadding().padding(top = 16.dp, end = if (wide) 22.dp else 14.dp),
             )
             // Over the gear for a moment. The wizard would hide it, and its three seconds count only
             // while the app is in front, so a pairing finished in Settings is still announced.
@@ -634,6 +660,9 @@ fun MainScreen(viewModel: MainViewModel) {
                 },
                 onRemoveAction = viewModel::draftRemoveAction,
                 onMoveAction = viewModel::draftMoveAction,
+                onSetActionUndo = viewModel::draftSetActionUndo,
+                onSetAllUndo = viewModel::draftSetAllUndo,
+                onSetMatchAny = viewModel::draftSetMatchAny,
                 onRemoveConstraint = viewModel::draftRemoveConstraint,
                 onSetConstraintParams = viewModel::draftSetConstraintParams,
                 onTestAction = viewModel::draftTestAction,
@@ -784,6 +813,9 @@ fun MainScreen(viewModel: MainViewModel) {
                     onRemoveReplyCooldown = viewModel::draftDismissReplyCooldown,
                     notificationAccessGranted = NotificationEventListener.isAccessGranted(context),
                     canWriteSettings = Settings.System.canWrite(context),
+                    shortcutBuzz = draft.vibrateOnTrigger ?: config.vibrateOnTrigger,
+                    shortcutBuzzPattern = BuzzPattern.parse(draft.hapticPattern).ifEmpty { listOf(draft.hapticDurationMs ?: config.hapticDurationMs) },
+                    onShortcutBuzz = viewModel::draftSetVibrateOnTrigger,
                 )
             }
             if (showScriptSettings) {
@@ -799,8 +831,9 @@ fun MainScreen(viewModel: MainViewModel) {
                     onSetConsumeOriginalEvent = viewModel::draftSetConsumeOriginalEvent,
                     onSetVibrateOnTrigger = viewModel::draftSetVibrateOnTrigger,
                     onSetShowCapsule = viewModel::draftSetShowCapsule,
-                    onSetHapticDurationMs = viewModel::draftSetHapticDurationMs,
+                    onSetHapticPattern = viewModel::draftSetHapticPattern,
                     onSetExactTiming = viewModel::draftSetExactTiming,
+                    onSetNotice = viewModel::draftSetNotice,
                 )
             }
             pendingConstraintType?.let { type ->
@@ -925,6 +958,17 @@ fun MainScreen(viewModel: MainViewModel) {
             onConfirm = viewModel::confirmImport,
             onDismiss = viewModel::dismissImport,
             repliesToEveryChat = ActionEditorForms.repliesToEveryChat(imported.automation, imported.constraints, imported.actions),
+        )
+    }
+    if (showReconnectSheet) {
+        ReconnectSheet(
+            warnsAfterwards = reconnectWarnsAfterwards(Build.MANUFACTURER),
+            onConfirm = {
+                showReconnectSheet = false
+                // Never enable = true here: this path only redoes an entry that is still present.
+                viewModel.reconnectAccessibility(context, enable = false)
+            },
+            onDismiss = { showReconnectSheet = false },
         )
     }
     if (showAccessibilityDisclosure) {

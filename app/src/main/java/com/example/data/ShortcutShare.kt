@@ -25,6 +25,7 @@ internal data class SharedShortcut(
     val actions: List<PersistedScriptAction>,
     val constraints: List<PersistedScriptConstraint> = emptyList(),
     val showCapsule: Boolean = true,
+    val matchAny: Boolean = false,
 )
 
 /** A shortcut decoded from shared text and validated. Nothing about it is saved yet. */
@@ -36,6 +37,7 @@ data class ImportedShortcut(
     val constraints: List<ScriptConstraint>,
     val surfaceOnly: Boolean = false,
     val showCapsule: Boolean = true,
+    val matchAny: Boolean = false,
 ) {
     /** CLAUDE.md: an imported shortcut that runs anything privileged is never switched on for the user. */
     val startsEnabled: Boolean get() = actions.none { it.type in ScriptActionCatalog.PRIVILEGED }
@@ -90,6 +92,9 @@ object ShortcutShare {
         // A chat is a third party's name too. Left empty, a reply answers whichever chat triggered
         // it; PRIVILEGED keeps such an import switched off and the review shows the every-chat warning.
         "reply_to_notification" to setOf("chat"),
+        // Settings keys taught on this phone mean nothing on another; the name travels, and the
+        // recipient's editor says "Not found. Teach it again."
+        "learned_setting" to setOf("writes"),
     )
 
     private val adapter = Moshi.Builder().build().adapter(SharedShortcut::class.java)
@@ -104,6 +109,7 @@ object ShortcutShare {
         constraints: List<ScriptConstraint>,
         surfaceOnly: Boolean = false,
         showCapsule: Boolean = true,
+        matchAny: Boolean = false,
     ): String = adapter.toJson(
         SharedShortcut(
             keysnap = FORMAT_VERSION,
@@ -111,8 +117,9 @@ object ShortcutShare {
             automation = automation,
             surfaceOnly = surfaceOnly,
             showCapsule = showCapsule,
+            matchAny = matchAny,
             pressType = pressType.name,
-            actions = actions.map { PersistedScriptAction(it.type, portableParams(it.type, it.params)) },
+            actions = actions.map { PersistedScriptAction(it.type, portableParams(it.type, it.params), it.undoOnEnd) },
             constraints = constraints.map { PersistedScriptConstraint(it.type, portableConstraintParams(it.type, it.params)) },
         ),
     )
@@ -145,7 +152,7 @@ object ShortcutShare {
             // Undeclared keys are inert today but would be invisible in the review, so they stay out.
             val params = portableParams(action.type, action.params.filterKeys { it in specs })
             if (params.any { (key, value) -> !isValid(specs.getValue(key), value) }) return invalid
-            ScriptAction(action.type, params)
+            ScriptAction(action.type, params, action.undoOnEnd)
         }
         val constraints = shared.constraints.map {
             if (!ScriptConstraintCatalog.isAvailable(it.type)) return unsupported
@@ -164,7 +171,7 @@ object ShortcutShare {
         ) {
             return unsupported
         }
-        return ImportResult.Ok(ImportedShortcut(name, shared.automation, pressType, actions, constraints, shared.surfaceOnly, shared.showCapsule))
+        return ImportResult.Ok(ImportedShortcut(name, shared.automation, pressType, actions, constraints, shared.surfaceOnly, shared.showCapsule, shared.matchAny))
     }
 
     /**
@@ -196,6 +203,9 @@ object ShortcutShare {
         "bluetooth_device_connected", "bluetooth_device_disconnected" -> params - setOf("address", "name")
         ScriptConstraintCatalog.RSS_NEW_ITEM -> params - "url"
         ScriptConstraintCatalog.CALENDAR_EVENT_ACTIVE -> params - "calendar"
+        // Where someone lives or works; the recipient picks their own place. The Fast mode's
+        // notification words are personal too, and the editor would not show them in a share.
+        ScriptConstraintCatalog.AT_PLACE -> params - setOf("lat", "lng", "radius", Place.NOTICE_TITLE, Place.NOTICE_TEXT)
         // A contact's name is a third party's data, like a message's recipient.
         ScriptConstraintCatalog.NOTIFICATION_RECEIVED -> params - "contact"
         else -> params
@@ -226,6 +236,7 @@ object ShortcutShare {
             when (field) {
                 is EditorField.Number -> fits(field.key, ::int)
                 is EditorField.Choice -> fits(field.key) { value -> field.options.any { it.first == value } }
+                is EditorField.Switch -> fits(field.key) { it == "true" || it == "false" }
                 is EditorField.Time -> fits(field.key, ::time)
                 is EditorField.TimeRange -> fits(field.startKey, ::time) && fits(field.endKey, ::time)
                 is EditorField.DaySet -> fits(field.key) { days -> days.split(',').all { ConstraintEditorForms.parseDays(it).isNotEmpty() } }

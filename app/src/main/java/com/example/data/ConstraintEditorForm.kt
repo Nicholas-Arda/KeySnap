@@ -3,6 +3,7 @@ package com.example.data
 import android.content.Context
 import android.content.res.Resources
 import androidx.annotation.StringRes
+import com.example.bridge.PhysicalOrientation
 import io.github.nicholasarda.keysnap.R
 import java.time.DayOfWeek
 import java.time.LocalTime
@@ -41,6 +42,15 @@ object ConstraintEditorForms {
         apps.firstOrNull { it.packageName == pkg }?.label ?: pkg
     }
 
+    private val keyboardField = EditorField.AppPick("packageName", R.string.field_keyboard, keyboardOnly = true)
+    private val PHYSICAL_ORIENTATIONS = listOf(
+        PhysicalOrientation.FACE_UP to R.string.orientation_face_up,
+        PhysicalOrientation.FACE_DOWN to R.string.orientation_face_down,
+        PhysicalOrientation.PORTRAIT to R.string.orientation_portrait,
+        PhysicalOrientation.UPSIDE_DOWN to R.string.orientation_upside_down,
+        PhysicalOrientation.LANDSCAPE to R.string.orientation_landscape,
+    )
+
     private val ssidField = EditorField.Text("ssid", R.string.field_wifi_ssid, hintRes = R.string.hint_wifi_ssid_any)
     private val ssidSummary: (Resources, Map<String, String>, List<InstalledApp>) -> String = { res, params, _ ->
         params.value("ssid").ifEmpty { res.getString(R.string.constraint_summary_any_wifi) }
@@ -67,6 +77,17 @@ object ConstraintEditorForms {
         ),
         ConstraintEditorForm("app_in_foreground", listOf(appField), summary = appSummary),
         ConstraintEditorForm("app_not_in_foreground", listOf(appField), summary = appSummary),
+        ConstraintEditorForm("app_playing_media", listOf(appField), summary = appSummary),
+        ConstraintEditorForm("app_not_playing_media", listOf(appField), summary = appSummary),
+        ConstraintEditorForm("input_method_chosen", listOf(keyboardField), summary = appSummary),
+        ConstraintEditorForm("input_method_not_chosen", listOf(keyboardField), summary = appSummary),
+        ConstraintEditorForm(
+            type = "physical_orientation",
+            fields = listOf(EditorField.Choice("orientation", R.string.field_orientation, PHYSICAL_ORIENTATIONS)),
+            summary = { res, params, _ ->
+                PHYSICAL_ORIENTATIONS.firstOrNull { it.first == params.value("orientation") }?.let { res.getString(it.second) }.orEmpty()
+            },
+        ),
         ConstraintEditorForm(
             type = ScriptConstraintCatalog.NOTIFICATION_RECEIVED,
             fields = listOf(
@@ -81,6 +102,32 @@ object ConstraintEditorForms {
                 listOf(appSummary(res, params, apps), params.value("contact"), if (contains.isEmpty()) "" else "“$contains”")
                     .filter { it.isNotEmpty() }
                     .joinToString(" · ")
+            },
+        ),
+        ConstraintEditorForm(
+            type = ScriptConstraintCatalog.NOTIFICATION_WAITING,
+            fields = listOf(
+                EditorField.Choice(
+                    "apps", R.string.field_notification_apps,
+                    listOf("any" to R.string.notification_apps_any, "pick" to R.string.notification_apps_pick),
+                ),
+                EditorField.AppList("packages", R.string.field_notification_pick, visibleWhen = "apps" to setOf("pick")),
+                EditorField.AppList("except", R.string.field_notification_except, visibleWhen = "apps" to setOf("any")),
+                EditorField.Switch("skip_silent", R.string.field_skip_silent, default = true),
+            ),
+            helperRes = R.string.helper_notification_waiting,
+            required = emptySet(),
+            valid = { it["apps"] != "pick" || !it["packages"].isNullOrBlank() },
+            summary = { res, params, apps ->
+                fun labels(key: String) = params.value(key).split(',').map(String::trim).filter(String::isNotEmpty)
+                    .joinToString(", ") { pkg -> apps.firstOrNull { it.packageName == pkg }?.label ?: pkg }
+                if (params.value("apps") == "pick") {
+                    labels("packages")
+                } else {
+                    val except = labels("except")
+                    res.getString(R.string.notification_apps_any) +
+                        if (except.isEmpty()) "" else " · " + res.getString(R.string.notification_summary_except, except)
+                }
             },
         ),
         ConstraintEditorForm(
@@ -104,6 +151,28 @@ object ConstraintEditorForms {
             summary = { res, params, _ ->
                 listOf(params.value("calendar"), params.value("title")).filter(String::isNotEmpty).joinToString(" · ")
                     .ifEmpty { res.getString(R.string.constraint_summary_any_event) }
+            },
+        ),
+        ConstraintEditorForm(
+            type = ScriptConstraintCatalog.AT_PLACE,
+            // lat, lng and radius come from the map page (the sheet's place row), not from a field.
+            fields = listOf(
+                EditorField.Text("name", R.string.field_place_name, hintRes = R.string.hint_place_name),
+                EditorField.Choice(
+                    "mode", R.string.field_place_mode,
+                    listOf("battery" to R.string.place_mode_battery, Place.MODE_FAST to R.string.place_mode_fast),
+                ),
+            ),
+            helperRes = R.string.helper_at_place,
+            required = setOf("lat", "lng", "radius"),
+            // Under 150 m only Fast (GPS) can tell the sides apart; the platform geofence cannot.
+            valid = { p -> Place.parse(p)?.let { it.radius >= Place.MIN_BATTERY_RADIUS_M || p["mode"] == Place.MODE_FAST } == true },
+            summary = { res, params, _ ->
+                Place.parse(params)?.let { place ->
+                    val circle = res.getString(R.string.place_circle, place.radius)
+                    params.value("name").ifEmpty { String.format(Locale.ROOT, "%.4f, %.4f", place.lat, place.lng) } + " · " + circle +
+                        if (params["mode"] == Place.MODE_FAST) " · " + res.getString(R.string.place_mode_fast) else ""
+                }.orEmpty()
             },
         ),
         ConstraintEditorForm(
@@ -200,7 +269,7 @@ object ConstraintEditorForms {
 
     fun form(type: String): ConstraintEditorForm? = byType[type]
 
-    fun needsInstalledApps(type: String): Boolean = byType[type]?.fields?.any { it is EditorField.AppPick } == true
+    fun needsInstalledApps(type: String): Boolean = byType[type]?.fields?.any { it is EditorField.AppPick || it is EditorField.AppList } == true
 
     /** Seed values for a freshly added constraint. Free text, apps, devices and days start empty. */
     fun defaults(form: ConstraintEditorForm): Map<String, String> = buildMap {
@@ -213,6 +282,7 @@ object ConstraintEditorForms {
                     put(field.endKey, field.defaultEnd)
                 }
                 is EditorField.Time -> put(field.key, field.default)
+                is EditorField.Switch -> put(field.key, field.default.toString())
                 is EditorField.Interval -> {
                     put(field.valueKey, "30")
                     put(field.unitKey, "m")
@@ -233,9 +303,17 @@ object ConstraintEditorForms {
         byType[constraint.type]?.summary?.invoke(resources, constraint.params, installedApps)?.takeIf { it.isNotBlank() }
 
     fun summarize(constraint: ScriptConstraint, context: Context): String? {
-        val packageKeys = byType[constraint.type]?.fields?.filterIsInstance<EditorField.AppPick>()?.map { it.key }.orEmpty()
+        val fields = byType[constraint.type]?.fields.orEmpty()
+        val packageKeys = fields.filterIsInstance<EditorField.AppPick>().map { it.key }
+        val listKeys = fields.filterIsInstance<EditorField.AppList>().map { it.key }
+        val labels = AppLabelResolver.get(context)
         val displayParams = constraint.params.mapValues { (key, value) ->
-            if (key in packageKeys) AppLabelResolver.get(context).displayName(value, context.resources) else value
+            when (key) {
+                in packageKeys -> labels.displayName(value, context.resources)
+                // Labels joined back with the same separator the summary splits on.
+                in listKeys -> value.split(',').filter(String::isNotBlank).joinToString(",") { labels.displayName(it.trim(), context.resources) }
+                else -> value
+            }
         }
         return summarize(constraint.copy(params = displayParams), context.resources)
     }

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_dark_mode">Тёмная тема</string>
+    <string name="action_night_light">Ночной режим</string>
+    <string name="action_extra_dim">Дополнительное затемнение</string>
+    <string name="action_screen_timeout">Отключение экрана</string>
+    <string name="param_screen_timeout">Выключать экран через</string>
+    <string name="choice_timeout_15s">15 секунд</string>
+    <string name="choice_timeout_30s">30 секунд</string>
+    <string name="choice_timeout_1m">1 минута</string>
+    <string name="choice_timeout_2m">2 минуты</string>
+    <string name="choice_timeout_5m">5 минут</string>
+    <string name="choice_timeout_10m">10 минут</string>
+    <string name="choice_timeout_30m">30 минут</string>
+</resources>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_notifications_summary">KeySnap आपको क्या बता सकता है</string>
+    <string name="notif_group_working">KeySnap को चालू रखता है</string>
+    <string name="notif_group_shortcuts">आपके शॉर्टकट</string>
+    <string name="notif_group_places">जगहें</string>
+    <string name="notif_failures_desc">जब कोई ऐक्शन नहीं चल पाया</string>
+    <string name="notif_runs_desc">हर ऑटोमेशन में अलग से चालू</string>
+    <string name="notif_action_desc">इसका टेक्स्ट हर शॉर्टकट में सेट होता है</string>
+    <string name="notif_place_desc">फ़ास्ट मोड चलने तक दिखता है</string>
+    <string name="notif_autostart_row">रीस्टार्ट के बाद शुरू नहीं हुआ</string>
+    <string name="notif_autostart_desc">बताता है क्या ठीक करना है</string>
+    <string name="notif_setup_row">सेटअप और पेयरिंग</string>
+    <string name="notif_setup_desc">सिर्फ़ सेटअप के दौरान</string>
+    <string name="notif_required">ज़रूरी</string>
+    <string name="notif_system_settings">Android सूचना सेटिंग</string>
+    <string name="notif_runs_hint">हर ऑटोमेशन के लिए डिफ़ॉल्ट। उसका अपना टेक्स्ट पहले आता है। {name} शॉर्टकट का नाम है।</string>
+    <string name="notif_place_hint">जब किसी जगह का अपना टेक्स्ट न हो।</string>
+    <string name="notif_preview">झलक</string>
+    <string name="notif_sample_name">सुबह</string>
+</resources>

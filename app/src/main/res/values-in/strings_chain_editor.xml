@@ -6,6 +6,9 @@
     <string name="chain_condition_empty">Periksa setelan kondisi</string>
     <string name="chain_shell_limited">Shell berjalan terbatas di sini</string>
     <string name="chain_set_up">Siapkan</string>
+    <string name="chain_bt_prompt">Muncul konfirmasi Bluetooth singkat</string>
+    <string name="chain_bt_prompt_hide">Untuk menyembunyikan: Opsi pengembang → Nonaktifkan pengoptimalan sistem</string>
+    <string name="chain_open_developer_options">Buka</string>
     <string name="chain_test_running">Menguji aksi</string>
     <string name="chain_test_success">Uji berhasil</string>
     <string name="chain_test_failure">Uji gagal</string>

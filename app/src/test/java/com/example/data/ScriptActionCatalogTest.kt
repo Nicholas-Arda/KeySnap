@@ -64,18 +64,47 @@ class ScriptActionCatalogTest {
                 "toggle_dnd",
                 "enable_dnd",
                 "disable_dnd",
+                "toggle_battery_saver",
+                "enable_battery_saver",
+                "disable_battery_saver",
+                "always_on_display",
+                "grayscale",
+                "charge_limit",
+                "bedtime",
+                "dark_mode",
+                "night_light",
+                "extra_dim",
+                "screen_timeout",
+                "toggle_nfc",
+                "toggle_notification_drawer",
+                "toggle_quick_settings",
+                "dismiss_all_notifications",
+                "learned_setting",
                 "text_cut",
                 "text_copy",
                 "text_paste",
                 "show_keyboard_picker",
                 "switch_keyboard",
                 "launch_app",
+                "launch_app_shortcut",
+                "answer_call",
+                "end_call",
                 "open_url",
                 "launch_voice_assistant",
                 "launch_device_assistant",
                 "open_camera",
                 "open_settings",
+                "open_hotspot_settings",
+                "set_timer",
+                "set_alarm",
+                "copy_to_clipboard",
+                "keep_screen_awake",
+                "close_and_clear_app",
+                "go_last_app",
+                "hide_keyboard",
+                "change_flashlight_brightness",
                 "force_stop_app",
+                "set_payment_app",
                 "modify_setting",
                 "send_intent",
                 "reply_to_notification",
@@ -151,7 +180,7 @@ class ScriptActionCatalogTest {
 
     @Test fun isAvailableMatchesDescriptorAvailability() {
         assertTrue(ScriptActionCatalog.isAvailable("toggle_flashlight"))
-        assertTrue(!ScriptActionCatalog.isAvailable("launch_app_shortcut"))
+        assertTrue(!ScriptActionCatalog.isAvailable("open_app_drawer"))
         assertTrue(!ScriptActionCatalog.isAvailable("not_a_real_action"))
     }
 
@@ -224,6 +253,12 @@ class ScriptActionCatalogTest {
                 "open_recents",
                 "show_notification",
                 "reply_to_notification",
+                "dismiss_all_notifications",
+                "go_last_app",
+                "hide_keyboard",
+                "change_flashlight_brightness",
+                "copy_to_clipboard",
+                "keep_screen_awake",
             ),
             ScriptActionCatalog.UNSUPPORTED_BY_BRIDGE,
         )
@@ -252,8 +287,8 @@ class ScriptActionCatalogTest {
     @Test fun privilegedActionsAreAvailableCatalogEntries() {
         assertEquals(
             setOf(
-                "shell_command", "modify_setting", "force_stop_app", "send_intent", "http_request", "open_url", "show_notification",
-                "reply_to_notification", "send_message",
+                "shell_command", "modify_setting", "force_stop_app", "close_and_clear_app", "send_intent", "http_request", "open_url", "show_notification",
+                "reply_to_notification", "send_message", "learned_setting", "set_payment_app",
             ),
             ScriptActionCatalog.PRIVILEGED,
         )

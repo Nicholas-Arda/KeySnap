@@ -139,12 +139,17 @@ internal fun actionTestSummary(resources: Resources, action: ScriptAction, resul
     val status = when {
         result.timedOut -> resources.getString(R.string.chain_test_timeout)
         result.httpStatus != null -> if (result.httpStatus == 200) "200 OK" else resources.getString(R.string.chain_http_status, result.httpStatus)
-        result.exitCode != null -> resources.getString(R.string.chain_exit_code, result.exitCode)
+        result.exitCode != null && (action.type == "shell_command" || !result.ok) -> resources.getString(R.string.chain_exit_code, result.exitCode)
         result.ok -> resources.getString(R.string.chain_test_success)
         else -> resources.getString(R.string.chain_test_failure)
     }
     val seconds = String.format(resources.configuration.locales[0], "%.1f", result.durationMs / 1000.0)
-    return resources.getString(R.string.chain_test_result, if (result.ok) "✓" else "✗", title, status, seconds)
+    val summary = resources.getString(R.string.chain_test_result, if (result.ok) "✓" else "✗", title, status, seconds)
+    // A failed fixed command (svc bluetooth …) shows what the system said, so a screenshot names the
+    // cause. Never for shell/HTTP: their output can echo a token from the user's own command.
+    val said = if (result.ok || action.type == "shell_command" || action.type == "http_request") null
+    else result.output.lastOrNull { it.isNotBlank() }?.trim()?.take(120)
+    return if (said == null) summary else "$summary\n$said"
 }
 
 @Composable
@@ -222,6 +227,54 @@ internal fun ShellLimitedWarning(visible: Boolean, onSetUp: () -> Unit) {
             Text(stringResource(R.string.chain_shell_limited), Modifier.weight(1f), color = warning, style = MaterialTheme.typography.bodySmall)
             TextButton(onClick = onSetUp, modifier = Modifier.testTag("shell_set_up")) {
                 Text(stringResource(R.string.chain_set_up), color = warning)
+            }
+        }
+    }
+}
+
+internal val BLUETOOTH_SWITCH_ACTIONS = setOf("toggle_bluetooth", "enable_bluetooth", "disable_bluetooth")
+
+/**
+ * Whether ColorOS will show its Bluetooth prompt for these actions: its permission monitor
+ * (Developer options "Disable system optimization" off, `persist.sys.permission.enable=true`)
+ * refuses the bridge's `svc bluetooth`, so the bridge confirms Android's own dialog instead. When the
+ * property cannot be read, an OPPO / OnePlus / realme phone is assumed to have it on.
+ */
+internal fun bluetoothPromptExpected(permissionMonitor: String?, manufacturer: String): Boolean = when (permissionMonitor) {
+    "true" -> true
+    "false" -> false
+    else -> manufacturer.lowercase() in setOf("oppo", "oneplus", "realme")
+}
+
+private fun readPermissionMonitor(): String? = runCatching {
+    Class.forName("android.os.SystemProperties").getMethod("get", String::class.java)
+        .invoke(null, "persist.sys.permission.enable") as String
+}.getOrNull()?.takeIf { it.isNotEmpty() }
+
+@Composable
+internal fun BluetoothPromptWarning(actionType: String) {
+    val context = LocalContext.current
+    val expected = remember { bluetoothPromptExpected(readPermissionMonitor(), android.os.Build.MANUFACTURER.orEmpty()) }
+    val warning = setupWarning()
+    AnimatedVisibility(expected && actionType in BLUETOOTH_SWITCH_ACTIONS, enter = fadeIn() + expandVertically(), exit = fadeOut() + shrinkVertically()) {
+        Row(
+            Modifier.clip(InnerShape).background(warning.copy(alpha = .12f)).padding(start = 8.dp).testTag("bluetooth_prompt_warning"),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            androidx.compose.foundation.layout.Column(Modifier.weight(1f).padding(vertical = 6.dp)) {
+                Text(stringResource(R.string.chain_bt_prompt), color = warning, style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Medium)
+                Text(stringResource(R.string.chain_bt_prompt_hide), color = warning, style = MaterialTheme.typography.bodySmall)
+            }
+            TextButton(onClick = {
+                runCatching {
+                    context.startActivity(
+                        android.content.Intent(android.provider.Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)
+                            .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK),
+                    )
+                }
+            }) {
+                Text(stringResource(R.string.chain_open_developer_options), color = warning)
             }
         }
     }

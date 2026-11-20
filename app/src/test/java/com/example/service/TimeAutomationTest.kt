@@ -175,6 +175,25 @@ class TimeAutomationTest {
         assertNotNull(alarms[0].alarmClockInfo)
     }
 
+    /** "At 09:00" is a wall-clock time: after a time-zone change the alarm moves to 09:00 in the new zone. */
+    @Test fun aTimeZoneChangeReArmsTheAlarmForTheNewWallClock() {
+        ShadowAlarmManager.setCanScheduleExactAlarms(true)
+        val original = java.util.TimeZone.getDefault()
+        try {
+            java.util.TimeZone.setDefault(java.util.TimeZone.getTimeZone("UTC"))
+            add("qa-time-zone", at("09:00"))
+            idle()
+            java.util.TimeZone.setDefault(java.util.TimeZone.getTimeZone("Asia/Tokyo"))
+            context.sendBroadcast(Intent(Intent.ACTION_TIMEZONE_CHANGED).setClass(context, TimeAlarmReceiver::class.java))
+            idle()
+            val alarms = shadowOf(context.getSystemService(AlarmManager::class.java)).scheduledAlarms
+            assertEquals(1, alarms.size)
+            assertEquals(ms(TimeRules.nextDue(at("09:00"), LocalDateTime.now())!!), alarms[0].triggerAtMs)
+        } finally {
+            java.util.TimeZone.setDefault(original)
+        }
+    }
+
     /** Pausing everything removes the alarm, and with it the alarm-clock icon; resuming re-arms it. */
     @Test fun aGlobalPauseCancelsTheAlarm() {
         ShadowAlarmManager.setCanScheduleExactAlarms(true)

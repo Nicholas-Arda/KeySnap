@@ -38,6 +38,12 @@
     <string name="setup_skip">Пропустить</string>
     <string name="setup_not_now">Не сейчас</string>
     <string name="setup_optional_row">Необязательно: уведомления</string>
+    <string name="auto_launch_row">Сценарии работают и при закрытом приложении</string>
+    <string name="auto_launch_search_hint">Найдите «Автозапуск» и включите KeySnap</string>
+    <string name="home_stopped_banner">KeySnap был остановлен. Некоторые сценарии не сработают.</string>
+    <string name="auto_launch_row_stopped">Не дать KeySnap снова остановиться</string>
+    <string name="reconnect_sheet_body">KeySnap один раз выключит и включит свои специальные возможности. Больше ничего не меняется.</string>
+    <string name="reconnect_sheet_keep_on">Затем Android спросит. Выберите «Оставить включённым».</string>
     <string name="setup_turn_on">Включить</string>
     <string name="setup_usage_banner">Условиям приложений нужен доступ к данным об использовании</string>
     <string name="setup_usage_title">Разрешить доступ к данным об использовании</string>

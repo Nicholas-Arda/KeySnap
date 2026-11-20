@@ -86,6 +86,7 @@ import com.example.data.ActionEditorForms
 import com.example.data.AppLabelResolver
 import com.example.data.EditorField
 import com.example.data.InstalledApp
+import com.example.data.InstalledAppsRepository
 import com.example.data.PrivilegedEditor
 import com.example.data.ScriptAction
 import com.example.data.NOTIFICATION_ACCESS_BADGE
@@ -150,6 +151,10 @@ fun ActionConfigSheet(
     readSetting: (suspend (String, String) -> String?)? = null,
     writeSystemSetting: (suspend (String, String) -> ActionTestResult)? = null,
     visibleChats: ((String) -> List<String>)? = null,
+    /** The shortcut's own buzz, shown and switchable in the ringer editor; applied on confirm. */
+    shortcutBuzz: Boolean = false,
+    shortcutBuzzPattern: List<Long> = emptyList(),
+    onShortcutBuzz: ((Boolean) -> Unit)? = null,
 ) {
     val colors = MaterialTheme.colorScheme
     val context = LocalContext.current
@@ -167,6 +172,11 @@ fun ActionConfigSheet(
     // Which field asked for a point, so the returning overlay result lands in the right params.
     var awaitingPointKeys by remember { mutableStateOf<List<String>>(emptyList()) }
     var showAppPickerFor by remember { mutableStateOf<String?>(null) }
+    val paymentPick = form.fields.any { it is EditorField.AppPick && it.paymentOnly }
+    val paymentApps by produceState(emptyList<InstalledApp>(), paymentPick) {
+        if (paymentPick) value = InstalledAppsRepository(context).paymentApps()
+    }
+    var ownBuzz by remember(shortcutBuzz) { mutableStateOf(shortcutBuzz) }
 
     LaunchedEffect(pendingPoints) {
         val picked = pendingPoints ?: return@LaunchedEffect
@@ -246,100 +256,94 @@ fun ActionConfigSheet(
                 .navigationBarsPadding()
                 .padding(horizontal = 16.dp)
                 .heightIn(max = sheetMaxHeight)
-                .nestedScroll(rememberSheetContentScroll())
-                .verticalScroll(rememberScrollState())
                 .testTag("action_config_sheet"),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            Text(title, style = MaterialTheme.typography.titleMedium, color = colors.onSurface)
-            ActionEditorForms.helperRes(form, snapshot)?.let {
-                Text(stringResource(it), style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
-            }
-            if (ActionEditorForms.needsAdvancedMode(actionType)) {
-                advancedModeWarningRes(actionType, advancedActive)?.let { AdvancedModeWarning(it, onSetUpAdvancedMode) }
-            } else form.requirementRes?.let {
-                val onClick = when (it) {
-                    NOTIFICATION_POLICY_BADGE -> onRequestNotificationPolicyAccess
-                    WRITE_SETTINGS_BADGE -> onRequestWriteSettings
-                    NOTIFICATION_ACCESS_BADGE -> ({ NotificationEventListener.openAccessSettings(context) })
-                    else -> null
+            // Only the fields scroll; Cancel/Add stay pinned, so a tall form never shows half a button.
+            Column(
+                Modifier
+                    .weight(1f, fill = false)
+                    .nestedScroll(rememberSheetContentScroll())
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                Text(title, style = MaterialTheme.typography.titleMedium, color = colors.onSurface)
+                ActionEditorForms.helperRes(form, snapshot)?.let {
+                    Text(stringResource(it), style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
                 }
-                RequirementBadge(stringResource(it), onClick)
-            }
-
-            visible.forEach { field ->
-                when (field) {
-                    is EditorField.Text -> TextFieldRow(field, values)
-                    is EditorField.Number -> if (ModeHooks.cycleCountLocked(actionType, field.key, scripts)) {
-                        ModeHooks.LockedCycleCount(scripts)
-                    } else {
-                        NumberFieldRow(field, values)
+                if (ActionEditorForms.needsAdvancedMode(actionType)) {
+                    advancedModeWarningRes(actionType, advancedActive)?.let { AdvancedModeWarning(it, onSetUpAdvancedMode) }
+                } else form.requirementRes?.let {
+                    val onClick = when (it) {
+                        NOTIFICATION_POLICY_BADGE -> onRequestNotificationPolicyAccess
+                        WRITE_SETTINGS_BADGE -> onRequestWriteSettings
+                        NOTIFICATION_ACCESS_BADGE -> ({ NotificationEventListener.openAccessSettings(context) })
+                        else -> null
                     }
-                    is EditorField.Choice -> ChoiceFieldRow(field, values)
-                    is EditorField.KeyCodePick -> KeyCodeFieldRow(
-                        field,
-                        values,
-                        isRecordingKey,
-                        onStartRecording,
-                        onCancelRecording,
-                        onUseInputText = onSwitchAction?.let { switch -> { onCancelRecording(); switch("input_text") } },
-                    )
-                    is EditorField.AppPick -> AppFieldRow(field, values) { showAppPickerFor = field.key }
-                    is EditorField.Point -> PointFieldRow(
-                        label = stringResource(field.labelRes),
-                        pointKeys = listOf(field.xKey, field.yKey),
-                        values = values,
-                        canDrawOverlays = canDrawOverlays,
-                        onPick = {
-                            awaitingPointKeys = listOf(field.xKey, field.yKey)
-                            onPickPoints(PointPickMode.SINGLE, TwoPointGesture.NONE)
-                        },
-                        onRequestPermission = onRequestOverlayPermission,
-                    )
-                    is EditorField.TwoPoints -> {
-                        val keys = listOf(field.x1Key, field.y1Key, field.x2Key, field.y2Key)
-                        PointFieldRow(
-                            label = "${stringResource(field.labelARes)} → ${stringResource(field.labelBRes)}",
-                            pointKeys = keys,
+                    RequirementBadge(stringResource(it), onClick)
+                }
+
+                visible.forEach { field ->
+                    when (field) {
+                        is EditorField.Text -> TextFieldRow(field, values)
+                        is EditorField.Number -> if (ModeHooks.cycleCountLocked(actionType, field.key, scripts)) {
+                            ModeHooks.LockedCycleCount(scripts)
+                        } else {
+                            NumberFieldRow(field, values)
+                        }
+                        is EditorField.Choice -> ChoiceFieldRow(field, values)
+                        is EditorField.KeyCodePick -> KeyCodeFieldRow(
+                            field,
+                            values,
+                            isRecordingKey,
+                            onStartRecording,
+                            onCancelRecording,
+                            onUseInputText = onSwitchAction?.let { switch -> { onCancelRecording(); switch("input_text") } },
+                        )
+                        is EditorField.AppPick -> AppFieldRow(field, values) { showAppPickerFor = field.key }
+                        is EditorField.Point -> PointFieldRow(
+                            label = stringResource(field.labelRes),
+                            pointKeys = listOf(field.xKey, field.yKey),
                             values = values,
                             canDrawOverlays = canDrawOverlays,
                             onPick = {
-                                awaitingPointKeys = keys
-                                onPickPoints(PointPickMode.TWO_POINTS, twoPointGesture)
+                                awaitingPointKeys = listOf(field.xKey, field.yKey)
+                                onPickPoints(PointPickMode.SINGLE, TwoPointGesture.NONE)
                             },
                             onRequestPermission = onRequestOverlayPermission,
                         )
+                        is EditorField.TwoPoints -> {
+                            val keys = listOf(field.x1Key, field.y1Key, field.x2Key, field.y2Key)
+                            PointFieldRow(
+                                label = "${stringResource(field.labelARes)} → ${stringResource(field.labelBRes)}",
+                                pointKeys = keys,
+                                values = values,
+                                canDrawOverlays = canDrawOverlays,
+                                onPick = {
+                                    awaitingPointKeys = keys
+                                    onPickPoints(PointPickMode.TWO_POINTS, twoPointGesture)
+                                },
+                                onRequestPermission = onRequestOverlayPermission,
+                            )
+                        }
+                        is EditorField.ImagePick -> ImageFieldRow(field, values)
+                        is EditorField.ContactPick -> ContactFieldRow(field, values)
+                        is EditorField.Switch -> {
+                            val on = values[field.key] == "true"
+                            ConsoleSwitch(stringResource(field.labelRes), on) { values[field.key] = it.toString() }
+                            if (on && field.needsAdvancedMode) RequirementBadge(stringResource(R.string.badge_expert_mode), tag = "switch_badge_${field.key}")
+                        }
+                        EditorField.RingerPattern -> RingerPatternField(values, ownBuzz, shortcutBuzzPattern, onShortcutBuzz?.let { { on: Boolean -> ownBuzz = on } })
+                        is EditorField.AppShortcutPick -> AppShortcutFieldRow(field, values)
+                        // Constraint-only fields; listed so the sealed `when` stays exhaustive.
+                        is EditorField.BluetoothDevicePick -> BluetoothDeviceFieldRow(field, values)
+                        is EditorField.TimeRange -> TimeRangeFieldRow(field, values)
+                        is EditorField.DaySet -> DaySetFieldRow(field, values)
+                        is EditorField.Time -> TimeFieldRows(listOf(field.key to field.labelRes), values)
+                        is EditorField.Interval, is EditorField.AppList -> Unit
                     }
-                    is EditorField.ImagePick -> ImageFieldRow(field, values)
-                    is EditorField.ContactPick -> ContactFieldRow(field, values)
-                    is EditorField.Switch -> {
-                        val on = values[field.key] == "true"
-                        ConsoleSwitch(stringResource(field.labelRes), on) { values[field.key] = it.toString() }
-                        // Today only "Send automatically", which the bridge carries out.
-                        if (on) RequirementBadge(stringResource(R.string.badge_expert_mode), tag = "switch_badge_${field.key}")
-                    }
-                    // Constraint-only fields; listed so the sealed `when` stays exhaustive.
-                    is EditorField.BluetoothDevicePick -> BluetoothDeviceFieldRow(field, values)
-                    is EditorField.TimeRange -> TimeRangeFieldRow(field, values)
-                    is EditorField.DaySet -> DaySetFieldRow(field, values)
-                    is EditorField.Time, is EditorField.Interval -> Unit
                 }
-            }
-            // CLAUDE.md "Privileged actions must stay legible": the literal link or intent, before it runs.
-            if (actionType == "force_stop_app" && !snapshot["packageName"].isNullOrBlank()) {
-                Text(
-                    stringResource(R.string.action_config_what_will_run, "am force-stop ${snapshot["packageName"]}"),
-                    Modifier.testTag("config_what_will_run"),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = colors.onSurfaceVariant,
-                )
-            }
-            if (actionType == "send_message") {
-                val launch = remember(snapshot) { messageLaunchFor(context, snapshot) }
-                val hasNumber = !snapshot["number"].isNullOrBlank()
-                val autoSendOn = snapshot[ActionEditorForms.AUTO_SEND] == "true"
-                launch?.let {
-                    val command = if (autoSends(snapshot, it)) stringResource(R.string.message_then_taps_send, it.describe()) else it.describe()
+                // CLAUDE.md "Privileged actions must stay legible": the literal link or intent, before it runs.
+                com.example.data.stopCommandPreview(actionType, snapshot["packageName"])?.let { command ->
                     Text(
                         stringResource(R.string.action_config_what_will_run, command),
                         Modifier.testTag("config_what_will_run"),
@@ -347,26 +351,69 @@ fun ActionConfigSheet(
                         color = colors.onSurfaceVariant,
                     )
                 }
-                val warning = when {
-                    launch == null && hasNumber && !snapshot["packageName"].isNullOrBlank() && !snapshot["text"].isNullOrBlank() ->
-                        R.string.message_number_needs_country_code
-                    launch != null && launch.uri == null && hasNumber -> R.string.message_number_not_used
-                    else -> null
+                if (actionType == com.example.data.ScriptActionCatalog.LEARNED_SETTING) {
+                    val state = snapshot["state"].orEmpty().ifEmpty { "toggle" }
+                    val on = com.example.data.TeachRules.commands(snapshot[com.example.bridge.LearnedSetting.PARAM_WRITES], on = true)
+                    val off = com.example.data.TeachRules.commands(snapshot[com.example.bridge.LearnedSetting.PARAM_WRITES], on = false)
+                    Text(
+                        if (on == null || off == null) {
+                            stringResource(R.string.teach_not_found)
+                        } else {
+                            stringResource(
+                                R.string.action_config_what_will_run,
+                                when (state) {
+                                    "on" -> on.joinToString("\n")
+                                    "off" -> off.joinToString("\n")
+                                    else -> {
+                                        val onLabel = stringResource(R.string.choice_state_on)
+                                        val offLabel = stringResource(R.string.choice_state_off)
+                                        (on.map { "$onLabel: $it" } + off.map { "$offLabel: $it" }).joinToString("\n")
+                                    }
+                                },
+                            )
+                        },
+                        Modifier.testTag("config_what_will_run"),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = if (on == null) colors.error else colors.onSurfaceVariant,
+                    )
                 }
-                // A picker or share screen has no chat to send into, so the switch does nothing here.
-                val noChat = if (launch != null && autoSendOn && !launch.opensChat) R.string.message_no_chat_to_send else null
-                listOfNotNull(warning, noChat).forEach {
-                    Text(stringResource(it), style = MaterialTheme.typography.bodySmall, color = colors.error)
+                if (actionType == "send_message") {
+                    val launch = remember(snapshot) { messageLaunchFor(context, snapshot) }
+                    val hasNumber = !snapshot["number"].isNullOrBlank()
+                    val autoSendOn = snapshot[ActionEditorForms.AUTO_SEND] == "true"
+                    launch?.let {
+                        val command = if (autoSends(snapshot, it)) stringResource(R.string.message_then_taps_send, it.describe()) else it.describe()
+                        Text(
+                            stringResource(R.string.action_config_what_will_run, command),
+                            Modifier.testTag("config_what_will_run"),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = colors.onSurfaceVariant,
+                        )
+                    }
+                    val warning = when {
+                        launch == null && hasNumber && !snapshot["packageName"].isNullOrBlank() && !snapshot["text"].isNullOrBlank() ->
+                            R.string.message_number_needs_country_code
+                        launch != null && launch.uri == null && hasNumber -> R.string.message_number_not_used
+                        else -> null
+                    }
+                    // A picker or share screen has no chat to send into, so the switch does nothing here.
+                    val noChat = if (launch != null && autoSendOn && !launch.opensChat) R.string.message_no_chat_to_send else null
+                    listOfNotNull(warning, noChat).forEach {
+                        Text(stringResource(it), style = MaterialTheme.typography.bodySmall, color = colors.error)
+                    }
                 }
             }
 
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+            Row(Modifier.fillMaxWidth().padding(top = 12.dp), horizontalArrangement = Arrangement.End) {
                 TextButton(onClick = onDismiss, modifier = Modifier.testTag("action_config_cancel")) {
                     Text(stringResource(R.string.common_cancel), color = colors.onSurfaceVariant)
                 }
                 Spacer(Modifier.width(8.dp))
                 Button(
-                    onClick = { onConfirm(values.toMap().filterValues { it.isNotBlank() }) },
+                    onClick = {
+                        if (ownBuzz != shortcutBuzz) onShortcutBuzz?.invoke(ownBuzz)
+                        onConfirm(values.toMap().filterValues { it.isNotBlank() })
+                    },
                     enabled = complete,
                     shape = InnerShape,
                     modifier = Modifier.testTag("action_config_confirm"),
@@ -384,7 +431,7 @@ fun ActionConfigSheet(
 
     showAppPickerFor?.let { key ->
         AppPickerSheet(
-            apps = installedApps,
+            apps = if (form.fields.any { it is EditorField.AppPick && it.key == key && it.paymentOnly }) paymentApps else installedApps,
             selected = values[key],
             onSelect = {
                 values[key] = it

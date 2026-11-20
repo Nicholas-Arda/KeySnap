@@ -92,6 +92,16 @@ class ChainRowFeedbackTest {
         rule.onNodeWithText(http.params.getValue("url")).assertDoesNotExist()
     }
 
+    @Test fun failedFixedCommandShowsTheSystemMessageButShellNever() {
+        val res = androidx.test.core.app.ApplicationProvider.getApplicationContext<android.content.Context>().resources
+        val failed = ActionTestResult(false, 1, null, 50, false, listOf("", "Failure calling service bluetooth_manager"))
+        assertEquals(
+            "Failure calling service bluetooth_manager",
+            actionTestSummary(res, ScriptAction("enable_bluetooth"), failed).lines().last(),
+        )
+        assertEquals(1, actionTestSummary(res, ScriptAction("shell_command", mapOf("command" to "x")), failed).lines().size)
+    }
+
     @Test fun timeoutDisplaysSafeReason() {
         showTest(ActionTestResult(false, null, null, 5_000, true, emptyList()))
         rule.onNodeWithText("✗ HTTP · Timed out · 5.0 s").assertIsDisplayed()

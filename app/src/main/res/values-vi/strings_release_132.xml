@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_teach_title_132">Dạy một cài đặt</string>
+    <string name="whats_new_teach_description_132">Cho KeySnap xem một công tắc một lần, rồi bật/tắt nó từ bất kỳ phím tắt nào.</string>
+    <string name="whats_new_place_title_132">Điều kiện mới: Ở một nơi</string>
+    <string name="whats_new_place_description_132">Chạy khi bạn đến hoặc rời đi. Vị trí của bạn chỉ ở trên điện thoại. Thử nghiệm.</string>
+    <string name="whats_new_actions_title_132">Hơn 25 hành động mới</string>
+    <string name="whats_new_actions_description_132">Nghe và kết thúc cuộc gọi, hẹn giờ, báo thức, chế độ tối, đèn ngủ và hơn nữa.</string>
+    <string name="whats_new_fix_conditions_132">Điều kiện mới: có thông báo chờ, đang phát nội dung, hướng thiết bị</string>
+    <string name="whats_new_fix_undo_132">Hoàn tác khi kết thúc trả lại các cài đặt đã đổi</string>
+    <string name="whats_new_fix_vibration_132">Kiểu rung</string>
+    <string name="whats_new_fix_foldable_132">Rộng rãi hơn trên điện thoại gập và máy tính bảng</string>
+    <string name="whats_new_also_new_132">Cũng mới</string>
+</resources>

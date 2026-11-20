@@ -60,8 +60,22 @@ public class ConstraintNegationTest {
             {"battery_below", "level: 80", "level: 20", Map.of("percent", "50")},
             {"ringer_normal", "1", "2", Map.of()},
             {"ringer_vibrate", "2", "1", Map.of()},
-            {"ringer_silent", "2", "0", Map.of()}
+            {"ringer_silent", "2", "0", Map.of()},
+            {"app_playing_media", media("test.app", "PAUSED(2)"), media("test.app", "PLAYING(3)"), Map.of("packageName", "test.app")},
+            {"app_not_playing_media", media("test.app", "PLAYING(3)"), media("other.app", "PLAYING(3)"), Map.of("packageName", "test.app")},
+            {"input_method_chosen", "other.ime/.Ime", "test.ime/.Ime", Map.of("packageName", "test.ime")},
+            {"input_method_not_chosen", "test.ime/.Ime", "other.ime/.Ime", Map.of("packageName", "test.ime")},
+            {"physical_orientation", accel(0.1, 9.8, 0.3), accel(0.1, 0.3, -9.8), Map.of("orientation", "face_down")}
         });
+    }
+    static String media(String pkg, String state) {
+        return "MEDIA SESSION SERVICE (dumpsys media_session)\n  Sessions Stack - have 1 sessions:\n    t " + pkg + "/t/1 (userId=0)\n"
+                + "      package=" + pkg + "\n      state=PlaybackState {state=" + state + ", position=0}\nAudio playback\n";
+    }
+    static String accel(double x, double y, double z) {
+        String now = java.time.LocalTime.now().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss"));
+        return "0x00000001) icm456xy acc              | iven_sense      | ver: 1 | type: android.sensor.accelerometer(1) | perm: n/a\n"
+                + "icm456xy acc: last 50 events\n\t 1 (ts=10.5, wall=" + now + ".801) " + x + ", " + y + ", " + z + ", \n";
     }
     private final String type, falseOutput, trueOutput;
     private final Map<String, String> params;

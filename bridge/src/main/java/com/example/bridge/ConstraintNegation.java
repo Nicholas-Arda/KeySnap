@@ -33,6 +33,8 @@ public final class ConstraintNegation {
             case "flashlight_off": return "flashlight_on";
             case "app_not_in_foreground": return "app_in_foreground";
             case "no_media_playing": return "media_is_playing";
+            case "app_not_playing_media": return "app_playing_media";
+            case "input_method_not_chosen": return "input_method_chosen";
             case "bluetooth_device_disconnected": return "bluetooth_device_connected";
             case "dark_mode_off": return "dark_mode_on";
             case "disconnected_from_wifi_network": return "connected_to_wifi_network";

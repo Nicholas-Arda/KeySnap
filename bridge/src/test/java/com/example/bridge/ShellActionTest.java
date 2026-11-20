@@ -40,6 +40,18 @@ public class ShellActionTest {
         assertEquals("last stderr line", result.output.get(19));
     }
 
+    @Test public void editorTestCapturesFixedCommandExitAndMessage() {
+        ActionTestResult[] slot = new ActionTestResult[1];
+        ShellKeyInjector.TEST_CAPTURE.set(slot);
+        try {
+            assertFalse(ShellKeyInjector.runShell(childCommand("output")));
+        } finally {
+            ShellKeyInjector.TEST_CAPTURE.remove();
+        }
+        assertEquals(Integer.valueOf(7), slot[0].exitCode);
+        assertEquals("last stderr line", slot[0].output.get(slot[0].output.size() - 1));
+    }
+
     private static final class FakeProcess extends Process {
         final boolean finished;
         final int exit;
@@ -109,5 +121,28 @@ public class ShellActionTest {
         assertEquals(123, decoded.durationMs);
         assertTrue(decoded.ok);
         assertTrue(BridgeProtocol.VERSION >= 37);
+    }
+
+    @Test public void shadeIsOpenOnlyWhileItHoldsFocus() {
+        assertTrue(BridgeMain.shadeOpen("  mCurrentFocus=null\n  mCurrentFocus=Window{8e416b5 u0 NotificationShade}\n"));
+        assertFalse(BridgeMain.shadeOpen("  mCurrentFocus=Window{36ac4c5 u0 com.android.launcher/com.android.launcher.Launcher}\n"));
+        assertFalse(BridgeMain.shadeOpen(null));
+    }
+
+    @Test public void callStateTakesTheBusiestSlot() {
+        assertEquals(0, BridgeMain.callState("    mCallState=0\n    mCallState=0\n"));
+        assertEquals(1, BridgeMain.callState("    mCallState=0\n    mCallState=1\n"));
+        assertEquals(2, BridgeMain.callState("    mCallState=2\n    mCallState=0\n"));
+        assertEquals(-1, BridgeMain.callState("Phone Id=0\n"));
+    }
+
+    @Test public void recentTaskIdsMatchOnlyThatPackage() {
+        String dump = "  * Recent #0: Task{b11 #4831 type=standard A=10700:io.github.nicholasarda.keysnap.dev}\n"
+                + "  * Recent #1: Task{73097cd #4830 type=standard A=10301:com.coloros.calculator}\n"
+                + "  * Recent #2: Task{501c655 #2 type=undefined I=com.android.launcher/.Launcher}\n"
+                + "  * Recent #3: Task{9a #4700 type=standard A=10302:com.coloros.calculator.extra}\n";
+        assertEquals(java.util.Collections.singletonList("4830"), BridgeMain.recentTaskIds(dump, "com.coloros.calculator"));
+        assertEquals(java.util.Collections.singletonList("2"), BridgeMain.recentTaskIds(dump, "com.android.launcher"));
+        assertTrue(BridgeMain.recentTaskIds(null, "com.coloros.calculator").isEmpty());
     }
 }

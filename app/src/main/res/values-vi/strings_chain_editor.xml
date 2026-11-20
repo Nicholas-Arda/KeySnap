@@ -6,6 +6,9 @@
     <string name="chain_condition_empty">Kiểm tra cài đặt điều kiện</string>
     <string name="chain_shell_limited">Shell chạy hạn chế ở đây</string>
     <string name="chain_set_up">Thiết lập</string>
+    <string name="chain_bt_prompt">Hiện nhanh hộp thoại Bluetooth</string>
+    <string name="chain_bt_prompt_hide">Để ẩn: Tùy chọn nhà phát triển → Tắt tối ưu hóa hệ thống</string>
+    <string name="chain_open_developer_options">Mở</string>
     <string name="chain_test_running">Đang thử hành động</string>
     <string name="chain_test_success">Thử thành công</string>
     <string name="chain_test_failure">Thử thất bại</string>

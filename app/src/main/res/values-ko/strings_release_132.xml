@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_teach_title_132">설정 가르치기</string>
+    <string name="whats_new_teach_description_132">스위치를 KeySnap에 한 번 보여 주면 어떤 단축키로든 켜고 끌 수 있어요.</string>
+    <string name="whats_new_place_title_132">새 조건: 특정 장소에 있을 때</string>
+    <string name="whats_new_place_description_132">도착하거나 떠날 때 실행돼요. 위치는 휴대전화 밖으로 나가지 않아요. 실험 기능.</string>
+    <string name="whats_new_actions_title_132">새 동작 25개 이상</string>
+    <string name="whats_new_actions_description_132">전화 받기·끊기, 타이머, 알람, 다크 모드, 야간 조명 등.</string>
+    <string name="whats_new_fix_conditions_132">새 조건: 알림 대기 중, 미디어 재생 중, 기기 방향</string>
+    <string name="whats_new_fix_undo_132">끝나면 되돌리기: 바뀐 설정을 원래대로</string>
+    <string name="whats_new_fix_vibration_132">진동 패턴</string>
+    <string name="whats_new_fix_foldable_132">폴더블과 태블릿에서 더 넓게</string>
+    <string name="whats_new_also_new_132">그 밖의 새 기능</string>
+</resources>

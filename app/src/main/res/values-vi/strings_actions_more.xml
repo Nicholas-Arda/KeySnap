@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_dark_mode">Chế độ tối</string>
+    <string name="action_night_light">Ánh sáng ban đêm</string>
+    <string name="action_extra_dim">Siêu tối</string>
+    <string name="action_screen_timeout">Thời gian chờ màn hình</string>
+    <string name="param_screen_timeout">Tắt màn hình sau</string>
+    <string name="choice_timeout_15s">15 giây</string>
+    <string name="choice_timeout_30s">30 giây</string>
+    <string name="choice_timeout_1m">1 phút</string>
+    <string name="choice_timeout_2m">2 phút</string>
+    <string name="choice_timeout_5m">5 phút</string>
+    <string name="choice_timeout_10m">10 phút</string>
+    <string name="choice_timeout_30m">30 phút</string>
+</resources>

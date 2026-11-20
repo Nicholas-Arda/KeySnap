@@ -38,6 +38,12 @@
     <string name="setup_skip">Ignorer</string>
     <string name="setup_not_now">Pas maintenant</string>
     <string name="setup_optional_row">Facultatif : notifications</string>
+    <string name="auto_launch_row">Raccourcis actifs même app fermée</string>
+    <string name="auto_launch_search_hint">Cherchez « Démarrage auto » et activez KeySnap</string>
+    <string name="home_stopped_banner">KeySnap a été arrêté. Certains raccourcis ne marcheront pas.</string>
+    <string name="auto_launch_row_stopped">Empêcher KeySnap de s’arrêter à nouveau</string>
+    <string name="reconnect_sheet_body">KeySnap désactive puis réactive une fois sa propre accessibilité. Rien d’autre ne change.</string>
+    <string name="reconnect_sheet_keep_on">Android demandera ensuite. Choisissez « Laisser activé ».</string>
     <string name="setup_turn_on">Activer</string>
     <string name="setup_usage_banner">Les conditions d’app exigent l’accès aux données d’usage</string>
     <string name="setup_usage_title">Autoriser l’accès aux données d’usage</string>

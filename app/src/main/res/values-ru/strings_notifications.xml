@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_notifications_summary">О чём KeySnap может сообщить</string>
+    <string name="notif_group_working">Поддерживает работу KeySnap</string>
+    <string name="notif_group_shortcuts">Ваши сценарии</string>
+    <string name="notif_group_places">Места</string>
+    <string name="notif_failures_desc">Когда действие не выполнилось</string>
+    <string name="notif_runs_desc">Включается в каждой автоматизации</string>
+    <string name="notif_action_desc">Текст задаётся в каждом сценарии</string>
+    <string name="notif_place_desc">Видно, пока работает быстрый режим</string>
+    <string name="notif_autostart_row">Не запустился после перезагрузки</string>
+    <string name="notif_autostart_desc">Подскажет, что исправить</string>
+    <string name="notif_setup_row">Настройка и сопряжение</string>
+    <string name="notif_setup_desc">Только во время настройки</string>
+    <string name="notif_required">Обязательно</string>
+    <string name="notif_system_settings">Настройки уведомлений Android</string>
+    <string name="notif_runs_hint">По умолчанию для всех автоматизаций. Собственный текст важнее. {name} — название сценария.</string>
+    <string name="notif_place_hint">Используется, если у места нет своего текста.</string>
+    <string name="notif_preview">Предпросмотр</string>
+    <string name="notif_sample_name">Утро</string>
+</resources>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_dark_mode">Donkere modus</string>
+    <string name="action_night_light">Nachtverlichting</string>
+    <string name="action_extra_dim">Extra dimmen</string>
+    <string name="action_screen_timeout">Time-out scherm</string>
+    <string name="param_screen_timeout">Scherm uit na</string>
+    <string name="choice_timeout_15s">15 seconden</string>
+    <string name="choice_timeout_30s">30 seconden</string>
+    <string name="choice_timeout_1m">1 minuut</string>
+    <string name="choice_timeout_2m">2 minuten</string>
+    <string name="choice_timeout_5m">5 minuten</string>
+    <string name="choice_timeout_10m">10 minuten</string>
+    <string name="choice_timeout_30m">30 minuten</string>
+</resources>

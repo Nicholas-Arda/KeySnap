@@ -174,7 +174,7 @@ class ShortcutShareTest {
         assertEquals(R.string.import_error_newer, error(encode().replace("\"keysnap\":1", "\"keysnap\":2")))
         assertEquals(R.string.import_error_unsupported, error(encode(actions = listOf(torch, ScriptAction("teleport")))))
         // Coming-soon catalog entries are known ids that cannot run yet.
-        assertEquals(R.string.import_error_unsupported, error(encode(actions = listOf(ScriptAction("toggle_nfc")))))
+        assertEquals(R.string.import_error_unsupported, error(encode(actions = listOf(ScriptAction("show_keyboard")))))
         assertEquals(R.string.import_error_unsupported, error(encode(constraints = listOf(ScriptConstraint("hinge_open")))))
     }
 

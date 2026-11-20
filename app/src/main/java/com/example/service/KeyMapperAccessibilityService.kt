@@ -5,6 +5,7 @@ import android.accessibilityservice.GestureDescription
 import android.content.Context
 import android.content.Intent
 import android.graphics.Path
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import com.example.data.AppLocale
@@ -65,10 +66,33 @@ class KeyMapperAccessibilityService : AccessibilityService() {
          * Whether an input-method window is on screen, for the `keyboard_showing` constraints.
          * Null when no service instance is reachable, so the caller can treat it as unknown.
          * Window metadata only; this reads no window content.
+         *
+         * packageNames keeps window-change events, and so the refresh of the cached window list, away
+         * from this service: without clearCache the first list stuck forever (PLG110, 2026-11-18). Before
+         * API 33 the cache cannot be cleared, so the state is unknown there.
          */
-        fun isKeyboardShowing(): Boolean? = instance?.let { service ->
-            runCatching { service.windows.orEmpty().any { it.type == AccessibilityWindowInfo.TYPE_INPUT_METHOD } }.getOrNull()
+        fun isKeyboardShowing(): Boolean? {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return null
+            val service = instance ?: return null
+            return runCatching {
+                service.clearCache()
+                service.windows.orEmpty().any { it.type == AccessibilityWindowInfo.TYPE_INPUT_METHOD }
+            }.getOrNull()
         }
+
+        /**
+         * Hides the on-screen keyboard: forced hidden, then handed back to the system, so the next
+         * tap on a field brings it up again. Reads nothing on screen.
+         */
+        suspend fun hideKeyboard(): Boolean {
+            val controller = instance?.softKeyboardController ?: return false
+            if (!controller.setShowMode(AccessibilityService.SHOW_MODE_HIDDEN)) return false
+            kotlinx.coroutines.delay(KEYBOARD_RELEASE_MS)
+            return controller.setShowMode(AccessibilityService.SHOW_MODE_AUTO)
+        }
+
+        // The keyboard took ~0.5 s to go (PLG110, 2026-11-18); handed back sooner, it stayed up.
+        private const val KEYBOARD_RELEASE_MS = 1_000L
 
         /**
          * Runs an [AccessibilityNodeInfo] action (cut/copy/paste) on whichever node currently has
@@ -166,6 +190,7 @@ class KeyMapperAccessibilityService : AccessibilityService() {
         WirelessAdbManager.initialize(applicationContext)
         DeviceEventReceiver.register(this, deviceEventReceiver)
         refreshConnectionStatus()
+        com.example.service.teach.TeachBubble.onServiceConnected(this)
         Log.d(TAG, "KeyMapperAccessibilityService connected & coordinator initialized")
     }
 

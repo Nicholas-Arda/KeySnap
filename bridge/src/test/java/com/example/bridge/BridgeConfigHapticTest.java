@@ -75,6 +75,24 @@ public class BridgeConfigHapticTest {
         assertEquals(30L, duration(25L, 60L));
     }
 
+    private String pattern(String override, Long duration) throws Exception {
+        JSONObject root = new JSONObject().put("hapticDurationMs", 60L);
+        BridgeConfig.Script s = script(root, null, duration);
+        JSONObject withPattern = new JSONObject(root.toString());
+        if (override != null) withPattern.getJSONArray("scripts").getJSONObject(0).put("hapticPattern", override);
+        BridgeConfig config = BridgeConfig.read(lastFile(withPattern));
+        return BuzzPattern.join(config.hapticPatternFor(config.scripts.get(0)));
+    }
+
+    @Test
+    public void hapticPatternCases() throws Exception {
+        // Same cases as ScriptTimingTest.hapticPatternCases.
+        assertEquals("60", pattern(null, null));
+        assertEquals("100", pattern(null, 100L));
+        assertEquals("60,150,120", pattern("60,150,120", 100L));
+        assertEquals("100", pattern("", 100L));
+    }
+
     @Test
     public void oldConfigWithoutHapticFieldsUsesAppDefaults() throws Exception {
         JSONObject root = new JSONObject();

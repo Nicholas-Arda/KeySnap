@@ -5,6 +5,9 @@
     <string name="chain_condition_empty">Koşul ayarlarını kontrol edin</string>
     <string name="chain_shell_limited">Shell burada sınırlı çalışır</string>
     <string name="chain_set_up">Kurulum</string>
+    <string name="chain_bt_prompt">Kısa bir Bluetooth onayı görünür</string>
+    <string name="chain_bt_prompt_hide">Gizlemek için: Geliştirici seçenekleri → Sistem optimizasyonunu devre dışı bırak</string>
+    <string name="chain_open_developer_options">Aç</string>
     <string name="chain_test_running">Eylem deneniyor</string>
     <string name="chain_test_success">Deneme başarılı</string>
     <string name="chain_test_failure">Deneme başarısız</string>

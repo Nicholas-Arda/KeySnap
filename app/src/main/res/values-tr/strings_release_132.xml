@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_teach_title_132">Ayar öğret</string>
+    <string name="whats_new_teach_description_132">Bir anahtarı KeySnap\'e bir kez göster, sonra her kısayoldan aç-kapat.</string>
+    <string name="whats_new_place_title_132">Yeni koşul: Bir yerdeyken</string>
+    <string name="whats_new_place_description_132">Bir yere varınca ya da ayrılınca çalışır. Konumun telefonundan çıkmaz. Deneysel.</string>
+    <string name="whats_new_actions_title_132">25+ yeni eylem</string>
+    <string name="whats_new_actions_description_132">Aramayı cevapla ve bitir, zamanlayıcı, alarm, karanlık mod, gece ışığı ve dahası.</string>
+    <string name="whats_new_fix_conditions_132">Yeni koşullar: bekleyen bildirim, çalan medya, telefonun yönü</string>
+    <string name="whats_new_fix_undo_132">Bitince geri al: değişen ayarlar eski haline döner</string>
+    <string name="whats_new_fix_vibration_132">Titreşim desenleri</string>
+    <string name="whats_new_fix_foldable_132">Katlanabilir telefon ve tabletlerde daha geniş ekran</string>
+    <string name="whats_new_also_new_132">Diğer yenilikler</string>
+</resources>

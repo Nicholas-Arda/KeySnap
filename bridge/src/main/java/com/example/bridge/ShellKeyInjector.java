@@ -14,6 +14,8 @@ import java.io.InputStreamReader;
  */
 public final class ShellKeyInjector {
 
+    static final int KEYCODE_CALL = 5;
+    static final int KEYCODE_ENDCALL = 6;
     static final int KEYCODE_VOLUME_MUTE = 164;
     static final int KEYCODE_VOLUME_UP = 24;
     static final int KEYCODE_VOLUME_DOWN = 25;
@@ -39,6 +41,21 @@ public final class ShellKeyInjector {
     private ShellKeyInjector() {
     }
 
+    /**
+     * Set only around an editor test (one action, on the requesting socket's thread). The fixed-command
+     * {@link #runShell} then also keeps the system's exit code and output here, so the test reply can
+     * show why a fixed command such as {@code svc bluetooth enable} failed. Memory only: it goes
+     * back to the authenticated socket and is never logged (the user sees the failure in the editor).
+     */
+    static final ThreadLocal<ActionTestResult[]> TEST_CAPTURE = new ThreadLocal<>();
+
+    private static Boolean runForTest(String... command) {
+        ActionTestResult[] slot = TEST_CAPTURE.get();
+        if (slot == null) return null;
+        slot[0] = runShellUnlogged(10, true, command);
+        return slot[0].ok;
+    }
+
     static boolean sendKey(int keyCode) {
         try {
             Process process = new ProcessBuilder("input", "keyevent", String.valueOf(keyCode))
@@ -61,6 +78,8 @@ public final class ShellKeyInjector {
      * same authorized-shell privilege as {@link #sendKey(int)}. Returns true only on exit code 0.
      */
     static boolean runShell(String... command) {
+        Boolean tested = runForTest(command);
+        if (tested != null) return tested;
         String description = describe(command);
         try {
             Process process = new ProcessBuilder(command)
@@ -192,7 +211,15 @@ public final class ShellKeyInjector {
      * Used by actions that need to read state (e.g. the enabled input methods) before acting.
      */
     static String runShellForOutput(String... command) {
-        String description = describe(command);
+        return readOutput(true, command);
+    }
+
+    /** {@link #runShellForOutput} that logs nothing at all, for reads of learned settings and snapshots. */
+    static String runShellForOutputUnlogged(String... command) {
+        return readOutput(false, command);
+    }
+
+    private static String readOutput(boolean log, String... command) {
         try {
             Process process = new ProcessBuilder(command)
                     .redirectErrorStream(true)
@@ -206,7 +233,7 @@ public final class ShellKeyInjector {
             process.waitFor();
             return out.toString();
         } catch (Exception e) {
-            BridgeLog.w(description + " failed: " + e);
+            if (log) BridgeLog.w(describe(command) + " failed: " + e);
             return "";
         }
     }

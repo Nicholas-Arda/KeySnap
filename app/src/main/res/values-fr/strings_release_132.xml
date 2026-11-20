@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_teach_title_132">Apprendre un réglage</string>
+    <string name="whats_new_teach_description_132">Montrez un interrupteur une fois à KeySnap, puis basculez-le depuis n\'importe quel raccourci.</string>
+    <string name="whats_new_place_title_132">Nouvelle condition : À un lieu</string>
+    <string name="whats_new_place_description_132">Se déclenche quand vous arrivez ou partez. Votre position reste sur le téléphone. Expérimental.</string>
+    <string name="whats_new_actions_title_132">Plus de 25 nouvelles actions</string>
+    <string name="whats_new_actions_description_132">Répondre et raccrocher, minuteur, alarme, mode sombre, éclairage nocturne et plus.</string>
+    <string name="whats_new_fix_conditions_132">Nouvelles conditions : notification en attente, média en lecture, orientation</string>
+    <string name="whats_new_fix_undo_132">Annuler à la fin remet les réglages modifiés</string>
+    <string name="whats_new_fix_vibration_132">Motifs de vibration</string>
+    <string name="whats_new_fix_foldable_132">Plus d\'espace sur pliables et tablettes</string>
+    <string name="whats_new_also_new_132">Aussi nouveau</string>
+</resources>

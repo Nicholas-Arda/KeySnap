@@ -12,14 +12,16 @@ import android.os.Bundle
 import android.os.SystemClock
 import android.provider.Settings
 import android.service.notification.NotificationListenerService
+import android.service.notification.NotificationListenerService.Ranking
 import android.service.notification.StatusBarNotification
 import android.util.Log
 import com.example.data.ScriptConstraintCatalog
 import com.example.data.ScriptRepository
 
 /**
- * Notification access serves the "Notification received" condition and "Reply to notification"
- * action. If already granted, CapsuleActionStateReader also uses it to read media playback
+ * Notification access serves the "Notification received" and "Notification waiting" conditions
+ * and the "Reply to notification" action. "Notification waiting" looks only at which app posted
+ * each notification in the shade and whether it is ongoing or silent, never at its content. If already granted, CapsuleActionStateReader also uses it to read media playback
  * state through MediaSessionManager, without reading media metadata. A notification's text
  * is read only for an app some condition names,
  * matched in memory and dropped; [NotificationMatches] keeps the time and system key of a match,
@@ -39,6 +41,7 @@ class NotificationEventListener : NotificationListenerService() {
     }
 
     override fun onNotificationPosted(sbn: StatusBarNotification) {
+        onShadeChanged(this)
         val notification = sbn.notification ?: return
         // Ongoing (media, progress) and group summaries re-post constantly and carry no message.
         if (sbn.isOngoing || notification.flags and Notification.FLAG_GROUP_SUMMARY != 0) return
@@ -54,13 +57,55 @@ class NotificationEventListener : NotificationListenerService() {
         }
     }
 
+    override fun onNotificationRemoved(sbn: StatusBarNotification) {
+        onShadeChanged(this)
+    }
+
     companion object {
         private const val TAG = "NotificationListener"
+
+        /** "Notification waiting" is a state: re-check it whenever the shade changes, if anything uses it. */
+        private fun onShadeChanged(context: Context) {
+            val used = ScriptRepository.getInstance(context).scripts.value
+                .any { script -> script.constraints.any { it.type == ScriptConstraintCatalog.NOTIFICATION_WAITING } }
+            if (used) HardwareKeyTriggerCoordinator.reevaluateAutomations()
+        }
+
+        /** Null while notification access is off or the listener is unbound: the state can't be read. */
+        /**
+         * The shade as last read. ColorOS unbinds the listener now and then; reading that as "nothing
+         * waiting" would end the If (and undo its settings) while the notification is still there.
+         * onListenerConnected re-evaluates with a fresh read.
+         */
+        @Volatile private var lastShade: List<WaitingNotification>? = null
+
+        internal fun waiting(context: Context, params: Map<String, String>): Boolean? {
+            if (!isAccessGranted(context)) return null
+            val listener = instance ?: return lastShade?.let { NotificationWaiting.matches(params, it, context.packageName) }
+            val active = runCatching { listener.activeNotifications }.getOrNull() ?: return null
+            val ranking = runCatching { listener.currentRanking }.getOrNull()
+            val shade = active
+                // A group summary repeats its children.
+                .filter { (it.notification?.flags ?: 0) and Notification.FLAG_GROUP_SUMMARY == 0 }
+                .map { sbn ->
+                    val r = Ranking()
+                    val silent = ranking?.getRanking(sbn.key, r) == true && r.importance < NotificationManager.IMPORTANCE_DEFAULT
+                    WaitingNotification(sbn.packageName, sbn.isOngoing, silent)
+                }
+            lastShade = shade
+            return NotificationWaiting.matches(params, shade, context.packageName)
+        }
 
         /** Null while notification access is off or the system has unbound the listener. */
         @Volatile private var instance: NotificationEventListener? = null
 
         internal fun isConnected(): Boolean = instance != null
+
+        /** Clears what the user could swipe away; ongoing ones stay. False when access is off. */
+        fun dismissAll(): Boolean {
+            val listener = instance ?: return false
+            return runCatching { listener.cancelAllNotifications() }.isSuccess
+        }
 
         /**
          * Sends `text` through a chat notification's own Reply button, like replying from the
@@ -171,4 +216,28 @@ class NotificationEventListener : NotificationListenerService() {
             }
         }
     }
+}
+
+/** One notification in the shade, reduced to what "Notification waiting" looks at. */
+internal data class WaitingNotification(val packageName: String, val ongoing: Boolean, val silent: Boolean)
+
+internal object NotificationWaiting {
+    fun matches(params: Map<String, String>, shade: List<WaitingNotification>, ownPackage: String): Boolean {
+        val pick = params["apps"] == "pick"
+        val packages = list(params["packages"])
+        val except = list(params["except"])
+        // Absent (older or shared) reads as on: "Any app" would otherwise almost always be true.
+        val skipSilent = params["skip_silent"] != "false"
+        return shade.any { n ->
+            n.packageName != ownPackage &&
+                // System notices (charging, USB, "Do Not Disturb is on") would otherwise keep "Any app"
+                // true, and the last one is posted by an automation that turns DND on.
+                !(skipSilent && (n.ongoing || n.silent || n.packageName in SYSTEM_PACKAGES)) &&
+                if (pick) n.packageName in packages else n.packageName !in except
+        }
+    }
+
+    private val SYSTEM_PACKAGES = setOf("android", "com.android.systemui")
+
+    private fun list(value: String?): Set<String> = value.orEmpty().split(',').map(String::trim).filter(String::isNotEmpty).toSet()
 }

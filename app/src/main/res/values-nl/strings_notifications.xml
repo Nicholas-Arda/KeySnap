@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_notifications_summary">Wat KeySnap je kan melden</string>
+    <string name="notif_group_working">Houdt KeySnap draaiend</string>
+    <string name="notif_group_shortcuts">Je snelkoppelingen</string>
+    <string name="notif_group_places">Plaatsen</string>
+    <string name="notif_failures_desc">Als een actie niet kon draaien</string>
+    <string name="notif_runs_desc">Per automatisering aan te zetten</string>
+    <string name="notif_action_desc">Tekst stel je per snelkoppeling in</string>
+    <string name="notif_place_desc">Zichtbaar zolang de snelle modus draait</string>
+    <string name="notif_autostart_row">Niet gestart na herstart</string>
+    <string name="notif_autostart_desc">Vertelt wat je moet oplossen</string>
+    <string name="notif_setup_row">Instellen en koppelen</string>
+    <string name="notif_setup_desc">Alleen tijdens het instellen</string>
+    <string name="notif_required">Verplicht</string>
+    <string name="notif_system_settings">Android-meldingsinstellingen</string>
+    <string name="notif_runs_hint">Standaard voor elke automatisering. Eigen tekst gaat voor. {name} is de naam van de snelkoppeling.</string>
+    <string name="notif_place_hint">Gebruikt als een plaats geen eigen tekst heeft.</string>
+    <string name="notif_preview">Voorbeeld</string>
+    <string name="notif_sample_name">Ochtend</string>
+</resources>

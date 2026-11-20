@@ -104,6 +104,13 @@ internal fun parsePressSendReply(line: String?): String? {
     return if (fields.firstOrNull() == BridgeProtocol.MSG_OK) fields.getOrNull(1) else null
 }
 
+internal fun parseShortcutsReply(body: String?): List<Pair<String, String>>? {
+    if (body == null || !body.startsWith("[")) return null
+    val array = org.json.JSONArray(body)
+    return (0 until array.length()).map { array.getJSONObject(it) }
+        .mapNotNull { o -> o.optString("id").takeIf { it.isNotEmpty() }?.let { it to o.optString("label").ifEmpty { it } } }
+}
+
 private fun decodeActionResults(field: String?): List<Pair<String, Boolean>>? =
     field?.let { BridgeProtocol.decodeActionResults(it) }?.map { it.key to it.value }
 
@@ -215,6 +222,32 @@ class BridgeClient(
                 session.socket.soTimeout = PRESS_SEND_TIMEOUT_MS
                 session.writer.writeLine("${BridgeProtocol.CMD_PRESS_SEND}$SEP$payloadJson")
                 parsePressSendReply(readReply(session.reader::readLine))
+            }.getOrNull()
+        }
+    }
+
+    /**
+     * One "Teach a setting" step ([BridgeProtocol.CMD_TEACH]). The reply names settings keys and
+     * values of this phone: never log it. Null when no answer came.
+     */
+    suspend fun requestTeach(step: String): String? = withContext(Dispatchers.IO) {
+        openSession()?.use { session ->
+            runCatching {
+                // Three `settings list` runs can take a second or two on a busy phone.
+                session.socket.soTimeout = 10_000
+                session.writer.writeLine("${BridgeProtocol.CMD_TEACH}$SEP$step")
+                parsePressSendReply(readReply(session.reader::readLine))
+            }.getOrNull()
+        }
+    }
+
+    /** The "Launch app shortcut" picker's list as {id, label}; null when the bridge could not read it. */
+    suspend fun requestShortcuts(packageName: String): List<Pair<String, String>>? = withContext(Dispatchers.IO) {
+        openSession()?.use { session ->
+            runCatching {
+                session.socket.soTimeout = 5_000
+                session.writer.writeLine("${BridgeProtocol.CMD_SHORTCUTS}$SEP$packageName")
+                parseShortcutsReply(parsePressSendReply(readReply(session.reader::readLine)))
             }.getOrNull()
         }
     }

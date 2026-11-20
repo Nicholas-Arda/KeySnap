@@ -47,15 +47,24 @@ data class ActionDescriptor(
  */
 object ScriptActionCatalog {
 
+    const val LEARNED_SETTING = "learned_setting"
+
     private fun param(key: String, @StringRes labelRes: Int, kind: ActionParameterKind, required: Boolean = true, choices: List<String> = emptyList()) =
         ActionParameterSpec(key, labelRes, kind, required, choices)
+
+    /** Absent = toggle (PresetSettings.apply). */
+    /** Screen timeouts in ms; the bridge accepts only these (PresetSettings.SCREEN_TIMEOUTS). */
+    val SCREEN_TIMEOUTS = listOf("15000", "30000", "60000", "120000", "300000", "600000", "1800000")
+
+    private fun stateParam() = param("state", R.string.param_state, ActionParameterKind.CHOICE, required = false, choices = listOf("toggle", "on", "off"))
 
     val all: List<ActionDescriptor> = listOf(
         // Flashlight
         ActionDescriptor("toggle_flashlight", R.string.action_toggle_flashlight, ActionCategory.FLASHLIGHT, ActionAvailability.AVAILABLE),
         ActionDescriptor("enable_flashlight", R.string.action_enable_flashlight, ActionCategory.FLASHLIGHT, ActionAvailability.AVAILABLE),
         ActionDescriptor("disable_flashlight", R.string.action_disable_flashlight, ActionCategory.FLASHLIGHT, ActionAvailability.AVAILABLE),
-        ActionDescriptor("change_flashlight_brightness", R.string.action_change_flashlight_brightness, ActionCategory.FLASHLIGHT, parameters = listOf(param("strength", R.string.param_strength, ActionParameterKind.INTEGER))),
+        // "strength" is a percent of the phone's strongest torch level. App-only (see UNSUPPORTED_BY_BRIDGE).
+        ActionDescriptor("change_flashlight_brightness", R.string.action_change_flashlight_brightness, ActionCategory.FLASHLIGHT, ActionAvailability.AVAILABLE, listOf(param("strength", R.string.param_strength, ActionParameterKind.INTEGER))),
 
         // Input
         ActionDescriptor("input_key_code", R.string.action_input_key_code, ActionCategory.INPUT, ActionAvailability.AVAILABLE, listOf(param("keyCode", R.string.param_key_code, ActionParameterKind.KEY_CODE))),
@@ -96,7 +105,7 @@ object ScriptActionCatalog {
 
         // Apps
         ActionDescriptor("launch_app", R.string.action_launch_app, ActionCategory.APPS, ActionAvailability.AVAILABLE, listOf(param("packageName", R.string.param_app, ActionParameterKind.PACKAGE))),
-        ActionDescriptor("launch_app_shortcut", R.string.action_launch_app_shortcut, ActionCategory.APPS, parameters = listOf(param("shortcutId", R.string.param_shortcut, ActionParameterKind.TEXT))),
+        ActionDescriptor("launch_app_shortcut", R.string.action_launch_app_shortcut, ActionCategory.APPS, ActionAvailability.AVAILABLE, listOf(param("packageName", R.string.param_app, ActionParameterKind.PACKAGE), param("shortcutId", R.string.param_shortcut, ActionParameterKind.TEXT), param("label", R.string.param_shortcut, ActionParameterKind.TEXT, required = false))),
         ActionDescriptor("open_url", R.string.action_open_url, ActionCategory.APPS, ActionAvailability.AVAILABLE, listOf(param("url", R.string.param_url, ActionParameterKind.URL))),
         ActionDescriptor("http_request", R.string.action_http_request, ActionCategory.APPS, ActionAvailability.AVAILABLE, listOf(param("method", R.string.param_method, ActionParameterKind.CHOICE, choices = listOf("GET", "POST", "PUT", "DELETE")), param("url", R.string.param_url, ActionParameterKind.URL), param("body", R.string.param_body, ActionParameterKind.TEXT, required = false), param("headers", R.string.param_headers, ActionParameterKind.TEXT, required = false), param("content_type", R.string.param_content_type, ActionParameterKind.CHOICE, required = false, choices = listOf("none", "json", "form", "text")))),
         ActionDescriptor("shell_command", R.string.action_shell_command, ActionCategory.APPS, ActionAvailability.AVAILABLE, listOf(param("command", R.string.param_command, ActionParameterKind.TEXT), param("timeout_sec", R.string.param_timeout_sec, ActionParameterKind.CHOICE, required = false, choices = listOf("5", "10", "30", "60")))),
@@ -133,20 +142,29 @@ object ScriptActionCatalog {
         ActionDescriptor("open_camera", R.string.action_open_camera, ActionCategory.APPS, ActionAvailability.AVAILABLE),
         ActionDescriptor("open_settings", R.string.action_open_settings, ActionCategory.APPS, ActionAvailability.AVAILABLE),
         ActionDescriptor("force_stop_app", R.string.action_force_stop_app, ActionCategory.APPS, ActionAvailability.AVAILABLE, listOf(param("packageName", R.string.param_app, ActionParameterKind.PACKAGE))),
-        ActionDescriptor("close_and_clear_app", R.string.action_close_and_clear_app, ActionCategory.APPS, parameters = listOf(param("packageName", R.string.param_app, ActionParameterKind.PACKAGE))),
+        ActionDescriptor(
+            "set_payment_app", R.string.action_set_payment_app, ActionCategory.APPS, ActionAvailability.AVAILABLE,
+            listOf(
+                param("mode", R.string.param_mode, ActionParameterKind.CHOICE, required = false, choices = listOf("set", "switch")),
+                param("packageName", R.string.param_app, ActionParameterKind.PACKAGE),
+                param("otherPackage", R.string.field_payment_other, ActionParameterKind.PACKAGE, required = false),
+            ),
+        ),
+        // force_stop_app plus the app's cards removed from Recents. Bridge only.
+        ActionDescriptor("close_and_clear_app", R.string.action_close_and_clear_app, ActionCategory.APPS, ActionAvailability.AVAILABLE, listOf(param("packageName", R.string.param_app, ActionParameterKind.PACKAGE))),
         ActionDescriptor("modify_setting", R.string.action_modify_setting, ActionCategory.APPS, ActionAvailability.AVAILABLE, listOf(param("namespace", R.string.param_namespace, ActionParameterKind.CHOICE, choices = listOf("system", "secure", "global")), param("key", R.string.param_key, ActionParameterKind.TEXT), param("value", R.string.param_value, ActionParameterKind.TEXT))),
 
         // Navigation
         ActionDescriptor("expand_notification_drawer", R.string.action_expand_notification_drawer, ActionCategory.NAVIGATION, ActionAvailability.AVAILABLE),
-        ActionDescriptor("toggle_notification_drawer", R.string.action_toggle_notification_drawer, ActionCategory.NAVIGATION),
+        ActionDescriptor("toggle_notification_drawer", R.string.action_toggle_notification_drawer, ActionCategory.NAVIGATION, ActionAvailability.AVAILABLE),
         ActionDescriptor("expand_quick_settings", R.string.action_expand_quick_settings, ActionCategory.NAVIGATION, ActionAvailability.AVAILABLE),
-        ActionDescriptor("toggle_quick_settings", R.string.action_toggle_quick_settings, ActionCategory.NAVIGATION),
+        ActionDescriptor("toggle_quick_settings", R.string.action_toggle_quick_settings, ActionCategory.NAVIGATION, ActionAvailability.AVAILABLE),
         ActionDescriptor("collapse_status_bar", R.string.action_collapse_status_bar, ActionCategory.NAVIGATION, ActionAvailability.AVAILABLE),
         ActionDescriptor("go_back", R.string.action_go_back, ActionCategory.NAVIGATION, ActionAvailability.AVAILABLE),
         ActionDescriptor("go_home", R.string.action_go_home, ActionCategory.NAVIGATION, ActionAvailability.AVAILABLE),
         ActionDescriptor("open_recents", R.string.action_open_recents, ActionCategory.NAVIGATION, ActionAvailability.AVAILABLE),
         ActionDescriptor("open_menu", R.string.action_open_menu, ActionCategory.NAVIGATION, ActionAvailability.AVAILABLE),
-        ActionDescriptor("go_last_app", R.string.action_go_last_app, ActionCategory.NAVIGATION),
+        ActionDescriptor("go_last_app", R.string.action_go_last_app, ActionCategory.NAVIGATION, ActionAvailability.AVAILABLE),
         ActionDescriptor("toggle_split_screen", R.string.action_toggle_split_screen, ActionCategory.NAVIGATION, ActionAvailability.AVAILABLE),
         ActionDescriptor("take_screenshot", R.string.action_take_screenshot, ActionCategory.NAVIGATION, ActionAvailability.AVAILABLE),
         ActionDescriptor("move_cursor_to_end", R.string.action_move_cursor_to_end, ActionCategory.NAVIGATION, ActionAvailability.AVAILABLE),
@@ -161,7 +179,8 @@ object ScriptActionCatalog {
         // Silent/vibrate ringer modes need ACCESS_NOTIFICATION_POLICY on API 23+ (Settings > Special
         // app access > Do Not Disturb access, granted outside the app); the executor checks
         // NotificationManager.isNotificationPolicyAccessGranted() and fails safe if it isn't.
-        ActionDescriptor("cycle_ringer_mode", R.string.action_cycle_ringer_mode, ActionCategory.VOLUME, ActionAvailability.AVAILABLE),
+        // Absent params = all three modes, no buzz, as before the choice existed.
+        ActionDescriptor("cycle_ringer_mode", R.string.action_cycle_ringer_mode, ActionCategory.VOLUME, ActionAvailability.AVAILABLE, listOf(param("modes", R.string.param_ringer_cycle, ActionParameterKind.TEXT, required = false)) + listOf("buzz_normal", "buzz_vibrate", "buzz_silent", "buzz_lead").map { param(it, R.string.ringer_pattern, ActionParameterKind.TEXT, required = false) }),
         ActionDescriptor("change_ringer_mode", R.string.action_change_ringer_mode, ActionCategory.VOLUME, ActionAvailability.AVAILABLE, listOf(param("mode", R.string.param_mode, ActionParameterKind.CHOICE, choices = listOf("normal", "vibrate", "silent")))),
         ActionDescriptor("change_volume_stream", R.string.action_change_volume_stream, ActionCategory.VOLUME, ActionAvailability.AVAILABLE, listOf(param("stream", R.string.param_stream, ActionParameterKind.CHOICE, choices = listOf("ring", "media", "alarm", "notification")), param("value", R.string.param_value, ActionParameterKind.INTEGER))),
 
@@ -203,29 +222,62 @@ object ScriptActionCatalog {
         ActionDescriptor("enable_bluetooth", R.string.action_enable_bluetooth, ActionCategory.CONNECTIVITY, ActionAvailability.AVAILABLE),
         ActionDescriptor("disable_bluetooth", R.string.action_disable_bluetooth, ActionCategory.CONNECTIVITY, ActionAvailability.AVAILABLE),
         ActionDescriptor("toggle_mobile_data", R.string.action_toggle_mobile_data, ActionCategory.CONNECTIVITY, ActionAvailability.AVAILABLE),
-        ActionDescriptor("toggle_nfc", R.string.action_toggle_nfc, ActionCategory.CONNECTIVITY),
+        ActionDescriptor("toggle_nfc", R.string.action_toggle_nfc, ActionCategory.CONNECTIVITY, ActionAvailability.AVAILABLE),
         ActionDescriptor("toggle_airplane_mode", R.string.action_toggle_airplane_mode, ActionCategory.CONNECTIVITY, ActionAvailability.AVAILABLE),
         ActionDescriptor("toggle_location", R.string.action_toggle_location, ActionCategory.CONNECTIVITY, ActionAvailability.AVAILABLE),
+        // Turning the hotspot on is closed to shell and to apps (Android 16, checked on PLG110
+        // 2026-11-18), so this opens its page and the user flips the switch.
+        ActionDescriptor("open_hotspot_settings", R.string.action_open_hotspot_settings, ActionCategory.CONNECTIVITY, ActionAvailability.AVAILABLE),
         ActionDescriptor("toggle_hotspot", R.string.action_toggle_hotspot, ActionCategory.CONNECTIVITY),
 
         // Keyboard
         ActionDescriptor("show_keyboard", R.string.action_show_keyboard, ActionCategory.KEYBOARD),
-        ActionDescriptor("hide_keyboard", R.string.action_hide_keyboard, ActionCategory.KEYBOARD),
+        ActionDescriptor("hide_keyboard", R.string.action_hide_keyboard, ActionCategory.KEYBOARD, ActionAvailability.AVAILABLE),
         ActionDescriptor("toggle_keyboard", R.string.action_toggle_keyboard, ActionCategory.KEYBOARD),
         ActionDescriptor("switch_keyboard", R.string.action_switch_keyboard, ActionCategory.KEYBOARD, ActionAvailability.AVAILABLE),
         ActionDescriptor("show_keyboard_picker", R.string.action_show_keyboard_picker, ActionCategory.KEYBOARD, ActionAvailability.AVAILABLE),
         ActionDescriptor("text_cut", R.string.action_text_cut, ActionCategory.KEYBOARD, ActionAvailability.AVAILABLE),
         ActionDescriptor("text_copy", R.string.action_text_copy, ActionCategory.KEYBOARD, ActionAvailability.AVAILABLE),
         ActionDescriptor("text_paste", R.string.action_text_paste, ActionCategory.KEYBOARD, ActionAvailability.AVAILABLE),
+        ActionDescriptor("copy_to_clipboard", R.string.action_copy_to_clipboard, ActionCategory.KEYBOARD, ActionAvailability.AVAILABLE, listOf(param("text", R.string.param_text, ActionParameterKind.TEXT))),
         ActionDescriptor("select_word_at_cursor", R.string.action_select_word_at_cursor, ActionCategory.KEYBOARD, ActionAvailability.AVAILABLE),
 
         // Device
         ActionDescriptor("lock_device", R.string.action_lock_device, ActionCategory.DEVICE, ActionAvailability.AVAILABLE),
         ActionDescriptor("secure_lock_device", R.string.action_secure_lock_device, ActionCategory.DEVICE),
         ActionDescriptor("power_dialog", R.string.action_power_dialog, ActionCategory.DEVICE, ActionAvailability.AVAILABLE),
-        ActionDescriptor("toggle_dnd", R.string.action_toggle_dnd, ActionCategory.DEVICE, ActionAvailability.AVAILABLE),
-        ActionDescriptor("enable_dnd", R.string.action_enable_dnd, ActionCategory.DEVICE, ActionAvailability.AVAILABLE),
+        // "filter" absent = priority only, so scripts saved before the choice existed keep working.
+        ActionDescriptor("toggle_dnd", R.string.action_toggle_dnd, ActionCategory.DEVICE, ActionAvailability.AVAILABLE, listOf(param("filter", R.string.param_dnd_type, ActionParameterKind.CHOICE, required = false, choices = listOf("priority", "alarms", "none")))),
+        ActionDescriptor("enable_dnd", R.string.action_enable_dnd, ActionCategory.DEVICE, ActionAvailability.AVAILABLE, listOf(param("filter", R.string.param_dnd_type, ActionParameterKind.CHOICE, required = false, choices = listOf("priority", "alarms", "none")))),
         ActionDescriptor("disable_dnd", R.string.action_disable_dnd, ActionCategory.DEVICE, ActionAvailability.AVAILABLE),
+        // Bridge only: setPowerSaveMode needs a system permission. `cmd power set-mode` also drives
+        // ColorOS's own power-saving mode (verified on PLG110, 2026-11-16).
+        ActionDescriptor("toggle_battery_saver", R.string.action_toggle_battery_saver, ActionCategory.DEVICE, ActionAvailability.AVAILABLE),
+        ActionDescriptor("enable_battery_saver", R.string.action_enable_battery_saver, ActionCategory.DEVICE, ActionAvailability.AVAILABLE),
+        ActionDescriptor("disable_battery_saver", R.string.action_disable_battery_saver, ActionCategory.DEVICE, ActionAvailability.AVAILABLE),
+        // Bridge only, over the known-keys list in PresetSettings (:bridge); a phone without a
+        // known key fails the action rather than writing a guess.
+        ActionDescriptor("always_on_display", R.string.action_always_on_display, ActionCategory.DISPLAY, ActionAvailability.AVAILABLE, listOf(stateParam())),
+        ActionDescriptor("grayscale", R.string.action_grayscale, ActionCategory.DISPLAY, ActionAvailability.AVAILABLE, listOf(stateParam())),
+        // Bridge only: `cmd uimode night`, and AOSP Night Light / Extra dim keys (PresetSettings).
+        ActionDescriptor("dark_mode", R.string.action_dark_mode, ActionCategory.DISPLAY, ActionAvailability.AVAILABLE, listOf(stateParam())),
+        ActionDescriptor("night_light", R.string.action_night_light, ActionCategory.DISPLAY, ActionAvailability.AVAILABLE, listOf(stateParam())),
+        ActionDescriptor("extra_dim", R.string.action_extra_dim, ActionCategory.DISPLAY, ActionAvailability.AVAILABLE, listOf(stateParam())),
+        // App-only (see UNSUPPORTED_BY_BRIDGE and KeepAwake).
+        ActionDescriptor("keep_screen_awake", R.string.action_keep_screen_awake, ActionCategory.DISPLAY, ActionAvailability.AVAILABLE, listOf(stateParam())),
+        ActionDescriptor("screen_timeout", R.string.action_screen_timeout, ActionCategory.DISPLAY, ActionAvailability.AVAILABLE, listOf(param("timeout", R.string.param_screen_timeout, ActionParameterKind.CHOICE, choices = SCREEN_TIMEOUTS))),
+        ActionDescriptor("charge_limit", R.string.action_charge_limit, ActionCategory.DEVICE, ActionAvailability.AVAILABLE, listOf(param("state", R.string.param_state, ActionParameterKind.CHOICE, required = false, choices = listOf("on", "off")), param("level", R.string.param_charge_level, ActionParameterKind.INTEGER, required = false))),
+        ActionDescriptor("bedtime", R.string.action_bedtime, ActionCategory.DEVICE, ActionAvailability.AVAILABLE, listOf(stateParam())),
+        // A switch the user taught this phone (LearnedSetting in :bridge). Bridge only; added from the
+        // picker's "Learned on this phone" rows, never offered as a blank row of its own.
+        ActionDescriptor(
+            LEARNED_SETTING, R.string.action_learned_setting, ActionCategory.DEVICE, ActionAvailability.AVAILABLE,
+            listOf(
+                param("name", R.string.field_learned_name, ActionParameterKind.TEXT, required = false),
+                param("writes", R.string.field_learned_writes, ActionParameterKind.TEXT, required = false),
+                stateParam(),
+            ),
+        ),
         // "url" and "packageName" are required only while visible: the editor gates each on
         // "onTap", and ActionEditorForms.isComplete checks visible fields only.
         ActionDescriptor(
@@ -239,9 +291,18 @@ object ScriptActionCatalog {
             ),
         ),
         ActionDescriptor("open_app_drawer", R.string.action_open_app_drawer, ActionCategory.DEVICE),
-        ActionDescriptor("dismiss_all_notifications", R.string.action_dismiss_all_notifications, ActionCategory.DEVICE),
-        ActionDescriptor("answer_call", R.string.action_answer_call, ActionCategory.DEVICE),
-        ActionDescriptor("end_call", R.string.action_end_call, ActionCategory.DEVICE),
+        ActionDescriptor("dismiss_all_notifications", R.string.action_dismiss_all_notifications, ActionCategory.DEVICE, ActionAvailability.AVAILABLE),
+        // The clock app's own timer and alarm, set without opening it (AlarmClock SKIP_UI).
+        ActionDescriptor(
+            "set_timer", R.string.action_set_timer, ActionCategory.DEVICE, ActionAvailability.AVAILABLE,
+            listOf(
+                param("minutes", R.string.interval_unit_minutes, ActionParameterKind.INTEGER, required = false),
+                param("seconds", R.string.interval_unit_seconds, ActionParameterKind.INTEGER, required = false),
+            ),
+        ),
+        ActionDescriptor("set_alarm", R.string.action_set_alarm, ActionCategory.DEVICE, ActionAvailability.AVAILABLE, listOf(param("time", R.string.field_at_time, ActionParameterKind.TEXT))),
+        ActionDescriptor("answer_call", R.string.action_answer_call, ActionCategory.DEVICE, ActionAvailability.AVAILABLE),
+        ActionDescriptor("end_call", R.string.action_end_call, ActionCategory.DEVICE, ActionAvailability.AVAILABLE),
 
         // Sound
         ActionDescriptor("play_sound", R.string.action_play_sound, ActionCategory.SOUND, ActionAvailability.AVAILABLE, listOf(param("uri", R.string.param_sound, ActionParameterKind.URL))),
@@ -315,6 +376,18 @@ object ScriptActionCatalog {
         "open_recents",
         // Shell's `cmd notification post` would show it as coming from Shell, with no tap target.
         "show_notification",
+        // Needs the bound notification listener; the shell UID has no clear-all.
+        "dismiss_all_notifications",
+        // Recents twice, like open_recents: KEYCODE_APP_SWITCH is swallowed on some gesture ROMs.
+        "go_last_app",
+        // Accessibility's soft-keyboard controller; the shell has no way to hide another app's keyboard.
+        "hide_keyboard",
+        // The strongest torch level comes from camera characteristics, which the shell UID cannot read.
+        "change_flashlight_brightness",
+        // The clipboard belongs to the app; the shell has no command to set it.
+        "copy_to_clipboard",
+        // The user's own timeout is remembered in the app's prefs; the bridge's files do not outlive Off.
+        "keep_screen_awake",
     )
 
     /**
@@ -334,20 +407,41 @@ object ScriptActionCatalog {
         "shell_command",
         "modify_setting",
         "force_stop_app",
+        "close_and_clear_app",
         "send_intent",
         "http_request",
         "open_url",
         "show_notification",
         "reply_to_notification",
         "send_message",
+        // Writes settings keys this phone showed while teaching; the editor prints each command.
+        LEARNED_SETTING,
+        // Changes the phone's tap-to-pay app; an imported one must arrive off, never switch it on arrival.
+        "set_payment_app",
+    )
+
+    /**
+     * Actions the picker tags with a blue NEW badge: everything added since the last Play release
+     * (1.3.1), and every "Coming soon" row the day it becomes available. Clear this set's older
+     * entries one release later, so NEW always means "new in this update".
+     */
+    val NEW: Set<String> = setOf(
+        "toggle_battery_saver", "enable_battery_saver", "disable_battery_saver",
+        "always_on_display", "grayscale", "charge_limit", "bedtime",
+        LEARNED_SETTING, "set_payment_app",
+        "dark_mode", "night_light", "extra_dim", "screen_timeout", "toggle_nfc",
+        "toggle_notification_drawer", "toggle_quick_settings", "dismiss_all_notifications",
+        "open_hotspot_settings", "go_last_app", "hide_keyboard", "change_flashlight_brightness",
+        "set_timer", "set_alarm", "copy_to_clipboard", "keep_screen_awake", "close_and_clear_app",
+        "launch_app_shortcut", "answer_call", "end_call",
     )
 
     /**
      * Printed as written in the share and import review, and a share of them warns first:
-     * [PRIVILEGED] plus input_text, which routinely types passwords (CLAUDE.md "Never log secrets").
-     * input_text does not make an import arrive switched off; only [PRIVILEGED] does.
+     * [PRIVILEGED] plus input_text and copy_to_clipboard, which routinely carry passwords (CLAUDE.md
+     * "Never log secrets"). Neither makes an import arrive switched off; only [PRIVILEGED] does.
      */
-    val REVIEWED_LITERALLY: Set<String> = PRIVILEGED + "input_text"
+    val REVIEWED_LITERALLY: Set<String> = PRIVILEGED + "input_text" + "copy_to_clipboard"
 
     private val byType: Map<String, ActionDescriptor> = all.associateBy { it.type }
     val byCategory: Map<ActionCategory, List<ActionDescriptor>> = all.groupBy { it.category }
@@ -360,6 +454,6 @@ object ScriptActionCatalog {
     fun search(query: String, resources: Resources): List<ActionDescriptor> {
         if (query.isBlank()) return all
         val needle = query.trim()
-        return all.filter { resources.getString(it.titleRes).contains(needle, ignoreCase = true) }
+        return all.filter { resources.getString(it.titleRes).contains(needle, ignoreCase = true) || CatalogSynonyms.matches(it.type, needle) }
     }
 }

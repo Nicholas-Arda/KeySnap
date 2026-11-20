@@ -38,6 +38,12 @@
     <string name="setup_skip">Lewati</string>
     <string name="setup_not_now">Lain kali</string>
     <string name="setup_optional_row">Opsional: notifikasi</string>
+    <string name="auto_launch_row">Pintasan tetap jalan saat aplikasi tertutup</string>
+    <string name="auto_launch_search_hint">Cari “Luncurkan otomatis” dan aktifkan KeySnap</string>
+    <string name="home_stopped_banner">KeySnap dihentikan. Beberapa pintasan tidak akan berjalan.</string>
+    <string name="auto_launch_row_stopped">Cegah KeySnap berhenti lagi</string>
+    <string name="reconnect_sheet_body">KeySnap menonaktifkan lalu mengaktifkan aksesibilitasnya sendiri sekali. Tidak ada yang lain berubah.</string>
+    <string name="reconnect_sheet_keep_on">Lalu Android akan bertanya. Pilih “Tetap aktifkan”.</string>
     <string name="setup_turn_on">Aktifkan</string>
     <string name="setup_usage_banner">Kondisi aplikasi perlu akses penggunaan</string>
     <string name="setup_usage_title">Izinkan akses penggunaan</string>

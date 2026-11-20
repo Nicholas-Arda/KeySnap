@@ -65,6 +65,13 @@ import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.RestartAlt
 import androidx.compose.material.icons.outlined.TouchApp
+import androidx.compose.material.icons.automirrored.outlined.Undo
+import androidx.compose.material.icons.outlined.Bolt
+import androidx.compose.material.icons.outlined.NotificationsActive
+import androidx.compose.material.icons.outlined.Place
+import androidx.compose.material.icons.outlined.School
+import androidx.compose.material.icons.outlined.TabletAndroid
+import androidx.compose.material.icons.outlined.Vibration
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
@@ -229,7 +236,7 @@ fun WhatsNewDialog(
                             }
                         }
                         if (release.fixes.isNotEmpty()) {
-                            WhatsNewSectionLabel(stringResource(R.string.whats_new_fixed))
+                            WhatsNewSectionLabel(stringResource(release.fixesTitle))
                             release.fixes.forEachIndexed { index, fix ->
                                 WhatsNewFix(fix, compact, whatsNewAccent(release.features.size + index))
                             }
@@ -302,6 +309,9 @@ internal fun WhatsNewFeatureCard(feature: WhatsNewFeature, accent: Color = Mater
         R.string.whats_new_test_editors_title_120 -> Icons.Outlined.PlayArrow
         R.string.whats_new_reorder_shortcuts_title_120 -> Icons.Outlined.SwapVert
         R.string.whats_new_input_devices_title_120 -> Icons.Outlined.Keyboard
+        R.string.whats_new_teach_title_132 -> Icons.Outlined.School
+        R.string.whats_new_place_title_132 -> Icons.Outlined.Place
+        R.string.whats_new_actions_title_132 -> Icons.Outlined.Bolt
         else -> null
     } ?: when (feature.destination) {
         WhatsNewDestination.ADVANCED_MODE -> Icons.Outlined.RestartAlt
@@ -373,6 +383,10 @@ private fun fixIcon(fix: Int): ImageVector = when (fix) {
     R.string.whats_new_fix_saved_keys_120 -> Icons.Outlined.Key
     R.string.whats_new_fix_shortcuts_page_120 -> Icons.Outlined.Dashboard
     R.string.whats_new_fix_modes_120 -> Icons.Outlined.Layers
+    R.string.whats_new_fix_conditions_132 -> Icons.Outlined.NotificationsActive
+    R.string.whats_new_fix_undo_132 -> Icons.AutoMirrored.Outlined.Undo
+    R.string.whats_new_fix_vibration_132 -> Icons.Outlined.Vibration
+    R.string.whats_new_fix_foldable_132 -> Icons.Outlined.TabletAndroid
     else -> Icons.Outlined.Check
 }
 

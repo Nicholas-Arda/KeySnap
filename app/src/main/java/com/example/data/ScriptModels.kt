@@ -22,7 +22,38 @@ data class ShortcutScript(
     /** A time automation's wake-up is an alarm clock (status-bar icon) that OEMs don't defer; see TimeSchedule.plan. */
     val exactTiming: Boolean = true,
     val showCapsule: Boolean = true,
+    /** The shortcut's own buzz as a BuzzPattern; null falls back to one buzz, see [resolveHapticPatternForScript]. */
+    val hapticPattern: String? = null,
+    /** "Any" instead of "All" over [constraints]; see [constraintsMatch]. */
+    val matchAny: Boolean = false,
+    /** An automation's own "Notifications"; see AutomationRunNotifier. */
+    val notice: RunNotice = RunNotice(),
 )
+
+/**
+ * What an automation says when it runs and when its "Undo when it ends" puts settings back. Off by
+ * default. Blank words fall back to defaults built from the shortcut's name, so a rename shows up.
+ */
+@JsonClass(generateAdapter = true)
+data class RunNotice(
+    val onRun: Boolean = false,
+    val onUndo: Boolean = false,
+    val runTitle: String = "",
+    val runText: String = "",
+    val undoTitle: String = "",
+    val undoText: String = "",
+) {
+    val any: Boolean get() = onRun || onUndo
+}
+
+/**
+ * Whether [constraints] hold, All or Any; the one rule the bridge shares (ConstraintMatch). Any reads
+ * [known], where a state that can't be read is false: "unknown never blocks" must not mean "fires".
+ */
+fun ShortcutScript.constraintsMatch(
+    satisfied: (ScriptConstraint) -> Boolean,
+    known: (ScriptConstraint) -> Boolean = satisfied,
+): Boolean = com.example.bridge.ConstraintMatch.matches(constraints, matchAny, { it.type }, if (matchAny) known else satisfied)
 
 /** No key and not an automation: it runs only from a home-screen widget or a Quick Settings tile. */
 val ShortcutScript.isSurfaceOnly: Boolean get() = triggers.isEmpty() && !automation
@@ -36,8 +67,12 @@ data class ScriptTrigger(
     val longPressThresholdMs: Long? = null,
 )
 
-/** [type] keys into [ScriptActionCatalog]; [params] are the action's typed parameters as strings. */
-data class ScriptAction(val type: String, val params: Map<String, String> = emptyMap()) {
+/**
+ * [type] keys into [ScriptActionCatalog]; [params] are the action's typed parameters as strings.
+ * [undoOnEnd]: on an automation, put this setting back when the If ends (see AutomationUndo). Kept
+ * out of [params], which the executor and the bridge read as the action's contract.
+ */
+data class ScriptAction(val type: String, val params: Map<String, String> = emptyMap(), val undoOnEnd: Boolean = false) {
     companion object {
         val ToggleFlashlight = ScriptAction("toggle_flashlight")
     }
@@ -70,6 +105,9 @@ internal data class PersistedShortcutScript(
     /** Absent in stores written before it existed: on, like a new shortcut. */
     val exactTiming: Boolean = true,
     val showCapsule: Boolean = true,
+    val hapticPattern: String? = null,
+    val matchAny: Boolean = false,
+    val notice: RunNotice? = null,
 )
 
 @JsonClass(generateAdapter = true)
@@ -81,7 +119,7 @@ internal data class PersistedScriptTrigger(
 )
 
 @JsonClass(generateAdapter = true)
-internal data class PersistedScriptAction(val type: String, val params: Map<String, String> = emptyMap())
+internal data class PersistedScriptAction(val type: String, val params: Map<String, String> = emptyMap(), val undoOnEnd: Boolean = false)
 
 @JsonClass(generateAdapter = true)
 internal data class PersistedScriptConstraint(val type: String, val params: Map<String, String> = emptyMap())
@@ -92,7 +130,7 @@ internal data class PersistedScriptEventTrigger(val type: String, val params: Ma
 internal fun ShortcutScript.toPersisted() = PersistedShortcutScript(
     id, name, enabled,
     triggers.map { PersistedScriptTrigger(it.keyCodes, it.pressType.name, it.doublePressWindowMs, it.longPressThresholdMs) },
-    actions.map { PersistedScriptAction(it.type, it.params) },
+    actions.map { PersistedScriptAction(it.type, it.params, it.undoOnEnd) },
     constraints.map { PersistedScriptConstraint(it.type, it.params) },
     automation = automation,
     consumeOriginalEvent = consumeOriginalEvent,
@@ -100,6 +138,9 @@ internal fun ShortcutScript.toPersisted() = PersistedShortcutScript(
     hapticDurationMs = hapticDurationMs,
     exactTiming = exactTiming,
     showCapsule = showCapsule,
+    hapticPattern = hapticPattern,
+    matchAny = matchAny,
+    notice = notice.takeIf { it != RunNotice() },
 )
 
 /** Dropped from the catalog because it ran the identical `input keyevent` the bridge runs for
@@ -135,7 +176,7 @@ internal fun PersistedShortcutScript.toDomain(): ShortcutScript? {
         else ScriptTrigger(trigger.keyCodes.distinct(), type, trigger.doublePressWindowMs, trigger.longPressThresholdMs)
     }
     val validActions = actions.mapNotNull { action ->
-        val migrated = migrateAction(action.type, action.params)
+        val migrated = migrateAction(action.type, action.params).copy(undoOnEnd = action.undoOnEnd)
         if (ScriptActionCatalog.descriptor(migrated.type) == null) null else migrated
     }
     val validConstraints = constraints.mapNotNull { constraint ->
@@ -148,7 +189,8 @@ internal fun PersistedShortcutScript.toDomain(): ShortcutScript? {
         id, name.ifBlank { "Unnamed script" }, enabled, validTriggers, validActions,
         validConstraints + migratedEventTriggers,
         automation || eventTriggers.isNotEmpty(),
-        consumeOriginalEvent, vibrateOnTrigger, hapticDurationMs, exactTiming, showCapsule,
+        consumeOriginalEvent, vibrateOnTrigger, hapticDurationMs, exactTiming, showCapsule, hapticPattern, matchAny,
+        notice ?: RunNotice(),
     )
 }
 

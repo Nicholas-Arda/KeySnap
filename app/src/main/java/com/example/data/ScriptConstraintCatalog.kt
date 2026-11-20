@@ -48,6 +48,12 @@ object ScriptConstraintCatalog {
     /** "A notification from app `packageName`, from chat `contact`, whose message contains `contains`, arrived in the last 10 s." */
     const val NOTIFICATION_RECEIVED = "notification_received"
 
+    /**
+     * "A notification is still in the shade": `apps` any (minus `except`) or pick (`packages`), both
+     * comma-separated packages; `skip_silent` ignores ongoing and silent ones. A state, unlike the above.
+     */
+    const val NOTIFICATION_WAITING = "notification_waiting"
+
     /** "A check of the RSS/Atom feed at `url` just found an item not seen before." */
     const val RSS_NEW_ITEM = "rss_new_item"
 
@@ -60,6 +66,12 @@ object ScriptConstraintCatalog {
     /** "Every `every` `unit` (s|m|h), counted from local midnight." A pulse, not a state. */
     const val INTERVAL = "interval"
 
+    /** "The phone is inside the `radius` m circle around `lat`,`lng`" (picked on the map page); optional `name`. */
+    const val AT_PLACE = "at_place"
+
+    /** Conditions still being tested on real devices: the picker and the sheet say so. */
+    val EXPERIMENTAL: Set<String> = setOf(AT_PLACE)
+
     val all: List<ConstraintDescriptor> = listOf(
         ConstraintDescriptor(MODE_IS, R.string.constraint_mode_is, ConstraintCategory.DEVICE, ConstraintAvailability.AVAILABLE),
         // Apps
@@ -67,8 +79,9 @@ object ScriptConstraintCatalog {
         ConstraintDescriptor("app_not_in_foreground", R.string.constraint_app_not_in_foreground, ConstraintCategory.APPS, ConstraintAvailability.AVAILABLE),
         ConstraintDescriptor("no_app_open", R.string.constraint_no_app_open, ConstraintCategory.APPS, ConstraintAvailability.AVAILABLE),
         ConstraintDescriptor(NOTIFICATION_RECEIVED, R.string.constraint_notification_received, ConstraintCategory.APPS, ConstraintAvailability.AVAILABLE),
-        ConstraintDescriptor("app_playing_media", R.string.constraint_app_playing_media, ConstraintCategory.APPS),
-        ConstraintDescriptor("app_not_playing_media", R.string.constraint_app_not_playing_media, ConstraintCategory.APPS),
+        ConstraintDescriptor(NOTIFICATION_WAITING, R.string.constraint_notification_waiting, ConstraintCategory.APPS, ConstraintAvailability.AVAILABLE),
+        ConstraintDescriptor("app_playing_media", R.string.constraint_app_playing_media, ConstraintCategory.APPS, ConstraintAvailability.AVAILABLE),
+        ConstraintDescriptor("app_not_playing_media", R.string.constraint_app_not_playing_media, ConstraintCategory.APPS, ConstraintAvailability.AVAILABLE),
 
         // Media
         ConstraintDescriptor("no_media_playing", R.string.constraint_no_media_playing, ConstraintCategory.MEDIA, ConstraintAvailability.AVAILABLE),
@@ -84,7 +97,7 @@ object ScriptConstraintCatalog {
         ConstraintDescriptor("screen_on", R.string.constraint_screen_on, ConstraintCategory.DISPLAY, ConstraintAvailability.AVAILABLE),
         ConstraintDescriptor("screen_off", R.string.constraint_screen_off, ConstraintCategory.DISPLAY, ConstraintAvailability.AVAILABLE),
         ConstraintDescriptor("screen_orientation", R.string.constraint_screen_orientation, ConstraintCategory.DISPLAY, ConstraintAvailability.AVAILABLE),
-        ConstraintDescriptor("physical_orientation", R.string.constraint_physical_orientation, ConstraintCategory.DISPLAY),
+        ConstraintDescriptor("physical_orientation", R.string.constraint_physical_orientation, ConstraintCategory.DISPLAY, ConstraintAvailability.AVAILABLE),
         ConstraintDescriptor("dark_mode_on", R.string.constraint_dark_mode_on, ConstraintCategory.DISPLAY, ConstraintAvailability.AVAILABLE),
         ConstraintDescriptor("dark_mode_off", R.string.constraint_dark_mode_off, ConstraintCategory.DISPLAY, ConstraintAvailability.AVAILABLE),
 
@@ -106,8 +119,8 @@ object ScriptConstraintCatalog {
         ConstraintDescriptor(RSS_NEW_ITEM, R.string.constraint_rss_new_item, ConstraintCategory.CONNECTIVITY, ConstraintAvailability.AVAILABLE),
 
         // Keyboard
-        ConstraintDescriptor("input_method_chosen", R.string.constraint_input_method_chosen, ConstraintCategory.KEYBOARD),
-        ConstraintDescriptor("input_method_not_chosen", R.string.constraint_input_method_not_chosen, ConstraintCategory.KEYBOARD),
+        ConstraintDescriptor("input_method_chosen", R.string.constraint_input_method_chosen, ConstraintCategory.KEYBOARD, ConstraintAvailability.AVAILABLE),
+        ConstraintDescriptor("input_method_not_chosen", R.string.constraint_input_method_not_chosen, ConstraintCategory.KEYBOARD, ConstraintAvailability.AVAILABLE),
         ConstraintDescriptor("keyboard_showing", R.string.constraint_keyboard_showing, ConstraintCategory.KEYBOARD, ConstraintAvailability.AVAILABLE),
         ConstraintDescriptor("keyboard_not_showing", R.string.constraint_keyboard_not_showing, ConstraintCategory.KEYBOARD, ConstraintAvailability.AVAILABLE),
 
@@ -146,6 +159,7 @@ object ScriptConstraintCatalog {
         ConstraintDescriptor("hinge_open", R.string.constraint_hinge_open, ConstraintCategory.DEVICE),
         ConstraintDescriptor("location_on", R.string.constraint_location_on, ConstraintCategory.DEVICE, ConstraintAvailability.AVAILABLE),
         ConstraintDescriptor("location_off", R.string.constraint_location_off, ConstraintCategory.DEVICE, ConstraintAvailability.AVAILABLE),
+        ConstraintDescriptor(AT_PLACE, R.string.constraint_at_place, ConstraintCategory.DEVICE, ConstraintAvailability.AVAILABLE),
 
         // Time
         ConstraintDescriptor("time", R.string.constraint_time, ConstraintCategory.TIME, ConstraintAvailability.AVAILABLE),
@@ -188,8 +202,8 @@ object ScriptConstraintCatalog {
         "headphones_connected", "headphones_disconnected",
         "airplane_mode_on", "airplane_mode_off",
         "location_on", "location_off",
-        NOTIFICATION_RECEIVED, RSS_NEW_ITEM, CALENDAR_EVENT_ACTIVE,
-        "time", AT_TIME, INTERVAL,
+        NOTIFICATION_RECEIVED, NOTIFICATION_WAITING, RSS_NEW_ITEM, CALENDAR_EVENT_ACTIVE,
+        "time", AT_TIME, INTERVAL, AT_PLACE,
     )
 
     fun isAutomation(type: String): Boolean = type in AUTOMATION_TYPES && isAvailable(type)
@@ -200,7 +214,8 @@ object ScriptConstraintCatalog {
      * every" pulse (those hold only for the alarm's one re-evaluation), so on a key shortcut it
      * would decide differently from the app (for a type it has no constant for, "unknown never blocks").
      */
-    val AUTOMATION_ONLY: Set<String> = setOf(NOTIFICATION_RECEIVED, RSS_NEW_ITEM, CALENDAR_EVENT_ACTIVE, AT_TIME, INTERVAL)
+    // AT_PLACE is not here: the app writes the place's side into the bridge config (never the place).
+    val AUTOMATION_ONLY: Set<String> = setOf(NOTIFICATION_RECEIVED, NOTIFICATION_WAITING, RSS_NEW_ITEM, CALENDAR_EVENT_ACTIVE, AT_TIME, INTERVAL)
 
     /**
      * True when this shortcut's automation fires only on a notification, so a reply with no chat
@@ -214,6 +229,6 @@ object ScriptConstraintCatalog {
     fun search(query: String, resources: Resources): List<ConstraintDescriptor> {
         if (query.isBlank()) return all
         val needle = query.trim()
-        return all.filter { resources.getString(it.titleRes).contains(needle, ignoreCase = true) }
+        return all.filter { resources.getString(it.titleRes).contains(needle, ignoreCase = true) || CatalogSynonyms.matches(it.type, needle) }
     }
 }

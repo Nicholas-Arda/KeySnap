@@ -124,6 +124,10 @@ abstract class DexBridgeTask : DefaultTask() {
       .map { it.absolutePath }
       .toList()
     check(classFiles.isNotEmpty()) { "No compiled bridge classes to dex" }
+    // d8.bat goes through cmd.exe, whose 8191-character line limit the class list outgrew;
+    // d8 reads its inputs from an @argfile instead, one path per line, unquoted.
+    val argFile = File(temporaryDir, "classes.txt")
+    argFile.writeText(classFiles.joinToString("\n"))
 
     execOperations.exec {
       // d8.bat/d8 shells out to `java` and refuses to run unless JAVA_HOME is set in its own
@@ -139,7 +143,7 @@ abstract class DexBridgeTask : DefaultTask() {
           add(androidJar.get().asFile.absolutePath)
           add("--output")
           add(outputDir.absolutePath)
-          addAll(classFiles)
+          add("@" + argFile.absolutePath)
         },
       )
     }

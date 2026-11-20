@@ -204,7 +204,7 @@ final class SendButton {
      * bridge's own directory, deleted as soon as it is read. Either way, more than
      * {@link #MAX_DUMP_BYTES} is refused.
      */
-    private static String dump() {
+    static String dump() {
         String out = runCapped("uiautomator", "dump", "/dev/stdout");
         if (out != null && !out.contains("<hierarchy") && !out.contains("ERROR")) {
             out = dumpToFile();

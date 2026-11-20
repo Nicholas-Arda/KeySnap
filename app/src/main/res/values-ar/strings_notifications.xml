@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_notifications_summary">ما يمكن أن يخبرك به KeySnap</string>
+    <string name="notif_group_working">يبقي KeySnap يعمل</string>
+    <string name="notif_group_shortcuts">اختصاراتك</string>
+    <string name="notif_group_places">الأماكن</string>
+    <string name="notif_failures_desc">عندما لا يعمل إجراء</string>
+    <string name="notif_runs_desc">يُفعَّل في كل أتمتة</string>
+    <string name="notif_action_desc">يُحدَّد نصه في كل اختصار</string>
+    <string name="notif_place_desc">يظهر أثناء عمل الوضع السريع</string>
+    <string name="notif_autostart_row">لم يبدأ بعد إعادة التشغيل</string>
+    <string name="notif_autostart_desc">يخبرك بما يجب إصلاحه</string>
+    <string name="notif_setup_row">الإعداد والاقتران</string>
+    <string name="notif_setup_desc">أثناء الإعداد فقط</string>
+    <string name="notif_required">مطلوب</string>
+    <string name="notif_system_settings">إعدادات إشعارات Android</string>
+    <string name="notif_runs_hint">افتراضي لكل أتمتة. نصها الخاص له الأولوية. {name} هو اسم الاختصار.</string>
+    <string name="notif_place_hint">يُستخدم عندما لا يكون للمكان نص خاص.</string>
+    <string name="notif_preview">معاينة</string>
+    <string name="notif_sample_name">الصباح</string>
+</resources>

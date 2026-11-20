@@ -3,6 +3,7 @@ package com.example.ui.home
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import com.example.billing.ProPrice
 import com.example.billing.ProSale
 import com.example.ui.theme.MyApplicationTheme
@@ -69,6 +70,12 @@ class HomeSaleStripTest {
     @Test fun saleWithoutEndTimeIsVisible() {
         render(sale = liveSale().copy(endsAtMillis = null))
         rule.onNodeWithTag("home_sale_strip").assertIsDisplayed()
+    }
+
+    @Test fun blackFridayOfferDressesTheStrip() {
+        render(sale = liveSale().copy(blackFriday = true))
+        rule.onNodeWithText("BLACK FRIDAY").assertIsDisplayed()
+        rule.onNodeWithText("Pro sale").assertDoesNotExist()
     }
 
     private fun liveSale() = ProSale("$5.99", 50, System.currentTimeMillis() + 7 * 24 * 60 * 60_000L)

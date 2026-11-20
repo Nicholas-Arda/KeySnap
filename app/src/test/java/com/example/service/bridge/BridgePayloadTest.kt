@@ -145,14 +145,14 @@ class BridgePayloadTest {
             name = "Brightness",
             enabled = true,
             triggers = listOf(ScriptTrigger(listOf(24), TriggerPressType.LONG_PRESS, doublePressWindowMs = 450L, longPressThresholdMs = 900L)),
-            actions = listOf(com.example.data.ScriptAction("change_flashlight_brightness", mapOf("strength" to "3"))),
+            actions = listOf(com.example.data.ScriptAction("change_brightness", mapOf("value" to "3"))),
         )
         payload.writeConfig(listOf(script), globallyEnabled = true, config = KeyMappingConfig())
         val parsed = BridgeConfig.read(payload.configFile()!!)
 
         val parsedAction = parsed.scripts.single().actions.single()
-        assertEquals("change_flashlight_brightness", parsedAction.type)
-        assertEquals("3", parsedAction.params["strength"])
+        assertEquals("change_brightness", parsedAction.type)
+        assertEquals("3", parsedAction.params["value"])
         // A trigger-level override must win over the config-wide default resolved for that key.
         assertEquals(450L, parsed.doublePressWindowFor(24))
         assertEquals(900L, parsed.longPressThresholdFor(24))

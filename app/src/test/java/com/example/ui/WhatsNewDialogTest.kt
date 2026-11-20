@@ -78,6 +78,26 @@ class WhatsNewDialogTest {
         rule.onNodeWithTag("whats_new_got_it").assertIsDisplayed()
     }
 
+    @Test
+    fun release132ShowsItsNewsAndOpensShortcuts() {
+        val release = whatsNewReleases.getValue(25L)
+        val destinations = mutableListOf<WhatsNewDestination>()
+        rule.setContent {
+            MyApplicationTheme(themeMode = ThemeMode.LIGHT) {
+                WhatsNewDialog(release, ThemeMode.LIGHT, {}, { destinations += it })
+            }
+        }
+        rule.onNodeWithText("Teach a setting").assertIsDisplayed()
+        rule.onNodeWithText("Also new").performScrollTo().assertIsDisplayed()
+        rule.onNodeWithTag("whats_new_dialog").captureRoboImage("build/outputs/whats-new-review/132-head.png")
+        release.features.indices.forEach { index ->
+            rule.onAllNodesWithTag("whats_new_shortcuts")[index].performScrollTo().assertIsDisplayed().performClick()
+        }
+        assertEquals(List(release.features.size) { WhatsNewDestination.SHORTCUTS }, destinations)
+        rule.onNodeWithTag("whats_new_fix_${release.fixes.last()}").performScrollTo().assertIsDisplayed()
+        rule.onNodeWithTag("whats_new_dialog").captureRoboImage("build/outputs/whats-new-review/132-fixes.png")
+    }
+
     @Test fun lightScreenshot() = checkDialog(ThemeMode.LIGHT, "light")
     @Test fun darkScreenshot() = checkDialog(ThemeMode.DARK, "dark")
     @Test fun sepiaScreenshot() = checkDialog(ThemeMode.SEPIA, "sepia")

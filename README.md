@@ -52,7 +52,7 @@
 <table>
   <tr>
     <td width="50%"><h3>🔘 Press your way</h3>Single, double or long press. Combine keys for another shortcut.</td>
-    <td width="50%"><h3>⚡ 91 actions</h3>Flashlight, camera, apps, media and more. Chain actions together.</td>
+    <td width="50%"><h3>⚡ 120 actions</h3>Flashlight, camera, apps, media and more. Chain actions together.</td>
   </tr>
   <tr>
     <td><h3>🕒 Add conditions</h3>Time, Wi-Fi, charging or apps. Automate without pressing a key.</td>

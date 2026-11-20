@@ -152,6 +152,18 @@ object TimeSchedule {
         return fired
     }
 
+    /**
+     * The wall clock or time zone moved, or the phone booted (which drops every alarm). Boundaries
+     * are wall-clock times, so the pending alarm now points at the wrong moment: re-arm it. A jump
+     * that opened or closed a "Time" window is re-checked now rather than at its next boundary.
+     */
+    internal fun onClockChanged(context: Context): Boolean {
+        HardwareKeyTriggerCoordinator.ensureInitialized(context)
+        val fired = HardwareKeyTriggerCoordinator.reevaluateAutomationsFired()
+        sync(context, ScriptRepository.getInstance(context).scripts.value)
+        return fired
+    }
+
     /** One alarm slot; the extra only rides along, so cancelling with any boundary cancels it. */
     private fun alarmIntent(context: Context, boundaryMs: Long): PendingIntent = PendingIntent.getBroadcast(
         context,
@@ -163,10 +175,11 @@ object TimeSchedule {
 
 /**
  * Rings at the next time-condition boundary: fires what is due, then arms the next one. Also
- * receives the exact-alarm grant (Android 12+), which re-arms the pending inexact alarm as an exact one.
+ * receives the exact-alarm grant (Android 12+), which re-arms the pending inexact alarm as an exact
+ * one, and clock changes and boot, which re-arm it for the new wall clock ([TimeSchedule.onClockChanged]).
  */
 class TimeAlarmReceiver : BroadcastReceiver() {
-    // Unexported, and every intent only re-evaluates and re-arms; there is no action to tell apart.
+    // Unexported, and every intent only re-evaluates and re-arms; nothing it does depends on who sent it.
     @SuppressLint("UnsafeProtectedBroadcastReceiver")
     override fun onReceive(context: Context, intent: Intent) {
         // The alarm can start this process cold; keep it protected while a fired shortcut runs.
@@ -174,7 +187,11 @@ class TimeAlarmReceiver : BroadcastReceiver() {
         val boundary = intent.getLongExtra(TimeSchedule.EXTRA_BOUNDARY, 0L).takeIf { it > 0 }
         var fired = false
         try {
-            fired = TimeSchedule.onWakeUp(context.applicationContext, boundary)
+            fired = if (intent.action in CLOCK_CHANGES) {
+                TimeSchedule.onClockChanged(context.applicationContext)
+            } else {
+                TimeSchedule.onWakeUp(context.applicationContext, boundary)
+            }
         } finally {
             if (fired) {
                 // ponytail: a fixed budget, as for a widget tap; a long chain keeps running unprotected after it.
@@ -187,5 +204,6 @@ class TimeAlarmReceiver : BroadcastReceiver() {
 
     private companion object {
         const val BROADCAST_BUDGET_MS = 9_000L
+        val CLOCK_CHANGES = setOf(Intent.ACTION_TIME_CHANGED, Intent.ACTION_TIMEZONE_CHANGED, Intent.ACTION_BOOT_COMPLETED)
     }
 }

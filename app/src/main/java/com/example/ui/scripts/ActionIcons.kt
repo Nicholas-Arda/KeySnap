@@ -12,9 +12,20 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.AirplanemodeActive
+import androidx.compose.material.icons.outlined.Alarm
+import androidx.compose.material.icons.outlined.Contactless
 import androidx.compose.material.icons.outlined.Android
 import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material.icons.outlined.Block
+import androidx.compose.material.icons.outlined.AccessTime
+import androidx.compose.material.icons.outlined.BatteryChargingFull
+import androidx.compose.material.icons.outlined.BatteryFull
+import androidx.compose.material.icons.outlined.Bedtime
+import androidx.compose.material.icons.outlined.School
+import androidx.compose.material.icons.outlined.Contrast
+import androidx.compose.material.icons.outlined.DarkMode
+import androidx.compose.material.icons.outlined.NightsStay
+import androidx.compose.material.icons.outlined.BatterySaver
 import androidx.compose.material.icons.outlined.Bluetooth
 import androidx.compose.material.icons.outlined.BluetoothDisabled
 import androidx.compose.material.icons.outlined.Brightness6
@@ -75,6 +86,8 @@ import androidx.compose.material.icons.outlined.Sync
 import androidx.compose.material.icons.outlined.TextFields
 import androidx.compose.material.icons.outlined.Terminal
 import androidx.compose.material.icons.outlined.Timer
+import androidx.compose.material.icons.outlined.HourglassTop
+import androidx.compose.material.icons.outlined.LightMode
 import androidx.compose.material.icons.outlined.TouchApp
 import androidx.compose.material.icons.outlined.Translate
 import androidx.compose.material.icons.outlined.Tune
@@ -180,6 +193,24 @@ private val perActionIcons: Map<String, ImageVector> = mapOf(
     "toggle_airplane_mode" to Icons.Outlined.AirplanemodeActive,
     "toggle_location" to Icons.Outlined.LocationOff,
     "toggle_hotspot" to Icons.Outlined.WifiTethering,
+    "open_hotspot_settings" to Icons.Outlined.WifiTethering,
+    "toggle_battery_saver" to Icons.Outlined.BatterySaver,
+    "enable_battery_saver" to Icons.Outlined.BatterySaver,
+    "disable_battery_saver" to Icons.Outlined.BatteryFull,
+    "charge_limit" to Icons.Outlined.BatteryChargingFull,
+    "always_on_display" to Icons.Outlined.AccessTime,
+    "grayscale" to Icons.Outlined.Contrast,
+    "dark_mode" to Icons.Outlined.DarkMode,
+    "night_light" to Icons.Outlined.NightsStay,
+    "extra_dim" to Icons.Outlined.BrightnessLow,
+    "screen_timeout" to Icons.Outlined.Timer,
+    "keep_screen_awake" to Icons.Outlined.LightMode,
+    "bedtime" to Icons.Outlined.Bedtime,
+    "set_payment_app" to Icons.Outlined.Contactless,
+    "learned_setting" to Icons.Outlined.School,
+    "set_timer" to Icons.Outlined.HourglassTop,
+    "set_alarm" to Icons.Outlined.Alarm,
+    "copy_to_clipboard" to Icons.Outlined.ContentPaste,
     // Keyboard
     "show_keyboard" to Icons.Outlined.Keyboard,
     "hide_keyboard" to Icons.Outlined.KeyboardHide,

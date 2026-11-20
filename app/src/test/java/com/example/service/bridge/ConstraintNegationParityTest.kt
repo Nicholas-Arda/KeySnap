@@ -37,7 +37,7 @@ class ConstraintNegationParityTest {
         shadowOf(context.getSystemService(KeyguardManager::class.java)).setIsDeviceLocked(false)
         shadowOf(context.getSystemService(KeyguardManager::class.java)).setKeyguardLocked(false)
         shadowOf(context.getSystemService(android.location.LocationManager::class.java)).setLocationEnabled(false)
-        context.sendStickyBroadcast(Intent(Intent.ACTION_BATTERY_CHANGED).putExtra(BatteryManager.EXTRA_PLUGGED,0))
+        context.sendStickyBroadcast(Intent(Intent.ACTION_BATTERY_CHANGED).putExtra(BatteryManager.EXTRA_PLUGGED,0).putExtra(BatteryManager.EXTRA_STATUS,BatteryManager.BATTERY_STATUS_DISCHARGING))
         Settings.Global.putInt(context.contentResolver,"mobile_data",0)
         Settings.Global.putInt(context.contentResolver,Settings.Global.AIRPLANE_MODE_ON,0)
         shadowOf(context.getSystemService(AppOpsManager::class.java)).setMode(AppOpsManager.OPSTR_GET_USAGE_STATS,Process.myUid(),context.packageName,AppOpsManager.MODE_ALLOWED)

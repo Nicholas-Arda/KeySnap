@@ -6,6 +6,9 @@
     <string name="chain_condition_empty">조건 설정을 확인하세요</string>
     <string name="chain_shell_limited">여기서는 셸이 제한적으로 실행돼요</string>
     <string name="chain_set_up">설정</string>
+    <string name="chain_bt_prompt">Bluetooth 확인 창이 잠깐 표시됨</string>
+    <string name="chain_bt_prompt_hide">숨기기: 개발자 옵션 → 시스템 최적화 사용 안함</string>
+    <string name="chain_open_developer_options">열기</string>
     <string name="chain_test_running">동작 테스트 중</string>
     <string name="chain_test_success">테스트 성공</string>
     <string name="chain_test_failure">테스트 실패</string>

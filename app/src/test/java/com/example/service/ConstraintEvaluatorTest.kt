@@ -73,13 +73,14 @@ class ConstraintEvaluatorTest {
         assertTrue(evaluator.isSatisfied(ScriptConstraint("bluetooth_off")))
     }
 
-    @Test fun chargingAndDischargingReflectBatteryManagerState() {
-        val batteryManager = context.getSystemService(Context.BATTERY_SERVICE) as BatteryManager
-        shadowOf(batteryManager).setIsCharging(true)
+    @Test fun chargingAndDischargingReflectTheBatteryStatus() {
+        fun status(value: Int) =
+            context.sendStickyBroadcast(Intent(Intent.ACTION_BATTERY_CHANGED).putExtra(BatteryManager.EXTRA_STATUS, value))
+        status(BatteryManager.BATTERY_STATUS_CHARGING)
         assertTrue(evaluator.isSatisfied(ScriptConstraint("charging")))
         assertFalse(evaluator.isSatisfied(ScriptConstraint("discharging")))
 
-        shadowOf(batteryManager).setIsCharging(false)
+        status(BatteryManager.BATTERY_STATUS_DISCHARGING)
         assertFalse(evaluator.isSatisfied(ScriptConstraint("charging")))
         assertTrue(evaluator.isSatisfied(ScriptConstraint("discharging")))
     }
@@ -164,6 +165,14 @@ class ConstraintEvaluatorTest {
         assertNull(normalizeSsid(WifiManager.UNKNOWN_SSID))
         assertNull(normalizeSsid(""))
         assertNull(normalizeSsid(null))
+    }
+
+    @Test fun chargingStatusCountsChargingAndFullLikeTheBridge() {
+        assertTrue(isChargingStatus(BatteryManager.BATTERY_STATUS_CHARGING))
+        assertTrue(isChargingStatus(BatteryManager.BATTERY_STATUS_FULL))
+        assertFalse(isChargingStatus(BatteryManager.BATTERY_STATUS_DISCHARGING))
+        assertFalse(isChargingStatus(BatteryManager.BATTERY_STATUS_NOT_CHARGING))
+        assertFalse(isChargingStatus(0))
     }
 
     @Test fun pluggedKindMapsAcAndUsbToWiredAndWirelessToWireless() {

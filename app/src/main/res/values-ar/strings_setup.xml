@@ -38,6 +38,12 @@
     <string name="setup_skip">تخطي</string>
     <string name="setup_not_now">ليس الآن</string>
     <string name="setup_optional_row">اختياري: الإشعارات</string>
+    <string name="auto_launch_row">تشغيل الاختصارات والتطبيق مغلق</string>
+    <string name="auto_launch_search_hint">ابحث عن ”التشغيل التلقائي“ وفعّل KeySnap</string>
+    <string name="home_stopped_banner">تم إيقاف KeySnap. لن تعمل بعض الاختصارات.</string>
+    <string name="auto_launch_row_stopped">امنع KeySnap من التوقف مرة أخرى</string>
+    <string name="reconnect_sheet_body">يوقف KeySnap إمكانية الوصول الخاصة به ويشغّلها مرة واحدة. لا يتغير شيء آخر.</string>
+    <string name="reconnect_sheet_keep_on">سيسأل Android بعد ذلك. اختر ”إبقاؤها مفعّلة“.</string>
     <string name="setup_turn_on">تفعيل</string>
     <string name="setup_usage_banner">شروط التطبيقات تحتاج إلى إذن الوصول للاستخدام</string>
     <string name="setup_usage_title">السماح بالوصول إلى بيانات الاستخدام</string>

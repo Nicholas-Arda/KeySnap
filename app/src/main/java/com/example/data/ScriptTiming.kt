@@ -1,5 +1,6 @@
 package com.example.data
 
+import com.example.bridge.BuzzPattern
 import com.example.bridge.ChordTracker
 
 /** The key this trigger listens to: the key code, or the shared chord id for several keys. */
@@ -62,3 +63,7 @@ fun resolveVibrateForScript(script: ShortcutScript, globalDefault: Boolean): Boo
 
 fun resolveHapticDurationForScript(script: ShortcutScript, globalDefault: Long): Long =
     normalizeTimingValue(script.hapticDurationMs ?: globalDefault, TriggerTimingSpecs.hapticDuration)
+
+/** The shortcut's own buzz: its pattern, else one buzz of [resolveHapticDurationForScript]. Mirrored by BridgeConfig.hapticPatternFor. */
+fun resolveHapticPatternForScript(script: ShortcutScript, globalDurationMs: Long): List<Long> =
+    BuzzPattern.parse(script.hapticPattern).ifEmpty { listOf(resolveHapticDurationForScript(script, globalDurationMs)) }

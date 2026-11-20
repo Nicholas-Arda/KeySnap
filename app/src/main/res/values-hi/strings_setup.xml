@@ -38,6 +38,12 @@
     <string name="setup_skip">छोड़ें</string>
     <string name="setup_not_now">अभी नहीं</string>
     <string name="setup_optional_row">वैकल्पिक: सूचनाएँ</string>
+    <string name="auto_launch_row">ऐप बंद होने पर भी शॉर्टकट चलें</string>
+    <string name="auto_launch_search_hint">“ऑटो लॉन्च” खोजें और KeySnap चालू करें</string>
+    <string name="home_stopped_banner">KeySnap रोक दिया गया। कुछ शॉर्टकट नहीं चलेंगे।</string>
+    <string name="auto_launch_row_stopped">KeySnap को फिर से रुकने से बचाएँ</string>
+    <string name="reconnect_sheet_body">KeySnap अपनी सुलभता को एक बार बंद करके चालू करता है। और कुछ नहीं बदलता।</string>
+    <string name="reconnect_sheet_keep_on">इसके बाद Android पूछेगा। “चालू रखें” चुनें।</string>
     <string name="setup_turn_on">चालू करें</string>
     <string name="setup_usage_banner">ऐप शर्तों के लिए उपयोग एक्सेस चाहिए</string>
     <string name="setup_usage_title">उपयोग एक्सेस की अनुमति दें</string>

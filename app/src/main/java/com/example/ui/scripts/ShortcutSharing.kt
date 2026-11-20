@@ -101,9 +101,10 @@ fun ShortcutReviewDialog(
                                 )
                             }
                         }
-                        if ((action.type == "send_intent" && !action.params["package"].isNullOrBlank()) || action.type == "force_stop_app") {
-                            val command = if (action.type == "force_stop_app") {
-                                action.params["packageName"]?.takeIf { it.isNotBlank() }?.let { "am force-stop $it" }.orEmpty()
+                        val stop = com.example.data.stopCommandPreview(action.type, action.params["packageName"])
+                        if ((action.type == "send_intent" && !action.params["package"].isNullOrBlank()) || stop != null) {
+                            val command = if (stop != null) {
+                                stop
                             } else {
                                 previewCommand(action)
                             }

@@ -6,34 +6,49 @@ import android.app.NotificationManager
 import android.app.usage.UsageEvents
 import android.app.usage.UsageStatsManager
 import android.bluetooth.BluetoothManager
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.location.LocationManager
 import android.media.AudioDeviceInfo
 import android.media.AudioManager
+import android.media.session.MediaSessionManager
+import android.media.session.PlaybackState
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
 import android.os.BatteryManager
 import android.os.Build
+import android.os.Handler
+import android.os.HandlerThread
 import android.os.PowerManager
 import android.os.SystemClock
 import android.provider.Settings
 import android.util.Log
 import com.example.bridge.ConstraintNegation
+import com.example.bridge.PhysicalOrientation
 import com.example.data.ScriptConstraint
 import com.example.data.ScriptConstraintCatalog
 import com.example.mode.ModeHooks
 import java.time.DayOfWeek
 import java.time.LocalTime
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 
 /** Answers whether a single [ScriptConstraint] currently holds, so a script only fires while every constraint is satisfied. */
 interface ConstraintEvaluator {
     fun isSatisfied(constraint: ScriptConstraint): Boolean
+
+    /** For "Any": true only when the state is read and holds; unknown is false, not "never blocks". */
+    fun isKnownTrue(constraint: ScriptConstraint): Boolean = isSatisfied(constraint)
 
     /** A short-lived view for one decision; never retain it across key presses. */
     fun forDecision(): ConstraintEvaluator = this
@@ -70,6 +85,14 @@ class AndroidConstraintEvaluator(
         return decisionResults.getOrPut(constraint) { evaluate(constraint) }
     }
 
+    /** Mirrors `com.example.bridge.ConstraintEvaluator.isKnownTrue`. */
+    override fun isKnownTrue(constraint: ScriptConstraint): Boolean {
+        // Negation already fails closed; mode_is fails closed and has no known-state reader.
+        if (ConstraintNegation.requested(constraint.params) || constraint.type == ScriptConstraintCatalog.MODE_IS) return isSatisfied(constraint)
+        val state = runCatching { readKnownState(ConstraintNegation.positiveType(constraint.type), constraint) }.getOrNull()
+        return ConstraintNegation.predicate(constraint.type, state) == true
+    }
+
     private fun evaluate(constraint: ScriptConstraint): Boolean {
         val p = constraint.params
         if (ConstraintNegation.requested(p)) {
@@ -96,6 +119,11 @@ class AndroidConstraintEvaluator(
             "app_not_in_foreground" -> isAppInForeground(p["packageName"])?.not() ?: true
             "media_is_playing" -> isMusicActive()
             "no_media_playing" -> !isMusicActive()
+            "app_playing_media" -> isAppPlayingMedia(p["packageName"]) ?: true
+            "app_not_playing_media" -> isAppPlayingMedia(p["packageName"])?.not() ?: true
+            "input_method_chosen" -> isInputMethodChosen(p["packageName"]) ?: true
+            "input_method_not_chosen" -> isInputMethodChosen(p["packageName"])?.not() ?: true
+            "physical_orientation" -> PhysicalOrientation.matches(p["orientation"], readPhysicalOrientation()) ?: true
             "bluetooth_device_connected" -> isBluetoothDeviceConnected(p["address"], p["name"])
             "bluetooth_device_disconnected" -> !isBluetoothDeviceConnected(p["address"], p["name"])
             "screen_orientation" -> matchesOrientation(p["orientation"], appContext.resources.configuration.orientation)
@@ -137,9 +165,11 @@ class AndroidConstraintEvaluator(
             ScriptConstraintCatalog.COOLDOWN -> true
             ScriptConstraintCatalog.NOTIFICATION_RECEIVED ->
                 NotificationMatches.isRecent(constraint, SystemClock.elapsedRealtime())
+            ScriptConstraintCatalog.NOTIFICATION_WAITING -> NotificationEventListener.waiting(appContext, p) ?: false
             ScriptConstraintCatalog.RSS_NEW_ITEM -> RssPolling.isPulsing(p["url"])
             ScriptConstraintCatalog.AT_TIME, ScriptConstraintCatalog.INTERVAL -> TimeSchedule.isPulsing(constraint)
             ScriptConstraintCatalog.CALENDAR_EVENT_ACTIVE -> CalendarCondition.isActive(appContext, p["calendar"], p["title"])
+            ScriptConstraintCatalog.AT_PLACE -> PlaceCondition.knownInside(appContext, p) ?: false
             // A constraint type that isn't AVAILABLE never blocks a script.
             else -> true
         }
@@ -152,12 +182,15 @@ class AndroidConstraintEvaluator(
             "screen_on" -> power { it.isInteractive }
             "wifi_on" -> read<WifiManager>(Context.WIFI_SERVICE, "WiFi") { it.isWifiEnabled }
             "bluetooth_on" -> service<BluetoothManager>(Context.BLUETOOTH_SERVICE)?.adapter?.isEnabled
-            "charging" -> read<BatteryManager>(Context.BATTERY_SERVICE, "battery") { it.isCharging }
+            "charging" -> batteryIntExtra(BatteryManager.EXTRA_STATUS).takeIf { it > 0 }?.let(::isChargingStatus)
             "in_phone_call" -> audioMode()?.takeIf { it in 0..6 }?.let { isInPhoneCall(it) }
             "phone_ringing" -> audioMode()?.takeIf { it in 0..6 }?.let { isPhoneRinging(it) }
             "flashlight_on" -> FlashlightController.knownState()
             "app_in_foreground" -> isAppInForeground(p["packageName"])
             "media_is_playing" -> audio { it.isMusicActive }
+            "app_playing_media" -> isAppPlayingMedia(p["packageName"])
+            "input_method_chosen" -> isInputMethodChosen(p["packageName"])
+            "physical_orientation" -> PhysicalOrientation.matches(p["orientation"], readPhysicalOrientation())
             "bluetooth_device_connected" -> knownBluetoothDevice(p["address"], p["name"])
             "screen_orientation" -> appContext.resources.configuration.orientation.let {
                 if (it !in setOf(Configuration.ORIENTATION_PORTRAIT, Configuration.ORIENTATION_LANDSCAPE) ||
@@ -195,12 +228,58 @@ class AndroidConstraintEvaluator(
             "headphones_connected" -> audio { manager -> manager.getDevices(AudioManager.GET_DEVICES_OUTPUTS).any { it.type in HEADPHONE_TYPES } }
             ScriptConstraintCatalog.NOTIFICATION_RECEIVED -> if (!NotificationEventListener.isConnected() || !NotificationEventListener.isAccessGranted(appContext) || p["packageName"].isNullOrBlank()) null
                 else NotificationMatches.isRecent(constraint, SystemClock.elapsedRealtime())
+            ScriptConstraintCatalog.NOTIFICATION_WAITING -> NotificationEventListener.waiting(appContext, p)
             ScriptConstraintCatalog.RSS_NEW_ITEM -> RssPolling.knownPulse(p["url"])
             ScriptConstraintCatalog.AT_TIME -> if (knownTime(p["time"]) == null ||
                 (!p["days"].isNullOrBlank() && parseDaySet(p["days"]).isEmpty())) null else TimeSchedule.isPulsing(constraint)
             ScriptConstraintCatalog.INTERVAL -> if (TimeRules.intervalSeconds(p["every"], p["unit"]) == null) null else TimeSchedule.isPulsing(constraint)
             ScriptConstraintCatalog.CALENDAR_EVENT_ACTIVE -> CalendarCondition.knownActive(appContext, p["calendar"], p["title"])
+            ScriptConstraintCatalog.AT_PLACE -> PlaceCondition.knownInside(appContext, p)
             else -> null
+        }
+    }
+
+    /** Reads play state only, never metadata; needs notification access (null without it). */
+    private fun isAppPlayingMedia(packageName: String?): Boolean? {
+        val pkg = packageName?.trim()?.takeIf { it.isNotEmpty() } ?: return null
+        val sessions = runCatching {
+            service<MediaSessionManager>(Context.MEDIA_SESSION_SERVICE)
+                ?.getActiveSessions(ComponentName(appContext, NotificationEventListener::class.java))
+        }.getOrNull() ?: return null
+        return sessions.any { it.packageName == pkg && it.playbackState?.state == PlaybackState.STATE_PLAYING }
+    }
+
+    private fun isInputMethodChosen(packageName: String?): Boolean? {
+        val pkg = packageName?.trim()?.takeIf { it.isNotEmpty() } ?: return null
+        val current = Settings.Secure.getString(appContext.contentResolver, Settings.Secure.DEFAULT_INPUT_METHOD)
+            ?.substringBefore('/', "")?.takeIf { it.isNotEmpty() } ?: return null
+        return current == pkg
+    }
+
+    /**
+     * One accelerometer reading, classified by the bridge's shared rule. Blocks the caller for at
+     * most [ORIENTATION_WAIT_MS]; the listener runs on its own thread so a main-thread caller works.
+     */
+    private fun readPhysicalOrientation(): String? {
+        val sensors = service<SensorManager>(Context.SENSOR_SERVICE) ?: return null
+        val sensor = sensors.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) ?: return null
+        val latch = CountDownLatch(1)
+        var result: String? = null
+        val listener = object : SensorEventListener {
+            override fun onSensorChanged(event: SensorEvent) {
+                if (latch.count == 0L) return
+                result = PhysicalOrientation.classify(event.values[0].toDouble(), event.values[1].toDouble(), event.values[2].toDouble())
+                latch.countDown()
+            }
+            override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) = Unit
+        }
+        val thread = HandlerThread("physical-orientation").apply { start() }
+        return try {
+            sensors.registerListener(listener, sensor, SensorManager.SENSOR_DELAY_GAME, Handler(thread.looper))
+            if (latch.await(ORIENTATION_WAIT_MS, TimeUnit.MILLISECONDS)) result else null
+        } finally {
+            sensors.unregisterListener(listener)
+            thread.quitSafely()
         }
     }
 
@@ -263,7 +342,9 @@ class AndroidConstraintEvaluator(
     private fun isBluetoothOn(): Boolean =
         read<BluetoothManager>(Context.BLUETOOTH_SERVICE, "Bluetooth") { it.adapter?.isEnabled ?: false } ?: false
 
-    private fun isCharging(): Boolean = read<BatteryManager>(Context.BATTERY_SERVICE, "battery") { it.isCharging } ?: false
+    // Not BatteryManager.isCharging: that one turns true only after the level starts rising, minutes
+    // after the plug, so an automation missed the plug-in moment. Same rule as the bridge's parseCharging.
+    private fun isCharging(): Boolean = isChargingStatus(batteryIntExtra(BatteryManager.EXTRA_STATUS))
 
     private fun audioMode(): Int? = try {
         service<AudioManager>(Context.AUDIO_SERVICE)?.mode
@@ -393,9 +474,11 @@ class AndroidConstraintEvaluator(
         return raw
     }
 
-    private fun pluggedExtra(): Int = try {
+    private fun pluggedExtra(): Int = batteryIntExtra(BatteryManager.EXTRA_PLUGGED)
+
+    private fun batteryIntExtra(key: String): Int = try {
         appContext.registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
-            ?.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0) ?: 0
+            ?.getIntExtra(key, 0) ?: 0
     } catch (e: Exception) {
         Log.e(TAG, "Error reading charger state", e)
         0
@@ -440,6 +523,8 @@ class AndroidConstraintEvaluator(
         // ago; only a process with no memory yet falls back, and that scan stays a few hours.
         private const val FOREGROUND_LOOKBACK_MS = 60_000L
         private const val FOREGROUND_FALLBACK_LOOKBACK_MS = 3 * 60 * 60_000L
+        // The first accelerometer event arrives within ~20 ms when the sensor is free; none = unknown.
+        private const val ORIENTATION_WAIT_MS = 300L
 
         @Volatile
         private var lastKnownForegroundPackage: String? = null
@@ -529,6 +614,10 @@ internal fun normalizeSsid(raw: String?): String? {
     val s = raw?.trim().orEmpty().removeSurrounding("\"")
     return s.takeIf { it.isNotEmpty() && it != WifiManager.UNKNOWN_SSID }
 }
+
+/** Charging or full while plugged both count, as in the bridge's `parseCharging`. */
+internal fun isChargingStatus(status: Int): Boolean =
+    status == BatteryManager.BATTERY_STATUS_CHARGING || status == BatteryManager.BATTERY_STATUS_FULL
 
 /** Maps `EXTRA_PLUGGED` to `wired` (AC or USB), `wireless`, or null when unplugged. */
 internal fun pluggedKind(plugged: Int): String? = when (plugged) {

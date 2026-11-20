@@ -1,6 +1,7 @@
 package com.example.ui.scripts
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,6 +21,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
@@ -30,12 +32,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -52,6 +55,7 @@ import com.example.mode.ModeHooks
 import com.example.ui.components.IconTile
 import com.example.ui.components.MinTouchTarget
 import com.example.ui.components.trailingEdgeFade
+import com.example.ui.components.isWideLayout
 import com.example.ui.theme.SectionLabel
 import io.github.nicholasarda.keysnap.R
 
@@ -71,8 +75,9 @@ fun ConstraintPickerScreen(
     hideModeCondition: Boolean = false,
 ) {
     val colors = MaterialTheme.colorScheme
-    var query by remember { mutableStateOf("") }
-    var selectedCategory by remember { mutableStateOf<ConstraintCategory?>(null) }
+    // Saveable: folding or unfolding the phone recreates the activity.
+    var query by rememberSaveable { mutableStateOf("") }
+    var selectedCategory by rememberSaveable { mutableStateOf<ConstraintCategory?>(null) }
 
     Column(Modifier.fillMaxSize().statusBarsPadding().testTag("constraint_picker_sheet")) {
         Row(
@@ -141,6 +146,8 @@ fun ConstraintPickerScreen(
             val entries = filtered.filter { it.category == category }
             if (entries.isEmpty()) null else category to entries
         }
+        // In the wide panel the rows go two to a line, so a name never has to wrap.
+        val columns = if (isWideLayout()) 2 else 1
         LazyColumn(Modifier.fillMaxWidth().weight(1f)) {
             if (grouped.isEmpty()) {
                 item {
@@ -165,8 +172,9 @@ fun ConstraintPickerScreen(
                         color = colors.onSurfaceVariant,
                     )
                 }
-                items(entries.size, key = { "constraint_${entries[it].type}" }) { i ->
-                    ConstraintRow(entries[i], onPickConstraint)
+                val rows = entries.chunked(columns)
+                items(rows.size, key = { "constraint_${rows[it][0].type}" }) { i ->
+                    PickerRow(rows[i]) { ConstraintRow(it, onPickConstraint) }
                 }
             }
         }
@@ -199,13 +207,17 @@ private fun ConstraintRow(descriptor: ConstraintDescriptor, onAdd: (String) -> U
         )
         Spacer(Modifier.width(14.dp))
         Column(Modifier.weight(1f)) {
-            Text(
-                stringResource(descriptor.titleRes),
-                color = colors.onSurface,
-                style = MaterialTheme.typography.bodyLarge,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    stringResource(descriptor.titleRes),
+                    Modifier.weight(1f, fill = false),
+                    color = colors.onSurface,
+                    style = MaterialTheme.typography.bodyLarge,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                if (descriptor.type in ScriptConstraintCatalog.EXPERIMENTAL) ExperimentalBadge(Modifier.padding(start = 8.dp))
+            }
             if (!available) {
                 Text(
                     stringResource(R.string.common_coming_soon),
@@ -223,4 +235,21 @@ private fun ConstraintRow(descriptor: ConstraintDescriptor, onAdd: (String) -> U
             }
         }
     }
+}
+
+/** Outlined "Experimental" tag for a condition in [ScriptConstraintCatalog.EXPERIMENTAL]. */
+@Composable
+internal fun ExperimentalBadge(modifier: Modifier = Modifier) {
+    val colors = MaterialTheme.colorScheme
+    Text(
+        stringResource(R.string.settings_experimental),
+        modifier
+            .clip(RoundedCornerShape(6.dp))
+            .border(1.dp, colors.tertiary, RoundedCornerShape(6.dp))
+            .padding(horizontal = 6.dp, vertical = 1.dp),
+        color = colors.tertiary,
+        style = MaterialTheme.typography.labelSmall,
+        fontWeight = FontWeight.Bold,
+        maxLines = 1,
+    )
 }

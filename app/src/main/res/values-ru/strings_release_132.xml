@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_teach_title_132">Научить настройке</string>
+    <string name="whats_new_teach_description_132">Покажите KeySnap переключатель один раз и меняйте его любым сценарием.</string>
+    <string name="whats_new_place_title_132">Новое условие: В определённом месте</string>
+    <string name="whats_new_place_description_132">Срабатывает, когда вы приходите или уходите. Местоположение остаётся на телефоне. Экспериментально.</string>
+    <string name="whats_new_actions_title_132">Более 25 новых действий</string>
+    <string name="whats_new_actions_description_132">Ответить и завершить звонок, таймер, будильник, тёмная тема, ночной свет и другое.</string>
+    <string name="whats_new_fix_conditions_132">Новые условия: есть уведомление, играет медиа, ориентация</string>
+    <string name="whats_new_fix_undo_132">«Отменить по окончании» возвращает изменённые настройки</string>
+    <string name="whats_new_fix_vibration_132">Узоры вибрации</string>
+    <string name="whats_new_fix_foldable_132">Больше места на складных телефонах и планшетах</string>
+    <string name="whats_new_also_new_132">Также новое</string>
+</resources>

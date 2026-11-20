@@ -25,6 +25,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.layoutId
+import androidx.compose.ui.unit.Constraints
+import com.example.data.constraintLabel
+import com.example.ui.components.isWideLayout
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.outlined.FileDownload
@@ -291,6 +297,8 @@ internal fun ScriptCard(
         lastRunFailed -> stringResource(R.string.scripts_last_run_failed)
         else -> null
     }
+    // A wide card has room to say what the shortcut does: one chip line instead of the trigger line.
+    val wide = isWideLayout()
     val cardRim = LocalGlass.current.cardRim
     val rim by animateColorAsState(if (editing) cardRim.copy(alpha = 0f) else cardRim, tween(220), label = "rim")
     val outline by animateFloatAsState(if (editing) 1f else 0f, tween(220), label = "outline")
@@ -324,11 +332,11 @@ internal fun ScriptCard(
                             modifier = Modifier.testTag("script_name_${script.id}"),
                             style = MaterialTheme.typography.titleSmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
                             color = colors.onSurface,
-                            maxLines = 2,
+                            maxLines = if (wide) 1 else 2,
                             overflow = TextOverflow.Ellipsis,
                         )
                         val (triggerText, triggerOk) = triggerSummary(script)
-                        Text(
+                        if (!wide) Text(
                             triggerText,
                             modifier = Modifier.testTag("script_subtitle_${script.id}"),
                             style = MaterialTheme.typography.bodySmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
@@ -336,7 +344,7 @@ internal fun ScriptCard(
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis,
                         )
-                        if (problem != null) Text(
+                        if (problem != null && !(wide && script.actions.isEmpty())) Text(
                             problem,
                             style = MaterialTheme.typography.bodySmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
                             color = colors.error,
@@ -361,6 +369,7 @@ internal fun ScriptCard(
                         )
                     }
                 }
+                if (wide) ShortcutChipLine(script)
                 if (stacked) AnimatedVisibility(!editing) {
                     EnabledPill(
                         name = script.name.ifBlank { stringResource(R.string.scripts_unnamed) },
@@ -374,6 +383,88 @@ internal fun ScriptCard(
             }
         }
     }
+}
+
+/**
+ * Trigger (or up to two conditions) → first action, on one line; "+N" says how many more of each.
+ * Text chips shrink with an ellipsis so the action always stays on the line.
+ */
+@Composable
+private fun ShortcutChipLine(script: ShortcutScript) {
+    val res = LocalContext.current.resources
+    val (triggerText, triggerOk) = triggerSummary(script)
+    val conditions = if (script.automation) script.constraints.map { res.constraintLabel(it) } else emptyList()
+    val shrink = Modifier.layoutId(ShrinkableChip)
+    Layout(
+        content = {
+            when {
+                conditions.isNotEmpty() -> {
+                    conditions.take(2).forEach { ShortcutChip(it, shrink) }
+                    if (conditions.size > 2) ShortcutChip("+${conditions.size - 2}", accent = true)
+                }
+                script.automation -> ShortcutChip(stringResource(R.string.scripts_no_condition), shrink, error = true)
+                else -> ShortcutChip(triggerText, shrink, error = !triggerOk)
+            }
+            Text("→", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            val first = script.actions.firstOrNull()
+            if (first == null) {
+                ShortcutChip(stringResource(R.string.scripts_no_actions), shrink, error = true)
+            } else {
+                ShortcutChip(actionLabel(first), shrink)
+                if (script.actions.size > 1) ShortcutChip("+${script.actions.size - 1}", accent = true)
+            }
+        },
+        modifier = Modifier.fillMaxWidth().padding(top = 10.dp).testTag("script_chips_${script.id}"),
+    ) { measurables, constraints ->
+        val gap = 6.dp.roundToPx()
+        val loose = Constraints(maxWidth = constraints.maxWidth)
+        val fixed = measurables.mapIndexedNotNull { i, m -> if (m.layoutId == ShrinkableChip) null else i to m.measure(loose) }.toMap()
+        // Short chips keep their width; what is left is shared out among the long ones.
+        var left = constraints.maxWidth - fixed.values.sumOf { it.width } - gap * (measurables.size - 1)
+        val flexible = measurables.indices.filter { it !in fixed }.sortedBy { measurables[it].maxIntrinsicWidth(Constraints.Infinity) }
+        val widths = mutableMapOf<Int, Int>()
+        flexible.forEachIndexed { n, i ->
+            val share = (left / (flexible.size - n)).coerceAtLeast(0)
+            widths[i] = minOf(measurables[i].maxIntrinsicWidth(Constraints.Infinity), share)
+            left -= widths.getValue(i)
+        }
+        val placeables = measurables.mapIndexed { i, m -> fixed[i] ?: m.measure(Constraints(maxWidth = widths.getValue(i))) }
+        val height = placeables.maxOf { it.height }
+        layout(constraints.maxWidth, height) {
+            var x = 0
+            placeables.forEach {
+                it.placeRelative(x, (height - it.height) / 2)
+                x += it.width + gap
+            }
+        }
+    }
+}
+
+private const val ShrinkableChip = "shrinkable"
+
+/** An action's catalog title; a learned setting goes by the switch it was taught. */
+@Composable
+internal fun actionLabel(action: com.example.data.ScriptAction): String =
+    action.params[com.example.bridge.LearnedSetting.PARAM_NAME]?.takeIf { action.type == ScriptActionCatalog.LEARNED_SETTING && it.isNotBlank() }
+        ?: ScriptActionCatalog.descriptor(action.type)?.let { stringResource(it.titleRes) }
+        ?: action.type
+
+@Composable
+internal fun ShortcutChip(text: String, modifier: Modifier = Modifier, error: Boolean = false, accent: Boolean = false) {
+    val colors = MaterialTheme.colorScheme
+    val ink = when {
+        error -> colors.error
+        accent -> colors.primary
+        else -> colors.onSurfaceVariant
+    }
+    Text(
+        text,
+        modifier.clip(RoundedCornerShape(8.dp)).background(ink.copy(alpha = .09f)).padding(horizontal = 8.dp, vertical = 4.dp),
+        style = MaterialTheme.typography.bodySmall,
+        color = ink,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+    )
 }
 
 /**

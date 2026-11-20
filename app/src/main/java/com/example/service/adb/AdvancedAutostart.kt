@@ -21,6 +21,7 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.example.MainActivity
 import com.example.data.ScriptAction
+import com.example.service.NotificationPrefs
 import com.example.service.RunFailureNotifier
 import com.example.service.bridge.BridgeController
 import io.github.nicholasarda.keysnap.R
@@ -226,7 +227,7 @@ object AdvancedAutostart {
 
     internal fun fail(context: Context, reason: Int) {
         val manager = context.getSystemService(NotificationManager::class.java) ?: return
-        if (!manager.areNotificationsEnabled()) return
+        if (!manager.areNotificationsEnabled() || !NotificationPrefs.enabled(context, NotificationPrefs.Kind.AUTOSTART)) return
         manager.createNotificationChannel(NotificationChannel(
             RunFailureNotifier.CHANNEL_ID, context.getString(R.string.notif_channel_run_failures), NotificationManager.IMPORTANCE_DEFAULT,
         ))

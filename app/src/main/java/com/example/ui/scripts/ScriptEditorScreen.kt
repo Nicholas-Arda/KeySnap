@@ -4,6 +4,7 @@ import android.view.KeyEvent
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.animateColorAsState
@@ -14,6 +15,11 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
+import com.example.service.AutomationUndo
+import androidx.compose.material.icons.automirrored.outlined.Undo
+import androidx.compose.ui.draw.scale
+import androidx.compose.foundation.selection.toggleable
+import androidx.compose.material3.Switch
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -164,6 +170,12 @@ import com.example.ui.components.MinTouchTarget
 import com.example.ui.components.SelectionLeadSpring
 import com.example.ui.components.SelectionTrailSpring
 import com.example.ui.components.trailingEdgeFade
+import com.example.ui.components.LeftColumn
+import com.example.ui.components.TwoColumns
+import com.example.ui.components.WideGutter
+import com.example.ui.components.WidePagePadding
+import com.example.ui.components.WidePanel
+import com.example.ui.components.isWideLayout
 import com.example.ui.theme.SectionLabel
 import com.example.ui.theme.categoryTileColors
 import io.github.nicholasarda.keysnap.R
@@ -171,6 +183,14 @@ import com.example.viewmodel.ScriptDraft
 import com.example.viewmodel.hasTrigger
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.delay
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.runtime.collectAsState
+import com.example.bridge.LearnedSetting
+import com.example.data.LearnedSettings
+import com.example.data.LearnedSwitch
 
 /**
  * These two actions take no params, so [ActionEditorForms] has no form for them; "Configure" still
@@ -226,6 +246,9 @@ fun ScriptEditorScreen(
     onSetUpAdvancedMode: () -> Unit = {},
     onSetConstraintParams: (Int, Map<String, String>) -> Unit = { _, _ -> },
     onTestAction: suspend (ScriptAction) -> ActionTestResult = { ActionTestResult(false, null, null, 0, false, emptyList()) },
+    onSetActionUndo: (Int, Boolean) -> Unit = { _, _ -> },
+    onSetAllUndo: (Boolean) -> Unit = {},
+    onSetMatchAny: (Boolean) -> Unit = {},
 ) {
     val context = LocalContext.current
     var feedback by remember { mutableStateOf<EditorFeedback?>(null) }
@@ -242,11 +265,14 @@ fun ScriptEditorScreen(
         Toast.makeText(context.applicationContext, text, Toast.LENGTH_SHORT).show()
         onConsumeMessage()
     }
-    var query by remember { mutableStateOf("") }
-    var selectedCategory by remember { mutableStateOf<ActionCategory?>(null) }
+    // Saveable: folding or unfolding the phone recreates the activity, and an open picker stays open.
+    var query by rememberSaveable { mutableStateOf("") }
+    var selectedCategory by rememberSaveable { mutableStateOf<ActionCategory?>(null) }
     var confirmDelete by remember { mutableStateOf(false) }
     var confirmDiscard by remember { mutableStateOf(false) }
-    var pane by remember { mutableStateOf(EditorPane.CHAIN) }
+    var pane by rememberSaveable { mutableStateOf(EditorPane.CHAIN) }
+    // A wide screen keeps the chain on screen and opens the catalogs as a panel over it.
+    val wide = isWideLayout()
     // The draft as the editor received it. Every edit goes through updateDraft's copy(), and the
     // draft and everything it holds are data classes, so structural inequality means "touched".
     val opened = remember(draft.id) { draft }
@@ -285,8 +311,40 @@ fun ScriptEditorScreen(
     // The catalogs replace the chain rather than layering over it, so the swap is animated: the
     // outgoing pane fades first and the incoming one follows a beat later, which keeps the two from
     // reading through each other while neither paints an opaque background of its own.
+    val addActionPane = @Composable {
+        AddActionScreen(
+            query = query,
+            onQueryChange = { query = it },
+            selectedCategory = selectedCategory,
+            onSelectCategory = { selectedCategory = it },
+            onPickAction = { type ->
+                pane = EditorPane.CHAIN
+                if (ActionEditorForms.isConfigurable(type)) onConfigureNewAction(type) else onAddAction(type, emptyMap())
+            },
+            onPickLearned = { params ->
+                pane = EditorPane.CHAIN
+                onAddAction(ScriptActionCatalog.LEARNED_SETTING, params)
+            },
+            onClose = { pane = EditorPane.CHAIN },
+            advancedModeActive = advancedModeActive,
+        )
+    }
+    val addConstraintPane = @Composable {
+        ConstraintPickerScreen(
+            automation = draft.automation,
+            scriptId = draft.id,
+            scripts = scripts,
+            isPro = isPro,
+            onClose = { pane = EditorPane.CHAIN },
+            onPickConstraint = { type ->
+                pane = EditorPane.CHAIN
+                onPickConstraint(type)
+            },
+        )
+    }
+    Box(Modifier.fillMaxSize()) {
     AnimatedContent(
-        targetState = pane,
+        targetState = if (wide) EditorPane.CHAIN else pane,
         transitionSpec = {
             val enteringCatalog = targetState != EditorPane.CHAIN
             val offset = if (enteringCatalog) 1 else -1
@@ -298,29 +356,8 @@ fun ScriptEditorScreen(
         label = "editorPane",
     ) { target ->
         when (target) {
-            EditorPane.ADD_ACTION -> AddActionScreen(
-                query = query,
-                onQueryChange = { query = it },
-                selectedCategory = selectedCategory,
-                onSelectCategory = { selectedCategory = it },
-                onPickAction = { type ->
-                    pane = EditorPane.CHAIN
-                    if (ActionEditorForms.isConfigurable(type)) onConfigureNewAction(type) else onAddAction(type, emptyMap())
-                },
-                onClose = { pane = EditorPane.CHAIN },
-                advancedModeActive = advancedModeActive,
-            )
-            EditorPane.ADD_CONSTRAINT -> ConstraintPickerScreen(
-                automation = draft.automation,
-                scriptId = draft.id,
-                scripts = scripts,
-                isPro = isPro,
-                onClose = { pane = EditorPane.CHAIN },
-                onPickConstraint = { type ->
-                    pane = EditorPane.CHAIN
-                    onPickConstraint(type)
-                },
-            )
+            EditorPane.ADD_ACTION -> addActionPane()
+            EditorPane.ADD_CONSTRAINT -> addConstraintPane()
             // statusBarsPadding keeps the top bar from rendering beneath the real system status bar,
             // which otherwise intercepts touches meant for the app.
             EditorPane.CHAIN -> Column(Modifier.fillMaxSize().statusBarsPadding()) {
@@ -346,6 +383,9 @@ fun ScriptEditorScreen(
                             onConfigureAction = { onDismissKeyPicker(); onConfigureAction(it) },
                             onRemoveAction = onRemoveAction,
                             onMoveAction = onMoveAction,
+                            onSetActionUndo = onSetActionUndo,
+                            onSetAllUndo = onSetAllUndo,
+                            onSetMatchAny = onSetMatchAny,
                             onOpenConstraintPicker = { onDismissKeyPicker(); pane = EditorPane.ADD_CONSTRAINT },
                             onRemoveConstraint = onRemoveConstraint,
                             onConfigureConstraint = { onDismissKeyPicker(); onConfigureConstraint(it) },
@@ -381,6 +421,7 @@ fun ScriptEditorScreen(
                             advancedModeActive = advancedModeActive,
                             onSetUpAdvancedMode = onSetUpAdvancedMode,
                         ) else BottomToolbar(
+                            wide = wide,
                             canRun = draft.actions.isNotEmpty(),
                             onRunOnce = onRunOnce,
                             onDone = {
@@ -402,6 +443,10 @@ fun ScriptEditorScreen(
                 }
             }
         }
+    }
+    if (wide) WidePanel(pane.takeIf { it != EditorPane.CHAIN }, onDismiss = { pane = EditorPane.CHAIN }) { shown ->
+        if (shown == EditorPane.ADD_ACTION) addActionPane() else addConstraintPane()
+    }
     }
 }
 
@@ -569,6 +614,9 @@ private fun ChainArea(
     onConfigureAction: (Int) -> Unit,
     onRemoveAction: (Int) -> Unit,
     onMoveAction: (Int, Int) -> Unit,
+    onSetActionUndo: (Int, Boolean) -> Unit,
+    onSetAllUndo: (Boolean) -> Unit,
+    onSetMatchAny: (Boolean) -> Unit,
     onOpenConstraintPicker: () -> Unit,
     onRemoveConstraint: (Int) -> Unit,
     onOpenAddAction: () -> Unit,
@@ -597,107 +645,144 @@ private fun ChainArea(
     val colors = MaterialTheme.colorScheme
     val visibleConstraints = draft.constraints
     val conditionColor = sentenceConditionColor(visibleConstraints)
+    // All / Any only means something with two real conditions; the cooldown is a gate, not one.
+    val anyOffered = draft.constraints.count { it.type != ScriptConstraintCatalog.COOLDOWN } >= 2
     val actionColor = sentenceActionColor(draft.actions)
+    val everyChatIndex = ActionEditorForms.everyChatReplyIndex(draft.automation, draft.constraints, draft.actions)
+    val undoOffered = AutomationUndo.offered(draft.automation, draft.constraints)
+    val undoable = draft.actions.filter(AutomationUndo::canUndo)
+    val undoing = undoable.count { it.undoOnEnd }
+    // Wide: conditions side by side (their order does not matter), everything else in the left column.
+    // At Fold width the actions keep a phone's width with the options beside them; narrower, the
+    // actions take the full width so their names do not wrap.
+    val wide = isWideLayout()
+    val sideOptions = wide && LocalConfiguration.current.screenWidthDp >= 800
+    val half: @Composable (@Composable () -> Unit) -> Unit = { content -> if (wide) LeftColumn { content() } else content() }
+    val doSection = @Composable {
+        SentenceSection(stringResource(R.string.editor_chain_do), actionColor, last = true,
+            modifier = Modifier.alpha(if (keyPickerOpen) .4f else 1f)) {
+            draft.actions.forEachIndexed { index, action ->
+                key(index, action) {
+                    ActionChainCard(
+                        action = action, index = index, total = draft.actions.size,
+                        menuOpen = openMenuFor == index, advancedModeActive = advancedModeActive,
+                        startsFromNotification = ScriptConstraintCatalog.startsFromNotification(draft.automation, draft.constraints),
+                        onOpenMenu = { openMenuFor = index }, onDismissMenu = { openMenuFor = null },
+                        onConfigure = { onConfigureAction(index) },
+                        onRemove = { openMenuFor = null; onRemoveAction(index) },
+                        onMoveUp = { onMoveAction(index, index - 1) },
+                        onMoveDown = { onMoveAction(index, index + 1) },
+                        onTestAction = onTestAction,
+                        onTestResult = onTestResult,
+                        onSetUpAdvancedMode = onSetUpAdvancedMode,
+                        undoBadge = when {
+                            !undoOffered || undoing == 0 -> null
+                            !AutomationUndo.canUndo(action) -> R.string.undo_badge_cant
+                            action.undoOnEnd -> R.string.undo_badge_on
+                            else -> R.string.undo_badge_off
+                        },
+                        onSetUndo = if (undoOffered && AutomationUndo.canUndo(action)) { undo -> onSetActionUndo(index, undo) } else null,
+                    )
+                }
+                if (index == everyChatIndex) EveryChatWarning()
+            }
+            AddActionRow(onOpenAddAction)
+            if (!sideOptions && undoOffered && undoable.isNotEmpty()) UndoWhenItEndsRow(undoing, undoable.size, onSetAllUndo)
+            if (draft.actions.isEmpty()) ChainHint(stringResource(R.string.editor_needs_action), flagMissing)
+        }
+    }
+    val fineTune = @Composable {
+        Column(
+            Modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp)).background(colors.surface)
+                .border(1.dp, colors.outline.copy(alpha = .4f), RoundedCornerShape(20.dp)),
+        ) {
+            Row(
+                Modifier.fillMaxWidth().clickable { fineTuneExpanded = !fineTuneExpanded }
+                    .testTag("editor_fine_tune").padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(Icons.Outlined.Tune, null, tint = colors.onSurfaceVariant)
+                Column(Modifier.weight(1f).padding(horizontal = 12.dp)) {
+                    Text(stringResource(R.string.editor_fine_tune), style = MaterialTheme.typography.titleSmall, color = colors.onSurface)
+                    Text(stringResource(R.string.editor_fine_tune_summary), style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
+                }
+                Icon(Icons.Outlined.ExpandMore, null, tint = colors.onSurfaceVariant)
+            }
+            if (fineTuneExpanded) Column(Modifier.padding(horizontal = 12.dp, vertical = 4.dp)) {
+                ScriptNameField(draft.name, stringResource(R.string.editor_shortcut_name), onSetName, Modifier.fillMaxWidth())
+                if (ModeHooks.showsRunsIn(draft.id, scripts, isPro)) ModeHooks.RunsInField(
+                    scriptId = draft.id, constraints = draft.constraints, scripts = scripts,
+                    isPro = isPro, onChange = onSetRunsIn,
+                )
+                TextButton(onClick = onOpenScriptSettings, modifier = Modifier.testTag("script_settings_button")) {
+                    Icon(Icons.Outlined.Settings, null, Modifier.size(18.dp))
+                    Spacer(Modifier.width(8.dp))
+                    Text(stringResource(R.string.editor_shortcut_settings))
+                }
+            }
+        }
+    }
     LazyColumn(
-        modifier.fillMaxWidth().testTag("editor_chain").padding(horizontal = 24.dp),
+        modifier.fillMaxWidth().testTag("editor_chain").padding(horizontal = if (wide) WidePagePadding else 24.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(top = 12.dp, bottom = 24.dp),
     ) {
-        item { ShortcutTypeSelector(draft, onToggleAutomation, onClearSurfaceOnly) }
-        draft.noteRes?.let { note -> item { ChainHint(stringResource(note)) } }
+        item { half { ShortcutTypeSelector(draft, onToggleAutomation, onClearSurfaceOnly) } }
+        draft.noteRes?.let { note -> item { half { ChainHint(stringResource(note)) } } }
         item {
-            AnimatedContent(
-                targetState = draft.takeUnless { it.automation },
-                contentKey = { it != null },
-                transitionSpec = {
-                    (fadeIn(tween(180, delayMillis = 60)) togetherWith fadeOut(tween(100)))
-                        .using(SizeTransform(clip = false))
-                },
-                label = "shortcutKeyClause",
-            ) { keyDraft ->
-                if (keyDraft != null) SentenceSection(stringResource(R.string.editor_chain_when), colors.onSurfaceVariant) {
-                    TriggerCard(keyDraft, onOpenTriggerPicker, onClearSurfaceOnly,
-                        keyPickerOpen, isRecordingKey, recordingKeys, onSetPressType, savedKeys = savedKeys)
-                    if (!keyDraft.hasTrigger()) ChainHint(stringResource(R.string.editor_needs_trigger), flagMissing)
+            half {
+                AnimatedContent(
+                    targetState = draft.takeUnless { it.automation },
+                    contentKey = { it != null },
+                    transitionSpec = {
+                        (fadeIn(tween(180, delayMillis = 60)) togetherWith fadeOut(tween(100)))
+                            .using(SizeTransform(clip = false))
+                    },
+                    label = "shortcutKeyClause",
+                ) { keyDraft ->
+                    if (keyDraft != null) SentenceSection(stringResource(R.string.editor_chain_when), colors.onSurfaceVariant) {
+                        TriggerCard(keyDraft, onOpenTriggerPicker, onClearSurfaceOnly,
+                            keyPickerOpen, isRecordingKey, recordingKeys, onSetPressType, savedKeys = savedKeys)
+                        if (!keyDraft.hasTrigger()) ChainHint(stringResource(R.string.editor_needs_trigger), flagMissing)
+                    }
                 }
             }
         }
         item {
             SentenceSection(stringResource(if (draft.automation) R.string.editor_chain_if else R.string.editor_chain_only_if), conditionColor,
-                modifier = Modifier.alpha(if (keyPickerOpen) .4f else 1f)) {
+                modifier = Modifier.alpha(if (keyPickerOpen) .4f else 1f),
+                trailing = { AnimatedVisibility(anyOffered, enter = fadeIn(), exit = fadeOut()) { MatchModeToggle(draft.matchAny, onSetMatchAny) } }) {
                 ConstraintsCard(
                     constraints = draft.constraints, onOpenPicker = onOpenConstraintPicker,
                     onRemove = onRemoveConstraint, onConfigure = onConfigureConstraint,
                     onSetParams = onSetConstraintParams,
                     installedApps = installedApps, automation = draft.automation,
+                    joins = anyOffered, matchAny = draft.matchAny,
+                    columns = if (wide) 2 else 1,
                 )
             }
         }
         item {
-            SentenceSection(stringResource(R.string.editor_chain_do), actionColor, last = true,
-                modifier = Modifier.alpha(if (keyPickerOpen) .4f else 1f)) {
-                val everyChatIndex = ActionEditorForms.everyChatReplyIndex(draft.automation, draft.constraints, draft.actions)
-                draft.actions.forEachIndexed { index, action ->
-                    key(index, action) {
-                        ActionChainCard(
-                            action = action, index = index, total = draft.actions.size,
-                            menuOpen = openMenuFor == index, advancedModeActive = advancedModeActive,
-                            startsFromNotification = ScriptConstraintCatalog.startsFromNotification(draft.automation, draft.constraints),
-                            onOpenMenu = { openMenuFor = index }, onDismissMenu = { openMenuFor = null },
-                            onConfigure = { onConfigureAction(index) },
-                            onRemove = { openMenuFor = null; onRemoveAction(index) },
-                            onMoveUp = { onMoveAction(index, index - 1) },
-                            onMoveDown = { onMoveAction(index, index + 1) },
-                            onTestAction = onTestAction,
-                            onTestResult = onTestResult,
-                            onSetUpAdvancedMode = onSetUpAdvancedMode,
-                        )
-                    }
-                    if (index == everyChatIndex) EveryChatWarning()
+            if (sideOptions) Row(horizontalArrangement = Arrangement.spacedBy(WideGutter)) {
+                Box(Modifier.weight(1f)) { doSection() }
+                // Level with the first action, below the section's title.
+                Column(Modifier.weight(1f).padding(top = 28.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    if (undoOffered && undoable.isNotEmpty()) UndoWhenItEndsRow(undoing, undoable.size, onSetAllUndo)
+                    fineTune()
                 }
-                AddActionRow(onOpenAddAction)
-                if (draft.actions.isEmpty()) ChainHint(stringResource(R.string.editor_needs_action), flagMissing)
-            }
+            } else doSection()
         }
-        if (draft.automation) item { ChainHint(stringResource(R.string.automation_card_subtitle)) }
+        if (draft.automation) item {
+            half { ChainHint(stringResource(if (anyOffered && draft.matchAny) R.string.automation_card_subtitle_any else R.string.automation_card_subtitle)) }
+        }
         // An empty automation has no highlighted word yet (the key clause is what a key press highlights).
         if (showHighlightHint && (!draft.automation || draft.constraints.isNotEmpty())) {
-            item { ChainHint(stringResource(R.string.editor_highlight_hint)) }
+            item { half { ChainHint(stringResource(R.string.editor_highlight_hint)) } }
         }
-        item {
-            Column(
-                Modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp)).background(colors.surface)
-                    .border(1.dp, colors.outline.copy(alpha = .4f), RoundedCornerShape(20.dp)),
-            ) {
-                Row(
-                    Modifier.fillMaxWidth().clickable { fineTuneExpanded = !fineTuneExpanded }
-                        .testTag("editor_fine_tune").padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Icon(Icons.Outlined.Tune, null, tint = colors.onSurfaceVariant)
-                    Column(Modifier.weight(1f).padding(horizontal = 12.dp)) {
-                        Text(stringResource(R.string.editor_fine_tune), style = MaterialTheme.typography.titleSmall, color = colors.onSurface)
-                        Text(stringResource(R.string.editor_fine_tune_summary), style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
-                    }
-                    Icon(Icons.Outlined.ExpandMore, null, tint = colors.onSurfaceVariant)
-                }
-                if (fineTuneExpanded) Column(Modifier.padding(horizontal = 12.dp, vertical = 4.dp)) {
-                    ScriptNameField(draft.name, stringResource(R.string.editor_shortcut_name), onSetName, Modifier.fillMaxWidth())
-                    if (ModeHooks.showsRunsIn(draft.id, scripts, isPro)) ModeHooks.RunsInField(
-                        scriptId = draft.id, constraints = draft.constraints, scripts = scripts,
-                        isPro = isPro, onChange = onSetRunsIn,
-                    )
-                    TextButton(onClick = onOpenScriptSettings, modifier = Modifier.testTag("script_settings_button")) {
-                        Icon(Icons.Outlined.Settings, null, Modifier.size(18.dp))
-                        Spacer(Modifier.width(8.dp))
-                        Text(stringResource(R.string.editor_shortcut_settings))
-                    }
-                }
-            }
-        }
+        if (!sideOptions) item { half { fineTune() } }
         if (!draft.isNew) {
-            item { ChainLabel(stringResource(R.string.editor_chain_runs), topPadding = 6.dp) }
-            item { RunHistoryCard(runs, draft.trigger?.keyCodes.orEmpty()) }
+            item { half { ChainLabel(stringResource(R.string.editor_chain_runs), topPadding = 6.dp) } }
+            item { half { RunHistoryCard(runs, draft.trigger?.keyCodes.orEmpty()) } }
         }
     }
 }
@@ -761,6 +846,9 @@ private fun ShortcutTypeSelector(draft: ScriptDraft, onToggleAutomation: () -> U
     }
 }
 
+/** How far a sentence section's content sits right of its timeline dot. */
+private val SentenceInset = 24.dp
+
 @Composable
 internal fun SentenceSection(
     title: String,
@@ -771,6 +859,7 @@ internal fun SentenceSection(
     titleColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
     line: Color = MaterialTheme.colorScheme.outline.copy(alpha = .4f),
     lineWidth: Dp = 1.5.dp,
+    trailing: (@Composable () -> Unit)? = null,
     content: @Composable () -> Unit,
 ) {
     Column(
@@ -778,15 +867,19 @@ internal fun SentenceSection(
             val x = if (layoutDirection == androidx.compose.ui.unit.LayoutDirection.Rtl) size.width - 5.dp.toPx() else 5.dp.toPx()
             drawCircle(tint, 5.dp.toPx(), Offset(x, 10.dp.toPx()))
             if (!last) drawLine(line, Offset(x, 24.dp.toPx()), Offset(x, size.height), lineWidth.toPx())
-        }.padding(start = 24.dp, bottom = 20.dp),
+        }.padding(start = SentenceInset, bottom = 20.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        AnimatedContent(
-            targetState = title,
-            transitionSpec = { fadeIn(tween(150)) togetherWith fadeOut(tween(100)) },
-            label = "shortcutClauseTitle",
-        ) { label ->
-            Text(label, style = titleStyle, fontWeight = FontWeight.SemiBold, color = titleColor)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            AnimatedContent(
+                targetState = title,
+                transitionSpec = { fadeIn(tween(150)) togetherWith fadeOut(tween(100)) },
+                label = "shortcutClauseTitle",
+                modifier = Modifier.weight(1f),
+            ) { label ->
+                Text(label, style = titleStyle, fontWeight = FontWeight.SemiBold, color = titleColor)
+            }
+            trailing?.invoke()
         }
         content()
     }
@@ -1007,6 +1100,11 @@ internal fun ConstraintsCard(
     // The mode sheet lists conditions under a sentence that is not the page's subject, so smaller there.
     titleStyle: TextStyle = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold),
     onSetParams: ((Int, Map<String, String>) -> Unit)? = null,
+    /** Shows AND / OR between the rows; [matchAny] picks which. */
+    joins: Boolean = false,
+    matchAny: Boolean = false,
+    /** 2 lays the conditions out side by side, as a wide editor does; their order does not matter. */
+    columns: Int = 1,
 ) {
     val colors = MaterialTheme.colorScheme
     val resources = LocalContext.current.resources
@@ -1026,7 +1124,21 @@ internal fun ConstraintsCard(
                 style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold),
             )
         } else {
-            visible.forEach { (index, constraint) ->
+            val row: @Composable (Int, ScriptConstraint) -> Unit = { index, constraint ->
+                // Side by side, every condition keeps the join's line so the cards stay level.
+                if (joins && (index > 0 || columns > 1)) Box(Modifier.heightIn(min = if (columns > 1) 22.dp else 0.dp)) {
+                    // The cooldown is always a gate, even under Any.
+                    val or = matchAny && constraint.type != ScriptConstraintCatalog.COOLDOWN
+                    if (index > 0) AnimatedContent(or, label = "constraintJoin") { isOr ->
+                        Text(
+                            stringResource(if (isOr) R.string.constraint_join_or else R.string.constraint_join_and),
+                            Modifier.padding(start = 14.dp, bottom = 6.dp),
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = colors.primary,
+                        )
+                    }
+                }
                 val descriptor = ScriptConstraintCatalog.descriptor(constraint.type)
                 val title = resources.constraintLabel(constraint)
                 val incomplete = !ConstraintEditorForms.isComplete(constraint.type, constraint.params)
@@ -1038,6 +1150,7 @@ internal fun ConstraintsCard(
                     Column(modifier) {
                         Text(title, color = glyph, style = titleStyle)
                         if (summary != null) Text(summary, style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant)
+                        if (constraint.type == ScriptConstraintCatalog.AT_PLACE && !incomplete) PlaceStatusLine(constraint.params)
                     }
                 }
                 val remove: @Composable () -> Unit = {
@@ -1076,20 +1189,26 @@ internal fun ConstraintsCard(
                 RowConfigError(incomplete, action = false, Modifier.testTag("constraint_error_$index"))
                 Spacer(Modifier.height(8.dp))
             }
+            // Inside a sentence section: its inset comes off the left column so the gap stays centred.
+            if (columns > 1) TwoColumns(visible, rowGap = 0.dp, startInset = SentenceInset) { (index, constraint) -> Column { row(index, constraint) } }
+            else visible.forEach { (index, constraint) -> row(index, constraint) }
         }
-        Row(
-            Modifier
-                .dashedBorder(colors.outline, RoundedCornerShape(14.dp))
-                .heightIn(min = MinTouchTarget)
-                .clickable(onClick = onOpenPicker)
-                .testTag(addTestTag)
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Icon(Icons.Filled.Add, null, tint = colors.onSurfaceVariant, modifier = Modifier.size(18.dp))
-            Spacer(Modifier.width(10.dp))
-            Text(stringResource(R.string.editor_add_constraint), color = colors.onSurfaceVariant, style = MaterialTheme.typography.bodyLarge)
+        val add = @Composable {
+            Row(
+                Modifier
+                    .dashedBorder(colors.outline, RoundedCornerShape(14.dp))
+                    .heightIn(min = MinTouchTarget)
+                    .clickable(onClick = onOpenPicker)
+                    .testTag(addTestTag)
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(Icons.Filled.Add, null, tint = colors.onSurfaceVariant, modifier = Modifier.size(18.dp))
+                Spacer(Modifier.width(10.dp))
+                Text(stringResource(R.string.editor_add_constraint), color = colors.onSurfaceVariant, style = MaterialTheme.typography.bodyLarge)
+            }
         }
+        if (columns > 1) LeftColumn { add() } else add()
     }
 }
 
@@ -1115,6 +1234,10 @@ internal fun ActionChainCard(
     onTestAction: suspend (ScriptAction) -> ActionTestResult,
     onTestResult: (EditorFeedback) -> Unit,
     onSetUpAdvancedMode: () -> Unit,
+    /** "Undone" / "Stays" / "Can't undo" while any action of this automation is undone; null hides it. */
+    @StringRes undoBadge: Int? = null,
+    /** Shows the menu's "Undo when it ends" switch; null when this action or this If can't be undone. */
+    onSetUndo: ((Boolean) -> Unit)? = null,
 ) {
     val colors = MaterialTheme.colorScheme
     val descriptor = ScriptActionCatalog.descriptor(action.type)
@@ -1153,6 +1276,7 @@ internal fun ActionChainCard(
                     )
                 }
                 if (action.type != "shell_command" && ActionEditorForms.needsAdvancedMode(action.type)) AdvancedModeChip(advancedModeActive)
+                undoBadge?.let { UndoBadge(it, on = it == R.string.undo_badge_on) }
             }
             if (redirectsAssistant) {
                 Text(
@@ -1188,6 +1312,15 @@ internal fun ActionChainCard(
                             onDismissMenu()
                             onConfigure()
                         },
+                    )
+                }
+                if (onSetUndo != null) {
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.undo_when_it_ends)) },
+                        leadingIcon = { Icon(Icons.AutoMirrored.Outlined.Undo, null) },
+                        trailingIcon = { Switch(checked = action.undoOnEnd, onCheckedChange = null, modifier = Modifier.scale(.8f)) },
+                        modifier = Modifier.testTag("undo_action_$index"),
+                        onClick = { onSetUndo(!action.undoOnEnd) },
                     )
                 }
                 DropdownMenuItem(
@@ -1248,6 +1381,7 @@ internal fun ActionChainCard(
     }
     RowConfigError(incomplete, action = true, Modifier.testTag("action_error_$index"))
     ShellLimitedWarning(action.type == "shell_command" && shellRunsIn(advancedModeActive) == ShellContext.APP_LIMITED, onSetUpAdvancedMode)
+    BluetoothPromptWarning(action.type)
     Spacer(Modifier.height(8.dp))
 }
 
@@ -1279,12 +1413,15 @@ private fun AdvancedModeChip(active: Boolean) {
 
 @Composable
 @OptIn(ExperimentalLayoutApi::class)
-private fun BottomToolbar(canRun: Boolean, onRunOnce: () -> Unit, onDone: () -> Unit) {
+private fun BottomToolbar(canRun: Boolean, onRunOnce: () -> Unit, onDone: () -> Unit, wide: Boolean = false) {
     val largeText = LocalDensity.current.fontScale > 1.3f
     val testDescription = stringResource(R.string.editor_test_run)
+    val width = LocalConfiguration.current.screenWidthDp.dp
     FlowRow(
         Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.background).navigationBarsPadding()
-            .padding(horizontal = 22.dp, vertical = 10.dp),
+            // Wide: Test and Save sit in the right column, under the options.
+            .padding(start = if (wide) width / 2 + WideGutter / 2 else 22.dp, end = if (wide) WidePagePadding else 22.dp)
+            .padding(vertical = 10.dp),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
         maxItemsInEachRow = if (LocalDensity.current.fontScale > 2f && LocalConfiguration.current.screenWidthDp < 600) 1 else 2,
@@ -1315,6 +1452,7 @@ private fun AddActionScreen(
     onPickAction: (String) -> Unit,
     onClose: () -> Unit,
     advancedModeActive: Boolean = false,
+    onPickLearned: (Map<String, String>) -> Unit = {},
 ) {
     val colors = MaterialTheme.colorScheme
     Column(Modifier.fillMaxSize().statusBarsPadding().testTag("action_picker_sheet")) {
@@ -1362,15 +1500,26 @@ private fun AddActionScreen(
         Spacer(Modifier.height(8.dp))
 
         val searching = query.isNotBlank()
-        val offered = (if (searching) ScriptActionCatalog.search(query, LocalContext.current.resources) else ScriptActionCatalog.all)
-            .filter { ModeHooks.offered(it.type) }
+        val context = LocalContext.current
+        val offered = (if (searching) ScriptActionCatalog.search(query, context.resources) else ScriptActionCatalog.all)
+            .filter { ModeHooks.offered(it.type) && it.type != ScriptActionCatalog.LEARNED_SETTING }
         val filtered = selectedCategory?.let { cat -> offered.filter { it.category == cat } } ?: offered
+        // "Teach a setting" and the switches taught on this phone live under Device.
+        val deviceShown = selectedCategory == null || selectedCategory == ActionCategory.DEVICE
+        val needle = query.trim()
+        val showTeach = deviceShown && (!searching || stringResource(R.string.teach_setting_title).contains(needle, ignoreCase = true))
+        val learned by LearnedSettings.flow(context).collectAsState()
+        val learnedShown = if (deviceShown) learned.filter { !searching || it.name.contains(needle, ignoreCase = true) } else emptyList()
+        var editingLearned by remember { mutableStateOf<LearnedSwitch?>(null) }
+        editingLearned?.let { LearnedSwitchDialog(it) { editingLearned = null } }
         val grouped = ActionCategory.entries.mapNotNull { category ->
             val entries = filtered.filter { it.category == category }
             if (entries.isEmpty()) null else category to entries
         }
+        // In the wide panel the rows go two to a line, so a name never has to wrap.
+        val columns = if (isWideLayout()) 2 else 1
         LazyColumn(Modifier.fillMaxWidth().weight(1f)) {
-            if (grouped.isEmpty()) {
+            if (grouped.isEmpty() && !showTeach && learnedShown.isEmpty()) {
                 item {
                     Text(
                         if (searching) stringResource(R.string.action_picker_no_match, query) else stringResource(R.string.action_picker_empty_category),
@@ -1378,6 +1527,41 @@ private fun AddActionScreen(
                         color = colors.onSurfaceVariant,
                         style = MaterialTheme.typography.bodyMedium,
                     )
+                }
+            }
+            // "Teach a setting" and the switches taught on this phone always come first.
+            if (showTeach) {
+                item(key = "teach_setting") {
+                    TeachRow(advancedModeWarningRes(ScriptActionCatalog.LEARNED_SETTING, advancedModeActive)) { startTeaching(context) }
+                }
+            }
+            if (learnedShown.isNotEmpty()) {
+                item(key = "header_learned") {
+                    Text(
+                        stringResource(R.string.teach_learned_header),
+                        Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                        style = SectionLabel,
+                        color = colors.onSurfaceVariant,
+                    )
+                }
+                val learnedRows = learnedShown.flatMap { switch -> LEARNED_STATES.map { (state, label) -> Triple(switch, state, label) } }
+                    .chunked(columns)
+                items(learnedRows.size, key = { "learned_${learnedRows[it][0].first.id}_${learnedRows[it][0].second}" }) { i ->
+                    PickerRow(learnedRows[i]) { (switch, state, label) ->
+                        LearnedRow(
+                            title = "${switch.name} · ${stringResource(label)}",
+                            onPick = {
+                                onPickLearned(
+                                    mapOf(
+                                        LearnedSetting.PARAM_NAME to switch.name,
+                                        LearnedSetting.PARAM_WRITES to switch.writes,
+                                        LearnedSetting.PARAM_STATE to state,
+                                    ),
+                                )
+                            },
+                            onLongPress = { editingLearned = switch },
+                        )
+                    }
                 }
             }
             grouped.forEach { (category, entries) ->
@@ -1389,12 +1573,19 @@ private fun AddActionScreen(
                         color = colors.onSurfaceVariant,
                     )
                 }
-                items(entries.size, key = { "action_${entries[it].type}" }) { i ->
-                    ActionRow(entries[i], onPickAction, advancedModeWarningRes(entries[i].type, advancedModeActive))
+                val rows = entries.chunked(columns)
+                items(rows.size, key = { "action_${rows[it][0].type}" }) { i ->
+                    PickerRow(rows[i]) { ActionRow(it, onPickAction, advancedModeWarningRes(it.type, advancedModeActive)) }
                 }
             }
         }
     }
+}
+
+/** One picker line: a row, or two side by side in the wide panel. */
+@Composable
+internal fun <T> PickerRow(items: List<T>, item: @Composable (T) -> Unit) {
+    if (items.size == 1 && !isWideLayout()) item(items[0]) else TwoColumns(items, rowGap = 0.dp, item = item)
 }
 
 /** A topbar icon button drawn as a small rounded tile, matching the redesign's `.topbtn`, with a
@@ -1512,13 +1703,17 @@ private fun ActionRow(descriptor: ActionDescriptor, onPickAction: (String) -> Un
         IconTile(actionIcon(descriptor.type, descriptor.category), category = descriptor.category, size = 32.dp)
         Spacer(Modifier.width(14.dp))
         Column(Modifier.weight(1f)) {
-            Text(
-                stringResource(descriptor.titleRes),
-                color = colors.onSurface,
-                style = MaterialTheme.typography.bodyLarge,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    stringResource(descriptor.titleRes),
+                    Modifier.weight(1f, fill = false),
+                    color = colors.onSurface,
+                    style = MaterialTheme.typography.bodyLarge,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                if (descriptor.type in ScriptActionCatalog.NEW) NewBadge()
+            }
             if (!available) {
                 Text(
                     stringResource(R.string.common_coming_soon),
@@ -1548,6 +1743,171 @@ private fun ActionRow(descriptor: ActionDescriptor, onPickAction: (String) -> Un
             ) {
                 Icon(Icons.Filled.Add, null, tint = colors.primary, modifier = Modifier.size(14.dp))
             }
+        }
+    }
+}
+
+private val LEARNED_STATES = listOf(
+    "toggle" to R.string.choice_state_toggle,
+    "on" to R.string.choice_state_on,
+    "off" to R.string.choice_state_off,
+)
+
+/** "Teach a setting": opens Settings with the teaching circle on top. */
+@Composable
+private fun TeachRow(@StringRes warningRes: Int?, onClick: () -> Unit) {
+    val colors = MaterialTheme.colorScheme
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .heightIn(min = MinTouchTarget)
+            .clickable(onClickLabel = stringResource(R.string.teach_setting_title), onClick = onClick)
+            .testTag("action_row_teach_setting")
+            .padding(horizontal = 16.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        IconTile(actionIcon(ScriptActionCatalog.LEARNED_SETTING, ActionCategory.DEVICE), category = ActionCategory.DEVICE, size = 32.dp)
+        Spacer(Modifier.width(14.dp))
+        Column(Modifier.weight(1f)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(stringResource(R.string.teach_setting_title), color = colors.onSurface, style = MaterialTheme.typography.bodyLarge, maxLines = 1)
+                if (ScriptActionCatalog.LEARNED_SETTING in ScriptActionCatalog.NEW) NewBadge()
+            }
+            Text(
+                stringResource(warningRes ?: R.string.teach_setting_subtitle),
+                style = MaterialTheme.typography.bodySmall,
+                color = if (warningRes != null) colors.error else colors.onSurfaceVariant,
+                maxLines = 2,
+            )
+        }
+        Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = colors.onSurfaceVariant)
+    }
+}
+
+/** Blue "NEW" tag after a just-shipped action's name ([ScriptActionCatalog.NEW]). */
+@Composable
+private fun NewBadge() {
+    val colors = MaterialTheme.colorScheme
+    Text(
+        stringResource(R.string.badge_new),
+        Modifier
+            .padding(start = 8.dp)
+            .clip(RoundedCornerShape(6.dp))
+            .background(colors.primary)
+            .padding(horizontal = 6.dp, vertical = 1.dp),
+        color = colors.onPrimary,
+        style = MaterialTheme.typography.labelSmall,
+        fontWeight = FontWeight.Bold,
+        maxLines = 1,
+    )
+}
+
+/** One of a learned switch's three rows (Toggle, On, Off). Long-press renames or deletes it. */
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun LearnedRow(title: String, onPick: () -> Unit, onLongPress: () -> Unit) {
+    val colors = MaterialTheme.colorScheme
+    val haptic = LocalHapticFeedback.current
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .heightIn(min = MinTouchTarget)
+            .combinedClickable(
+                onClickLabel = stringResource(R.string.action_picker_add_label, title),
+                onClick = onPick,
+                onLongClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    onLongPress()
+                },
+            )
+            .padding(horizontal = 16.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        IconTile(actionIcon(ScriptActionCatalog.LEARNED_SETTING, ActionCategory.DEVICE), category = ActionCategory.DEVICE, size = 32.dp)
+        Spacer(Modifier.width(14.dp))
+        Text(title, Modifier.weight(1f), color = colors.onSurface, style = MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        Box(
+            Modifier.size(26.dp).clip(CircleShape).background(colors.primary.copy(alpha = .14f)),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(Icons.Filled.Add, null, tint = colors.primary, modifier = Modifier.size(14.dp))
+        }
+    }
+}
+
+/** The small tag after an action's summary saying what "Undo when it ends" does with it. */
+@Composable
+private fun UndoBadge(@StringRes text: Int, on: Boolean) {
+    val colors = MaterialTheme.colorScheme
+    val tint = if (on) colors.onPrimaryContainer else colors.onSurfaceVariant
+    Row(
+        Modifier
+            .clip(RoundedCornerShape(8.dp))
+            .background(if (on) colors.primaryContainer else colors.surfaceVariant)
+            .padding(horizontal = 6.dp, vertical = 2.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        if (on) Icon(Icons.AutoMirrored.Outlined.Undo, null, Modifier.size(14.dp).padding(end = 2.dp), tint = tint)
+        Text(stringResource(text), style = MaterialTheme.typography.labelSmall, color = tint, maxLines = 1)
+    }
+}
+
+/** Under the Do chain of an automation: undo every action that can be, at once; each one's ⋮ changes just it. */
+@Composable
+private fun UndoWhenItEndsRow(undoing: Int, undoable: Int, onSetAll: (Boolean) -> Unit) {
+    val colors = MaterialTheme.colorScheme
+    val on = undoing > 0
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp)
+            .clip(RoundedCornerShape(14.dp))
+            .background(colors.surface)
+            .toggleable(value = on, role = Role.Switch, onValueChange = onSetAll)
+            .testTag("undo_when_it_ends")
+            .padding(horizontal = 14.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(Icons.AutoMirrored.Outlined.Undo, null, tint = colors.tertiary)
+        Column(Modifier.weight(1f).padding(horizontal = 12.dp)) {
+            Text(stringResource(R.string.undo_when_it_ends), style = MaterialTheme.typography.titleSmall, color = colors.onSurface)
+            Text(
+                if (on && undoing < undoable) {
+                    stringResource(R.string.undo_some, undoing, undoable)
+                } else {
+                    stringResource(R.string.undo_all_subtitle)
+                },
+                style = MaterialTheme.typography.bodySmall,
+                color = colors.onSurfaceVariant,
+            )
+        }
+        Switch(checked = on, onCheckedChange = null)
+    }
+}
+
+/** "All" / "Any" beside the If title: whether every condition must hold or just one. */
+@Composable
+private fun MatchModeToggle(any: Boolean, onSet: (Boolean) -> Unit) {
+    val colors = MaterialTheme.colorScheme
+    Row(
+        Modifier.clip(RoundedCornerShape(10.dp)).background(colors.surfaceVariant).padding(2.dp).selectableGroup(),
+    ) {
+        listOf(false to R.string.constraint_match_all, true to R.string.constraint_match_any).forEach { (value, label) ->
+            val selected = any == value
+            val fill by animateColorAsState(if (selected) colors.surface else Color.Transparent, label = "matchModeFill")
+            val ink by animateColorAsState(if (selected) colors.primary else colors.onSurfaceVariant, label = "matchModeInk")
+            Text(
+                stringResource(label),
+                Modifier
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(fill)
+                    .selectable(selected = selected, role = Role.RadioButton, onClick = { onSet(value) })
+                    .testTag(if (value) "match_any" else "match_all")
+                    .padding(horizontal = 12.dp, vertical = 4.dp),
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
+                color = ink,
+            )
         }
     }
 }

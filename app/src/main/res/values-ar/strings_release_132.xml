@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_teach_title_132">علِّم إعدادًا</string>
+    <string name="whats_new_teach_description_132">أرِ KeySnap مفتاحًا مرة واحدة، ثم بدّله من أي اختصار.</string>
+    <string name="whats_new_place_title_132">شرط جديد: في مكان</string>
+    <string name="whats_new_place_description_132">يعمل عند وصولك أو مغادرتك. موقعك يبقى على هاتفك. تجريبي.</string>
+    <string name="whats_new_actions_title_132">أكثر من 25 إجراءً جديدًا</string>
+    <string name="whats_new_actions_description_132">الرد على المكالمات وإنهاؤها، مؤقت، منبه، الوضع الداكن، الإضاءة الليلية والمزيد.</string>
+    <string name="whats_new_fix_conditions_132">شروط جديدة: إشعار بانتظارك، وسائط قيد التشغيل، اتجاه الهاتف</string>
+    <string name="whats_new_fix_undo_132">تراجع عند الانتهاء يعيد الإعدادات كما كانت</string>
+    <string name="whats_new_fix_vibration_132">أنماط اهتزاز</string>
+    <string name="whats_new_fix_foldable_132">مساحة أكبر على الهواتف القابلة للطي والأجهزة اللوحية</string>
+    <string name="whats_new_also_new_132">جديد أيضًا</string>
+</resources>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_dark_mode">Dunkelmodus</string>
+    <string name="action_night_light">Nachtlicht</string>
+    <string name="action_extra_dim">Extradunkel</string>
+    <string name="action_screen_timeout">Display-Zeitlimit</string>
+    <string name="param_screen_timeout">Bildschirm aus nach</string>
+    <string name="choice_timeout_15s">15 Sekunden</string>
+    <string name="choice_timeout_30s">30 Sekunden</string>
+    <string name="choice_timeout_1m">1 Minute</string>
+    <string name="choice_timeout_2m">2 Minuten</string>
+    <string name="choice_timeout_5m">5 Minuten</string>
+    <string name="choice_timeout_10m">10 Minuten</string>
+    <string name="choice_timeout_30m">30 Minuten</string>
+</resources>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_teach_title_132">Ensinar um ajuste</string>
+    <string name="whats_new_teach_description_132">Mostre um botão ao KeySnap uma vez e alterne-o em qualquer atalho.</string>
+    <string name="whats_new_place_title_132">Nova condição: Em um lugar</string>
+    <string name="whats_new_place_description_132">Roda quando você chega ou sai. Sua localização fica no celular. Experimental.</string>
+    <string name="whats_new_actions_title_132">Mais de 25 novas ações</string>
+    <string name="whats_new_actions_description_132">Atender e encerrar chamadas, timer, alarme, modo escuro, luz noturna e mais.</string>
+    <string name="whats_new_fix_conditions_132">Novas condições: notificação esperando, mídia tocando, orientação</string>
+    <string name="whats_new_fix_undo_132">Desfazer ao terminar devolve os ajustes alterados</string>
+    <string name="whats_new_fix_vibration_132">Padrões de vibração</string>
+    <string name="whats_new_fix_foldable_132">Mais espaço em dobráveis e tablets</string>
+    <string name="whats_new_also_new_132">Também novo</string>
+</resources>

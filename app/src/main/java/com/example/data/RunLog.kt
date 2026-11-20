@@ -85,8 +85,12 @@ internal val ADVANCED_MODE_TYPES = setOf(
     "input_key_code", "open_menu",
     "toggle_wifi", "enable_wifi", "disable_wifi", "toggle_mobile_data", "toggle_airplane_mode", "toggle_location",
     "toggle_bluetooth", "enable_bluetooth", "disable_bluetooth",
-    "switch_keyboard", "force_stop_app", "modify_setting", "shell_command",
-    "screen_on", "screen_off", "toggle_screen",
+    "toggle_battery_saver", "enable_battery_saver", "disable_battery_saver",
+    "always_on_display", "grayscale", "charge_limit", "bedtime", "learned_setting", "set_payment_app",
+    "dark_mode", "night_light", "extra_dim", "screen_timeout", "toggle_nfc",
+    "toggle_notification_drawer", "toggle_quick_settings",
+    "switch_keyboard", "force_stop_app", "close_and_clear_app", "launch_app_shortcut", "modify_setting", "shell_command",
+    "screen_on", "screen_off", "toggle_screen", "answer_call", "end_call",
 )
 
 /** Run without Advanced Mode, but only partly: shell has app privileges, assistants miss the overlay. */
@@ -102,7 +106,7 @@ internal fun advancedModeWarningRes(type: String, advancedMode: Boolean): Int? =
 }
 internal val ACCESSIBILITY_TYPES = setOf(
     "input_text", "tap_screen", "swipe_screen", "pinch_screen",
-    "go_back", "go_home", "open_recents", "expand_notification_drawer", "expand_quick_settings",
+    "go_back", "go_home", "open_recents", "go_last_app", "hide_keyboard", "expand_notification_drawer", "expand_quick_settings",
     "collapse_status_bar", "take_screenshot", "toggle_split_screen", "move_cursor_to_end",
     "select_word_at_cursor", "lock_device", "power_dialog", "text_cut", "text_copy", "text_paste",
 )
@@ -112,12 +116,13 @@ internal val DND_ACCESS_TYPES = setOf(
 internal val WRITE_SETTINGS_TYPES = setOf(
     "toggle_auto_rotate", "portrait_mode", "landscape_mode", "cycle_rotations",
     "change_brightness", "toggle_auto_brightness", "increase_brightness", "decrease_brightness",
+    "keep_screen_awake",
 )
 
 internal val NOTIFICATION_TYPES = setOf("show_notification")
 
 /** Actions that need notification access; one with access on and nothing to reply to reads FAILED. */
-internal val NOTIFICATION_ACCESS_TYPES = setOf("reply_to_notification")
+internal val NOTIFICATION_ACCESS_TYPES = setOf("reply_to_notification", "dismiss_all_notifications")
 
 internal const val MAX_RUNS_PER_SCRIPT = 20
 internal const val MAX_RUNS = 200

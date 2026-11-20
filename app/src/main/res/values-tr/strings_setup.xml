@@ -38,6 +38,12 @@
     <string name="setup_skip">Atla</string>
     <string name="setup_not_now">Şimdi değil</string>
     <string name="setup_optional_row">İsteğe bağlı: bildirimler</string>
+    <string name="auto_launch_row">Kısayollar kapalıyken de çalışsın</string>
+    <string name="auto_launch_search_hint">“Otomatik başlatma” arayın ve KeySnap\'i açın</string>
+    <string name="home_stopped_banner">KeySnap durduruldu. Bazı kısayollar çalışmaz.</string>
+    <string name="auto_launch_row_stopped">KeySnap\'in tekrar durmasını önle</string>
+    <string name="reconnect_sheet_body">KeySnap kendi Erişilebilirlik iznini bir kez kapatıp açar. Başka bir şey değişmez.</string>
+    <string name="reconnect_sheet_keep_on">Ardından Android soracak. “Açık tut”u seç.</string>
     <string name="setup_turn_on">Aç</string>
     <string name="setup_usage_banner">Uygulama koşulları kullanım erişimi ister</string>
     <string name="setup_usage_title">Kullanım erişimine izin ver</string>

@@ -38,6 +38,12 @@
     <string name="setup_skip">Laktawan</string>
     <string name="setup_not_now">Huwag muna</string>
     <string name="setup_optional_row">Opsyonal: mga notification</string>
+    <string name="auto_launch_row">Gumagana ang shortcut kahit sarado</string>
+    <string name="auto_launch_search_hint">Hanapin ang “Auto launch” at i-on ang KeySnap</string>
+    <string name="home_stopped_banner">Na-stop ang KeySnap. Hindi tatakbo ang ilang shortcut.</string>
+    <string name="auto_launch_row_stopped">Pigilan ang KeySnap na huminto ulit</string>
+    <string name="reconnect_sheet_body">I-o-off at i-o-on ng KeySnap nang isang beses ang sarili nitong Accessibility. Walang ibang magbabago.</string>
+    <string name="reconnect_sheet_keep_on">Pagkatapos, magtatanong ang Android. Piliin ang “Keep it on”.</string>
     <string name="setup_turn_on">I-on</string>
     <string name="setup_usage_banner">Kailangan ng Usage access ang mga kondisyon ng app</string>
     <string name="setup_usage_title">Payagan ang Usage access</string>

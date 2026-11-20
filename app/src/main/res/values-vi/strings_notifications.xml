@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_notifications_summary">Những gì KeySnap có thể báo</string>
+    <string name="notif_group_working">Giữ KeySnap hoạt động</string>
+    <string name="notif_group_shortcuts">Phím tắt của bạn</string>
+    <string name="notif_group_places">Địa điểm</string>
+    <string name="notif_failures_desc">Khi một hành động không chạy được</string>
+    <string name="notif_runs_desc">Bật riêng trong từng tự động hóa</string>
+    <string name="notif_action_desc">Nội dung đặt trong từng phím tắt</string>
+    <string name="notif_place_desc">Hiện khi chế độ nhanh đang chạy</string>
+    <string name="notif_autostart_row">Không khởi động sau khi khởi động lại</string>
+    <string name="notif_autostart_desc">Cho biết cần sửa gì</string>
+    <string name="notif_setup_row">Thiết lập và ghép nối</string>
+    <string name="notif_setup_desc">Chỉ khi thiết lập</string>
+    <string name="notif_required">Bắt buộc</string>
+    <string name="notif_system_settings">Cài đặt thông báo Android</string>
+    <string name="notif_runs_hint">Mặc định cho mọi tự động hóa. Nội dung riêng vẫn được ưu tiên. {name} là tên phím tắt.</string>
+    <string name="notif_place_hint">Dùng khi địa điểm không có nội dung riêng.</string>
+    <string name="notif_preview">Xem trước</string>
+    <string name="notif_sample_name">Buổi sáng</string>
+</resources>

@@ -1,0 +1,123 @@
+package com.example.data
+
+/**
+ * Other names people search by ("cellular" → Mobile data, "torch" → Flashlight). Keyed by a run of
+ * whole `_`-separated segments of the type id, so `flashlight` covers every flashlight action and
+ * condition while `charging` never matches `discharging`. Typing the id's own words also works in
+ * every language, so "flashlight" finds the torch on a Turkish phone too.
+ *
+ * ponytail: English synonyms only; add per-locale lists if searches in other languages miss.
+ */
+internal object CatalogSynonyms {
+    private val BY_SEGMENT = mapOf(
+        "flashlight" to "torch lamp light",
+        "mobile_data" to "cellular cell data 4g 5g lte",
+        "wifi" to "wi-fi wlan network internet",
+        "hotspot" to "tethering tether access point",
+        "bluetooth" to "bt",
+        "nfc" to "contactless",
+        "dnd" to "do not disturb focus quiet",
+        "airplane" to "flight mode aeroplane offline",
+        "location" to "gps",
+        "screenshot" to "screen capture print screen",
+        "brightness" to "backlight dim",
+        "auto_rotate" to "rotate rotation orientation",
+        "rotations" to "rotate rotation orientation",
+        "portrait" to "rotate rotation orientation",
+        "landscape" to "rotate rotation orientation",
+        "orientation" to "rotate rotation",
+        "physical_orientation" to "face down face up flip upside down tilt",
+        "screen_off" to "sleep display off",
+        "screen_on" to "wake display on",
+        "toggle_screen" to "display wake sleep",
+        "lock_device" to "lock screen sleep",
+        "volume" to "sound loudness louder quieter",
+        "mute" to "silence silent quiet",
+        "unmute" to "sound on",
+        "ringer" to "ringtone sound profile silent vibrate",
+        "media" to "music song player audio",
+        "media_next" to "skip next song",
+        "media_previous" to "previous song",
+        "launch_app" to "open start run",
+        "app_shortcut" to "quick action long press menu deep link",
+        "voice_assistant" to "ai voice",
+        "device_assistant" to "ai voice",
+        "open_camera" to "photo picture",
+        "battery_saver" to "power saving power saver low power",
+        "always_on_display" to "aod",
+        "grayscale" to "greyscale black and white monochrome",
+        "bedtime" to "wind down sleep",
+        "charge_limit" to "battery protection",
+        "shell_command" to "adb terminal script",
+        "http_request" to "webhook api get post",
+        "open_url" to "link website web browser",
+        "send_intent" to "broadcast activity",
+        "input_key_code" to "keyevent key press",
+        "input_text" to "type typing write",
+        "tap_screen" to "click touch",
+        "swipe_screen" to "scroll drag gesture",
+        "pinch_screen" to "zoom gesture",
+        "text_to_speech" to "tts speak say read aloud",
+        "vibrate" to "haptic buzz vibration",
+        "play_sound" to "beep tone audio",
+        "show_notification" to "alert",
+        "send_message" to "sms text chat",
+        "reply_to_notification" to "respond answer chat",
+        "notification" to "alert",
+        "notification_drawer" to "shade pull down",
+        "quick_settings" to "shade toggles tiles",
+        "dismiss_all_notifications" to "clear",
+        "go_back" to "back button",
+        "go_home" to "home button",
+        "open_recents" to "recent apps overview multitasking app switcher",
+        "set_timer" to "countdown clock stopwatch",
+        "set_alarm" to "wake up clock",
+        "keep_screen_awake" to "stay on caffeine screen never off",
+        "close_and_clear_app" to "kill close swipe away recents force stop",
+        "go_last_app" to "previous app switch recent",
+        "split_screen" to "multi window",
+        "force_stop_app" to "kill close",
+        "set_payment_app" to "wallet tap to pay nfc",
+        "modify_setting" to "settings put secure global system",
+        "power_dialog" to "power menu shutdown restart reboot",
+        "delay" to "wait",
+        "repeat_previous" to "again loop",
+        "mapping" to "all shortcuts keysnap",
+        "cycle_mode" to "profile",
+        "mode_is" to "profile",
+        "text_copy" to "clipboard",
+        "text_paste" to "clipboard",
+        "text_cut" to "clipboard",
+        "keyboard" to "ime input method",
+        "input_method" to "keyboard ime",
+        "dark_mode" to "night mode dark theme",
+        "headphones" to "earphones earbuds headset",
+        "charging" to "plugged charger power",
+        "battery_above" to "charge level percent",
+        "battery_below" to "charge level percent",
+        "call" to "phone incoming hang up pick up",
+        "phone_ringing" to "incoming call",
+        "at_place" to "geofence area gps home work",
+        "time" to "schedule clock",
+        "at_time" to "schedule clock alarm",
+        "interval" to "every periodic timer",
+        "day_of_week" to "weekday weekend schedule",
+        "calendar" to "event meeting agenda",
+        "rss" to "feed news blog",
+        "cooldown" to "limit throttle once",
+        "foreground" to "open app current app",
+        "no_app_open" to "home screen launcher",
+        "hinge" to "fold foldable flip",
+        "set_wallpaper" to "background",
+        "open_settings" to "preferences",
+    )
+
+    /** True when [needle] is one of the other names of [type], or a piece of its id's own words. */
+    fun matches(type: String, needle: String): Boolean {
+        val n = needle.trim()
+        if (n.length < 2) return false
+        if (type.replace('_', ' ').contains(n, ignoreCase = true)) return true
+        val padded = "_${type}_"
+        return BY_SEGMENT.any { (segment, words) -> padded.contains("_${segment}_") && words.contains(n, ignoreCase = true) }
+    }
+}

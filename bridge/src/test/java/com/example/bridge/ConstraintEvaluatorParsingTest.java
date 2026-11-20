@@ -1,6 +1,8 @@
 package com.example.bridge;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -310,5 +312,93 @@ public class ConstraintEvaluatorParsingTest {
         Map<String, String> tenMinutes = Collections.singletonMap("minutes", "10");
         assertTrue(new ConstraintEvaluator(null).isSatisfied(
                 new BridgeConfig.Constraint(BridgeConfig.CONSTRAINT_COOLDOWN, tenMinutes)));
+    }
+    @Test public void appPlayingMediaLooksOnlyAtThatAppsSessions() {
+        String dump = String.join("\n",
+                "MEDIA SESSION SERVICE (dumpsys media_session)",
+                "  w7 com.android.server.telecom/w7/1 (userId=0)",
+                "    package=com.android.server.telecom",
+                "    state=PlaybackState {state=PLAYING(3), position=1}",
+                "Record for full_user=0",
+                "  Sessions Stack - have 2 sessions:",
+                "    spotify-media-session com.spotify.music/spotify-media-session/258 (userId=0)",
+                "      ownerPid=1, ownerUid=10300, userId=0",
+                "      package=com.spotify.music",
+                "      active=true",
+                "      state=PlaybackState {state=PLAYING(3), position=1, buffered position=0}",
+                "      metadata: size=18, description=Song, Artist",
+                "    YouTube playerlib com.google.android.youtube/YouTube playerlib/259 (userId=0)",
+                "      package=com.google.android.youtube",
+                "      state=PlaybackState {state=PAUSED(2), position=1}",
+                "Audio playback (lastly played comes first)",
+                "  uid=10448 packages=com.google.android.youtube", "");
+        assertEquals(Boolean.TRUE, ConstraintEvaluator.parseAppPlayingMedia(dump, "com.spotify.music"));
+        assertEquals(Boolean.FALSE, ConstraintEvaluator.parseAppPlayingMedia(dump, "com.google.android.youtube"));
+        assertEquals(Boolean.FALSE, ConstraintEvaluator.parseAppPlayingMedia(dump, "com.spotify"));
+        // Outside the Sessions Stack does not count.
+        assertEquals(Boolean.FALSE, ConstraintEvaluator.parseAppPlayingMedia(dump, "com.android.server.telecom"));
+        assertNull(ConstraintEvaluator.parseAppPlayingMedia("", "com.spotify.music"));
+    }
+
+    /** A playing app's own title or tag can carry line breaks; it must not pass as another app. */
+    @Test public void forgedSessionLinesNeverReadAsAnotherApp() {
+        String fakeBlock = "\n      package=com.victim\n      state=PlaybackState {state=PLAYING(3), position=0}";
+        String inTitle = String.join("\n",
+                "  Sessions Stack - have 1 sessions:",
+                "    t com.evil/t/1 (userId=0)",
+                "      package=com.evil",
+                "      state=PlaybackState {state=PAUSED(2), position=0}",
+                "      metadata: size=1, description=x" + fakeBlock,
+                "Audio playback", "");
+        assertEquals(Boolean.FALSE, ConstraintEvaluator.parseAppPlayingMedia(inTitle, "com.victim"));
+        String tag = "x\n    v com.victim/v/9 (userId=0)" + fakeBlock + "\n    y";
+        String inTag = String.join("\n",
+                "  Sessions Stack - have 1 sessions:",
+                "    " + tag + " com.evil/" + tag + "/1 (userId=0)",
+                "      package=com.evil",
+                "      state=PlaybackState {state=PLAYING(3), position=0}",
+                "Audio playback", "");
+        assertNull(ConstraintEvaluator.parseAppPlayingMedia(inTag, "com.victim"));
+        String forgedStack = "x\n  Sessions Stack - have 1 sessions:\n    v com.victim/v/9 (userId=0)" + fakeBlock + "\nX";
+        String aboveTheStack = String.join("\n",
+                "  Media button session is com.evil/" + forgedStack + " (userId=0)",
+                "  Sessions Stack - have 1 sessions:",
+                "    t com.evil/t/1 (userId=0)",
+                "      package=com.evil",
+                "      state=PlaybackState {state=PAUSED(2), position=0}",
+                "Audio playback", "");
+        assertNull(ConstraintEvaluator.parseAppPlayingMedia(aboveTheStack, "com.victim"));
+    }
+
+    @Test public void inputMethodPackageComesFromTheComponent() {
+        assertEquals("com.google.android.inputmethod.latin",
+                ConstraintEvaluator.parseInputMethodPackage("com.google.android.inputmethod.latin/com.android.inputmethod.latin.LatinIME"));
+        assertNull(ConstraintEvaluator.parseInputMethodPackage("null"));
+        assertNull(ConstraintEvaluator.parseInputMethodPackage(""));
+    }
+
+    @Test public void physicalOrientationFollowsTheGravityAxis() {
+        assertEquals(PhysicalOrientation.FACE_UP, PhysicalOrientation.classify(0.04, 0.32, 9.82));
+        assertEquals(PhysicalOrientation.FACE_DOWN, PhysicalOrientation.classify(0.1, -0.5, -9.7));
+        assertEquals(PhysicalOrientation.PORTRAIT, PhysicalOrientation.classify(0.5, 9.1, 3.0));
+        assertEquals(PhysicalOrientation.UPSIDE_DOWN, PhysicalOrientation.classify(0.5, -9.1, 3.0));
+        assertEquals(PhysicalOrientation.LANDSCAPE, PhysicalOrientation.classify(-9.6, 0.4, 1.0));
+        assertNull(PhysicalOrientation.classify(0.5, 0.4, 1.0));
+        assertNull(PhysicalOrientation.matches("sideways", PhysicalOrientation.FACE_UP));
+    }
+
+    @Test public void sensorDumpUsesTheNewestFreshAccelerometerEvent() {
+        String dump = String.join("\n",
+                "0x00000001) icm456xy acc              | iven_sense      | ver: 1 | type: android.sensor.accelerometer(1) | perm: n/a",
+                "0x5f676273) Gyroscope Bias (debug)    | AOSP            | ver: 1 | type: android.sensor.accelerometer(1) | perm: n/a",
+                "icm456xy acc: last 50 events",
+                "\t 1 (ts=1346719.639, wall=17:52:11.801) 0.03, 0.32, -9.82, ",
+                "\t 2 (ts=1346719.619, wall=17:52:11.790) 0.04, 9.32, 0.82, ",
+                "tcs3760 ps: last 50 events",
+                "\t 1 (ts=1346720.0, wall=17:52:12.000) 5.00, ", "");
+        LocalTime now = LocalTime.of(17, 52, 15);
+        assertEquals(PhysicalOrientation.FACE_DOWN, PhysicalOrientation.fromSensorDump(dump, now));
+        assertNull(PhysicalOrientation.fromSensorDump(dump, LocalTime.of(17, 53, 0)));
+        assertNull(PhysicalOrientation.fromSensorDump("", now));
     }
 }

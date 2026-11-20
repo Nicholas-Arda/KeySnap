@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_notifications_summary">Cosa può dirti KeySnap</string>
+    <string name="notif_group_working">Tiene attivo KeySnap</string>
+    <string name="notif_group_shortcuts">Le tue scorciatoie</string>
+    <string name="notif_group_places">Luoghi</string>
+    <string name="notif_failures_desc">Quando un’azione non è partita</string>
+    <string name="notif_runs_desc">Si attiva in ogni automazione</string>
+    <string name="notif_action_desc">Il testo si imposta in ogni scorciatoia</string>
+    <string name="notif_place_desc">Visibile mentre la modalità rapida è attiva</string>
+    <string name="notif_autostart_row">Non avviata dopo il riavvio</string>
+    <string name="notif_autostart_desc">Ti dice cosa sistemare</string>
+    <string name="notif_setup_row">Configurazione e associazione</string>
+    <string name="notif_setup_desc">Solo durante la configurazione</string>
+    <string name="notif_required">Obbligatoria</string>
+    <string name="notif_system_settings">Impostazioni notifiche di Android</string>
+    <string name="notif_runs_hint">Predefinito per ogni automazione. Il suo testo ha la precedenza. {name} è il nome della scorciatoia.</string>
+    <string name="notif_place_hint">Usato quando un luogo non ha un testo proprio.</string>
+    <string name="notif_preview">Anteprima</string>
+    <string name="notif_sample_name">Mattina</string>
+</resources>

@@ -5,6 +5,9 @@
     <string name="chain_condition_empty">Check condition settings</string>
     <string name="chain_shell_limited">Shell runs limited here</string>
     <string name="chain_set_up">Set up</string>
+    <string name="chain_bt_prompt">Shows a quick Bluetooth prompt</string>
+    <string name="chain_bt_prompt_hide">Hide it: Developer options → Disable system optimization</string>
+    <string name="chain_open_developer_options">Open</string>
     <string name="chain_test_running">Testing action</string>
     <string name="chain_test_success">Test succeeded</string>
     <string name="chain_test_failure">Test failed</string>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_teach_title_132">Instelling aanleren</string>
+    <string name="whats_new_teach_description_132">Laat KeySnap een schakelaar één keer zien en zet hem om met elke snelkoppeling.</string>
+    <string name="whats_new_place_title_132">Nieuwe voorwaarde: Op een plek</string>
+    <string name="whats_new_place_description_132">Werkt als je aankomt of vertrekt. Je locatie blijft op je telefoon. Experimenteel.</string>
+    <string name="whats_new_actions_title_132">25+ nieuwe acties</string>
+    <string name="whats_new_actions_description_132">Gesprekken aannemen en beëindigen, timer, wekker, donkere modus, nachtlicht en meer.</string>
+    <string name="whats_new_fix_conditions_132">Nieuwe voorwaarden: melding wacht, media speelt, stand van de telefoon</string>
+    <string name="whats_new_fix_undo_132">Ongedaan maken bij einde zet gewijzigde instellingen terug</string>
+    <string name="whats_new_fix_vibration_132">Trilpatronen</string>
+    <string name="whats_new_fix_foldable_132">Meer ruimte op vouwbare telefoons en tablets</string>
+    <string name="whats_new_also_new_132">Ook nieuw</string>
+</resources>

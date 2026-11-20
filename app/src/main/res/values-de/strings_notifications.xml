@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_notifications_summary">Was KeySnap dir sagen kann</string>
+    <string name="notif_group_working">Hält KeySnap am Laufen</string>
+    <string name="notif_group_shortcuts">Deine Kurzbefehle</string>
+    <string name="notif_group_places">Orte</string>
+    <string name="notif_failures_desc">Wenn eine Aktion nicht lief</string>
+    <string name="notif_runs_desc">In jeder Automation einzeln an</string>
+    <string name="notif_action_desc">Text wird im Kurzbefehl festgelegt</string>
+    <string name="notif_place_desc">Sichtbar, solange der Schnellmodus läuft</string>
+    <string name="notif_autostart_row">Nach Neustart nicht gestartet</string>
+    <string name="notif_autostart_desc">Sagt dir, was zu tun ist</string>
+    <string name="notif_setup_row">Einrichtung und Kopplung</string>
+    <string name="notif_setup_desc">Nur während der Einrichtung</string>
+    <string name="notif_required">Erforderlich</string>
+    <string name="notif_system_settings">Android-Benachrichtigungseinstellungen</string>
+    <string name="notif_runs_hint">Standard für jede Automation. Ihr eigener Text hat Vorrang. {name} ist der Name des Kurzbefehls.</string>
+    <string name="notif_place_hint">Gilt, wenn ein Ort keinen eigenen Text hat.</string>
+    <string name="notif_preview">Vorschau</string>
+    <string name="notif_sample_name">Morgen</string>
+</resources>

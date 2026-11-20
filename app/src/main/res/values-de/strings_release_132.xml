@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_teach_title_132">Einstellung beibringen</string>
+    <string name="whats_new_teach_description_132">Zeig KeySnap einen Schalter einmal und schalte ihn dann per Kurzbefehl.</string>
+    <string name="whats_new_place_title_132">Neue Bedingung: An einem Ort</string>
+    <string name="whats_new_place_description_132">Läuft, wenn du ankommst oder gehst. Dein Standort bleibt auf dem Handy. Experimentell.</string>
+    <string name="whats_new_actions_title_132">25+ neue Aktionen</string>
+    <string name="whats_new_actions_description_132">Anrufe annehmen und beenden, Timer, Wecker, dunkles Design, Nachtlicht und mehr.</string>
+    <string name="whats_new_fix_conditions_132">Neue Bedingungen: Benachrichtigung wartet, Medien laufen, Ausrichtung</string>
+    <string name="whats_new_fix_undo_132">Am Ende rückgängig machen stellt geänderte Einstellungen zurück</string>
+    <string name="whats_new_fix_vibration_132">Vibrationsmuster</string>
+    <string name="whats_new_fix_foldable_132">Mehr Platz auf Foldables und Tablets</string>
+    <string name="whats_new_also_new_132">Außerdem neu</string>
+</resources>

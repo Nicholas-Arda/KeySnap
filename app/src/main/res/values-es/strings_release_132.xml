@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_teach_title_132">Enseñar un ajuste</string>
+    <string name="whats_new_teach_description_132">Muéstrale a KeySnap un interruptor una vez y cámbialo desde cualquier atajo.</string>
+    <string name="whats_new_place_title_132">Nueva condición: En un lugar</string>
+    <string name="whats_new_place_description_132">Se activa al llegar o al salir. Tu ubicación no sale del teléfono. Experimental.</string>
+    <string name="whats_new_actions_title_132">Más de 25 acciones nuevas</string>
+    <string name="whats_new_actions_description_132">Contestar y colgar llamadas, temporizador, alarma, modo oscuro, luz nocturna y más.</string>
+    <string name="whats_new_fix_conditions_132">Nuevas condiciones: notificación pendiente, multimedia sonando, orientación</string>
+    <string name="whats_new_fix_undo_132">Deshacer al terminar restaura los ajustes cambiados</string>
+    <string name="whats_new_fix_vibration_132">Patrones de vibración</string>
+    <string name="whats_new_fix_foldable_132">Más espacio en plegables y tabletas</string>
+    <string name="whats_new_also_new_132">También nuevo</string>
+</resources>

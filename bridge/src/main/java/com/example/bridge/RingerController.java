@@ -55,20 +55,16 @@ final class RingerController {
         }
     }
 
-    boolean cycle() {
-        return set(next(current()));
+    /** cycle_ringer_mode: the next mode in its cycle, then that mode's buzz (see {@link RingerBuzz}). */
+    boolean cycle(java.util.Map<String, String> params) {
+        int target = RingerBuzz.next(current(), params.get("modes"));
+        if (!set(target)) return false;
+        ShellBuzz.play(RingerBuzz.waveform(params, target), true);
+        return true;
     }
 
-    /** Mirrors nextRingerMode in the app's ScriptActionExecutor.kt. */
     static int next(int current) {
-        switch (current) {
-            case MODE_NORMAL:
-                return MODE_VIBRATE;
-            case MODE_VIBRATE:
-                return MODE_SILENT;
-            default:
-                return MODE_NORMAL;
-        }
+        return RingerBuzz.next(current, null);
     }
 
     /**

@@ -30,6 +30,7 @@ import androidx.core.content.IntentCompat
 import com.example.data.AppLocale
 import com.example.data.KeyMappingRepository
 import com.example.data.KeyConsumptionTracker
+import com.example.service.PlacePick
 import com.example.service.RunFailureNotifier
 import com.example.service.DiagnosticRecorder
 import com.example.service.HardwareKeyTriggerCoordinator
@@ -90,6 +91,7 @@ class MainActivity : ComponentActivity() {
         if (savedInstanceState == null) {
             openScriptFrom(intent)
             importShared(intent)
+            PlacePick.deliver(intent?.data)
         }
     }
 
@@ -98,6 +100,8 @@ class MainActivity : ComponentActivity() {
         super.onNewIntent(intent)
         openScriptFrom(intent)
         importShared(intent)
+        // The map page's answer; the activity is singleTask, so this also closes the browser tab above it.
+        PlacePick.deliver(intent.data)
     }
 
     /** ACTION_SEND from any app is untrusted; the view model validates it and asks before anything is saved. */

@@ -31,8 +31,8 @@ object RunFailureNotifier {
             manager.cancel(tag, NOTIFICATION_ID)
             return
         }
-        // Blocked, or Android 13+ without POST_NOTIFICATIONS: the run log still has it.
-        if (!manager.areNotificationsEnabled()) return
+        // Blocked, switched off in Settings → Notifications, or Android 13+ without POST_NOTIFICATIONS: the run log still has it.
+        if (!manager.areNotificationsEnabled() || !NotificationPrefs.enabled(context, NotificationPrefs.Kind.FAILURES)) return
         manager.createNotificationChannel(
             NotificationChannel(
                 CHANNEL_ID,

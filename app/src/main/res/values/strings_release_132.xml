@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_teach_title_132">Teach a setting</string>
+    <string name="whats_new_teach_description_132">Show KeySnap a switch once, then flip it from any shortcut.</string>
+    <string name="whats_new_place_title_132">New condition: At a place</string>
+    <string name="whats_new_place_description_132">Runs when you arrive or leave. Your location stays on your phone. Experimental.</string>
+    <string name="whats_new_actions_title_132">25+ new actions</string>
+    <string name="whats_new_actions_description_132">Answer and end calls, timer, alarm, dark mode, night light and more.</string>
+    <string name="whats_new_fix_conditions_132">New conditions: notification waiting, media playing, orientation</string>
+    <string name="whats_new_fix_undo_132">Undo when it ends puts changed settings back</string>
+    <string name="whats_new_fix_vibration_132">Vibration patterns</string>
+    <string name="whats_new_fix_foldable_132">More room on foldables and tablets</string>
+    <string name="whats_new_also_new_132">Also new</string>
+</resources>

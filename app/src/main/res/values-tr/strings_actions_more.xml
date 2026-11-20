@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_dark_mode">Karanlık mod</string>
+    <string name="action_night_light">Gece ışığı</string>
+    <string name="action_extra_dim">Ekstra loş</string>
+    <string name="action_screen_timeout">Ekran zaman aşımı</string>
+    <string name="param_screen_timeout">Ekranı kapatma süresi</string>
+    <string name="choice_timeout_15s">15 saniye</string>
+    <string name="choice_timeout_30s">30 saniye</string>
+    <string name="choice_timeout_1m">1 dakika</string>
+    <string name="choice_timeout_2m">2 dakika</string>
+    <string name="choice_timeout_5m">5 dakika</string>
+    <string name="choice_timeout_10m">10 dakika</string>
+    <string name="choice_timeout_30m">30 dakika</string>
+</resources>

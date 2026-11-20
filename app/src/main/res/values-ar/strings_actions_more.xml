@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_dark_mode">الوضع الداكن</string>
+    <string name="action_night_light">الإضاءة الليلية</string>
+    <string name="action_extra_dim">تعتيم إضافي</string>
+    <string name="action_screen_timeout">مهلة الشاشة</string>
+    <string name="param_screen_timeout">إطفاء الشاشة بعد</string>
+    <string name="choice_timeout_15s">15 ثانية</string>
+    <string name="choice_timeout_30s">30 ثانية</string>
+    <string name="choice_timeout_1m">دقيقة واحدة</string>
+    <string name="choice_timeout_2m">دقيقتان</string>
+    <string name="choice_timeout_5m">5 دقائق</string>
+    <string name="choice_timeout_10m">10 دقائق</string>
+    <string name="choice_timeout_30m">30 دقيقة</string>
+</resources>

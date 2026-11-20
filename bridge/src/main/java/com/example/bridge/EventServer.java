@@ -38,6 +38,12 @@ public final class EventServer implements Runnable {
         /** The app owns role discovery and its outgoing-invocation guard. */
         default boolean onShowAssistantRequested() { return false; }
 
+        /** "Teach a setting" step; never logs the snapshots. */
+        default String onTeachRequested(String step) { return "error"; }
+
+        /** "Launch app shortcut" picker: one app's shortcuts as a JSON array. */
+        default String onShortcutsRequested(String packageName) { return "unavailable"; }
+
         /** No app trigger subscriber received a physical run; optionally wake display-only UI. */
         default void onFeedbackWakeRequested() { }
     }
@@ -283,6 +289,12 @@ public final class EventServer implements Runnable {
                     } else if (BridgeProtocol.CMD_SHOW_ASSISTANT.equals(command)) {
                         writeDirect(BridgeProtocol.MSG_OK + SEP
                                 + (listener.onShowAssistantRequested() ? "1" : "0"));
+                    } else if (BridgeProtocol.CMD_TEACH.equals(command)) {
+                        writeDirect(BridgeProtocol.MSG_OK + SEP
+                                + listener.onTeachRequested(parts.length >= 2 ? parts[1] : ""));
+                    } else if (BridgeProtocol.CMD_SHORTCUTS.equals(command)) {
+                        writeDirect(BridgeProtocol.MSG_OK + SEP
+                                + listener.onShortcutsRequested(parts.length >= 2 ? parts[1] : ""));
                     } else if (BridgeProtocol.CMD_SHUTDOWN.equals(command)) {
                         writeDirect(BridgeProtocol.MSG_BYE);
                         listener.onShutdownRequested();

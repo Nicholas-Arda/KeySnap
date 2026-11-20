@@ -38,6 +38,12 @@
     <string name="setup_skip">Overslaan</string>
     <string name="setup_not_now">Niet nu</string>
     <string name="setup_optional_row">Optioneel: meldingen</string>
+    <string name="auto_launch_row">Snelkoppelingen ook gesloten laten werken</string>
+    <string name="auto_launch_search_hint">Zoek op ‘Automatisch starten’ en zet KeySnap aan</string>
+    <string name="home_stopped_banner">KeySnap is gestopt. Sommige snelkoppelingen werken niet.</string>
+    <string name="auto_launch_row_stopped">Voorkom dat KeySnap weer stopt</string>
+    <string name="reconnect_sheet_body">KeySnap zet zijn eigen toegankelijkheid één keer uit en weer aan. Verder verandert er niets.</string>
+    <string name="reconnect_sheet_keep_on">Android vraagt het daarna. Kies ‘Ingeschakeld houden’.</string>
     <string name="setup_turn_on">Inschakelen</string>
     <string name="setup_usage_banner">App-voorwaarden hebben gebruikstoegang nodig</string>
     <string name="setup_usage_title">Gebruikstoegang toestaan</string>

@@ -125,6 +125,15 @@ object DiagnosticRecorder {
         }
     }
 
+    /** An editor ▶ test. Exit code only: the output can echo a user-authored command. */
+    fun test(actionType: Int, ok: Boolean, exitCode: Int?, durationMs: Long, path: ActionPath, bridgeReplied: Boolean = true) {
+        if (!recording) return
+        synchronized(this) {
+            val type = ScriptActionCatalog.all.getOrNull(actionType)?.type ?: "UNKNOWN"
+            append("test type=$type result=${if (ok) "ok" else "failed"} exit=${exitCode ?: "-"} ms=$durationMs path=$path${if (bridgeReplied) "" else " reply=NONE"}")
+        }
+    }
+
     @Synchronized
     fun render(): String {
         checkTimeout()

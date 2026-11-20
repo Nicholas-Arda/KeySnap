@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_dark_mode">다크 모드</string>
+    <string name="action_night_light">야간 조명</string>
+    <string name="action_extra_dim">더 어둡게</string>
+    <string name="action_screen_timeout">화면 자동 꺼짐</string>
+    <string name="param_screen_timeout">화면 꺼짐 시간</string>
+    <string name="choice_timeout_15s">15초</string>
+    <string name="choice_timeout_30s">30초</string>
+    <string name="choice_timeout_1m">1분</string>
+    <string name="choice_timeout_2m">2분</string>
+    <string name="choice_timeout_5m">5분</string>
+    <string name="choice_timeout_10m">10분</string>
+    <string name="choice_timeout_30m">30분</string>
+</resources>

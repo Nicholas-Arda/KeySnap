@@ -38,6 +38,12 @@
     <string name="setup_skip">Salta</string>
     <string name="setup_not_now">Non ora</string>
     <string name="setup_optional_row">Facoltativo: notifiche</string>
+    <string name="auto_launch_row">Scorciatoie attive ad app chiusa</string>
+    <string name="auto_launch_search_hint">Cerca “Avvio automatico” e attiva KeySnap</string>
+    <string name="home_stopped_banner">KeySnap è stato fermato. Alcune scorciatoie non funzioneranno.</string>
+    <string name="auto_launch_row_stopped">Evita che KeySnap si fermi di nuovo</string>
+    <string name="reconnect_sheet_body">KeySnap disattiva e riattiva una volta la propria accessibilità. Nient’altro cambia.</string>
+    <string name="reconnect_sheet_keep_on">Poi Android chiederà. Scegli “Lascia attivo”.</string>
     <string name="setup_turn_on">Attiva</string>
     <string name="setup_usage_banner">Le condizioni app richiedono l’accesso all’utilizzo</string>
     <string name="setup_usage_title">Consenti accesso all’utilizzo</string>

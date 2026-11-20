@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_notifications_summary">Yang bisa diberitahukan KeySnap</string>
+    <string name="notif_group_working">Menjaga KeySnap tetap berjalan</string>
+    <string name="notif_group_shortcuts">Pintasan Anda</string>
+    <string name="notif_group_places">Tempat</string>
+    <string name="notif_failures_desc">Saat aksi gagal berjalan</string>
+    <string name="notif_runs_desc">Diaktifkan di tiap otomatisasi</string>
+    <string name="notif_action_desc">Teksnya diatur di tiap pintasan</string>
+    <string name="notif_place_desc">Tampil selama mode cepat berjalan</string>
+    <string name="notif_autostart_row">Tidak mulai setelah restart</string>
+    <string name="notif_autostart_desc">Memberi tahu apa yang perlu diperbaiki</string>
+    <string name="notif_setup_row">Penyiapan dan penyandingan</string>
+    <string name="notif_setup_desc">Hanya saat penyiapan</string>
+    <string name="notif_required">Wajib</string>
+    <string name="notif_system_settings">Setelan notifikasi Android</string>
+    <string name="notif_runs_hint">Bawaan untuk tiap otomatisasi. Teksnya sendiri tetap diutamakan. {name} adalah nama pintasan.</string>
+    <string name="notif_place_hint">Dipakai jika tempat tidak punya teks sendiri.</string>
+    <string name="notif_preview">Pratinjau</string>
+    <string name="notif_sample_name">Pagi</string>
+</resources>

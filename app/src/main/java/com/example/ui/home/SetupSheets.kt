@@ -19,6 +19,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.RocketLaunch
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -29,6 +30,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.platform.testTag
@@ -47,10 +49,16 @@ fun SetupCard(
     gaps: PermissionGaps,
     isServiceActive: Boolean,
     onOpenAccessibility: () -> Unit,
+    /** Accessibility is allowed but its service died (e.g. swiped from Recents): not a setup step. */
+    stopped: Boolean = false,
 ) {
     val state = RequiredSetupState(isServiceActive, gaps.battery, gaps.notifications)
     if (state.banner == null) return
     val tint = if (state.banner == SetupBanner.NotRunning) MaterialTheme.colorScheme.error else setupWarning()
+    if (stopped && state.banner == SetupBanner.NotRunning) {
+        BannerRow(stringResource(R.string.home_stopped_banner), tint, onOpenAccessibility, Modifier.testTag("accessibility_stopped_alert"))
+        return
+    }
     val text = stringResource(if (state.banner == SetupBanner.NotRunning) R.string.setup_not_running else R.string.setup_background_risk)
     BannerRow(text, tint, onOpenAccessibility, Modifier.testTag("permission_alerts")) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -105,13 +113,53 @@ fun UsageAccessBanner(onFix: () -> Unit) {
 
 /** Optional notifications prompt: neutral card, bell, Turn on, close. */
 @Composable
-fun NotificationsCard(onTurnOn: () -> Unit, onClose: () -> Unit) {
+fun NotificationsCard(onTurnOn: () -> Unit, onClose: () -> Unit) =
+    OptionalRow(Icons.Outlined.Notifications, R.string.setup_optional_row, "notifications_card", onTurnOn, onClose)
+
+/** OEM "Auto launch": its state is unreadable, so the row stays until closed. After KeySnap was once stopped it says why. */
+@Composable
+fun AutoLaunchCard(stoppedBefore: Boolean, onTurnOn: () -> Unit, onClose: () -> Unit) =
+    OptionalRow(
+        if (stoppedBefore) Icons.Default.WarningAmber else Icons.Outlined.RocketLaunch,
+        if (stoppedBefore) R.string.auto_launch_row_stopped else R.string.auto_launch_row,
+        "auto_launch_card",
+        onTurnOn,
+        onClose,
+    )
+
+/** One action, named before it runs: KeySnap's own entry off and on. ColorOS then asks; say what to pick first. */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ReconnectSheet(warnsAfterwards: Boolean, onConfirm: () -> Unit, onDismiss: () -> Unit) {
+    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
+        Column(Modifier.fillMaxWidth().padding(horizontal = 20.dp).padding(bottom = 16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Text(stringResource(R.string.accessibility_reconnect_title), style = MaterialTheme.typography.headlineSmall)
+            Text(stringResource(R.string.reconnect_sheet_body), style = MaterialTheme.typography.bodyMedium)
+            if (warnsAfterwards) {
+                Row(
+                    Modifier.fillMaxWidth().background(setupWarning().copy(alpha = .12f), InnerShape).padding(12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(Icons.Default.WarningAmber, null, Modifier.padding(end = 8.dp).size(18.dp), tint = setupWarning())
+                    Text(stringResource(R.string.reconnect_sheet_keep_on), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
+                }
+            }
+            Button(onClick = onConfirm, modifier = Modifier.fillMaxWidth().testTag("reconnect_confirm")) {
+                Text(stringResource(R.string.accessibility_reconnect_button))
+            }
+            TextButton(onClick = onDismiss, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.setup_not_now)) }
+        }
+    }
+}
+
+@Composable
+private fun OptionalRow(icon: ImageVector, text: Int, tag: String, onTurnOn: () -> Unit, onClose: () -> Unit) {
     val colors = MaterialTheme.colorScheme
     Row(Modifier.fillMaxWidth().background(colors.onSurface.copy(alpha = .06f), InnerShape)
-        .testTag("notifications_card").padding(start = 14.dp, top = 2.dp, bottom = 2.dp, end = 2.dp),
+        .testTag(tag).padding(start = 14.dp, top = 2.dp, bottom = 2.dp, end = 2.dp),
         verticalAlignment = Alignment.CenterVertically) {
-        Icon(Icons.Outlined.Notifications, null, Modifier.padding(end = 8.dp).size(18.dp), tint = colors.onSurfaceVariant)
-        Text(stringResource(R.string.setup_optional_row), Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium)
+        Icon(icon, null, Modifier.padding(end = 8.dp).size(18.dp), tint = colors.onSurfaceVariant)
+        Text(stringResource(text), Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium)
         TextButton(onClick = onTurnOn) { Text(stringResource(R.string.setup_turn_on)) }
         IconButton(onClick = onClose) {
             Icon(Icons.Default.Close, stringResource(R.string.common_close), tint = colors.onSurfaceVariant)

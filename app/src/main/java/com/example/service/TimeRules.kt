@@ -53,6 +53,16 @@ internal object TimeRules {
     }
 
     /** The earliest [nextDue] across [constraints]. */
+    /**
+     * For the editor's "Not today. First run in …" line: whether an "At a time" next runs today, and
+     * the whole minutes until then, rounded up so "in 0 min" never shows. Null when it never runs.
+     */
+    fun firstRun(constraint: ScriptConstraint, now: LocalDateTime): Pair<Boolean, Long>? {
+        val next = nextDue(constraint, now) ?: return null
+        val minutes = (Duration.between(now, next).seconds + 59) / 60
+        return (next.toLocalDate() == now.toLocalDate()) to minutes
+    }
+
     fun nextBoundary(constraints: List<ScriptConstraint>, after: LocalDateTime): LocalDateTime? =
         constraints.mapNotNull { nextDue(it, after) }.minOrNull()
 

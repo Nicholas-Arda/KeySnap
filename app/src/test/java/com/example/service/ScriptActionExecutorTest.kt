@@ -4,6 +4,7 @@ import android.app.NotificationManager
 import android.app.WallpaperManager
 import android.media.AudioManager
 import com.example.bridge.BrightnessScale
+import com.example.bridge.RingerBuzz
 import com.example.data.ScriptAction
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
@@ -107,6 +108,13 @@ class ScriptActionExecutorTest {
         assertEquals(NotificationManager.INTERRUPTION_FILTER_ALL, dndFilterFor(NotificationManager.INTERRUPTION_FILTER_ALL, false))
     }
 
+    @Test fun dndTypeChoosesTheFilterOnlyWhenTurningOn() {
+        assertEquals(NotificationManager.INTERRUPTION_FILTER_ALARMS, dndFilterFor(NotificationManager.INTERRUPTION_FILTER_ALL, true, "alarms"))
+        assertEquals(NotificationManager.INTERRUPTION_FILTER_NONE, dndFilterFor(NotificationManager.INTERRUPTION_FILTER_ALL, null, "none"))
+        assertEquals(NotificationManager.INTERRUPTION_FILTER_PRIORITY, dndFilterFor(NotificationManager.INTERRUPTION_FILTER_ALL, true, "bogus"))
+        assertEquals(NotificationManager.INTERRUPTION_FILTER_ALL, dndFilterFor(NotificationManager.INTERRUPTION_FILTER_NONE, null, "none"))
+    }
+
     @Test fun brightnessUsesTheSharedBridgeScaleAndPreservesSavedValues() {
         val standard = BrightnessScale(255, false)
         assertEquals(154, standard.step(128, 1))
@@ -126,9 +134,9 @@ class ScriptActionExecutorTest {
     }
 
     @Test fun ringerModeCyclesNormalToVibrateToSilentAndBackToNormal() {
-        assertEquals(AudioManager.RINGER_MODE_VIBRATE, nextRingerMode(AudioManager.RINGER_MODE_NORMAL))
-        assertEquals(AudioManager.RINGER_MODE_SILENT, nextRingerMode(AudioManager.RINGER_MODE_VIBRATE))
-        assertEquals(AudioManager.RINGER_MODE_NORMAL, nextRingerMode(AudioManager.RINGER_MODE_SILENT))
+        assertEquals(AudioManager.RINGER_MODE_VIBRATE, RingerBuzz.next(AudioManager.RINGER_MODE_NORMAL, null))
+        assertEquals(AudioManager.RINGER_MODE_SILENT, RingerBuzz.next(AudioManager.RINGER_MODE_VIBRATE, null))
+        assertEquals(AudioManager.RINGER_MODE_NORMAL, RingerBuzz.next(AudioManager.RINGER_MODE_SILENT, null))
     }
 
     /**

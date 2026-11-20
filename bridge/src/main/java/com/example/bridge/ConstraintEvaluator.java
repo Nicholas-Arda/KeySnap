@@ -73,6 +73,23 @@ final class ConstraintEvaluator {
         return isSatisfied(constraint, false);
     }
 
+    /**
+     * For "Any": true only when the state is read and holds; unknown is false, not "never blocks".
+     * Mirrors the app's AndroidConstraintEvaluator.isKnownTrue.
+     */
+    boolean isKnownTrue(BridgeConfig.Constraint constraint, boolean foregroundReadable) {
+        if (ConstraintNegation.requested(constraint.params) || BridgeConfig.CONSTRAINT_MODE_IS.equals(constraint.type)) {
+            return isSatisfied(constraint, foregroundReadable);
+        }
+        Boolean state;
+        try {
+            state = knownState(ConstraintNegation.positiveType(constraint.type), constraint.params, foregroundReadable);
+        } catch (RuntimeException e) {
+            state = null;
+        }
+        return Boolean.TRUE.equals(ConstraintNegation.predicate(constraint.type, state));
+    }
+
     boolean isSatisfied(BridgeConfig.Constraint constraint, boolean foregroundReadable) {
         Map<String, String> p = constraint.params;
         if (ConstraintNegation.requested(p)) {
@@ -203,6 +220,14 @@ final class ConstraintEvaluator {
                 return parseHeadphonesConnected(shell("dumpsys", "audio"));
             case BridgeConfig.CONSTRAINT_HEADPHONES_DISCONNECTED:
                 return !parseHeadphonesConnected(shell("dumpsys", "audio"));
+            case BridgeConfig.CONSTRAINT_APP_PLAYING_MEDIA:
+            case BridgeConfig.CONSTRAINT_INPUT_METHOD_CHOSEN:
+            case BridgeConfig.CONSTRAINT_PHYSICAL_ORIENTATION:
+                // One reader for both paths; unknown never blocks.
+                return !Boolean.FALSE.equals(knownState(constraint.type, p, foregroundReadable));
+            case BridgeConfig.CONSTRAINT_APP_NOT_PLAYING_MEDIA:
+            case BridgeConfig.CONSTRAINT_INPUT_METHOD_NOT_CHOSEN:
+                return !Boolean.TRUE.equals(knownState(ConstraintNegation.positiveType(constraint.type), p, foregroundReadable));
             case BridgeConfig.CONSTRAINT_NOTIFICATION_RECEIVED:
                 // App-only: this process has no notification listener, so from here no
                 // notification has arrived. The editor offers the condition only on key-less
@@ -210,6 +235,9 @@ final class ConstraintEvaluator {
                 // scripts). Answering false instead of the usual "unknown never blocks" keeps an
                 // imported key shortcut from firing on every press here while the app holds it.
                 return false;
+            case BridgeConfig.CONSTRAINT_AT_PLACE:
+                // Unknown is not "here", as in the app: a place shortcut never fires on a guess.
+                return Boolean.TRUE.equals(knownPlaceSide(p));
             case BridgeConfig.CONSTRAINT_COOLDOWN:
                 // Needs the script's run history; BridgeMain.cooldownAllows gates it per script.
                 return true;
@@ -217,6 +245,11 @@ final class ConstraintEvaluator {
                 // A constraint type that isn't AVAILABLE never blocks a script.
                 return true;
         }
+    }
+
+    static Boolean knownPlaceSide(Map<String, String> p) {
+        String inside = p.get(BridgeConfig.PARAM_INSIDE);
+        return "true".equals(inside) ? Boolean.TRUE : "false".equals(inside) ? Boolean.FALSE : null;
     }
 
     /** Strict reads for negation only. A recognized field, not an empty/error dump, proves false. */
@@ -240,6 +273,7 @@ final class ConstraintEvaluator {
                 if (parseAudioMode(out) == null) return null;
                 return "phone_ringing".equals(type) ? parsePhoneRinging(out) : parseInPhoneCall(out);
             case "flashlight_on": return knownTorchState.get();
+            case BridgeConfig.CONSTRAINT_AT_PLACE: return knownPlaceSide(p);
             case "app_in_foreground":
                 if (!foregroundReadable || blank(p.get("packageName"))) return null;
                 String resumed = parseResumedPackage(knownReader.read("dumpsys", "activity", "activities"));
@@ -319,6 +353,16 @@ final class ConstraintEvaluator {
             case "headphones_connected":
                 out = knownReader.read("dumpsys", "audio");
                 return out.contains("Connected devices:") ? parseHeadphonesConnected(out) : null;
+            case BridgeConfig.CONSTRAINT_APP_PLAYING_MEDIA:
+                if (blank(p.get("packageName"))) return null;
+                return parseAppPlayingMedia(knownReader.read("dumpsys", "media_session"), p.get("packageName").trim());
+            case BridgeConfig.CONSTRAINT_INPUT_METHOD_CHOSEN:
+                if (blank(p.get("packageName"))) return null;
+                String ime = parseInputMethodPackage(knownReader.read("settings", "get", "secure", "default_input_method"));
+                return ime == null ? null : ime.equals(p.get("packageName").trim());
+            case BridgeConfig.CONSTRAINT_PHYSICAL_ORIENTATION:
+                return PhysicalOrientation.matches(p.get("orientation"),
+                        PhysicalOrientation.fromSensorDump(knownReader.read("dumpsys", "sensorservice"), LocalTime.now()));
             default: return null; // App-only, unknown, coming-soon, or unsupported mode_is.
         }
     }
@@ -698,6 +742,55 @@ final class ConstraintEvaluator {
     static boolean parseMediaPlaying(String dumpsysMediaSessionOutput) {
         return Pattern.compile("PlaybackState \\{state=(?:[A-Z_]+\\()?3(?!\\d)")
                 .matcher(dumpsysMediaSessionOutput).find();
+    }
+
+    private static final Pattern SESSION_STACK = Pattern.compile("(?m)^\\s*Sessions Stack - have (\\d+) sessions?:?\\s*$");
+    /** "    tag pkg/tag/id (userId=0)": the tag is printed twice, so a forged header always comes in pairs. */
+    private static final Pattern SESSION_HEADER = Pattern.compile("^\\s+(.+) ([\\w.]+)/\\1/\\d+ \\(userId=\\d+\\)$");
+    private static final Pattern PLAYING = Pattern.compile("^state=PlaybackState \\{state=(?:[A-Z_]+\\()?3(?!\\d)");
+
+    /**
+     * Whether one app's media session in the Sessions Stack is PLAYING. A session's tag and title
+     * are the app's own text and can hold line breaks, so a playing app could print a fake block
+     * for another package. Hence: only each block's first package= and state= lines count, the
+     * package= line must repeat the header's package, and the headers found must equal the count
+     * the service printed; anything else is unknown (null), never a guess.
+     */
+    static Boolean parseAppPlayingMedia(String dump, String packageName) {
+        Matcher stack = SESSION_STACK.matcher(dump == null ? "" : dump);
+        if (!stack.find()) return null;
+        // "Media button session is <pkg>/<tag>" sits above the stack, so a tag could forge a second one.
+        if (SESSION_STACK.matcher(dump.substring(stack.end())).find()) return null;
+        int headers = 0;
+        String owner = null;
+        boolean sawPackage = false, sawState = false, playing = false;
+        for (String line : dump.substring(stack.end()).split("\\r?\\n")) {
+            if (!line.isEmpty() && !Character.isWhitespace(line.charAt(0))) break;
+            Matcher header = SESSION_HEADER.matcher(line);
+            if (header.matches()) {
+                headers++;
+                owner = header.group(2);
+                sawPackage = false;
+                sawState = false;
+                continue;
+            }
+            String t = line.trim();
+            if (owner == null) continue;
+            if (!sawPackage && t.startsWith("package=")) {
+                sawPackage = true;
+                if (!owner.equals(t.substring("package=".length()))) return null;
+            } else if (sawPackage && !sawState && t.startsWith("state=")) {
+                sawState = true;
+                if (owner.equals(packageName) && PLAYING.matcher(t).find()) playing = true;
+            }
+        }
+        return headers == Integer.parseInt(stack.group(1)) ? playing : null;
+    }
+
+    /** "com.pkg/.Service" from {@code settings get secure default_input_method}; null when unset or not a component. */
+    static String parseInputMethodPackage(String output) {
+        Matcher m = Pattern.compile("^\\s*([a-zA-Z][\\w]*(?:\\.[\\w]+)+)/\\S+\\s*$").matcher(output == null ? "" : output);
+        return m.find() ? m.group(1) : null;
     }
 
     /**

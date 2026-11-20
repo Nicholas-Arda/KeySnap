@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_teach_title_132">Ajarkan setelan</string>
+    <string name="whats_new_teach_description_132">Tunjukkan sebuah tombol ke KeySnap sekali, lalu ubah dari pintasan mana pun.</string>
+    <string name="whats_new_place_title_132">Kondisi baru: Di suatu tempat</string>
+    <string name="whats_new_place_description_132">Berjalan saat Anda tiba atau pergi. Lokasi Anda tetap di ponsel. Eksperimental.</string>
+    <string name="whats_new_actions_title_132">25+ aksi baru</string>
+    <string name="whats_new_actions_description_132">Angkat dan akhiri panggilan, timer, alarm, mode gelap, cahaya malam, dan lainnya.</string>
+    <string name="whats_new_fix_conditions_132">Kondisi baru: notifikasi menunggu, media diputar, orientasi ponsel</string>
+    <string name="whats_new_fix_undo_132">Batalkan saat selesai mengembalikan setelan yang diubah</string>
+    <string name="whats_new_fix_vibration_132">Pola getaran</string>
+    <string name="whats_new_fix_foldable_132">Lebih lega di ponsel lipat dan tablet</string>
+    <string name="whats_new_also_new_132">Juga baru</string>
+</resources>

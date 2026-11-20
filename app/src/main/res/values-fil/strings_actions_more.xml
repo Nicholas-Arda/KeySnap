@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_dark_mode">Dark mode</string>
+    <string name="action_night_light">Night light</string>
+    <string name="action_extra_dim">Extra dim</string>
+    <string name="action_screen_timeout">Screen timeout</string>
+    <string name="param_screen_timeout">Patayin ang screen pagkalipas ng</string>
+    <string name="choice_timeout_15s">15 segundo</string>
+    <string name="choice_timeout_30s">30 segundo</string>
+    <string name="choice_timeout_1m">1 minuto</string>
+    <string name="choice_timeout_2m">2 minuto</string>
+    <string name="choice_timeout_5m">5 minuto</string>
+    <string name="choice_timeout_10m">10 minuto</string>
+    <string name="choice_timeout_30m">30 minuto</string>
+</resources>

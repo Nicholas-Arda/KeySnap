@@ -31,6 +31,9 @@ class ScriptConstraintCatalogTest {
             setOf(
                 "app_in_foreground", "app_not_in_foreground", "notification_received",
                 "media_is_playing", "no_media_playing",
+                "app_playing_media", "app_not_playing_media",
+                "physical_orientation",
+                "input_method_chosen", "input_method_not_chosen",
                 "bluetooth_on", "bluetooth_off",
                 "bluetooth_device_connected", "bluetooth_device_disconnected",
                 "screen_on", "screen_off",
@@ -57,6 +60,7 @@ class ScriptConstraintCatalogTest {
                 "location_on", "location_off",
                 "time", "day_of_week", "cooldown",
                 "mode_is",
+                "at_place",
             ),
             available.toSet() - (ScriptConstraintCatalog.AUTOMATION_ONLY - ScriptConstraintCatalog.NOTIFICATION_RECEIVED),
         )
@@ -66,9 +70,6 @@ class ScriptConstraintCatalogTest {
         val comingSoon = ScriptConstraintCatalog.all.filter { it.availability == ConstraintAvailability.COMING_SOON }.map { it.type }
         assertEquals(
             setOf(
-                "app_playing_media", "app_not_playing_media",
-                "physical_orientation",
-                "input_method_chosen", "input_method_not_chosen",
                 "hinge_closed", "hinge_open",
             ),
             comingSoon.toSet(),
@@ -89,7 +90,7 @@ class ScriptConstraintCatalogTest {
     /** App-only; grows with each automation-only condition. On a key the bridge would read these differently. */
     @Test fun theAutomationOnlySetIsPinnedAndEachCanWakeAnAutomation() {
         assertEquals(
-            setOf("notification_received", "rss_new_item", "calendar_event_active", "at_time", "interval"),
+            setOf("notification_received", "notification_waiting", "rss_new_item", "calendar_event_active", "at_time", "interval"),
             ScriptConstraintCatalog.AUTOMATION_ONLY,
         )
         ScriptConstraintCatalog.AUTOMATION_ONLY.forEach { type ->

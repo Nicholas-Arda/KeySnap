@@ -147,7 +147,9 @@ class PurchaseManager private constructor(context: Context, private val entitlem
 data class ProPrice(val price: String, val sale: ProSale? = null)
 
 /** A Play Console discount: the struck-out full price, its percentage and when Play ends it. */
-data class ProSale(val fullPrice: String, val percentOff: Int?, val endsAtMillis: Long?)
+/** [blackFriday]: the live Play offer carries the `blackfriday` tag (set in Play Console), so the
+ *  strip dresses for it without a date in the app. */
+data class ProSale(val fullPrice: String, val percentOff: Int?, val endsAtMillis: Long?, val blackFriday: Boolean = false)
 
 internal data class OfferInfo(val priceMicros: Long, val discounted: Boolean, val endsAtMillis: Long?)
 
@@ -168,7 +170,7 @@ private fun ProductDetails.OneTimePurchaseOfferDetails.sale(all: List<ProductDet
     val full = all.firstOrNull { it.discountDisplayInfo == null && it.priceAmountMicros == fullMicros }?.formattedPrice
         ?: NumberFormat.getCurrencyInstance().apply { currency = Currency.getInstance(priceCurrencyCode) }
             .format(fullMicros / 1_000_000.0)
-    return ProSale(full, discount.percentageDiscount, validTimeWindow?.endTimeMillis)
+    return ProSale(full, discount.percentageDiscount, validTimeWindow?.endTimeMillis, offerTags.orEmpty().any { it.equals("blackfriday", true) })
 }
 
 /** What Pro should become after a purchases query; null keeps the stored value. Only an OK answer

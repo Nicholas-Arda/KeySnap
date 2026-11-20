@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_notifications_summary">Ang maipapaalam ng KeySnap</string>
+    <string name="notif_group_working">Pinapanatiling gumagana ang KeySnap</string>
+    <string name="notif_group_shortcuts">Mga shortcut mo</string>
+    <string name="notif_group_places">Mga lugar</string>
+    <string name="notif_failures_desc">Kapag hindi tumakbo ang isang aksyon</string>
+    <string name="notif_runs_desc">Ino-on sa bawat automation</string>
+    <string name="notif_action_desc">Ang text ay nakatakda sa bawat shortcut</string>
+    <string name="notif_place_desc">Lumalabas habang tumatakbo ang Fast mode</string>
+    <string name="notif_autostart_row">Hindi nagsimula pagkatapos mag-restart</string>
+    <string name="notif_autostart_desc">Sinasabi kung ano ang aayusin</string>
+    <string name="notif_setup_row">Setup at pairing</string>
+    <string name="notif_setup_desc">Habang nagse-setup lang</string>
+    <string name="notif_required">Kailangan</string>
+    <string name="notif_system_settings">Mga setting ng notification ng Android</string>
+    <string name="notif_runs_hint">Default para sa bawat automation. Mas inuuna ang sarili nitong text. {name} ang pangalan ng shortcut.</string>
+    <string name="notif_place_hint">Ginagamit kapag walang sariling text ang lugar.</string>
+    <string name="notif_preview">Preview</string>
+    <string name="notif_sample_name">Umaga</string>
+</resources>

@@ -47,6 +47,7 @@ import androidx.compose.material.icons.outlined.Build
 import androidx.compose.material.icons.outlined.DeveloperMode
 import androidx.compose.material.icons.outlined.Key
 import androidx.compose.material.icons.outlined.Link
+import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Wifi
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
@@ -116,6 +117,7 @@ import androidx.compose.ui.text.style.Hyphens
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.text.BidiFormatter
 import androidx.core.text.TextDirectionHeuristicsCompat
@@ -208,6 +210,8 @@ fun SettingsScreen(
     var keysExpanded by rememberSaveable { mutableStateOf(false) }
     var savedKeysExpanded by rememberSaveable { mutableStateOf(false) }
     var showAppearance by rememberSaveable { mutableStateOf(false) }
+    var showNotifications by rememberSaveable { mutableStateOf(false) }
+    if (showNotifications) NotificationsDialog { showNotifications = false }
     var advancedExpanded by rememberSaveable { mutableStateOf(false) }
     val context = LocalContext.current
     val capsuleEnabled by remember(context) { CapsuleHooks.enabledFlow(context) }
@@ -287,6 +291,14 @@ fun SettingsScreen(
                     SettingsDivider()
                 }
                 LanguageRow()
+                SettingsDivider()
+                SettingsNavRow(
+                    title = stringResource(R.string.notice_title),
+                    subtitle = stringResource(R.string.settings_notifications_summary),
+                    icon = Icons.Outlined.Notifications,
+                    testTag = "open_notifications",
+                    onClick = { showNotifications = true },
+                )
                 if (AiHooks.AVAILABLE) {
                     SettingsDivider()
                     AiHooks.ModelSettings(onOpenAiModels)
@@ -424,7 +436,7 @@ fun SettingsScreen(
 }
 
 @Composable
-private fun SettingsCard(testTag: String, modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
+internal fun SettingsCard(testTag: String, modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
     Card(
         modifier.fillMaxWidth().glassCard(LocalGlass.current).testTag(testTag),
         shape = ConsoleShape,
@@ -543,7 +555,7 @@ private fun DisclosureChevron(expanded: Boolean) {
 }
 
 @Composable
-private fun SettingsGroupLabel(labelRes: Int, modifier: Modifier = Modifier, first: Boolean = false) {
+internal fun SettingsGroupLabel(labelRes: Int, modifier: Modifier = Modifier, first: Boolean = false) {
     Text(
         stringResource(labelRes),
         modifier.padding(start = 8.dp, top = if (first) 0.dp else 10.dp),
@@ -1092,6 +1104,9 @@ internal fun SettingsSwitchRow(
     enabled: Boolean,
     testTag: String,
     onCheckedChange: (Boolean) -> Unit,
+    verticalPadding: Dp = 4.dp,
+    /** Shown under the description, e.g. a link that belongs to this row. */
+    extra: (@Composable () -> Unit)? = null,
 ) {
     val colors = MaterialTheme.colorScheme
     BoxWithConstraints(
@@ -1105,7 +1120,7 @@ internal fun SettingsSwitchRow(
                 onValueChange = onCheckedChange,
             )
             .testTag(testTag)
-            .padding(vertical = 4.dp),
+            .padding(vertical = verticalPadding),
     ) {
         // A switch is narrow: the text keeps room beside it down to 180dp, even in an indented row.
         val stacked = maxWidth / LocalDensity.current.fontScale < 180.dp
@@ -1127,6 +1142,7 @@ internal fun SettingsSwitchRow(
                     color = if (enabled) colors.onSurfaceVariant else colors.onSurfaceVariant.copy(alpha = 0.5f),
                     style = MaterialTheme.typography.bodySmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
                 )
+                extra?.invoke()
             }
             Switch(checked = checked, onCheckedChange = null, enabled = enabled, modifier = Modifier.align(Alignment.CenterVertically))
         }

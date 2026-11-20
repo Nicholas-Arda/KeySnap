@@ -14,6 +14,23 @@ import android.text.format.DateFormat
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import com.example.service.PlacePick
+import com.example.service.PlaceCondition
+import android.text.format.DateUtils
+import androidx.compose.runtime.produceState
+import androidx.compose.runtime.DisposableEffect
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import kotlinx.coroutines.delay
+import com.example.data.Place
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.runtime.collectAsState
+import androidx.compose.material.icons.outlined.Place
+import androidx.compose.material.icons.filled.Remove
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -33,7 +50,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.InputChip
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -72,13 +93,20 @@ import androidx.compose.ui.unit.dp
 import com.example.data.ConstraintEditorForms
 import com.example.data.EditorField
 import com.example.data.InstalledApp
+import com.example.data.InstalledAppsRepository
+import com.example.data.ScriptConstraint
 import com.example.data.ScriptConstraintCatalog
 import com.example.service.CalendarCondition
 import com.example.service.NotificationEventListener
 import com.example.service.TimeRules
 import com.example.service.hasUsageAccess
+import com.example.data.AppLabelResolver
+import com.example.ui.components.ConsoleSwitch
 import com.example.ui.components.InnerShape
 import com.example.ui.components.MinTouchTarget
+import com.example.ui.home.AutoLaunchCard
+import com.example.ui.home.hasAutoLaunchSwitch
+import com.example.ui.home.openAutoLaunchSettings
 import com.example.ui.theme.SectionLabel
 import io.github.nicholasarda.keysnap.R
 import java.time.format.TextStyle
@@ -111,6 +139,10 @@ fun ConstraintConfigSheet(
         }
     }
     var showAppPickerFor by remember { mutableStateOf<String?>(null) }
+    val keyboardPick = form.fields.any { it is EditorField.AppPick && it.keyboardOnly }
+    val keyboardApps by produceState(emptyList<InstalledApp>(), keyboardPick) {
+        if (keyboardPick) value = InstalledAppsRepository(context).keyboardApps()
+    }
     val complete = ConstraintEditorForms.isComplete(constraintType, values.toMap())
     val sheetMaxHeight = (LocalConfiguration.current.screenHeightDp * 0.7f).dp
 
@@ -121,53 +153,97 @@ fun ConstraintConfigSheet(
                 .navigationBarsPadding()
                 .padding(horizontal = 16.dp)
                 .heightIn(max = sheetMaxHeight)
-                .nestedScroll(rememberSheetContentScroll())
-                .verticalScroll(rememberScrollState())
                 .testTag("constraint_config_sheet"),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            Text(stringResource(R.string.constraint_picker_configure_title), style = SectionLabel, color = colors.onSurfaceVariant)
-            Text(typeTitle, style = MaterialTheme.typography.titleMedium, color = colors.onSurface)
-            if (ScriptConstraintCatalog.supportsNegation(constraintType)) {
-                ConstraintNegationToggle(
-                    values["negate"] == "true",
-                    { negated -> if (negated) values["negate"] = "true" else values.remove("negate") },
-                    Modifier.testTag("constraint_config_negation"),
-                )
-            }
-            form.helperRes?.let { Text(stringResource(it), style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant) }
+            // Only the fields scroll; Cancel/Add stay pinned, so a tall form (At a place) never shows half a button.
+            Column(
+                Modifier
+                    .weight(1f, fill = false)
+                    .nestedScroll(rememberSheetContentScroll())
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                Text(stringResource(R.string.constraint_picker_configure_title), style = SectionLabel, color = colors.onSurfaceVariant)
+                Text(typeTitle, style = MaterialTheme.typography.titleMedium, color = colors.onSurface)
+                if (constraintType in ScriptConstraintCatalog.EXPERIMENTAL) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        ExperimentalBadge()
+                        Spacer(Modifier.width(8.dp))
+                        Text(stringResource(R.string.place_experimental_note), style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant)
+                    }
+                }
+                if (ScriptConstraintCatalog.supportsNegation(constraintType)) {
+                    ConstraintNegationToggle(
+                        values["negate"] == "true",
+                        { negated -> if (negated) values["negate"] = "true" else values.remove("negate") },
+                        Modifier.testTag("constraint_config_negation"),
+                    )
+                }
+                form.helperRes?.let { Text(stringResource(it), style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant) }
 
-            PermissionHints(constraintType, values["ssid"].orEmpty(), context)
+                if (constraintType == ScriptConstraintCatalog.AT_PLACE) PlaceRow(values, context)
 
-            form.fields.forEach { field ->
-                when (field) {
-                    is EditorField.Text -> TextFieldRow(field, values)
-                    is EditorField.Number -> NumberFieldRow(field, values)
-                    is EditorField.Choice -> ChoiceFieldRow(field, values)
-                    is EditorField.AppPick -> {
-                        AppFieldRow(field, values) { showAppPickerFor = field.key }
-                        // Add stays disabled until an app is picked; without this the button just
-                        // looks broken.
-                        if (values[field.key].isNullOrBlank()) {
-                            Text(
-                                stringResource(R.string.constraint_config_choose_app),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = colors.onSurfaceVariant,
+                PermissionHints(constraintType, values["ssid"].orEmpty(), context)
+
+                form.fields.forEach { field ->
+                    when (field) {
+                        is EditorField.Text -> TextFieldRow(field, values)
+                        is EditorField.Number -> NumberFieldRow(field, values)
+                        is EditorField.Choice -> ChoiceFieldRow(field, values)
+                        is EditorField.AppPick -> {
+                            AppFieldRow(field, values) { showAppPickerFor = field.key }
+                            // Add stays disabled until an app is picked; without this the button just
+                            // looks broken.
+                            if (values[field.key].isNullOrBlank()) {
+                                Text(
+                                    stringResource(R.string.constraint_config_choose_app),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = colors.onSurfaceVariant,
+                                )
+                            }
+                        }
+                        is EditorField.BluetoothDevicePick -> BluetoothDeviceFieldRow(field, values)
+                        is EditorField.TimeRange -> TimeRangeFieldRow(field, values)
+                        is EditorField.DaySet -> DaySetFieldRow(field, values)
+                        is EditorField.Time -> TimeFieldRows(listOf(field.key to field.labelRes), values)
+                        is EditorField.Interval -> IntervalFieldRow(field, values)
+                        is EditorField.AppList -> AnimatedVisibility(field.visibleWhen?.let { values[it.first] in it.second } ?: true) {
+                            AppListFieldRow(field, values) { showAppPickerFor = field.key }
+                        }
+                        is EditorField.Switch -> ConsoleSwitch(stringResource(field.labelRes), values[field.key] == "true") { values[field.key] = it.toString() }
+                        // Never declared by a constraint form; [ConstraintEditorFormTest] guards this.
+                        is EditorField.KeyCodePick, is EditorField.Point, is EditorField.TwoPoints, is EditorField.ImagePick,
+                        is EditorField.ContactPick, is EditorField.AppShortcutPick, EditorField.RingerPattern -> Unit
+                    }
+                }
+                if (constraintType == ScriptConstraintCatalog.AT_TIME && values["negate"] != "true") FirstRunHint(ScriptConstraint(constraintType, values.toMap()))
+                // Android checks a closed app's proximity alert at most every 30 min; say so up front.
+                AnimatedVisibility(constraintType == ScriptConstraintCatalog.AT_PLACE && values["mode"] != Place.MODE_FAST) {
+                    Text(stringResource(R.string.place_battery_note), style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant)
+                }
+                AnimatedVisibility(constraintType == ScriptConstraintCatalog.AT_PLACE && values["mode"] == Place.MODE_FAST) {
+                    // As in the automation notices: the label sits above, so a blank field shows the words it falls back to.
+                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Text(stringResource(R.string.place_fast_note), style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant)
+                        Spacer(Modifier.height(4.dp))
+                        listOf(
+                            Triple(Place.NOTICE_TITLE, R.string.notice_field_title, R.string.place_fast_notification_title),
+                            Triple(Place.NOTICE_TEXT, R.string.notice_field_text, R.string.place_fast_notification_text),
+                        ).forEach { (key, label, default) ->
+                            Text(stringResource(label), style = MaterialTheme.typography.labelMedium, color = colors.onSurfaceVariant)
+                            OutlinedTextField(
+                                value = values[key].orEmpty(),
+                                onValueChange = { values[key] = it.take(if (key == Place.NOTICE_TITLE) 60 else 120) },
+                                singleLine = true,
+                                modifier = Modifier.fillMaxWidth().testTag("place_$key"),
+                                placeholder = { Text(stringResource(default)) },
                             )
                         }
                     }
-                    is EditorField.BluetoothDevicePick -> BluetoothDeviceFieldRow(field, values)
-                    is EditorField.TimeRange -> TimeRangeFieldRow(field, values)
-                    is EditorField.DaySet -> DaySetFieldRow(field, values)
-                    is EditorField.Time -> TimeFieldRows(listOf(field.key to field.labelRes), values)
-                    is EditorField.Interval -> IntervalFieldRow(field, values)
-                    // Never declared by a constraint form; [ConstraintEditorFormTest] guards this.
-                    is EditorField.KeyCodePick, is EditorField.Point, is EditorField.TwoPoints, is EditorField.ImagePick,
-                    is EditorField.ContactPick, is EditorField.Switch -> Unit
                 }
             }
 
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+            Row(Modifier.fillMaxWidth().padding(top = 12.dp), horizontalArrangement = Arrangement.End) {
                 TextButton(onClick = onDismiss, modifier = Modifier.testTag("constraint_config_cancel")) {
                     Text(stringResource(R.string.common_cancel), color = colors.onSurfaceVariant)
                 }
@@ -196,10 +272,16 @@ fun ConstraintConfigSheet(
 
     showAppPickerFor?.let { key ->
         AppPickerSheet(
-            apps = installedApps,
-            selected = values[key],
-            onSelect = {
-                values[key] = it
+            apps = if (keyboardPick) keyboardApps else installedApps,
+            // A list adds one app per pick; marking one of its apps "selected" would read as the whole value.
+            selected = if (form.fields.any { it is EditorField.AppList && it.key == key }) null else values[key],
+            onSelect = { pkg ->
+                if (form.fields.any { it is EditorField.AppList && it.key == key }) {
+                    val list = values[key].orEmpty().split(',').filter(String::isNotBlank)
+                    if (pkg !in list) values[key] = (list + pkg).joinToString(",")
+                } else {
+                    values[key] = pkg
+                }
                 showAppPickerFor = null
             },
             onDismiss = { showAppPickerFor = null },
@@ -211,7 +293,7 @@ fun ConstraintConfigSheet(
 @Composable
 private fun PermissionHints(constraintType: String, ssid: String, context: Context) {
     when {
-        constraintType == ScriptConstraintCatalog.NOTIFICATION_RECEIVED -> {
+        constraintType == ScriptConstraintCatalog.NOTIFICATION_RECEIVED || constraintType == ScriptConstraintCatalog.NOTIFICATION_WAITING -> {
             var granted by remember { mutableStateOf(NotificationEventListener.isAccessGranted(context)) }
             val launcher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
                 granted = NotificationEventListener.isAccessGranted(context)
@@ -219,6 +301,18 @@ private fun PermissionHints(constraintType: String, ssid: String, context: Conte
             // The hint text is the prominent disclosure Play expects before the grant screen.
             if (!granted) {
                 PermissionHint(stringResource(R.string.constraint_needs_notification_access)) {
+                    runCatching { launcher.launch(NotificationEventListener.accessSettingsIntent(context)) }
+                        .onFailure { launcher.launch(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)) }
+                }
+            }
+        }
+        constraintType == "app_playing_media" || constraintType == "app_not_playing_media" -> {
+            var granted by remember { mutableStateOf(NotificationEventListener.isAccessGranted(context)) }
+            val launcher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+                granted = NotificationEventListener.isAccessGranted(context)
+            }
+            if (!granted) {
+                PermissionHint(stringResource(R.string.constraint_needs_media_access)) {
                     runCatching { launcher.launch(NotificationEventListener.accessSettingsIntent(context)) }
                         .onFailure { launcher.launch(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)) }
                 }
@@ -235,6 +329,28 @@ private fun PermissionHints(constraintType: String, ssid: String, context: Conte
                 }
             }
             ExactAlarmHint(R.string.constraint_needs_exact_alarm, context)
+        }
+        constraintType == ScriptConstraintCatalog.AT_PLACE -> {
+            var fine by remember { mutableStateOf(hasFineLocation(context)) }
+            var background by remember { mutableStateOf(hasBackgroundLocation(context)) }
+            val fineLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
+                fine = hasFineLocation(context)
+                background = hasBackgroundLocation(context)
+            }
+            // Android 11+ answers this one with the app's location page, where "Allow all the time" lives.
+            val backgroundLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { background = it }
+            // Each hint is the prominent disclosure Play expects before Android's own prompt.
+            if (!fine) {
+                PermissionHint(stringResource(R.string.constraint_needs_location_place)) {
+                    fineLauncher.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION))
+                }
+            } else if (!background) {
+                PermissionHint(stringResource(R.string.constraint_needs_background_location)) {
+                    backgroundLauncher.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+                }
+            } else {
+                AutoLaunchHint(context)
+            }
         }
         constraintType == ScriptConstraintCatalog.AT_TIME || constraintType == ScriptConstraintCatalog.INTERVAL ->
             ExactAlarmHint(R.string.time_needs_exact_alarm, context)
@@ -303,8 +419,164 @@ private fun PermissionHint(text: String, onGrant: () -> Unit) {
     }
 }
 
+/**
+ * Home's Auto launch row, in the place sheet too. Without that switch ColorOS (and phones like it)
+ * drops a closed KeySnap's recheck alarms and its boot restart, so place watching stops until the
+ * app is opened. Closing it here closes Home's row as well: one answer for both.
+ */
+@Composable
+private fun AutoLaunchHint(context: Context) {
+    if (!hasAutoLaunchSwitch(Build.MANUFACTURER)) return
+    val prefs = remember(context) { context.getSharedPreferences("keysnap_setup", Context.MODE_PRIVATE) }
+    var dismissed by remember { mutableStateOf(prefs.getBoolean("auto_launch_dismissed", false)) }
+    AnimatedVisibility(!dismissed, exit = fadeOut() + shrinkVertically()) {
+        AutoLaunchCard(
+            stoppedBefore = false,
+            onTurnOn = { openAutoLaunchSettings(context, Build.MANUFACTURER) },
+            onClose = {
+                dismissed = true
+                prefs.edit().putBoolean("auto_launch_dismissed", true).apply()
+            },
+        )
+    }
+}
+
 private fun hasFineLocation(context: Context): Boolean =
     context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+
+private fun hasBackgroundLocation(context: Context): Boolean =
+    context.checkSelfPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED
+
+/**
+ * Where the place comes from: before one is picked, why the map opens in the browser (what the
+ * user gains, what it costs) and the button; after, the picked circle and a way back to the map.
+ * The map page's answer arrives through [PlacePick.result] while this sheet is open.
+ */
+@Composable
+private fun PlaceRow(values: MutableMap<String, String>, context: Context) {
+    val colors = MaterialTheme.colorScheme
+    val picked by PlacePick.result.collectAsState()
+    DisposableEffect(Unit) { onDispose { PlacePick.cancel() } }
+    LaunchedEffect(picked) {
+        picked?.let {
+            values.putAll(it)
+            PlacePick.result.value = null
+        }
+    }
+    val place = Place.parse(values)
+    val card = Modifier.fillMaxWidth().border(1.dp, colors.outline.copy(alpha = .6f), InnerShape).padding(12.dp)
+    AnimatedContent(place, label = "placeRow") { shown ->
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            if (shown == null) {
+                Column(card, verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Text(stringResource(R.string.place_why_title), style = MaterialTheme.typography.titleSmall, color = colors.onSurface)
+                    PlaceFact(true, R.string.place_why_private)
+                    PlaceFact(true, R.string.place_why_no_sdk)
+                    PlaceFact(true, R.string.place_why_small)
+                    PlaceFact(false, R.string.place_why_internet)
+                    PlaceTable()
+                }
+                Button(
+                    onClick = { PlacePick.open(context, null) },
+                    shape = InnerShape,
+                    modifier = Modifier.fillMaxWidth().testTag("place_open_map"),
+                ) { Text(stringResource(R.string.place_open_map)) }
+            } else {
+                Row(card, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Icon(Icons.Outlined.Place, null, tint = colors.primary)
+                    Column(Modifier.weight(1f)) {
+                        Text(String.format(java.util.Locale.ROOT, "%.5f, %.5f", shown.lat, shown.lng), style = MaterialTheme.typography.bodyLarge, color = colors.onSurface)
+                        Text(stringResource(R.string.place_circle, shown.radius), style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant)
+                    }
+                }
+                if (shown.radius < Place.MIN_BATTERY_RADIUS_M && values["mode"] != Place.MODE_FAST) {
+                    Text(stringResource(R.string.place_battery_min), style = MaterialTheme.typography.bodySmall, color = colors.error)
+                }
+                PlaceStatusLine(values.toMap())
+                TextButton(onClick = { PlacePick.open(context, shown) }, modifier = Modifier.testTag("place_change_on_map")) {
+                    Text(stringResource(R.string.place_change_on_map))
+                }
+            }
+        }
+    }
+}
+
+/**
+ * What KeySnap believes right now and when it last checked, or why it cannot know (permission or
+ * location off). Shown in the sheet and on the condition card; re-read every 30 s while visible.
+ */
+@Composable
+internal fun PlaceStatusLine(params: Map<String, String>) {
+    val context = LocalContext.current
+    // Re-read every 30 s, and on coming back from Settings or the permission prompt.
+    val resumed by LocalLifecycleOwner.current.lifecycle.currentStateFlow.collectAsState()
+    val reading by produceState(PlaceCondition.reading(context, params), params, resumed) {
+        while (true) {
+            value = PlaceCondition.reading(context, params)
+            delay(30_000)
+        }
+    }
+    val colors = MaterialTheme.colorScheme
+    val (text, bad) = when (reading.status) {
+        PlaceCondition.Status.NO_PERMISSION -> R.string.place_status_no_permission to true
+        PlaceCondition.Status.NO_BACKGROUND -> R.string.place_status_no_background to true
+        PlaceCondition.Status.LOCATION_OFF -> R.string.place_status_location_off to true
+        PlaceCondition.Status.INSIDE -> R.string.place_status_inside to false
+        PlaceCondition.Status.OUTSIDE -> R.string.place_status_outside to false
+        PlaceCondition.Status.UNKNOWN -> R.string.place_status_unknown to false
+    }
+    val checked = reading.checkedAtMs.takeIf { it > 0 && !bad }?.let {
+        stringResource(
+            R.string.place_status_checked,
+            DateUtils.getRelativeTimeSpanString(it, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS).toString(),
+        )
+    }
+    Text(
+        listOfNotNull(stringResource(text), checked).joinToString(" · "),
+        style = MaterialTheme.typography.bodySmall,
+        color = if (bad) colors.error else colors.onSurfaceVariant,
+        modifier = Modifier.testTag("place_status"),
+    )
+}
+
+@Composable
+private fun PlaceFact(good: Boolean, @StringRes text: Int) {
+    val colors = MaterialTheme.colorScheme
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Icon(
+            if (good) Icons.Filled.Check else Icons.Filled.Remove,
+            null,
+            tint = if (good) colors.primary else colors.onSurfaceVariant,
+            modifier = Modifier.size(18.dp),
+        )
+        Text(stringResource(text), style = MaterialTheme.typography.bodyMedium, color = colors.onSurface)
+    }
+}
+
+/** The trade the user is shown before the browser opens: a map inside the app against this page. */
+@Composable
+private fun PlaceTable() {
+    val colors = MaterialTheme.colorScheme
+    val rows = listOf(
+        Triple(R.string.place_table_tracks, stringResource(R.string.place_table_yes), stringResource(R.string.place_table_no)),
+        Triple(R.string.place_table_size, "+12 MB", "+0 MB"),
+        Triple(R.string.place_table_data, stringResource(R.string.place_table_shared), stringResource(R.string.place_table_private)),
+    )
+    Column(Modifier.padding(top = 4.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Row {
+            Spacer(Modifier.weight(1.3f))
+            Text(stringResource(R.string.place_table_in_app), Modifier.weight(1f), style = MaterialTheme.typography.labelSmall, color = colors.onSurfaceVariant)
+            Text(stringResource(R.string.place_table_our_way), Modifier.weight(1f), style = MaterialTheme.typography.labelSmall, color = colors.onSurfaceVariant)
+        }
+        rows.forEach { (label, inApp, ours) ->
+            Row {
+                Text(stringResource(label), Modifier.weight(1.3f), style = MaterialTheme.typography.bodySmall, color = colors.onSurface)
+                Text(inApp, Modifier.weight(1f), style = MaterialTheme.typography.bodySmall, color = colors.error)
+                Text(ours, Modifier.weight(1f), style = MaterialTheme.typography.bodySmall, color = colors.primary, fontWeight = FontWeight.SemiBold)
+            }
+        }
+    }
+}
 
 private fun hasBluetoothConnect(context: Context): Boolean =
     Build.VERSION.SDK_INT < Build.VERSION_CODES.S ||
@@ -315,6 +587,64 @@ private fun hasBluetoothConnect(context: Context): Boolean =
 private fun bondedDevices(context: Context): List<Pair<String, String>> {
     val adapter = context.getSystemService(BluetoothManager::class.java)?.adapter ?: return emptyList()
     return runCatching { adapter.bondedDevices.map { it.address to (it.name ?: it.address) } }.getOrDefault(emptyList())
+}
+
+/** "Launch app shortcut": the picked app's shortcuts, read by the Advanced Mode bridge. */
+@Composable
+internal fun AppShortcutFieldRow(field: EditorField.AppShortcutPick, values: MutableMap<String, String>) {
+    val colors = MaterialTheme.colorScheme
+    val pkg = values[field.appKey].orEmpty()
+    if (pkg.isBlank()) return
+    var loaded by remember(pkg) { mutableStateOf(false) }
+    var shortcuts by remember(pkg) { mutableStateOf<List<Pair<String, String>>?>(null) }
+    LaunchedEffect(pkg) {
+        shortcuts = com.example.service.bridge.BridgeController.appShortcuts(pkg)
+        loaded = true
+        // Another app was picked: its old shortcut id means nothing here.
+        shortcuts?.let { list -> if (list.none { it.first == values[field.idKey] }) { values.remove(field.idKey); values.remove(field.labelKey) } }
+    }
+    if (!loaded) return
+    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        Text(stringResource(field.labelRes), style = SectionLabel, color = colors.onSurfaceVariant)
+        val list = shortcuts
+        if (list == null || list.isEmpty()) {
+            Text(
+                stringResource(if (list == null) R.string.shortcut_needs_advanced else R.string.shortcut_none),
+                style = MaterialTheme.typography.bodyMedium,
+                color = colors.onSurfaceVariant,
+            )
+            return@Column
+        }
+        val selected = values[field.idKey]
+        Column(Modifier.fillMaxWidth().border(1.dp, colors.outline.copy(alpha = .6f), InnerShape)) {
+            list.forEach { (id, label) ->
+                val isSelected = id == selected
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = MinTouchTarget)
+                        .clickable {
+                            values[field.idKey] = id
+                            values[field.labelKey] = label
+                        }
+                        .testTag("config_app_shortcut_$id")
+                        .padding(horizontal = 14.dp, vertical = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        label,
+                        Modifier.weight(1f),
+                        color = if (isSelected) colors.primary else colors.onSurface,
+                        style = MaterialTheme.typography.bodyLarge,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                    if (isSelected) Icon(Icons.Filled.Check, null, tint = colors.primary, modifier = Modifier.size(18.dp))
+                }
+            }
+        }
+        Text(stringResource(R.string.shortcut_may_change), style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant)
+    }
 }
 
 @Composable
@@ -379,7 +709,7 @@ internal fun TimeRangeFieldRow(field: EditorField.TimeRange, values: MutableMap<
 /** One tappable row per key-to-label entry, each opening the same clock picker. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun TimeFieldRows(entries: List<Pair<String, Int>>, values: MutableMap<String, String>) {
+internal fun TimeFieldRows(entries: List<Pair<String, Int>>, values: MutableMap<String, String>) {
     val colors = MaterialTheme.colorScheme
     val context = LocalContext.current
     val locale = LocalConfiguration.current.locales[0]
@@ -497,6 +827,66 @@ internal fun DaySetFieldRow(field: EditorField.DaySet, values: MutableMap<String
                     ),
                 )
             }
+        }
+    }
+}
+
+/** "Not today. First run in 22 h 49 min" under an "At a time", refreshed each minute while open. */
+@Composable
+private fun FirstRunHint(constraint: ScriptConstraint) {
+    var now by remember { mutableStateOf(java.time.LocalDateTime.now()) }
+    LaunchedEffect(Unit) {
+        while (true) {
+            kotlinx.coroutines.delay(60_000L - System.currentTimeMillis() % 60_000L)
+            now = java.time.LocalDateTime.now()
+        }
+    }
+    val (today, minutes) = TimeRules.firstRun(constraint, now) ?: return
+    val days = minutes / (24 * 60)
+    val hours = minutes / 60 % 24
+    val wait = when {
+        days > 0 -> stringResource(R.string.time_in_days, days.toInt(), hours.toInt())
+        hours > 0 -> stringResource(R.string.time_in_hours, hours.toInt(), (minutes % 60).toInt())
+        else -> stringResource(R.string.time_in_minutes, minutes.toInt())
+    }
+    Text(
+        stringResource(if (today) R.string.time_first_run_today else R.string.time_first_run_later, wait),
+        Modifier.testTag("constraint_first_run"),
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.primary,
+    )
+}
+
+/** Several apps as removable chips, plus "Add app" (the same picker, one app at a time). */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun AppListFieldRow(field: EditorField.AppList, values: MutableMap<String, String>, onAdd: () -> Unit) {
+    val colors = MaterialTheme.colorScheme
+    val context = LocalContext.current
+    val packages = values[field.key].orEmpty().split(',').map(String::trim).filter(String::isNotEmpty)
+    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        Text(stringResource(field.labelRes), style = SectionLabel, color = colors.onSurfaceVariant)
+        FlowRow(
+            Modifier.animateContentSize(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            packages.forEach { pkg ->
+                val label = AppLabelResolver.get(context).displayName(pkg, context.resources)
+                InputChip(
+                    selected = false,
+                    onClick = { values[field.key] = (packages - pkg).joinToString(",") },
+                    label = { Text(label) },
+                    trailingIcon = { Icon(Icons.Filled.Close, stringResource(R.string.app_list_remove, label), Modifier.size(16.dp)) },
+                    modifier = Modifier.testTag("app_list_${field.key}_$pkg"),
+                )
+            }
+            AssistChip(
+                onClick = onAdd,
+                label = { Text(stringResource(R.string.app_list_add)) },
+                leadingIcon = { Icon(Icons.Filled.Add, null, Modifier.size(16.dp)) },
+                modifier = Modifier.testTag("app_list_add_${field.key}"),
+            )
         }
     }
 }

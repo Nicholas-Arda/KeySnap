@@ -142,9 +142,17 @@ class DeviceEventReceiver : BroadcastReceiver() {
             }
         }
 
-        fun intentFilter(): IntentFilter = IntentFilter().apply {
+        /**
+         * The ACL broadcasts come from the Bluetooth process (uid 1002), not the system uid, so a
+         * RECEIVER_NOT_EXPORTED registration never gets them and the device conditions never
+         * changed. They are protected broadcasts, so no app can forge them through the export.
+         */
+        private fun aclFilter(): IntentFilter = IntentFilter().apply {
             addAction(BluetoothDevice.ACTION_ACL_CONNECTED)
             addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED)
+        }
+
+        fun intentFilter(): IntentFilter = IntentFilter().apply {
             addAction(BluetoothAdapter.ACTION_STATE_CHANGED)
             addAction(Intent.ACTION_POWER_CONNECTED)
             addAction(Intent.ACTION_POWER_DISCONNECTED)
@@ -188,8 +196,10 @@ class DeviceEventReceiver : BroadcastReceiver() {
         fun register(context: Context, receiver: DeviceEventReceiver) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 context.registerReceiver(receiver, intentFilter(), Context.RECEIVER_NOT_EXPORTED)
+                context.registerReceiver(receiver, aclFilter(), Context.RECEIVER_EXPORTED)
             } else {
                 context.registerReceiver(receiver, intentFilter())
+                context.registerReceiver(receiver, aclFilter())
             }
             context.applicationContext.registerComponentCallbacks(configurationCallbacks)
             runCatching {

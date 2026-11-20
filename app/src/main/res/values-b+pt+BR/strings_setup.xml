@@ -38,6 +38,12 @@
     <string name="setup_skip">Pular</string>
     <string name="setup_not_now">Agora não</string>
     <string name="setup_optional_row">Opcional: notificações</string>
+    <string name="auto_launch_row">Atalhos ativos com o app fechado</string>
+    <string name="auto_launch_search_hint">Pesquise “Início automático” e ative o KeySnap</string>
+    <string name="home_stopped_banner">O KeySnap foi parado. Alguns atalhos não vão rodar.</string>
+    <string name="auto_launch_row_stopped">Evitar que o KeySnap pare de novo</string>
+    <string name="reconnect_sheet_body">O KeySnap desliga e liga a própria acessibilidade uma vez. Nada mais muda.</string>
+    <string name="reconnect_sheet_keep_on">Depois o Android vai perguntar. Escolha “Manter ativado”.</string>
     <string name="setup_turn_on">Ativar</string>
     <string name="setup_usage_banner">Condições de app precisam de acesso de uso</string>
     <string name="setup_usage_title">Permitir acesso de uso</string>

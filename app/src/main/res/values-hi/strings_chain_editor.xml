@@ -5,6 +5,9 @@
     <string name="chain_condition_empty">शर्त की सेटिंग जाँचें</string>
     <string name="chain_shell_limited">Shell यहाँ सीमित चलता है</string>
     <string name="chain_set_up">सेट अप</string>
+    <string name="chain_bt_prompt">Bluetooth का छोटा संकेत दिखता है</string>
+    <string name="chain_bt_prompt_hide">छिपाने के लिए: डेवलपर विकल्प → सिस्टम ऑप्टिमाइज़ेशन बंद करें</string>
+    <string name="chain_open_developer_options">खोलें</string>
     <string name="chain_test_running">कार्रवाई जाँची जा रही है</string>
     <string name="chain_test_success">जाँच सफल</string>
     <string name="chain_test_failure">जाँच असफल</string>

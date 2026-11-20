@@ -23,7 +23,7 @@ class ConstraintEditorFormTest {
         "bluetooth_device_connected", "bluetooth_device_disconnected",
         "battery_above", "battery_below", "time", "day_of_week", "cooldown",
         "mode_is",
-        "notification_received", "rss_new_item", "calendar_event_active", "at_time", "interval",
+        "notification_received", "notification_waiting", "rss_new_item", "calendar_event_active", "at_time", "interval",
     )
 
     @Test fun aCalendarConditionNeedsNothingAndSummarisesItsFilters() {

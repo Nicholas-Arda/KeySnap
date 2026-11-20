@@ -1,7 +1,9 @@
 package com.example.ui.scripts
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.MarkEmailUnread
 import androidx.compose.material.icons.outlined.Tune
+import androidx.compose.material.icons.outlined.Place
 import androidx.compose.material.icons.automirrored.outlined.BluetoothSearching
 import androidx.compose.material.icons.outlined.AppBlocking
 import androidx.compose.material.icons.outlined.MobileOff
@@ -66,6 +68,7 @@ private val perConstraintIcons: Map<String, ImageVector> = mapOf(
     "app_not_in_foreground" to Icons.Outlined.AppBlocking,
     "no_app_open" to Icons.Outlined.Home,
     "notification_received" to Icons.Outlined.NotificationsActive,
+    "notification_waiting" to Icons.Outlined.MarkEmailUnread,
     "app_playing_media" to Icons.Outlined.MusicNote,
     "app_not_playing_media" to Icons.Outlined.MusicOff,
     // Media
@@ -133,6 +136,7 @@ private val perConstraintIcons: Map<String, ImageVector> = mapOf(
     "hinge_open" to Icons.Outlined.TabletMac,
     "location_on" to Icons.Outlined.LocationOn,
     "location_off" to Icons.Outlined.LocationOff,
+    "at_place" to Icons.Outlined.Place,
     // Time
     "time" to Icons.Outlined.Timer,
     "day_of_week" to Icons.Outlined.DateRange,

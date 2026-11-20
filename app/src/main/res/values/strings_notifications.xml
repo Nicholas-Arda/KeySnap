@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_notifications_summary">What KeySnap can tell you</string>
+    <string name="notif_group_working">Keeps KeySnap working</string>
+    <string name="notif_group_shortcuts">Your shortcuts</string>
+    <string name="notif_group_places">Places</string>
+    <string name="notif_failures_desc">When an action couldn’t run</string>
+    <string name="notif_runs_desc">Turned on in each automation</string>
+    <string name="notif_action_desc">Its words are set in each shortcut</string>
+    <string name="notif_place_desc">Shown while Fast mode runs</string>
+    <string name="notif_autostart_row">Didn’t start after restart</string>
+    <string name="notif_autostart_desc">Tells you what to fix</string>
+    <string name="notif_setup_row">Setup and pairing</string>
+    <string name="notif_setup_desc">Only while setting up</string>
+    <string name="notif_required">Required</string>
+    <string name="notif_system_settings">Android notification settings</string>
+    <string name="notif_runs_hint">Default for every automation. Its own words still win. {name} is the shortcut’s name.</string>
+    <string name="notif_place_hint">Used when a place has no words of its own.</string>
+    <string name="notif_preview">Preview</string>
+    <string name="notif_sample_name">Morning</string>
+</resources>

@@ -12,7 +12,9 @@ import android.provider.Settings
 import android.util.Log
 import android.view.KeyEvent
 import com.example.assistant.AssistantIntegration
+import com.example.bridge.BuzzPattern
 import com.example.bridge.KeyEventMapping
+import com.example.bridge.RingerBuzz
 import com.example.capsule.CapsuleHooks
 import com.example.mode.ModeHooks
 import com.example.data.EntitlementManager
@@ -28,11 +30,12 @@ import com.example.data.ScriptActionCatalog
 import com.example.data.ScriptConstraintCatalog
 import com.example.data.ScriptRepository
 import com.example.data.ShortcutScript
+import com.example.data.constraintsMatch
 import com.example.data.TriggerPressType
 import com.example.data.buildRunRecord
 import com.example.data.keyDisplayName
 import com.example.data.keyId
-import com.example.data.resolveHapticDurationForScript
+import com.example.data.resolveHapticPatternForScript
 import com.example.data.resolveTimingForKey
 import com.example.data.resolveVibrateForScript
 import com.example.service.bridge.BridgeController
@@ -110,6 +113,7 @@ object HardwareKeyTriggerCoordinator {
     private var lastEventTimestamp: Long = 0
     @Volatile private var lastDiagnosticPath = DiagnosticRecorder.InputPath.ACTIVITY
     private const val DEDUPLICATION_WINDOW_MS = 80L
+    private const val UNDO_SETTLE_MS = 1_500L
 
     // Last known "all conditions true" value per key-less script; a script fires on the
     // false -> true edge only, so a duplicate broadcast for the same state change is harmless.
@@ -137,7 +141,7 @@ object HardwareKeyTriggerCoordinator {
         val evaluator by lazy { constraintEvaluator?.forDecision() }
         val now = SystemClock.elapsedRealtime()
         return scripts.shouldConsume(keyCode) { script ->
-            passesCooldown(script, now) && script.constraints.all { evaluator?.isSatisfied(it) ?: false }
+            passesCooldown(script, now) && script.constraintsMatch({ evaluator?.isSatisfied(it) ?: false }, { evaluator?.isKnownTrue(it) ?: false })
         }
     }
 
@@ -184,16 +188,23 @@ object HardwareKeyTriggerCoordinator {
                     RssPolling.sync(it, scripts)
                     CalendarCondition.sync(it, scripts)
                     TimeSchedule.sync(it, scripts)
+                    PlaceCondition.sync(it, scripts)
                 }
                 automationEdges.reset()
                 reevaluateAutomations()
             }
         }
         launch { FlashlightController.isFlashlightOn.collect { reevaluateAutomations() } }
-        // Pausing everything drops the time alarm (and its alarm-clock icon); resuming re-arms it.
+        // Pausing everything drops the time alarm (and its alarm-clock icon) and the place watching
+        // (and the fast mode's notification); resuming re-arms both.
         launch {
             scriptRepository?.globallyEnabled?.collect {
-                appContext?.let { TimeSchedule.sync(it, scriptRepository?.scripts?.value.orEmpty()) }
+                appContext?.let {
+                    TimeSchedule.sync(it, scriptRepository?.scripts?.value.orEmpty())
+                    PlaceCondition.sync(it, scriptRepository?.scripts?.value.orEmpty())
+                }
+                // What changed while paused is not an edge to replay on resume.
+                reseedAutomationsSilently()
             }
         }
     }
@@ -414,7 +425,10 @@ object HardwareKeyTriggerCoordinator {
             }
         }.filter { script ->
             val evaluator = constraintEvaluator
-            script.constraints.all { evaluator?.isSatisfied(it) ?: !com.example.bridge.ConstraintNegation.requested(it.params) }
+            script.constraintsMatch(
+                { evaluator?.isSatisfied(it) ?: !com.example.bridge.ConstraintNegation.requested(it.params) },
+                { evaluator?.isKnownTrue(it) ?: false },
+            )
         }.filter { passesCooldown(it, SystemClock.elapsedRealtime()) }
         // While the bridge owns execution it reports its own gesture; logging this one too would
         // read as a double run.
@@ -463,7 +477,7 @@ object HardwareKeyTriggerCoordinator {
         reevaluateAutomationsFired()
     }
 
-    /** [reevaluateAutomations], true when a script fired. */
+    /** [reevaluateAutomations], true when a script fired or an ended one is being undone (both need time to run). */
     fun reevaluateAutomationsFired(): Boolean {
         val scriptsRepo = scriptRepository ?: return false
         val context = appContext ?: return false
@@ -471,17 +485,40 @@ object HardwareKeyTriggerCoordinator {
         val evaluator = constraintEvaluator ?: return false
 
         val now = SystemClock.elapsedRealtime()
-        val fired = scriptsRepo.scripts.value.filter { script ->
+        val ended = mutableListOf<ShortcutScript>()
+        val scripts = scriptsRepo.scripts.value
+        // A run whose script is gone has nothing left to undo against.
+        (AutomationUndo.pendingIds(context) - scripts.map { it.id }.toSet()).forEach { AutomationUndo.forget(context, it) }
+        val fired = scripts.filter { script ->
             if (!script.automation) return@filter false
-            val satisfied = script.constraints.isNotEmpty() && script.constraints.all(evaluator::isSatisfied)
+            val satisfied = script.constraints.isNotEmpty() && script.constraintsMatch(evaluator::isSatisfied, evaluator::isKnownTrue)
+            // Read from prefs, not the edge: the If may end in a process that never saw it start.
+            if (!satisfied && AutomationUndo.pending(context, script.id)) ended += script
             // update stays first, so the edge is recorded even when the cooldown skips this run.
             automationEdges.update(script.id, satisfied) && script.enabled && scriptsRepo.globallyEnabled.value &&
                 passesCooldown(script, now)
         }
-        if (fired.isEmpty()) return false
+        ended.forEach { undoEnded(context, it) }
+        if (fired.isEmpty()) return ended.isNotEmpty()
         Log.d(TAG, "Automation fired: scripts=${fired.map { it.id }}")
         executeActions(context, defaults, fired, context.getString(R.string.trigger_kind_automation), keyCode = null, pressType = null)
         return true
+    }
+
+    /** Puts back what the last run of [script] changed, for the actions still flagged "Undo when it ends". */
+    private fun undoEnded(context: Context, script: ShortcutScript) {
+        val executor = actionExecutor ?: return
+        coordinatorScope.launch {
+            // A place alert or an alarm can start this process cold, before anything adopted the bridge;
+            // takeRestore already reads the bridge-only settings to see whether they are still as set.
+            BridgeController.adoptIfInstalled(context)
+            val allowed = if (AutomationUndo.offered(script.automation, script.constraints)) AutomationUndo.kinds(script.actions) else emptyList()
+            val restore = AutomationUndo.takeRestore(context, script.id, allowed)
+            if (restore.isEmpty()) return@launch
+            Log.d(TAG, "Automation ended, undoing: script=${script.id} actions=${restore.map { it.type }}")
+            runChain(restore, executor, runOnBridge = BridgeController::runActions)
+            AutomationRunNotifier.onUndo(context, script)
+        }
     }
 
     /**
@@ -490,6 +527,16 @@ object HardwareKeyTriggerCoordinator {
      */
     fun ensureInitialized(context: Context) {
         if (!isReady) initialize(context.applicationContext, KeyMappingRepository.getInstance(context))
+    }
+
+    /**
+     * Forgets the edges of the automations [only] picks (all by default) and records their current
+     * state without firing: for a value that is not a change (a place's side seen for the first
+     * time, or first again after it went unwatched).
+     */
+    fun reseedAutomationsSilently(only: (ShortcutScript) -> Boolean = { true }) {
+        scriptRepository?.scripts?.value.orEmpty().filter(only).forEach { automationEdges.forget(it.id) }
+        seedUnknownAutomations()
     }
 
     /**
@@ -503,7 +550,7 @@ object HardwareKeyTriggerCoordinator {
         val scripts = scriptRepository?.scripts?.value ?: return
         val evaluator = constraintEvaluator ?: return
         scripts.filter { it.automation && !automationEdges.knows(it.id) }.forEach { script ->
-            automationEdges.update(script.id, script.constraints.isNotEmpty() && script.constraints.all(evaluator::isSatisfied))
+            automationEdges.update(script.id, script.constraints.isNotEmpty() && script.constraintsMatch(evaluator::isSatisfied, evaluator::isKnownTrue))
         }
     }
 
@@ -540,15 +587,19 @@ object HardwareKeyTriggerCoordinator {
         val evaluator = constraintEvaluator
         val now = SystemClock.elapsedRealtime()
         surfaceGate(script, scriptsRepo.globallyEnabled.value, passesCooldown(script, now)) { candidate ->
-            candidate.constraints.all { evaluator?.isSatisfied(it) ?: !com.example.bridge.ConstraintNegation.requested(it.params) }
+            candidate.constraintsMatch(
+                { evaluator?.isSatisfied(it) ?: !com.example.bridge.ConstraintNegation.requested(it.params) },
+                { evaluator?.isKnownTrue(it) ?: false },
+            )
         }?.let { return it }
         lastRunAt[script.id] = now
 
         ModeHooks.awaitPulseReservation()
         if (resolveVibrateForScript(script, defaults.vibrateOnTrigger)) {
-            val duration = resolveHapticDurationForScript(script, defaults.hapticDurationMs)
-            vibratePhone(context, duration)
-            delay(ModeHooks.triggerFeedbackPause(script.actions, duration))
+            val pattern = resolveHapticPatternForScript(script, defaults.hapticDurationMs)
+            val duration = BuzzPattern.total(pattern) // What the pause below waits out.
+            vibratePattern(context, pattern)
+            delay(triggerFeedbackPause(script.actions, duration))
         }
         // Nothing may have adopted a running bridge in a cold process yet; the probe does socket and
         // config-file I/O, as it does off the main thread at app start.
@@ -560,6 +611,12 @@ object HardwareKeyTriggerCoordinator {
         Log.d(TAG, "Surface run: script=${script.id} source=$source ran=$ran/${script.actions.size} bridge=${run.bridgeReport != null}")
         return SurfaceRun.Ran(script.name, ran, script.actions.size)
     }
+
+    /** The shortcut's own buzz must end, plus a lead pause, before a mode or ringer buzz follows. */
+    private fun triggerFeedbackPause(actions: List<ScriptAction>, duration: Long): Long = maxOf(
+        ModeHooks.triggerFeedbackPause(actions, duration),
+        actions.maxOfOrNull { RingerBuzz.triggerPause(it.type, it.params, duration) } ?: 0L,
+    )
 
     private fun executeActions(
         context: Context,
@@ -585,12 +642,23 @@ object HardwareKeyTriggerCoordinator {
             emptyMap()
         }
         coordinatorScope.launch {
+            // A key-less run can come from a process a place alert or an alarm just started cold,
+            // before anything adopted a running bridge.
+            if (keyCode == null) BridgeController.adoptIfInstalled(context)
             scripts.forEach { script ->
+                // Read before anything runs: what "Undo when it ends" will put back.
+                val undoKinds = if (keyCode == null && AutomationUndo.offered(script.automation, script.constraints)) {
+                    AutomationUndo.kinds(script.actions)
+                } else {
+                    emptyList()
+                }
+                val undoBefore = if (undoKinds.isEmpty()) emptyMap() else AutomationUndo.read(context, undoKinds)
                 ModeHooks.awaitPulseReservation()
                 if (resolveVibrateForScript(script, config.vibrateOnTrigger)) {
-                    val duration = resolveHapticDurationForScript(script, config.hapticDurationMs)
-                    vibratePhone(context, duration)
-                    delay(ModeHooks.triggerFeedbackPause(script.actions, duration))
+                    val pattern = resolveHapticPatternForScript(script, config.hapticDurationMs)
+                    val duration = BuzzPattern.total(pattern) // What the pause below waits out.
+                    vibratePattern(context, pattern)
+                    delay(triggerFeedbackPause(script.actions, duration))
                 }
                 val executor = actionExecutor
                 if (executor != null) {
@@ -604,6 +672,11 @@ object HardwareKeyTriggerCoordinator {
                         ChainResults(executor.executeEach(script.actions, diagnosticScriptId = if (DiagnosticRecorder.recording) script.id.hashCode() else 0, diagnosticPressType = pressType), bridgeReport = null)
                     }
                     recordRun(script, keyCode, pressType?.name, run.appResults, run.bridgeReport, capsuleRunId = feedbackIds[script.id])
+                }
+                if (undoKinds.isNotEmpty()) {
+                    // Wi-Fi, Bluetooth and battery saver report their new state a moment after the call.
+                    delay(UNDO_SETTLE_MS)
+                    AutomationUndo.remember(context, script.id, undoBefore, AutomationUndo.read(context, undoKinds))
                 }
                 _triggerCount.value = _triggerCount.value + 1
                 Log.d(TAG, "Trigger fired: script=${script.id}, action=$triggerLabel, total=${_triggerCount.value}")
@@ -635,6 +708,7 @@ object HardwareKeyTriggerCoordinator {
         )
         RunLogRepository.getInstance(context).append(record)
         RunFailureNotifier.onRun(context, script, record)
+        if (source == RunRecord.SOURCE_AUTOMATION) AutomationRunNotifier.onRun(context, script, record)
         // Observe the completed, merged run once. Visual feedback must never drive execution.
         if (script.showCapsule && source == RunRecord.SOURCE_KEY && keyCode != null) {
             runCatching { CapsuleHooks.onRun(context, record, appResults, bridgeReport, capsuleRunId) }
@@ -655,6 +729,11 @@ object HardwareKeyTriggerCoordinator {
 
     fun vibratePhone(context: Context, durationMs: Long = 50) {
         vibratePhone(context, VibrationEffect.createOneShot(durationMs.coerceAtLeast(1L), VibrationEffect.DEFAULT_AMPLITUDE))
+    }
+
+    /** A shortcut's own buzz: one buzz stays touch feedback, several play as a waveform. */
+    fun vibratePattern(context: Context, pattern: List<Long>) {
+        if (pattern.size == 1) vibratePhone(context, pattern[0]) else vibratePhone(context, BuzzPattern.waveform(pattern))
     }
 
     fun vibratePhone(context: Context, timings: LongArray) {
@@ -743,6 +822,10 @@ internal class AutomationEdges {
     }
 
     fun knows(id: String): Boolean = id in last
+
+    fun forget(id: String) {
+        last.remove(id)
+    }
 
     fun reset() = last.clear()
 }

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_notifications_summary">KeySnap\'in sana söyleyebildikleri</string>
+    <string name="notif_group_working">KeySnap\'i çalışır tutar</string>
+    <string name="notif_group_shortcuts">Kısayolların</string>
+    <string name="notif_group_places">Yerler</string>
+    <string name="notif_failures_desc">Bir eylem çalışamadığında</string>
+    <string name="notif_runs_desc">Her otomasyonda ayrıca açılır</string>
+    <string name="notif_action_desc">Yazısı her kısayolda ayarlanır</string>
+    <string name="notif_place_desc">Hızlı mod çalışırken görünür</string>
+    <string name="notif_autostart_row">Yeniden başlatmadan sonra açılmadı</string>
+    <string name="notif_autostart_desc">Neyi düzelteceğini söyler</string>
+    <string name="notif_setup_row">Kurulum ve eşleştirme</string>
+    <string name="notif_setup_desc">Yalnız kurulum sırasında</string>
+    <string name="notif_required">Zorunlu</string>
+    <string name="notif_system_settings">Android bildirim ayarları</string>
+    <string name="notif_runs_hint">Her otomasyon için varsayılan. Otomasyonun kendi yazısı önce gelir. {name} kısayolun adıdır.</string>
+    <string name="notif_place_hint">Bir yerin kendi yazısı yoksa kullanılır.</string>
+    <string name="notif_preview">Önizleme</string>
+    <string name="notif_sample_name">Sabah</string>
+</resources>

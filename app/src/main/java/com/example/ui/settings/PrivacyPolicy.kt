@@ -29,7 +29,7 @@ import com.example.ui.theme.MonoLabel
  */
 object PrivacyPolicy {
 
-    const val LAST_UPDATED = "10 November 2026"
+    const val LAST_UPDATED = "17 November 2026"
 
     /**
      * Left blank deliberately. A published policy needs a contact address, but which address to
@@ -155,7 +155,12 @@ object PrivacyPolicy {
             "redirect the request to another https address; it is never followed to an http one. " +
             "The third is to Google Play, to process the Pro purchase, " +
             "check whether you have bought Pro, and, only if you choose Download, fetch the " +
-            "optional Pro AI model. The app makes no other requests of its own.",
+            "optional Pro AI model. The app makes no other requests of its own. Picking a place " +
+            "for an \"At a place\" condition opens ardasenn.com/keysnap/place in your browser. " +
+            "While you pick, that page loads map images from OpenFreeMap and, only when you " +
+            "search, sends your search words to OpenStreetMap's Nominatim, so those services see " +
+            "the area you look at and your IP address. The place you pick goes straight back to " +
+            "the app; the page itself stores and sends nothing else.",
 
         "Digital assistant (optional)" to
             "If you select KeySnap as your digital assistant in Android settings, assistant gestures " +
@@ -173,7 +178,9 @@ object PrivacyPolicy {
             "into your own shortcuts. Vibrate: for the confirmation buzz when a shortcut fires. " +
             "Battery optimisation exemption: optional, so Android does not put the app to sleep " +
             "while it waits for your buttons. Foreground service: keeps a notification and the " +
-            "connection to your own device alive while Advanced Mode starts. Wake lock and data " +
+            "connection to your own device alive while Advanced Mode starts; an \"At a place\" " +
+            "condition set to \"Fast (GPS)\" runs a location service with a visible notification " +
+            "while that shortcut is on. Wake lock and data " +
             "sync: used by Google Play's download service when you download the optional Pro AI " +
             "model. " +
             "Set wallpaper: for the \"Set wallpaper\" action; the image comes from Android's photo " +
@@ -185,8 +192,12 @@ object PrivacyPolicy {
             "permission. Bluetooth: to list your paired devices and notice when one connects, for the " +
             "Bluetooth device conditions. Location: Android only reveals the name of the Wi-Fi " +
             "network you are on to apps holding the location permission, so the \"connected to " +
-            "Wi-Fi network\" condition asks for it; the app never reads your position, and the " +
-            "permission is requested only when you add that condition. Usage access: to know " +
+            "Wi-Fi network\" condition asks for it. The \"At a place\" condition uses it to tell " +
+            "whether the phone is inside a circle you picked on a map, also while the app is " +
+            "closed, which is why it asks for \"Allow all the time\". The app keeps only whether " +
+            "the phone was inside or outside each circle and when it last checked, on this device " +
+            "and excluded from backup; the phone's position itself is never stored, logged or " +
+            "sent. The permission is requested only when you add one of these conditions. Usage access: to know " +
             "which app is in the foreground, for the \"app in foreground\" condition. Calendar: " +
             "read-only, requested only when you add a \"Calendar event in progress\" condition; " +
             "the app reads each event's title, calendar name, start and end time, and whether it " +
@@ -228,7 +239,8 @@ object PrivacyPolicy {
             "you reinstall or move to a new phone. The ADB key pair and the bridge token are " +
             "excluded from both cloud backup and device-to-device transfer, because they " +
             "authorise one specific device and must never leave it. The downloaded AI model is " +
-            "excluded from both as well.",
+            "excluded from both as well, and so is whether the phone was inside or outside each " +
+            "\"At a place\" circle.",
 
         "Deleting your data" to
             "Settings > About > Erase all data removes every shortcut, preference, key and " +

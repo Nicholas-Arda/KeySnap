@@ -38,6 +38,12 @@
     <string name="setup_skip">Skip</string>
     <string name="setup_not_now">Not now</string>
     <string name="setup_optional_row">Optional: notifications</string>
+    <string name="auto_launch_row">Keep shortcuts working when closed</string>
+    <string name="auto_launch_search_hint">Search “Auto launch” and turn KeySnap on</string>
+    <string name="home_stopped_banner">KeySnap was stopped. Some shortcuts won’t run.</string>
+    <string name="auto_launch_row_stopped">Keep KeySnap from stopping again</string>
+    <string name="reconnect_sheet_body">KeySnap turns its own Accessibility off and on once. Nothing else changes.</string>
+    <string name="reconnect_sheet_keep_on">Android asks next. Choose “Keep it on”.</string>
     <string name="setup_turn_on">Turn on</string>
     <string name="setup_usage_banner">App conditions need usage access</string>
     <string name="setup_usage_title">Allow usage access</string>

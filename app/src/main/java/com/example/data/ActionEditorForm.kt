@@ -3,6 +3,7 @@ package com.example.data
 import android.content.Context
 import android.content.res.Resources
 import androidx.annotation.StringRes
+import com.example.bridge.RingerBuzz
 import io.github.nicholasarda.keysnap.R
 
 /**
@@ -53,6 +54,17 @@ sealed interface EditorField {
         @StringRes val labelRes: Int,
         /** Same gate as [Text.visibleWhen], e.g. a notification's app only when "When tapped" is App. */
         val visibleWhen: Pair<String, Set<String>>? = null,
+        /** Offer only apps with a contactless payment service ("Default payment app"). */
+        val paymentOnly: Boolean = false,
+        /** Offer only enabled keyboards (input methods). */
+        val keyboardOnly: Boolean = false,
+    ) : EditorField
+
+    /** Several apps, stored as comma-separated package names; shown as removable chips + "Add app". */
+    data class AppList(
+        val key: String,
+        @StringRes val labelRes: Int,
+        val visibleWhen: Pair<String, Set<String>>? = null,
     ) : EditorField
 
     data class Point(val xKey: String, val yKey: String, @StringRes val labelRes: Int) : EditorField
@@ -64,6 +76,14 @@ sealed interface EditorField {
         val x2Key: String,
         val y2Key: String,
         @StringRes val labelBRes: Int,
+    ) : EditorField
+
+    /** One of [appKey]'s launcher shortcuts, listed by the bridge; writes its id and, for the summary, its label. */
+    data class AppShortcutPick(
+        val appKey: String,
+        val idKey: String,
+        val labelKey: String,
+        @StringRes val labelRes: Int,
     ) : EditorField
 
     /** A bonded Bluetooth device; writes its address and, for the summary, its name. */
@@ -108,7 +128,14 @@ sealed interface EditorField {
      * An on/off switch persisted as "true"/"false". [default] seeds only a fresh action: on one saved
      * before the switch existed, a missing value reads as off, so its behaviour does not change.
      */
-    data class Switch(val key: String, @StringRes val labelRes: Int, val default: Boolean) : EditorField
+    /** [needsAdvancedMode]: turning it on shows the Advanced Mode badge (e.g. "Send automatically"). */
+    data class Switch(val key: String, @StringRes val labelRes: Int, val default: Boolean, val needsAdvancedMode: Boolean = false) : EditorField
+
+    /** cycle_ringer_mode: the modes in the cycle and each mode's buzz; formats in [RingerBuzz]. */
+    data object RingerPattern : EditorField {
+        const val MODES = "modes"
+        val BUZZ_KEYS = listOf(RingerBuzz.NORMAL, RingerBuzz.VIBRATE, RingerBuzz.SILENT).map(RingerBuzz::key)
+    }
 }
 
 /** Every param key this field writes. A point writes two, a two-point field writes four. */
@@ -119,9 +146,11 @@ val EditorField.keys: List<String>
         is EditorField.Choice -> listOf(key)
         is EditorField.KeyCodePick -> listOf(key)
         is EditorField.AppPick -> listOf(key)
+        is EditorField.AppList -> listOf(key)
         is EditorField.Point -> listOf(xKey, yKey)
         is EditorField.TwoPoints -> listOf(x1Key, y1Key, x2Key, y2Key)
         is EditorField.BluetoothDevicePick -> listOf(addressKey, nameKey)
+        is EditorField.AppShortcutPick -> listOf(idKey, labelKey)
         is EditorField.TimeRange -> listOf(startKey, endKey)
         is EditorField.DaySet -> listOf(key)
         is EditorField.Time -> listOf(key)
@@ -129,6 +158,7 @@ val EditorField.keys: List<String>
         is EditorField.ImagePick -> listOf(key)
         is EditorField.ContactPick -> listOf(numberKey, nameKey)
         is EditorField.Switch -> listOf(key)
+        EditorField.RingerPattern -> listOf(EditorField.RingerPattern.MODES, RingerBuzz.LEAD_KEY) + EditorField.RingerPattern.BUZZ_KEYS
     }
 
 data class ActionEditorForm(
@@ -145,10 +175,45 @@ data class ActionEditorForm(
 private val ADVANCED_MODE_BADGE = R.string.badge_expert_mode
 @Suppress("unused") private val ACCESSIBILITY_BADGE = R.string.badge_accessibility
 val NOTIFICATION_POLICY_BADGE = R.string.badge_notification_policy
+private val PRESET_STATES = listOf(
+    "toggle" to R.string.choice_state_toggle,
+    "on" to R.string.choice_state_on,
+    "off" to R.string.choice_state_off,
+)
+val RINGER_MODE_LABELS = listOf(
+    RingerBuzz.NORMAL to R.string.choice_ringer_normal,
+    RingerBuzz.VIBRATE to R.string.choice_ringer_vibrate,
+    RingerBuzz.SILENT to R.string.choice_ringer_silent,
+)
+private val PAYMENT_MODES = listOf(
+    "set" to R.string.choice_payment_set,
+    "switch" to R.string.choice_payment_switch,
+)
+private val SCREEN_TIMEOUT_CHOICES = ScriptActionCatalog.SCREEN_TIMEOUTS.zip(
+    listOf(
+        R.string.choice_timeout_15s, R.string.choice_timeout_30s, R.string.choice_timeout_1m, R.string.choice_timeout_2m,
+        R.string.choice_timeout_5m, R.string.choice_timeout_10m, R.string.choice_timeout_30m,
+    ),
+)
+private val DND_FILTERS = listOf(
+    "priority" to R.string.choice_dnd_priority,
+    "alarms" to R.string.choice_dnd_alarms,
+    "none" to R.string.choice_dnd_none,
+)
 val WRITE_SETTINGS_BADGE = R.string.badge_write_settings
 val NOTIFICATION_ACCESS_BADGE = R.string.badge_notification_access
 
 private fun Map<String, String>.value(key: String): String = this[key].orEmpty().trim()
+
+/** What force_stop_app / close_and_clear_app will run, shown before it runs; null for other actions or no app. */
+fun stopCommandPreview(type: String, packageName: String?): String? {
+    val pkg = packageName?.trim()?.takeIf { it.isNotEmpty() } ?: return null
+    return when (type) {
+        "force_stop_app" -> "am force-stop $pkg"
+        "close_and_clear_app" -> "am force-stop $pkg; am stack remove <$pkg tasks in Recents>"
+        else -> null
+    }
+}
 
 private fun Map<String, String>.pointText(xKey: String, yKey: String): String {
     val x = value(xKey)
@@ -315,6 +380,7 @@ object ActionEditorForms {
             helperRes = R.string.helper_send_intent,
             summary = { _, params -> joinSummary(params.value("package"), params.value("action")) },
         ),
+        ActionEditorForm(type = "dismiss_all_notifications", fields = emptyList(), requirementRes = NOTIFICATION_ACCESS_BADGE, summary = { _, _ -> "" }),
         ActionEditorForm(
             type = "reply_to_notification",
             fields = listOf(
@@ -340,7 +406,7 @@ object ActionEditorForms {
                 EditorField.ContactPick("number", "contactName", R.string.param_to),
                 EditorField.AppPick("packageName", R.string.field_send_with),
                 EditorField.Text("text", R.string.param_message, multiline = true),
-                EditorField.Switch(AUTO_SEND, R.string.field_send_automatically, default = true),
+                EditorField.Switch(AUTO_SEND, R.string.field_send_automatically, default = true, needsAdvancedMode = true),
             ),
             helperRes = R.string.helper_send_message,
             summary = { _, params ->
@@ -353,10 +419,34 @@ object ActionEditorForms {
             },
         ),
         ActionEditorForm(
-            type = "force_stop_app",
-            fields = listOf(EditorField.AppPick("packageName", R.string.field_app_to_stop)),
+            type = "launch_app_shortcut",
+            fields = listOf(
+                EditorField.AppPick("packageName", R.string.field_app_to_open),
+                EditorField.AppShortcutPick("packageName", "shortcutId", "label", R.string.param_shortcut),
+            ),
             requirementRes = ADVANCED_MODE_BADGE,
-            summary = { _, params -> params.value("packageName") },
+            summary = { _, params -> params.value("label").ifEmpty { params.value("shortcutId") } },
+        ),
+        *listOf("force_stop_app", "close_and_clear_app").map { type ->
+            ActionEditorForm(
+                type = type,
+                fields = listOf(EditorField.AppPick("packageName", R.string.field_app_to_stop)),
+                requirementRes = ADVANCED_MODE_BADGE,
+                summary = { _, params -> params.value("packageName") },
+            )
+        }.toTypedArray(),
+        ActionEditorForm(
+            type = "set_payment_app",
+            fields = listOf(
+                EditorField.Choice("mode", R.string.param_mode, PAYMENT_MODES),
+                EditorField.AppPick("packageName", R.string.field_payment_app, paymentOnly = true),
+                EditorField.AppPick("otherPackage", R.string.field_payment_other, visibleWhen = "mode" to setOf("switch"), paymentOnly = true),
+            ),
+            requirementRes = ADVANCED_MODE_BADGE,
+            summary = { _, params ->
+                if (params.value("mode") == "switch") joinSummary(params.value("packageName"), params.value("otherPackage"))
+                else params.value("packageName")
+            },
         ),
         ActionEditorForm(
             type = "modify_setting",
@@ -425,13 +515,95 @@ object ActionEditorForms {
                 )
             },
         ),
-        // No params, so this exists only to surface NOTIFICATION_POLICY_BADGE — without it, a
-        // missing Do Not Disturb grant made the action a silent no-op with no way to discover why.
+        ActionEditorForm(
+            type = "screen_timeout",
+            fields = listOf(EditorField.Choice("timeout", R.string.param_screen_timeout, SCREEN_TIMEOUT_CHOICES)),
+            requirementRes = ADVANCED_MODE_BADGE,
+            summary = { res, params -> res.choice(params.value("timeout"), *SCREEN_TIMEOUT_CHOICES.toTypedArray()) },
+        ),
+        *listOf("always_on_display", "grayscale", "bedtime", "dark_mode", "night_light", "extra_dim").map { type ->
+            ActionEditorForm(
+                type = type,
+                fields = listOf(EditorField.Choice("state", R.string.param_state, PRESET_STATES)),
+                requirementRes = ADVANCED_MODE_BADGE,
+                summary = { res, params -> res.choice(params.value("state").ifEmpty { "toggle" }, *PRESET_STATES.toTypedArray()) },
+            )
+        }.toTypedArray(),
+        ActionEditorForm(
+            type = "keep_screen_awake",
+            fields = listOf(EditorField.Choice("state", R.string.param_state, PRESET_STATES)),
+            requirementRes = WRITE_SETTINGS_BADGE,
+            summary = { res, params -> res.choice(params.value("state").ifEmpty { "toggle" }, *PRESET_STATES.toTypedArray()) },
+        ),
+        ActionEditorForm(
+            type = ScriptActionCatalog.LEARNED_SETTING,
+            fields = listOf(
+                EditorField.Text("name", R.string.field_learned_name),
+                EditorField.Choice("state", R.string.param_state, PRESET_STATES),
+            ),
+            requirementRes = ADVANCED_MODE_BADGE,
+            summary = { res, params ->
+                joinSummary(params.value("name"), res.choice(params.value("state").ifEmpty { "toggle" }, *PRESET_STATES.toTypedArray()))
+            },
+        ),
+        ActionEditorForm(
+            type = "charge_limit",
+            fields = listOf(
+                EditorField.Choice("state", R.string.param_state, PRESET_STATES.drop(1)),
+                // The bridge snaps down to the phone's own steps (ColorOS: 80, 85, … 100).
+                EditorField.Number("level", R.string.param_charge_level, min = 80, max = 100, default = 80, suffix = "%"),
+            ),
+            requirementRes = ADVANCED_MODE_BADGE,
+            summary = { res, params ->
+                if (params.value("state") == "off") res.getString(R.string.choice_state_off)
+                else "${params.value("level").ifEmpty { "80" }}%"
+            },
+        ),
+        *listOf("toggle_dnd", "enable_dnd").map { type ->
+            ActionEditorForm(
+                type = type,
+                fields = listOf(EditorField.Choice("filter", R.string.param_dnd_type, DND_FILTERS)),
+                requirementRes = NOTIFICATION_POLICY_BADGE,
+                summary = { res, params -> res.choice(params.value("filter").ifEmpty { "priority" }, *DND_FILTERS.toTypedArray()) },
+            )
+        }.toTypedArray(),
+        // The badge matters as much as the fields: without it, a missing Do Not Disturb grant made
+        // the action a silent no-op with no way to discover why.
         ActionEditorForm(
             type = "cycle_ringer_mode",
-            fields = emptyList(),
+            fields = listOf(EditorField.RingerPattern),
             requirementRes = NOTIFICATION_POLICY_BADGE,
-            summary = { _, _ -> "" },
+            summary = { res, params ->
+                val inCycle = RINGER_MODE_LABELS.filter { RingerBuzz.inCycle(it.first, params["modes"]) }
+                if (inCycle.size == RINGER_MODE_LABELS.size) "" else inCycle.joinToString(" · ") { res.getString(it.second) }
+            },
+        ),
+        ActionEditorForm(
+            type = "set_timer",
+            fields = listOf(
+                EditorField.Number("minutes", R.string.interval_unit_minutes, min = 0, max = 1440, default = 5),
+                EditorField.Number("seconds", R.string.interval_unit_seconds, min = 0, max = 59, default = 0),
+            ),
+            summary = { _, params ->
+                val m = params.value("minutes").ifEmpty { "0" }
+                val s = params.value("seconds").ifEmpty { "0" }.padStart(2, '0')
+                "$m:$s"
+            },
+        ),
+        ActionEditorForm(
+            type = "set_alarm",
+            fields = listOf(EditorField.Time("time", R.string.field_at_time, default = "07:00")),
+            summary = { _, params -> params.value("time") },
+        ),
+        ActionEditorForm(
+            type = "copy_to_clipboard",
+            fields = listOf(EditorField.Text("text", R.string.param_text, multiline = true)),
+            summary = { _, params -> params.value("text") },
+        ),
+        ActionEditorForm(
+            type = "change_flashlight_brightness",
+            fields = listOf(EditorField.Number("strength", R.string.param_strength, min = 1, max = 100, default = 100, suffix = "%")),
+            summary = { _, params -> params.value("strength").ifEmpty { "100" } + "%" },
         ),
         ActionEditorForm(
             type = "change_brightness",
@@ -540,6 +712,12 @@ object ActionEditorForms {
                 is EditorField.Number -> put(field.key, field.default.toString())
                 is EditorField.Choice -> field.options.firstOrNull()?.let { put(field.key, it.first) }
                 is EditorField.Switch -> put(field.key, field.default.toString())
+                is EditorField.Time -> put(field.key, field.default)
+                EditorField.RingerPattern -> {
+                    put(EditorField.RingerPattern.MODES, "normal,vibrate,silent")
+                    put(RingerBuzz.LEAD_KEY, RingerBuzz.LEAD_DEFAULT_MS.toString())
+                    RINGER_MODE_LABELS.forEach { (mode, _) -> put(RingerBuzz.key(mode), RingerBuzz.defaultPattern(mode)) }
+                }
                 else -> Unit
             }
         }
@@ -555,7 +733,9 @@ object ActionEditorForms {
         val kept = saved.filterValues { it.isNotBlank() }
         if (kept.isEmpty()) return defaults(form)
         val switchesOff = form.fields.filterIsInstance<EditorField.Switch>().associate { it.key to "false" }
-        return defaults(form) + switchesOff + kept
+        // Same rule for a ringer buzz: one saved without it (or with 0 buzzes) stays silent.
+        val buzzOff = if (EditorField.RingerPattern in form.fields) EditorField.RingerPattern.BUZZ_KEYS.associateWith { "" } else emptyMap()
+        return defaults(form) + switchesOff + buzzOff + kept
     }
 
     /** The helper line, which for a message says which of the two outcomes this one has. */
@@ -580,6 +760,7 @@ object ActionEditorForms {
             val gate = when (field) {
                 is EditorField.Text -> field.visibleWhen
                 is EditorField.AppPick -> field.visibleWhen
+                is EditorField.AppList -> field.visibleWhen
                 else -> null
             } ?: return@filter true
             values[gate.first] in gate.second

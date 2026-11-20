@@ -52,6 +52,13 @@ class TimeRulesTest {
         assertEquals(t("2026-10-02T07:00"), TimeRules.nextDue(window("22:00", "07:00"), t("2026-10-01T23:00")))
     }
 
+    /** Set at 16:11 for every day at 15:00: not today, first run in 22 h 49 min. */
+    @Test fun firstRunSaysWhetherItIsToday() {
+        assertEquals(false to (22 * 60L + 49), TimeRules.firstRun(at("15:00"), t("2026-10-01T16:11")))
+        assertEquals(true to 169L, TimeRules.firstRun(at("19:00"), t("2026-10-01T16:11")))
+        assertEquals(true to 1L, TimeRules.firstRun(at("16:12"), t("2026-10-01T16:11:30")))
+    }
+
     @Test fun nextBoundaryIsTheEarliest() =
         assertEquals(t("2026-10-01T10:15"), TimeRules.nextBoundary(listOf(at("11:00"), every("15", "m")), t("2026-10-01T10:01")))
 

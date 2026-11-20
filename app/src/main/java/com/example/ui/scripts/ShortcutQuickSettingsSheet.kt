@@ -90,6 +90,7 @@ internal fun ShortcutQuickSettingsSheet(
             constraints = script.constraints,
             surfaceOnly = script.isSurfaceOnly,
             showCapsule = script.showCapsule,
+            matchAny = script.matchAny,
         )
         shareShortcutText(context, context.getString(R.string.share_text_intro) + "\n\n" + encoded)
     }

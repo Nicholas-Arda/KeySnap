@@ -56,6 +56,23 @@ public final class BridgeConfig {
     public static final String ACTION_TOGGLE_DND = "toggle_dnd";
     public static final String ACTION_ENABLE_DND = "enable_dnd";
     public static final String ACTION_DISABLE_DND = "disable_dnd";
+    public static final String ACTION_TOGGLE_BATTERY_SAVER = "toggle_battery_saver";
+    public static final String ACTION_ENABLE_BATTERY_SAVER = "enable_battery_saver";
+    public static final String ACTION_DISABLE_BATTERY_SAVER = "disable_battery_saver";
+    public static final String ACTION_ALWAYS_ON_DISPLAY = "always_on_display";
+    public static final String ACTION_GRAYSCALE = "grayscale";
+    public static final String ACTION_CHARGE_LIMIT = "charge_limit";
+    public static final String ACTION_LEARNED_SETTING = LearnedSetting.TYPE;
+    public static final String ACTION_BEDTIME = "bedtime";
+    public static final String ACTION_DARK_MODE = "dark_mode";
+    public static final String ACTION_NIGHT_LIGHT = "night_light";
+    public static final String ACTION_EXTRA_DIM = "extra_dim";
+    public static final String ACTION_SCREEN_TIMEOUT = "screen_timeout";
+    public static final String ACTION_TOGGLE_NFC = "toggle_nfc";
+    public static final String ACTION_TOGGLE_NOTIFICATION_DRAWER = "toggle_notification_drawer";
+    public static final String ACTION_TOGGLE_QUICK_SETTINGS = "toggle_quick_settings";
+    public static final String ACTION_DISMISS_ALL_NOTIFICATIONS = "dismiss_all_notifications";
+    public static final String ACTION_SET_PAYMENT_APP = "set_payment_app";
     public static final String ACTION_TEXT_CUT = "text_cut";
     public static final String ACTION_TEXT_COPY = "text_copy";
     public static final String ACTION_TEXT_PASTE = "text_paste";
@@ -67,7 +84,19 @@ public final class BridgeConfig {
     public static final String ACTION_LAUNCH_DEVICE_ASSISTANT = "launch_device_assistant";
     public static final String ACTION_OPEN_CAMERA = "open_camera";
     public static final String ACTION_OPEN_SETTINGS = "open_settings";
+    public static final String ACTION_OPEN_HOTSPOT_SETTINGS = "open_hotspot_settings";
+    public static final String ACTION_GO_LAST_APP = "go_last_app";
+    public static final String ACTION_HIDE_KEYBOARD = "hide_keyboard";
+    public static final String ACTION_CHANGE_FLASHLIGHT_BRIGHTNESS = "change_flashlight_brightness";
+    public static final String ACTION_SET_TIMER = "set_timer";
+    public static final String ACTION_SET_ALARM = "set_alarm";
+    public static final String ACTION_COPY_TO_CLIPBOARD = "copy_to_clipboard";
+    public static final String ACTION_KEEP_SCREEN_AWAKE = "keep_screen_awake";
+    public static final String ACTION_CLOSE_AND_CLEAR_APP = "close_and_clear_app";
     public static final String ACTION_FORCE_STOP_APP = "force_stop_app";
+    public static final String ACTION_LAUNCH_APP_SHORTCUT = "launch_app_shortcut";
+    public static final String ACTION_ANSWER_CALL = "answer_call";
+    public static final String ACTION_END_CALL = "end_call";
     public static final String ACTION_MODIFY_SETTING = "modify_setting";
     public static final String ACTION_SEND_INTENT = "send_intent";
     public static final String ACTION_HTTP_REQUEST = "http_request";
@@ -218,9 +247,17 @@ public final class BridgeConfig {
     public static final String CONSTRAINT_HEADPHONES_CONNECTED = "headphones_connected";
     public static final String CONSTRAINT_HEADPHONES_DISCONNECTED = "headphones_disconnected";
     public static final String CONSTRAINT_NOTIFICATION_RECEIVED = "notification_received";
+    public static final String CONSTRAINT_APP_PLAYING_MEDIA = "app_playing_media";
+    public static final String CONSTRAINT_APP_NOT_PLAYING_MEDIA = "app_not_playing_media";
+    public static final String CONSTRAINT_INPUT_METHOD_CHOSEN = "input_method_chosen";
+    public static final String CONSTRAINT_INPUT_METHOD_NOT_CHOSEN = "input_method_not_chosen";
+    public static final String CONSTRAINT_PHYSICAL_ORIENTATION = "physical_orientation";
     /** Per-script "at most once every N minutes"; BridgeMain gates it, the evaluator never blocks on it. */
     public static final String CONSTRAINT_COOLDOWN = "cooldown";
     public static final String CONSTRAINT_MODE_IS = "mode_is";
+    /** The app decides in/out and writes only that, as {@link #PARAM_INSIDE}; absent = not known. */
+    public static final String CONSTRAINT_AT_PLACE = "at_place";
+    public static final String PARAM_INSIDE = "inside";
 
     public final int port;
     public final String token;
@@ -287,11 +324,18 @@ public final class BridgeConfig {
         /** Null defers to the config-wide default; see {@link BridgeConfig#shouldVibrate}. */
         public final Boolean vibrateOnTrigger;
         public final Long hapticDurationMs;
+        /** A {@link BuzzPattern}; null or blank falls back to one buzz of {@link #hapticDurationMs}. */
+        public final String hapticPattern;
+        /** "Any" instead of "All" over {@link #constraints}; see {@link ConstraintMatch}. */
+        public final boolean matchAny;
 
         Script(String id, String name, boolean enabled, List<Trigger> triggers, List<Action> actions,
-               List<Constraint> constraints, Boolean vibrateOnTrigger, Long hapticDurationMs) {
+               List<Constraint> constraints, Boolean vibrateOnTrigger, Long hapticDurationMs, String hapticPattern,
+               boolean matchAny) {
+            this.matchAny = matchAny;
             this.vibrateOnTrigger = vibrateOnTrigger;
             this.hapticDurationMs = hapticDurationMs;
+            this.hapticPattern = hapticPattern;
             this.id = id;
             this.name = name;
             this.enabled = enabled;
@@ -428,6 +472,12 @@ public final class BridgeConfig {
     public long hapticDurationFor(Script script) {
         long value = script.hapticDurationMs != null ? script.hapticDurationMs : hapticDurationMs;
         return normalize(value, 20L, 200L, 10L); // TriggerTimingSpecs.hapticDuration
+    }
+
+    /** Mirrors resolveHapticPatternForScript in app/.../data/ScriptTiming.kt exactly. */
+    public List<Long> hapticPatternFor(Script script) {
+        List<Long> pattern = BuzzPattern.parse(script.hapticPattern);
+        return pattern.isEmpty() ? Collections.singletonList(hapticDurationFor(script)) : pattern;
     }
 
     /** Enabled triggers whose key id (a key code, or a chord id) equals {@code keyId}. */
@@ -591,7 +641,9 @@ public final class BridgeConfig {
         return new Script(id, obj.optString("name", "Unnamed script"), obj.optBoolean("enabled", true),
                 triggers, actions, Collections.unmodifiableList(constraints),
                 obj.has("vibrateOnTrigger") && !obj.isNull("vibrateOnTrigger") ? obj.optBoolean("vibrateOnTrigger") : null,
-                obj.has("hapticDurationMs") && !obj.isNull("hapticDurationMs") ? obj.optLong("hapticDurationMs") : null);
+                obj.has("hapticDurationMs") && !obj.isNull("hapticDurationMs") ? obj.optLong("hapticDurationMs") : null,
+                obj.isNull("hapticPattern") ? null : obj.optString("hapticPattern", null),
+                obj.optBoolean("matchAny", false));
     }
 
     private static String readFully(File file) throws Exception {

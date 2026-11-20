@@ -50,6 +50,7 @@ import com.example.capsule.CapsuleHooks
 import com.example.data.KeyMappingConfig
 import com.example.data.MillisecondSettingSpec
 import com.example.data.TriggerPressType
+import com.example.bridge.BuzzPattern
 import com.example.data.TriggerTimingSpecs
 import com.example.service.TimeSchedule
 import com.example.ui.components.MillisecondSliderSetting
@@ -57,6 +58,21 @@ import androidx.compose.ui.res.stringResource
 import io.github.nicholasarda.keysnap.R
 import com.example.ui.theme.SectionLabel
 import com.example.viewmodel.ScriptDraft
+import android.content.Intent
+import android.provider.Settings
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material3.IconButton
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.app.NotificationManagerCompat
+import com.example.data.RunNotice
+import com.example.service.AutomationRunNotifier
+import com.example.service.AutomationUndo
 
 /** Per-script behavior: name, enabled, press type and timing overrides. Nothing here is written
  * through until the editor's Done commits the whole [ScriptDraft]. */
@@ -74,8 +90,9 @@ fun ScriptSettingsSheet(
     onSetConsumeOriginalEvent: (Boolean?) -> Unit = {},
     onSetVibrateOnTrigger: (Boolean?) -> Unit = {},
     onSetShowCapsule: (Boolean) -> Unit = {},
-    onSetHapticDurationMs: (Long?) -> Unit = {},
+    onSetHapticPattern: (String?) -> Unit = {},
     onSetExactTiming: (Boolean) -> Unit = {},
+    onSetNotice: (RunNotice) -> Unit = {},
 ) {
     val colors = MaterialTheme.colorScheme
     // Sliders plus a focused name field make this taller than a short screen, so the content
@@ -114,6 +131,7 @@ fun ScriptSettingsSheet(
                 singleLine = true,
             )
             SheetSwitchRow(Icons.Outlined.PowerSettingsNew, stringResource(R.string.script_settings_enabled), null, draft.enabled, onSetEnabled)
+            if (draft.automation) NoticeRow(draft, onSetNotice)
             HorizontalDivider(color = colors.outline.copy(alpha = .45f))
             OverridableConsumeSwitch(
                 override = draft.consumeOriginalEvent,
@@ -132,16 +150,14 @@ fun ScriptSettingsSheet(
                 globalDefault = defaults.vibrateOnTrigger,
                 onChange = onSetVibrateOnTrigger,
             )
-            OverridableMillisecondSlider(
-                title = stringResource(R.string.settings_haptic_duration),
-                override = draft.hapticDurationMs,
-                globalDefault = defaults.hapticDurationMs,
-                spec = TriggerTimingSpecs.hapticDuration,
-                testTag = "script_haptic_duration_slider",
-                icon = Icons.Outlined.Timer,
-                enabled = draft.vibrateOnTrigger ?: defaults.vibrateOnTrigger,
-                onChange = onSetHapticDurationMs,
-            )
+            if (draft.vibrateOnTrigger ?: defaults.vibrateOnTrigger) {
+                // An older single-length override shows as one buzz of that length.
+                ShortcutBuzzEditor(
+                    pattern = BuzzPattern.parse(draft.hapticPattern).ifEmpty { listOf(draft.hapticDurationMs ?: defaults.hapticDurationMs) },
+                    isCustom = draft.hapticPattern != null || draft.hapticDurationMs != null,
+                    onChange = { onSetHapticPattern(it?.let(BuzzPattern::join)) },
+                )
+            }
             HorizontalDivider(color = colors.outline.copy(alpha = .45f))
             if (TimeSchedule.hasTimeCondition(draft.automation, draft.constraints)) {
                 ExactTimingSwitch(draft.exactTiming, onSetExactTiming)
@@ -363,6 +379,129 @@ private fun OverridableConsumeSwitch(
 @Composable
 private fun SheetIcon(icon: ImageVector) {
     Icon(icon, contentDescription = null, Modifier.padding(end = 12.dp).size(24.dp), tint = MaterialTheme.colorScheme.primary)
+}
+
+/** Whether this automation has anything "Undo when it ends" could put back. */
+private fun undoOffered(draft: ScriptDraft) =
+    AutomationUndo.offered(draft.automation, draft.constraints) && draft.actions.any { it.undoOnEnd && AutomationUndo.canUndo(it) }
+
+/** "Notifications": the master switch, which parts are on, and a gear to the words. */
+@Composable
+private fun NoticeRow(draft: ScriptDraft, onSetNotice: (RunNotice) -> Unit) {
+    val colors = MaterialTheme.colorScheme
+    val context = LocalContext.current
+    val notice = draft.notice
+    val undo = undoOffered(draft)
+    var editing by remember { mutableStateOf(false) }
+    val parts = listOfNotNull(
+        stringResource(R.string.notice_when_runs).takeIf { notice.onRun },
+        stringResource(R.string.notice_when_undone).takeIf { notice.onUndo && undo },
+    )
+    fun setOn(on: Boolean) {
+        onSetNotice(notice.copy(onRun = on, onUndo = on && undo))
+        if (on && !NotificationManagerCompat.from(context).areNotificationsEnabled()) {
+            runCatching {
+                context.startActivity(
+                    Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+                )
+            }
+        }
+    }
+    Row(
+        Modifier.fillMaxWidth().heightIn(min = 48.dp).toggleable(value = notice.any, role = Role.Switch, onValueChange = ::setOn)
+            .testTag("script_settings_notice_switch"),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        SheetIcon(Icons.Outlined.Notifications)
+        Column(Modifier.weight(1f).padding(end = 8.dp)) {
+            Text(stringResource(R.string.notice_title), style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium, color = colors.onSurface)
+            Text(
+                if (parts.isEmpty()) stringResource(R.string.notice_subtitle_off) else parts.joinToString(" · "),
+                style = MaterialTheme.typography.bodySmall,
+                color = colors.onSurfaceVariant,
+            )
+        }
+        AnimatedVisibility(notice.any) {
+            IconButton(onClick = { editing = true }, modifier = Modifier.testTag("script_settings_notice_gear")) {
+                Icon(Icons.Outlined.Settings, stringResource(R.string.notice_edit), tint = colors.primary)
+            }
+        }
+        Switch(checked = notice.any, onCheckedChange = null)
+    }
+    if (editing) NoticeSheet(draft, undo, onSetNotice) { editing = false }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun NoticeSheet(draft: ScriptDraft, undo: Boolean, onSetNotice: (RunNotice) -> Unit, onDismiss: () -> Unit) {
+    val colors = MaterialTheme.colorScheme
+    val context = LocalContext.current
+    val notice = draft.notice
+    val blank = RunNotice()
+    // Placeholders are the words a blank field falls back to.
+    val (runTitle, runText) = AutomationRunNotifier.runWords(context, draft.name, blank, draft.actions.size)
+    val (undoTitle, undoText) = AutomationRunNotifier.undoWords(context, draft.name, blank)
+    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
+        Column(
+            Modifier.fillMaxWidth().navigationBarsPadding().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp, vertical = 8.dp)
+                .testTag("notice_sheet"),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Text(stringResource(R.string.notice_title), style = MaterialTheme.typography.titleMedium, color = colors.onSurface)
+            Text(draft.name.ifBlank { stringResource(R.string.scripts_unnamed) }, style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant)
+            NoticePart(
+                stringResource(R.string.notice_when_runs), notice.onRun, { onSetNotice(notice.copy(onRun = it)) },
+                notice.runTitle, runTitle, { onSetNotice(notice.copy(runTitle = it)) },
+                notice.runText, runText, { onSetNotice(notice.copy(runText = it)) },
+            )
+            if (undo) {
+                NoticePart(
+                    stringResource(R.string.notice_when_undone), notice.onUndo, { onSetNotice(notice.copy(onUndo = it)) },
+                    notice.undoTitle, undoTitle, { onSetNotice(notice.copy(undoTitle = it)) },
+                    notice.undoText, undoText, { onSetNotice(notice.copy(undoText = it)) },
+                )
+            }
+            TextButton(
+                onClick = { onSetNotice(notice.copy(runTitle = "", runText = "", undoTitle = "", undoText = "")) },
+                enabled = listOf(notice.runTitle, notice.runText, notice.undoTitle, notice.undoText).any { it.isNotEmpty() },
+            ) { Text(stringResource(R.string.notice_reset)) }
+        }
+    }
+}
+
+@Composable
+private fun NoticePart(
+    label: String,
+    on: Boolean,
+    onToggle: (Boolean) -> Unit,
+    title: String,
+    titleHint: String,
+    onTitle: (String) -> Unit,
+    text: String,
+    textHint: String,
+    onText: (String) -> Unit,
+) {
+    val colors = MaterialTheme.colorScheme
+    Row(Modifier.fillMaxWidth().heightIn(min = 48.dp).toggleable(value = on, role = Role.Switch, onValueChange = onToggle), verticalAlignment = Alignment.CenterVertically) {
+        Text(label, Modifier.weight(1f), style = SectionLabel, color = colors.onSurfaceVariant)
+        Switch(checked = on, onCheckedChange = null)
+    }
+    AnimatedVisibility(on) {
+        // The label sits above, so a blank field always shows the words it falls back to.
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Text(stringResource(R.string.notice_field_title), style = MaterialTheme.typography.labelMedium, color = colors.onSurfaceVariant)
+            OutlinedTextField(
+                value = title, onValueChange = { onTitle(it.take(60)) }, singleLine = true, modifier = Modifier.fillMaxWidth(),
+                placeholder = { Text(titleHint) },
+            )
+            Text(stringResource(R.string.notice_field_text), style = MaterialTheme.typography.labelMedium, color = colors.onSurfaceVariant)
+            OutlinedTextField(
+                value = text, onValueChange = { onText(it.take(120)) }, singleLine = true, modifier = Modifier.fillMaxWidth(),
+                placeholder = { Text(textHint) },
+            )
+        }
+    }
 }
 
 @Composable

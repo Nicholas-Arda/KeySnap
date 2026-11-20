@@ -49,6 +49,8 @@ data class WhatsNewRelease(
     /** Leads the dialog when a release has one headline that needs no button. */
     @StringRes val highlightTitle: Int? = null,
     @StringRes val highlightDescription: Int? = null,
+    /** Heading over [fixes]; a release whose short items are new features says so instead of "Fixed". */
+    @StringRes val fixesTitle: Int = R.string.whats_new_fixed,
 )
 
 private val release112Features = listOf(
@@ -181,6 +183,36 @@ val whatsNewReleases = mapOf(
         ),
         highlightTitle = R.string.whats_new_widgets_title_131,
         highlightDescription = R.string.whats_new_widgets_description_131,
+    ),
+    // 1.3.2 ships as code 25: code 24 reached Play's bundle library but never a user.
+    25L to WhatsNewRelease(
+        features = listOf(
+            WhatsNewFeature(
+                R.string.whats_new_teach_title_132,
+                R.string.whats_new_teach_description_132,
+                R.string.whats_new_try,
+                WhatsNewDestination.SHORTCUTS,
+            ),
+            WhatsNewFeature(
+                R.string.whats_new_place_title_132,
+                R.string.whats_new_place_description_132,
+                R.string.whats_new_try,
+                WhatsNewDestination.SHORTCUTS,
+            ),
+            WhatsNewFeature(
+                R.string.whats_new_actions_title_132,
+                R.string.whats_new_actions_description_132,
+                R.string.whats_new_try,
+                WhatsNewDestination.SHORTCUTS,
+            ),
+        ),
+        fixes = listOf(
+            R.string.whats_new_fix_conditions_132,
+            R.string.whats_new_fix_undo_132,
+            R.string.whats_new_fix_vibration_132,
+            R.string.whats_new_fix_foldable_132,
+        ),
+        fixesTitle = R.string.whats_new_also_new_132,
     ),
 ).filterValues { it.features.isNotEmpty() || it.fixes.isNotEmpty() || it.highlightTitle != null } +
     listOf(14L, 15L).mapNotNull { code -> CapsuleHooks.whatsNewRelease(code)?.let { code to it } }.toMap()

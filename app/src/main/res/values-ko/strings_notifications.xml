@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_notifications_summary">KeySnap이 알려 줄 수 있는 것</string>
+    <string name="notif_group_working">KeySnap이 계속 작동하게 함</string>
+    <string name="notif_group_shortcuts">내 단축키</string>
+    <string name="notif_group_places">장소</string>
+    <string name="notif_failures_desc">작업이 실행되지 못했을 때</string>
+    <string name="notif_runs_desc">자동화마다 따로 켬</string>
+    <string name="notif_action_desc">문구는 단축키마다 설정</string>
+    <string name="notif_place_desc">빠른 모드가 실행 중일 때 표시</string>
+    <string name="notif_autostart_row">재시작 후 시작되지 않음</string>
+    <string name="notif_autostart_desc">무엇을 고칠지 알려 줌</string>
+    <string name="notif_setup_row">설정 및 페어링</string>
+    <string name="notif_setup_desc">설정 중에만</string>
+    <string name="notif_required">필수</string>
+    <string name="notif_system_settings">Android 알림 설정</string>
+    <string name="notif_runs_hint">모든 자동화의 기본값. 자동화 자체 문구가 우선합니다. {name}은 단축키 이름입니다.</string>
+    <string name="notif_place_hint">장소에 자체 문구가 없을 때 사용합니다.</string>
+    <string name="notif_preview">미리보기</string>
+    <string name="notif_sample_name">아침</string>
+</resources>

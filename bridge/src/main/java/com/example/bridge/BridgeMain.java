@@ -344,12 +344,9 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
     }
 
     private boolean constraintsSatisfied(BridgeConfig.Script script, boolean foregroundReadable) {
-        for (BridgeConfig.Constraint constraint : script.constraints) {
-            if (!constraints.isSatisfied(constraint, foregroundReadable)) {
-                return false;
-            }
-        }
-        return true;
+        return ConstraintMatch.matches(script.constraints, script.matchAny, c -> c.type,
+                script.matchAny ? c -> constraints.isKnownTrue(c, foregroundReadable)
+                        : c -> constraints.isSatisfied(c, foregroundReadable));
     }
 
     /** The per-script half of the cooldown constraint. Mirrors HardwareKeyTriggerCoordinator.passesCooldown. */
@@ -377,9 +374,14 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
         // buzz on the TRIGGER broadcast. Once per press; the app no longer vibrates for these.
         BridgeConfig current = config;
         if (current != null && current.shouldVibrate(script)) {
-            long duration = current.hapticDurationFor(script);
-            vibrate(duration);
+            java.util.List<Long> pattern = current.hapticPatternFor(script);
+            long duration = BuzzPattern.total(pattern); // What the pauses below wait out.
+            if (pattern.size() == 1) vibrate(duration);
+            else ShellBuzz.play(BuzzPattern.waveform(pattern), false);
             long modePause = BridgeModes.triggerPause(script.actions, duration);
+            for (BridgeConfig.Action action : script.actions) {
+                modePause = Math.max(modePause, RingerBuzz.triggerPause(action.type, action.params, duration));
+            }
             if (modePause > 0 && !sleepFor(Long.toString(modePause))) return;
         }
         boolean[] ok = new boolean[script.actions.size()];
@@ -458,7 +460,16 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
                     result = HttpAction.execute(action.params);
                     break;
                 default:
-                    result = ActionTestResult.outcome(executeAction(action), start);
+                    ActionTestResult[] system = new ActionTestResult[1];
+                    ShellKeyInjector.TEST_CAPTURE.set(system);
+                    try {
+                        boolean ok = executeAction(action);
+                        result = system[0] == null ? ActionTestResult.outcome(ok, start)
+                                : new ActionTestResult(ok, system[0].exitCode, null, ActionTestResult.elapsed(start),
+                                        system[0].timedOut, system[0].output);
+                    } finally {
+                        ShellKeyInjector.TEST_CAPTURE.remove();
+                    }
             }
         } catch (Exception ignored) {
             result = ActionTestResult.outcome(false, start);
@@ -467,6 +478,79 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
             return result.toWire();
         } catch (Exception ignored) {
             return "{}";
+        }
+    }
+
+    private SettingsTeach.Snapshot teachStart, teachChanged;
+    private long teachStartedAt;
+
+    /**
+     * "Teach a setting". The snapshots hold device names and ids, so they live only in these fields
+     * and are dropped on success, clear, or after 10 minutes. A "back" that finds nothing keeps them,
+     * so the user can tap again once they have really changed the switch back.
+     */
+    @Override
+    public String onShortcutsRequested(String packageName) {
+        if (!packageName.matches("[a-zA-Z0-9_]+(\\.[a-zA-Z0-9_]+)+")) return "unavailable";
+        java.util.List<String[]> shortcuts = AppShortcuts.list(packageName);
+        if (shortcuts == null) return "unavailable";
+        org.json.JSONArray out = new org.json.JSONArray();
+        try {
+            for (String[] s : shortcuts) out.put(new org.json.JSONObject().put("id", s[0]).put("label", s[1]));
+        } catch (org.json.JSONException e) {
+            return "unavailable";
+        }
+        return out.toString();
+    }
+
+    @Override
+    public synchronized String onTeachRequested(String step) {
+        if (teachStart != null && System.nanoTime() / 1_000_000L - teachStartedAt > 10 * 60_000L) clearTeach();
+        switch (step) {
+            case "start":
+                teachStart = settingsSnapshot();
+                teachChanged = null;
+                teachStartedAt = System.nanoTime() / 1_000_000L;
+                return "ok";
+            case "changed":
+                if (teachStart == null) return "expired";
+                teachChanged = settingsSnapshot();
+                return String.valueOf(SettingsTeach.moved(teachStart, teachChanged));
+            case "back": {
+                if (teachStart == null || teachChanged == null) return "expired";
+                SettingsTeach.Result result = SettingsTeach.result(teachStart, teachChanged, settingsSnapshot());
+                if (!SettingsTeach.NONE.equals(result.status)) clearTeach();
+                return teachJson(result);
+            }
+            default:
+                clearTeach();
+                return "ok";
+        }
+    }
+
+    private void clearTeach() {
+        teachStart = null;
+        teachChanged = null;
+    }
+
+    private static SettingsTeach.Snapshot settingsSnapshot() {
+        SettingsTeach.Snapshot snapshot = new SettingsTeach.Snapshot();
+        for (String ns : LearnedSetting.NAMESPACES) {
+            SettingsTeach.put(snapshot, ns, ShellKeyInjector.runShellForOutputUnlogged("settings", "list", ns));
+        }
+        return snapshot;
+    }
+
+    static String teachJson(SettingsTeach.Result result) {
+        try {
+            org.json.JSONArray changes = new org.json.JSONArray();
+            for (SettingsTeach.Change c : result.changes) {
+                changes.put(new org.json.JSONObject().put("ns", c.namespace).put("key", c.key)
+                        .put("changed", c.changed).put("back", c.back));
+            }
+            return new org.json.JSONObject().put("status", result.status).put("changes", changes).toString();
+        } catch (org.json.JSONException e) {
+            return "{\"status\":\"none\",\"changes\":[]}";
         }
     }
 
@@ -612,7 +696,17 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
         // KEYCODE_APP_SWITCH is unbound on several gesture-navigation ROMs, where the shell key
         // is silently swallowed; Accessibility's GLOBAL_ACTION_RECENTS works everywhere. Left to
         // the app path. See ScriptActionCatalog.UNSUPPORTED_BY_BRIDGE.
-        if (BridgeConfig.ACTION_OPEN_RECENTS.equals(action.type)) {
+        if (BridgeConfig.ACTION_OPEN_RECENTS.equals(action.type)
+                || BridgeConfig.ACTION_GO_LAST_APP.equals(action.type)) {
+            return false;
+        }
+        // Needs Accessibility's soft-keyboard controller. Left to the app path.
+        if (BridgeConfig.ACTION_HIDE_KEYBOARD.equals(action.type)) {
+            return false;
+        }
+        // The strongest torch level is a camera characteristic, unreadable from this UID (see
+        // TorchController). Left to the app path.
+        if (BridgeConfig.ACTION_CHANGE_FLASHLIGHT_BRIGHTNESS.equals(action.type)) {
             return false;
         }
         if (BridgeConfig.ACTION_OPEN_MENU.equals(action.type)) {
@@ -714,20 +808,19 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
         // Silent without the DND icon: the app process only has the public setRingerMode, whose
         // external path always creates a manual Zen rule. See RingerController.
         if (BridgeConfig.ACTION_CYCLE_RINGER_MODE.equals(action.type)) {
-            return ringer.cycle();
+            return ringer.cycle(action.params);
         }
         if (BridgeConfig.ACTION_CHANGE_RINGER_MODE.equals(action.type)) {
             return ringer.set(RingerController.modeFor(action.params.get("mode")));
         }
         if (BridgeConfig.ACTION_ENABLE_BLUETOOTH.equals(action.type)) {
-            return ShellKeyInjector.runShell("svc", "bluetooth", "enable");
+            return BluetoothSwitch.set(true);
         }
         if (BridgeConfig.ACTION_DISABLE_BLUETOOTH.equals(action.type)) {
-            return ShellKeyInjector.runShell("svc", "bluetooth", "disable");
+            return BluetoothSwitch.set(false);
         }
         if (BridgeConfig.ACTION_TOGGLE_BLUETOOTH.equals(action.type)) {
-            return ShellKeyInjector.runShell("svc", "bluetooth",
-                    ConstraintEvaluator.isBluetoothOn() ? "disable" : "enable");
+            return BluetoothSwitch.toggle();
         }
         if (BridgeConfig.ACTION_ENABLE_WIFI.equals(action.type)) {
             return ShellKeyInjector.runShell("svc", "wifi", "enable");
@@ -763,14 +856,92 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
         // Through NotificationManager: it owns zen_mode and reverts a direct `settings put`
         // (verified on ColorOS 2026-10-23: the write "succeeded" and DND stayed off).
         if (BridgeConfig.ACTION_ENABLE_DND.equals(action.type)) {
-            return ShellKeyInjector.runShell("cmd", "notification", "set_dnd", "priority");
+            return setDnd(dndArgument(action.params.get("filter")));
         }
         if (BridgeConfig.ACTION_DISABLE_DND.equals(action.type)) {
             return ShellKeyInjector.runShell("cmd", "notification", "set_dnd", "off");
         }
         if (BridgeConfig.ACTION_TOGGLE_DND.equals(action.type)) {
-            return ShellKeyInjector.runShell("cmd", "notification", "set_dnd",
-                    ConstraintEvaluator.isDndOn() ? "off" : "priority");
+            return setDnd(ConstraintEvaluator.isDndOn() ? "off" : dndArgument(action.params.get("filter")));
+        }
+        // `cmd power set-mode` also switches ColorOS's own power-saving mode (PLG110, 2026-11-16).
+        if (BridgeConfig.ACTION_ENABLE_BATTERY_SAVER.equals(action.type)) {
+            return ShellKeyInjector.runShell("cmd", "power", "set-mode", "1");
+        }
+        if (BridgeConfig.ACTION_DISABLE_BATTERY_SAVER.equals(action.type)) {
+            return ShellKeyInjector.runShell("cmd", "power", "set-mode", "0");
+        }
+        if (BridgeConfig.ACTION_TOGGLE_BATTERY_SAVER.equals(action.type)) {
+            boolean on = "1".equals(ShellKeyInjector.runShellForOutput("settings", "get", "global", "low_power").trim());
+            return ShellKeyInjector.runShell("cmd", "power", "set-mode", on ? "0" : "1");
+        }
+        if (BridgeConfig.ACTION_ALWAYS_ON_DISPLAY.equals(action.type)) {
+            return PresetSettings.apply(PresetSettings.ALWAYS_ON_DISPLAY, action.params.get("state"), SHELL_SETTINGS);
+        }
+        if (BridgeConfig.ACTION_LEARNED_SETTING.equals(action.type)) {
+            List<PresetSettings.Variant> variants = LearnedSetting.variants(action.params.get(LearnedSetting.PARAM_WRITES));
+            return variants != null && PresetSettings.apply(variants, action.params.get(LearnedSetting.PARAM_STATE), LEARNED_SETTINGS);
+        }
+        if (BridgeConfig.ACTION_SET_PAYMENT_APP.equals(action.type)) {
+            return PaymentApp.apply(action.params.get("packageName"),
+                    "switch".equals(action.params.get("mode")) ? action.params.get("otherPackage") : null);
+        }
+        if (BridgeConfig.ACTION_GRAYSCALE.equals(action.type)) {
+            return PresetSettings.apply(PresetSettings.GRAYSCALE, action.params.get("state"), SHELL_SETTINGS);
+        }
+        if (BridgeConfig.ACTION_CHARGE_LIMIT.equals(action.type)) {
+            return PresetSettings.applyChargeLimit(action.params.get("state"), action.params.get("level"), SHELL_SETTINGS);
+        }
+        // Bedtime = DND + grayscale + the brand's warm colour where known. Toggle follows grayscale.
+        if (BridgeConfig.ACTION_BEDTIME.equals(action.type)) {
+            String state = action.params.get("state");
+            boolean on = "on".equals(state) || (!"off".equals(state)
+                    && !Boolean.TRUE.equals(PresetSettings.isOn(PresetSettings.GRAYSCALE, SHELL_SETTINGS)));
+            String target = on ? "on" : "off";
+            boolean ok = setDnd(on ? "priority" : "off");
+            ok &= PresetSettings.apply(PresetSettings.GRAYSCALE, target, SHELL_SETTINGS);
+            if (PresetSettings.pick(PresetSettings.WARM_COLOR, SHELL_SETTINGS) != null) {
+                ok &= PresetSettings.apply(PresetSettings.WARM_COLOR, target, SHELL_SETTINGS);
+            }
+            return ok;
+        }
+        // `cmd uimode night yes|no` switched the system theme on ColorOS 17 (PLG110, 2026-11-18).
+        if (BridgeConfig.ACTION_DARK_MODE.equals(action.type)) {
+            String state = action.params.get("state");
+            String current = "on".equals(state) || "off".equals(state) ? "" : ShellKeyInjector.runShellForOutput("cmd", "uimode", "night");
+            return ShellKeyInjector.runShell("cmd", "uimode", "night", PresetSettings.darkModeArgument(state, current));
+        }
+        if (BridgeConfig.ACTION_NIGHT_LIGHT.equals(action.type)) {
+            return PresetSettings.apply(PresetSettings.NIGHT_LIGHT, action.params.get("state"), SHELL_SETTINGS);
+        }
+        if (BridgeConfig.ACTION_EXTRA_DIM.equals(action.type)) {
+            return PresetSettings.apply(PresetSettings.EXTRA_DIM, action.params.get("state"), SHELL_SETTINGS);
+        }
+        if (BridgeConfig.ACTION_SCREEN_TIMEOUT.equals(action.type)) {
+            String ms = PresetSettings.screenTimeout(action.params.get("timeout"));
+            return ms != null && SHELL_SETTINGS.put("system", "screen_off_timeout", ms);
+        }
+        // The open shade holds window focus as "NotificationShade" (PLG110, 2026-11-18): close it,
+        // else open it. Quick settings closes the same shade.
+        if (BridgeConfig.ACTION_TOGGLE_NOTIFICATION_DRAWER.equals(action.type)
+                || BridgeConfig.ACTION_TOGGLE_QUICK_SETTINGS.equals(action.type)) {
+            boolean open = shadeOpen(ShellKeyInjector.runShellForOutput("dumpsys", "window", "displays"));
+            String expand = BridgeConfig.ACTION_TOGGLE_QUICK_SETTINGS.equals(action.type) ? "expand-settings" : "expand-notifications";
+            return ShellKeyInjector.runShell("cmd", "statusbar", open ? "collapse" : expand);
+        }
+        // Needs the app's bound notification listener. See ScriptActionCatalog.UNSUPPORTED_BY_BRIDGE.
+        if (BridgeConfig.ACTION_DISMISS_ALL_NOTIFICATIONS.equals(action.type)) {
+            return false;
+        }
+        // `dumpsys nfc` prints mState=on|off (PLG110, 2026-11-18).
+        if (BridgeConfig.ACTION_TOGGLE_NFC.equals(action.type)) {
+            // `svc nfc disable` is killed outright on ColorOS 17 (exit 137, PLG110 2026-11-18) while
+            // `cmd nfc disable-nfc` works; `cmd nfc` is newer than minSdk, so svc stays the fallback.
+            // "persist" keeps it off across a reboot, as the user's own switch does.
+            boolean on = ShellKeyInjector.runShellForOutput("dumpsys", "nfc").contains("mState=on");
+            return on
+                    ? ShellKeyInjector.runShell("cmd", "nfc", "disable-nfc", "persist") || ShellKeyInjector.runShell("svc", "nfc", "disable")
+                    : ShellKeyInjector.runShell("cmd", "nfc", "enable-nfc") || ShellKeyInjector.runShell("svc", "nfc", "enable");
         }
         // KEYCODE_CUT/COPY/PASTE only reach a view that handles those key codes itself, which
         // WebViews and many custom editors don't; the app's AccessibilityNodeInfo ACTION_CUT/
@@ -813,12 +984,55 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
         if (BridgeConfig.ACTION_OPEN_SETTINGS.equals(action.type)) {
             return ShellKeyInjector.runShell("am", "start", "-a", "android.settings.SETTINGS");
         }
+        // The clock app's AlarmClock API without its screen (checked on ColorOS 17, PLG110). Only
+        // validated numbers reach the command, so the logging runShell is fine.
+        if (BridgeConfig.ACTION_SET_TIMER.equals(action.type)) {
+            Integer seconds = AlarmIntents.timerSeconds(action.params);
+            return seconds != null && ShellKeyInjector.runShell("am", "start", "-a", "android.intent.action.SET_TIMER",
+                    "--ei", "android.intent.extra.alarm.LENGTH", String.valueOf(seconds),
+                    "--ez", "android.intent.extra.alarm.SKIP_UI", "true");
+        }
+        if (BridgeConfig.ACTION_SET_ALARM.equals(action.type)) {
+            int[] time = AlarmIntents.alarmTime(action.params);
+            return time != null && ShellKeyInjector.runShell("am", "start", "-a", "android.intent.action.SET_ALARM",
+                    "--ei", "android.intent.extra.alarm.HOUR", String.valueOf(time[0]),
+                    "--ei", "android.intent.extra.alarm.MINUTES", String.valueOf(time[1]),
+                    "--ez", "android.intent.extra.alarm.SKIP_UI", "true");
+        }
+        // The clipboard is the app's to set, and keep_screen_awake remembers the user's timeout in
+        // the app's prefs. See ScriptActionCatalog.UNSUPPORTED_BY_BRIDGE.
+        if (BridgeConfig.ACTION_COPY_TO_CLIPBOARD.equals(action.type)
+                || BridgeConfig.ACTION_KEEP_SCREEN_AWAKE.equals(action.type)) {
+            return false;
+        }
+        // The AOSP hotspot page (Personal hotspot on ColorOS); else the network settings.
+        if (BridgeConfig.ACTION_OPEN_HOTSPOT_SETTINGS.equals(action.type)) {
+            return ShellKeyInjector.runShell("am", "start", "-a", "com.android.settings.WIFI_TETHER_SETTINGS")
+                    || ShellKeyInjector.runShell("am", "start", "-a", "android.settings.WIRELESS_SETTINGS");
+        }
+        // Fetched from the launcher apps service here, started by the app (see AppShortcuts).
+        if (BridgeConfig.ACTION_LAUNCH_APP_SHORTCUT.equals(action.type)) {
+            BridgeConfig current = config;
+            return current != null && AppShortcuts.launch(action.params.get("packageName"), action.params.get("shortcutId"), current.packageName);
+        }
         if (BridgeConfig.ACTION_FORCE_STOP_APP.equals(action.type)) {
             String packageName = action.params.get("packageName");
             if (packageName == null || packageName.isEmpty()) {
                 return false;
             }
             return ShellKeyInjector.runShell("am", "force-stop", packageName);
+        }
+        // force-stop keeps the app's cards in Recents (PLG110, 2026-11-18); `am stack remove`
+        // takes each one out.
+        if (BridgeConfig.ACTION_CLOSE_AND_CLEAR_APP.equals(action.type)) {
+            String packageName = action.params.get("packageName");
+            if (packageName == null || packageName.isEmpty() || !ShellKeyInjector.runShell("am", "force-stop", packageName)) {
+                return false;
+            }
+            for (String taskId : recentTaskIds(ShellKeyInjector.runShellForOutput("dumpsys", "activity", "recents"), packageName)) {
+                ShellKeyInjector.runShell("am", "stack", "remove", taskId);
+            }
+            return true;
         }
         if (BridgeConfig.ACTION_MODIFY_SETTING.equals(action.type)) {
             return modifySetting(action);
@@ -835,6 +1049,16 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
                 return false;
             }
             return ShellKeyInjector.shellCommand(action.params, false).ok;
+        }
+        // Telecom answers a ringing call on KEYCODE_CALL and ends or rejects one on KEYCODE_ENDCALL
+        // (PLG110, 2026-11-19). With no call, ENDCALL puts the phone to sleep, so a key is sent only
+        // while telephony reports a call; with none there is nothing to do.
+        if (BridgeConfig.ACTION_ANSWER_CALL.equals(action.type) || BridgeConfig.ACTION_END_CALL.equals(action.type)) {
+            int state = callState(ShellKeyInjector.runShellForOutput("dumpsys", "telephony.registry"));
+            if (state < 0) return false;
+            boolean answer = BridgeConfig.ACTION_ANSWER_CALL.equals(action.type);
+            if (answer ? state != 1 : state == 0) return true;
+            return ShellKeyInjector.sendKey(answer ? ShellKeyInjector.KEYCODE_CALL : ShellKeyInjector.KEYCODE_ENDCALL);
         }
         if (BridgeConfig.ACTION_SCREEN_ON.equals(action.type)) {
             return ShellKeyInjector.sendKey(ShellKeyInjector.KEYCODE_WAKEUP);
@@ -925,6 +1149,81 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
         }
         BridgeLog.w("Unknown action type: " + action.type);
         return false;
+    }
+
+    /**
+     * Task ids of [packageName]'s cards in `dumpsys activity recents`, from lines like
+     * "Recent #1: Task{73097cd #4830 type=standard A=10301:com.coloros.calculator}".
+     */
+    static java.util.List<String> recentTaskIds(String dump, String packageName) {
+        java.util.List<String> ids = new java.util.ArrayList<>();
+        java.util.regex.Pattern line = java.util.regex.Pattern.compile("Recent #\\d+: Task\\{\\S+ #(\\d+) .*?(?:A=\\d+:|I=)([\\w.]+)[}/]");
+        for (String row : String.valueOf(dump).split("\n")) {
+            java.util.regex.Matcher m = line.matcher(row);
+            if (m.find() && m.group(2).equals(packageName)) ids.add(m.group(1));
+        }
+        return ids;
+    }
+
+    /** The busiest SIM slot's mCallState: 0 idle, 1 ringing, 2 in a call; -1 when the dump shows none. */
+    static int callState(String dumpsysTelephonyRegistry) {
+        int state = -1;
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile("mCallState=(\\d)").matcher(dumpsysTelephonyRegistry);
+        while (m.find()) state = Math.max(state, Integer.parseInt(m.group(1)));
+        return state;
+    }
+
+    /** True when `dumpsys window displays` shows the notification shade holding focus. */
+    static boolean shadeOpen(String dump) {
+        for (String line : String.valueOf(dump).split("\n")) {
+            if (line.contains("mCurrentFocus=") && line.contains(" NotificationShade}")) return true;
+        }
+        return false;
+    }
+
+    /** Preset values only (never a user-authored key or value), so the logging runShell is fine. */
+    private static final PresetSettings.Store SHELL_SETTINGS = new PresetSettings.Store() {
+        public String get(String namespace, String key) {
+            return ShellKeyInjector.runShellForOutput("settings", "get", namespace, key).trim();
+        }
+
+        public boolean put(String namespace, String key, String value) {
+            return ShellKeyInjector.runShell("settings", "put", namespace, key, value);
+        }
+    };
+
+    /** Keys and values the user's phone showed us while teaching: kept out of bridge.log. */
+    private static final PresetSettings.Store LEARNED_SETTINGS = new PresetSettings.Store() {
+        public String get(String namespace, String key) {
+            return ShellKeyInjector.runShellForOutputUnlogged("settings", "get", namespace, key).trim();
+        }
+
+        public boolean put(String namespace, String key, String value) {
+            return ShellKeyInjector.runShellUnlogged("settings", "put", namespace, key, value);
+        }
+    };
+
+    /** `cmd notification set_dnd` word for a DND action's "filter" param; mirrors the app's dndFilterFor. */
+    static String dndArgument(String filter) {
+        return "alarms".equals(filter) || "none".equals(filter) ? filter : "priority";
+    }
+
+    /**
+     * Going straight from alarms-only or total silence to another DND type leaves the ringer stuck
+     * on Silent, even after DND ends (ColorOS 17, 2026-11-17: alarms → priority → off ended Silent).
+     * Passing through off first lets the system restore the ringer.
+     */
+    private static boolean setDnd(String arg) {
+        String zen = ShellKeyInjector.runShellForOutput("settings", "get", "global", "zen_mode").trim();
+        if (switchesDndType(zen, arg)) ShellKeyInjector.runShell("cmd", "notification", "set_dnd", "off");
+        return ShellKeyInjector.runShell("cmd", "notification", "set_dnd", arg);
+    }
+
+    /** True when DND is on ([zen] ≠ 0) and [arg] asks for a different type. zen: 1 priority, 2 none, 3 alarms. */
+    static boolean switchesDndType(String zen, String arg) {
+        if ("off".equals(arg) || "0".equals(zen) || zen.isEmpty()) return false;
+        String target = "alarms".equals(arg) ? "3" : "none".equals(arg) ? "2" : "1";
+        return !zen.equals(target);
     }
 
     /** Locking rotation always disables auto-rotate first, matching the quick-settings tile. */
