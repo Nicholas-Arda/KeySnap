@@ -1,6 +1,7 @@
 package com.example.service.bridge
 
 import android.util.Log
+import com.example.bridge.BridgeAuth
 import com.example.bridge.BridgeProtocol
 import com.example.bridge.ActionTestResult
 import kotlinx.coroutines.CancellationException
@@ -69,7 +70,7 @@ internal fun parseRunReply(line: String?): BridgeRunResult? {
  * The reply to the command just sent. Every authenticated connection also receives the EVENT, TRIGGER
  * and DEVICE lines the bridge pushes, and a key press during a long command lands one first; those are
  * skipped. Even the handshake can be preceded by one, since the bridge marks a connection logged in
- * just before it answers HELLO. Null when the stream ends.
+ * just before it answers AUTH. Null when the stream ends.
  */
 internal fun readReply(nextLine: () -> String?): String? {
     while (true) {
@@ -78,9 +79,16 @@ internal fun readReply(nextLine: () -> String?): String? {
     }
 }
 
-private val PUSHED = setOf(BridgeProtocol.MSG_EVENT, BridgeProtocol.MSG_TRIGGER, BridgeProtocol.MSG_DEVICE, BridgeProtocol.MSG_FEEDBACK, BridgeProtocol.MSG_MODE)
+private val PUSHED = setOf(
+    BridgeProtocol.MSG_EVENT,
+    BridgeProtocol.MSG_TRIGGER,
+    BridgeProtocol.MSG_DEVICE,
+    BridgeProtocol.MSG_FEEDBACK,
+    BridgeProtocol.MSG_MODE,
+    BridgeProtocol.MSG_SENSITIVE,
+)
 
-/** The bridge's identity from its HELLO answer, or null unless it is an OK carrying one. */
+/** The bridge's identity from its AUTH answer, or null unless it is an OK carrying one. */
 internal fun parseHandshake(line: String?): BridgeStatus? {
     val fields = line?.split('\t').orEmpty()
     if (fields.firstOrNull() != BridgeProtocol.MSG_OK || fields.size < 4) return null
@@ -154,6 +162,12 @@ class BridgeClient(
         fun onTrigger(trigger: BridgeTrigger) {}
         fun onFeedback(trigger: BridgeTrigger) {}
         fun onModeChanged(mode: Int) {}
+
+        /** Display only: the bridge turned [packageName]'s switches off ([steppedAside]) or back on. */
+        fun onSensitiveApp(packageName: String, steppedAside: Boolean) {}
+
+        /** Display only: the bridge is turning wireless debugging off for [packageName] and ending. */
+        fun onSensitiveLeaving(packageName: String) {}
         fun onDevice(path: String, name: String) {}
     }
 
@@ -314,6 +328,13 @@ class BridgeClient(
         val fields = line.split(SEP)
         when (fields.firstOrNull()) {
             BridgeProtocol.MSG_MODE -> fields.getOrNull(1)?.toIntOrNull()?.let(listener::onModeChanged)
+            BridgeProtocol.MSG_SENSITIVE -> if (fields.size >= 3 && fields[1].isNotEmpty()) {
+                if (fields[2] == BridgeProtocol.SENSITIVE_LEAVING) {
+                    listener.onSensitiveLeaving(fields[1])
+                } else {
+                    listener.onSensitiveApp(fields[1], fields[2] == BridgeProtocol.SENSITIVE_ASIDE)
+                }
+            }
             BridgeProtocol.MSG_EVENT -> if (fields.size >= 6) {
                 listener.onKeyEvent(
                     BridgeKeyEvent(
@@ -344,22 +365,47 @@ class BridgeClient(
         }
     }
 
+    /**
+     * The only way to a session: the mutual handshake of [BridgeAuth], which never sends the token.
+     * Nonces and proofs stay out of the log.
+     */
     private suspend fun openSession(): Session? {
         val socket = Socket()
         return try {
             socket.connect(InetSocketAddress(host, port), CONNECT_TIMEOUT_MS)
             socket.tcpNoDelay = true
-            val reader = BufferedReader(InputStreamReader(socket.getInputStream(), Charsets.UTF_8))
-            val writer = BufferedWriter(OutputStreamWriter(socket.getOutputStream(), Charsets.UTF_8))
-            writer.writeLine("${BridgeProtocol.CMD_HELLO}$SEP$token")
-
             // A blocking read ignores coroutine timeouts, so the socket enforces it; a stream session
             // then goes back to waiting indefinitely.
             socket.soTimeout = HANDSHAKE_TIMEOUT_MS
-            val reply = readReply(reader::readLine)
-            val status = parseHandshake(reply)
+            val reader = BufferedReader(InputStreamReader(socket.getInputStream(), Charsets.UTF_8))
+            val writer = BufferedWriter(OutputStreamWriter(socket.getOutputStream(), Charsets.UTF_8))
+            val clientNonce = BridgeAuth.newNonce()
+            writer.writeLine("${BridgeProtocol.CMD_HELLO2}$SEP$clientNonce")
+
+            val challenge = reader.readLine()?.split(SEP).orEmpty()
+            if (challenge.firstOrNull() != BridgeProtocol.MSG_CHALLENGE) {
+                Log.d(TAG, "Bridge handshake rejected")
+                runCatching { socket.close() }
+                return null
+            }
+            // The server proves it holds the token before this side proves anything; on a mismatch
+            // nothing more is written to it.
+            // Proofs name this connection's own end, so one relayed from another connection never verifies.
+            val endpoint = BridgeAuth.endpoint(socket.localAddress, socket.localPort)
+            val serverNonce = challenge.getOrNull(1)
+            if (!BridgeAuth.isNonce(serverNonce) || !BridgeAuth.matches(
+                    BridgeAuth.proof(token, BridgeAuth.ROLE_SERVER, endpoint, clientNonce, serverNonce), challenge.getOrNull(2),
+                )
+            ) {
+                Log.w(TAG, "Control port answered without proving it holds the token; not adopting it")
+                runCatching { socket.close() }
+                return null
+            }
+            writer.writeLine("${BridgeProtocol.CMD_AUTH}$SEP${BridgeAuth.proof(token, BridgeAuth.ROLE_CLIENT, endpoint, clientNonce, serverNonce)}")
+
+            val status = parseHandshake(readReply(reader::readLine))
             if (status == null) {
-                Log.d(TAG, "Bridge handshake rejected: $reply")
+                Log.d(TAG, "Bridge handshake rejected")
                 runCatching { socket.close() }
                 return null
             }

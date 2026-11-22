@@ -3,6 +3,9 @@ package com.example.ui.scripts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -78,6 +81,7 @@ fun ConstraintPickerScreen(
     // Saveable: folding or unfolding the phone recreates the activity.
     var query by rememberSaveable { mutableStateOf("") }
     var selectedCategory by rememberSaveable { mutableStateOf<ConstraintCategory?>(null) }
+    var tab by rememberSaveable { mutableStateOf<PickerTab?>(null) }
 
     Column(Modifier.fillMaxSize().statusBarsPadding().testTag("constraint_picker_sheet")) {
         Row(
@@ -104,6 +108,19 @@ fun ConstraintPickerScreen(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).testTag("constraint_picker_search"),
         )
         Spacer(Modifier.height(12.dp))
+        val resources = LocalContext.current.resources
+        // Browsing offers only what can be added; a search still finds the unreleased ones.
+        // Automation-only conditions are hidden from key shortcuts altogether.
+        fun offeredOf(base: List<ConstraintDescriptor>, searching: Boolean) =
+            (if (searching) base else base.filter { it.availability == ConstraintAvailability.AVAILABLE })
+                .filter { automation || it.type !in ScriptConstraintCatalog.AUTOMATION_ONLY }
+                .filter { ModeHooks.offered(it.type) && !ModeHooks.hidesFromEditor(it.type, scriptId, scripts, isPro) }
+                .filter { !hideModeCondition || it.type != ScriptConstraintCatalog.MODE_IS }
+        // No condition is phone-specific yet, so the phone tile never shows here.
+        val shownTabs = buildList {
+            if (offeredOf(ScriptConstraintCatalog.all, false).any { it.type in ScriptConstraintCatalog.NEW }) add(PickerTab.NEW)
+            add(PickerTab.POPULAR)
+        }
         val categoryScroll = rememberLazyListState()
         LazyRow(
             Modifier.fillMaxWidth().trailingEdgeFade(categoryScroll.canScrollForward),
@@ -115,9 +132,16 @@ fun ConstraintPickerScreen(
                 CategoryIconChip(
                     icon = Icons.Outlined.GridView,
                     label = stringResource(R.string.picker_category_all),
-                    selected = selectedCategory == null,
-                    onClick = { selectedCategory = null },
+                    selected = selectedCategory == null && tab == null,
+                    onClick = { selectedCategory = null; tab = null },
                 )
+            }
+            items(shownTabs.size) { i ->
+                val shown = shownTabs[i]
+                PickerTabChip(shown, "", selected = tab == shown) {
+                    tab = if (tab == shown) null else shown
+                    selectedCategory = null
+                }
             }
             items(ConstraintCategory.entries.size) { i ->
                 val category = ConstraintCategory.entries[i]
@@ -125,7 +149,7 @@ fun ConstraintPickerScreen(
                     icon = constraintCategoryIcon(category),
                     label = stringResource(category.titleRes),
                     selected = selectedCategory == category,
-                    onClick = { selectedCategory = if (selectedCategory == category) null else category },
+                    onClick = { tab = null; selectedCategory = if (selectedCategory == category) null else category },
                     category = constraintTileCategory(category),
                 )
             }
@@ -133,22 +157,23 @@ fun ConstraintPickerScreen(
         Spacer(Modifier.height(8.dp))
 
         val searching = query.isNotBlank()
-        val resources = LocalContext.current.resources
-        val base = if (searching) ScriptConstraintCatalog.search(query, resources) else ScriptConstraintCatalog.all
-        // Browsing offers only what can be added; a search still finds the unreleased ones.
-        // Automation-only conditions are hidden from key shortcuts altogether.
-        val offered = (if (searching) base else base.filter { it.availability == ConstraintAvailability.AVAILABLE })
-            .filter { automation || it.type !in ScriptConstraintCatalog.AUTOMATION_ONLY }
-            .filter { ModeHooks.offered(it.type) && !ModeHooks.hidesFromEditor(it.type, scriptId, scripts, isPro) }
-            .filter { !hideModeCondition || it.type != ScriptConstraintCatalog.MODE_IS }
-        val filtered = selectedCategory?.let { cat -> offered.filter { it.category == cat } } ?: offered
-        val grouped = ConstraintCategory.entries.mapNotNull { category ->
-            val entries = filtered.filter { it.category == category }
-            if (entries.isEmpty()) null else category to entries
+        val offered = offeredOf(if (searching) ScriptConstraintCatalog.search(query, resources) else ScriptConstraintCatalog.all, searching)
+        val filtered = when (tab) {
+            PickerTab.NEW -> offered.filter { it.type in ScriptConstraintCatalog.NEW }
+            PickerTab.POPULAR -> ScriptConstraintCatalog.POPULAR.mapNotNull { type -> offered.find { it.type == type } }
+            PickerTab.PHONE, null -> selectedCategory?.let { cat -> offered.filter { it.category == cat } } ?: offered
+        }
+        // A tab is one flat list (Popular keeps its own order); categories group under headers.
+        val grouped: List<Pair<ConstraintCategory?, List<ConstraintDescriptor>>> = when {
+            tab != null -> if (filtered.isEmpty()) emptyList() else listOf(null to filtered)
+            else -> ConstraintCategory.entries.mapNotNull { category ->
+                val entries = filtered.filter { it.category == category }
+                if (entries.isEmpty()) null else category to entries
+            }
         }
         // In the wide panel the rows go two to a line, so a name never has to wrap.
         val columns = if (isWideLayout()) 2 else 1
-        LazyColumn(Modifier.fillMaxWidth().weight(1f)) {
+        LazyColumn(Modifier.fillMaxWidth().weight(1f), contentPadding = WindowInsets.navigationBars.asPaddingValues()) {
             if (grouped.isEmpty()) {
                 item {
                     Text(
@@ -164,13 +189,15 @@ fun ConstraintPickerScreen(
                 }
             }
             grouped.forEach { (category, entries) ->
-                item(key = "header_${category.name}") {
-                    Text(
-                        stringResource(category.titleRes),
-                        Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                        style = SectionLabel,
-                        color = colors.onSurfaceVariant,
-                    )
+                if (category != null) {
+                    item(key = "header_${category.name}") {
+                        Text(
+                            stringResource(category.titleRes),
+                            Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                            style = SectionLabel,
+                            color = colors.onSurfaceVariant,
+                        )
+                    }
                 }
                 val rows = entries.chunked(columns)
                 items(rows.size, key = { "constraint_${rows[it][0].type}" }) { i ->

@@ -62,7 +62,8 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-internal class EditorFeedback(val text: String, val failed: Boolean)
+/** [fix]: the failure is the phone blocking Bluetooth, so the pill offers "Fix" ([SystemOptimizationSheet]). */
+internal class EditorFeedback(val text: String, val failed: Boolean, val fix: Boolean = false)
 
 @Composable
 internal fun ChainActionTestButton(
@@ -105,7 +106,11 @@ internal fun ChainActionTestButton(
                             ActionTestResult(false, null, null, 0, false, emptyList())
                         }
                         result = outcome
-                        onResult(EditorFeedback(actionTestSummary(resources, action, outcome), !outcome.ok))
+                        val blocked = !outcome.ok && action.type in BLUETOOTH_SWITCH_ACTIONS && readPermissionMonitor() == "true"
+                        onResult(
+                            if (blocked) EditorFeedback("✗ " + resources.getString(R.string.chain_bt_blocked), true, fix = true)
+                            else EditorFeedback(actionTestSummary(resources, action, outcome), !outcome.ok),
+                        )
                         delay(2_000)
                         result = null
                     } finally {
@@ -147,24 +152,31 @@ internal fun actionTestSummary(resources: Resources, action: ScriptAction, resul
     val summary = resources.getString(R.string.chain_test_result, if (result.ok) "✓" else "✗", title, status, seconds)
     // A failed fixed command (svc bluetooth …) shows what the system said, so a screenshot names the
     // cause. Never for shell/HTTP: their output can echo a token from the user's own command.
+    // A stack trace ends in "at android.os.Binder…", so its exception line is the one that says why.
     val said = if (result.ok || action.type == "shell_command" || action.type == "http_request") null
-    else result.output.lastOrNull { it.isNotBlank() }?.trim()?.take(120)
+    else (result.output.lastOrNull { "Exception:" in it } ?: result.output.lastOrNull { it.isNotBlank() })?.trim()?.take(120)
     return if (said == null) summary else "$summary\n$said"
 }
 
 @Composable
-internal fun EditorFeedbackPill(feedback: EditorFeedback?, modifier: Modifier = Modifier) {
+internal fun EditorFeedbackPill(feedback: EditorFeedback?, modifier: Modifier = Modifier, onFix: () -> Unit = {}) {
     val colors = MaterialTheme.colorScheme
     AnimatedContent(feedback, modifier, transitionSpec = { fadeIn() togetherWith fadeOut() }, label = "feedbackPill") { current ->
         if (current != null) {
             val ink by animateColorAsState(if (current.failed) colors.error else setupSuccess(), label = "feedbackInk")
-            Text(
-                current.text,
-                Modifier.clip(InnerShape).background(colors.surfaceContainerHigh).animateContentSize().padding(12.dp)
-                    .testTag("chain_feedback").semantics { liveRegion = LiveRegionMode.Polite },
-                color = ink,
-                style = MaterialTheme.typography.labelMedium,
-            )
+            Row(
+                Modifier.clip(InnerShape).background(colors.surfaceContainerHigh).animateContentSize()
+                    .padding(start = 12.dp, end = if (current.fix) 4.dp else 12.dp, top = if (current.fix) 0.dp else 12.dp, bottom = if (current.fix) 0.dp else 12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    current.text,
+                    Modifier.weight(1f, fill = false).testTag("chain_feedback").semantics { liveRegion = LiveRegionMode.Polite },
+                    color = ink,
+                    style = MaterialTheme.typography.labelMedium,
+                )
+                if (current.fix) TextButton(onClick = onFix, modifier = Modifier.testTag("chain_feedback_fix")) { Text(stringResource(R.string.setup_fix)) }
+            }
         }
     }
 }
@@ -235,10 +247,10 @@ internal fun ShellLimitedWarning(visible: Boolean, onSetUp: () -> Unit) {
 internal val BLUETOOTH_SWITCH_ACTIONS = setOf("toggle_bluetooth", "enable_bluetooth", "disable_bluetooth")
 
 /**
- * Whether ColorOS will show its Bluetooth prompt for these actions: its permission monitor
- * (Developer options "Disable system optimization" off, `persist.sys.permission.enable=true`)
- * refuses the bridge's `svc bluetooth`, so the bridge confirms Android's own dialog instead. When the
- * property cannot be read, an OPPO / OnePlus / realme phone is assumed to have it on.
+ * Whether ColorOS will refuse these actions: its permission monitor (Developer options "Disable
+ * system optimization" off, `persist.sys.permission.enable=true`) refuses the bridge's
+ * `svc bluetooth`, and there is deliberately no dialog fallback, so the editor asks for that switch.
+ * When the property cannot be read, an OPPO / OnePlus / realme phone is assumed to have it on.
  */
 internal fun bluetoothPromptExpected(permissionMonitor: String?, manufacturer: String): Boolean = when (permissionMonitor) {
     "true" -> true
@@ -246,16 +258,23 @@ internal fun bluetoothPromptExpected(permissionMonitor: String?, manufacturer: S
     else -> manufacturer.lowercase() in setOf("oppo", "oneplus", "realme")
 }
 
-private fun readPermissionMonitor(): String? = runCatching {
+internal fun readPermissionMonitor(): String? = runCatching {
     Class.forName("android.os.SystemProperties").getMethod("get", String::class.java)
         .invoke(null, "persist.sys.permission.enable") as String
 }.getOrNull()?.takeIf { it.isNotEmpty() }
 
 @Composable
 internal fun BluetoothPromptWarning(actionType: String) {
-    val context = LocalContext.current
-    val expected = remember { bluetoothPromptExpected(readPermissionMonitor(), android.os.Build.MANUFACTURER.orEmpty()) }
+    fun read() = bluetoothPromptExpected(readPermissionMonitor(), android.os.Build.MANUFACTURER.orEmpty())
+    var expected by remember { mutableStateOf(read()) }
+    // Re-read on return from Developer options, so the warning goes away once the switch is on.
+    androidx.lifecycle.compose.LifecycleResumeEffect(Unit) {
+        expected = read()
+        onPauseOrDispose {}
+    }
     val warning = setupWarning()
+    var showSheet by remember { mutableStateOf(false) }
+    if (showSheet) SystemOptimizationSheet(onDismiss = { showSheet = false })
     AnimatedVisibility(expected && actionType in BLUETOOTH_SWITCH_ACTIONS, enter = fadeIn() + expandVertically(), exit = fadeOut() + shrinkVertically()) {
         Row(
             Modifier.clip(InnerShape).background(warning.copy(alpha = .12f)).padding(start = 8.dp).testTag("bluetooth_prompt_warning"),
@@ -266,14 +285,7 @@ internal fun BluetoothPromptWarning(actionType: String) {
                 Text(stringResource(R.string.chain_bt_prompt), color = warning, style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Medium)
                 Text(stringResource(R.string.chain_bt_prompt_hide), color = warning, style = MaterialTheme.typography.bodySmall)
             }
-            TextButton(onClick = {
-                runCatching {
-                    context.startActivity(
-                        android.content.Intent(android.provider.Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)
-                            .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK),
-                    )
-                }
-            }) {
+            TextButton(onClick = { showSheet = true }) {
                 Text(stringResource(R.string.chain_open_developer_options), color = warning)
             }
         }

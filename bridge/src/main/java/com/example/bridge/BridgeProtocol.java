@@ -18,7 +18,7 @@ public final class BridgeProtocol {
     /** Bumped whenever the on-disk payload or the socket protocol changes incompatibly, or when
      *  :bridge behavior changes at all — an already-running detached bridge has no way to pick up
      *  a source-only fix otherwise. */
-    public static final int VERSION = 62;
+    public static final int VERSION = 71;
 
     /** Process name given to app_process, used by `pidof` for liveness checks. */
     public static final String NICE_NAME = "arda_bridge";
@@ -46,9 +46,20 @@ public final class BridgeProtocol {
     public static final String DEX_NAME = "bridge.dex";
     public static final String START_SCRIPT_NAME = "start.sh";
     public static final String LOG_NAME = "bridge.log";
+    /**
+     * Written by bridges before protocol 63 once their port was bound; start.sh kills that leftover by
+     * it, then deletes it. Protocol 63 writes none, so the kill can never reach a bridge it spawned.
+     */
+    public static final String LEGACY_PID_NAME = "bridge.pid";
 
     /** Written by the app into its external files dir; read by the bridge (shell is in ext_data_rw). */
-    public static final String CONFIG_NAME = "bridge_config.json";
+    public static final String CONFIG_NAME = "bridge.json";
+
+    /**
+     * The config of bridges before protocol 63, which they poll and exit on their own once it is gone
+     * (bridges since 2026-10-15). The app deletes it on first touch and never writes it again.
+     */
+    public static final String LEGACY_CONFIG_NAME = "bridge_config.json";
 
     /** Entry point class launched by app_process. */
     public static final String MAIN_CLASS = "com.example.bridge.BridgeMain";
@@ -60,8 +71,14 @@ public final class BridgeProtocol {
 
     public static final String HOST = "127.0.0.1";
 
-    /** Client -> bridge. */
-    public static final String CMD_HELLO = "HELLO";
+    /**
+     * Client -> bridge. HELLO2 clientNonce, answered CHALLENGE serverNonce serverProof; the client
+     * checks that proof, then sends AUTH clientProof and gets the OK line the cleartext
+     * `HELLO token` of bridges before protocol 63 used to get. That HELLO is refused, and the app
+     * never sends a token over the socket. See {@link BridgeAuth}.
+     */
+    public static final String CMD_HELLO2 = "HELLO2";
+    public static final String CMD_AUTH = "AUTH";
     /** Explicit streaming subscriptions; probes and RUN clients never claim trigger delivery. */
     public static final String CMD_WATCH = "WATCH";
     public static final String CMD_WATCH_FEEDBACK = "WATCH_FEEDBACK";
@@ -111,6 +128,7 @@ public final class BridgeProtocol {
     public static final String MSG_OK = "OK";
     public static final String MSG_PONG = "PONG";
     public static final String MSG_ERROR = "ERROR";
+    public static final String MSG_CHALLENGE = "CHALLENGE";
     public static final String MSG_EVENT = "EVENT";
     /** TRIGGER ts keyCode pressType scriptId success actionResults runId pending — see {@link #encodeActionResults}. */
     public static final String MSG_TRIGGER = "TRIGGER";
@@ -119,6 +137,15 @@ public final class BridgeProtocol {
     public static final String MSG_DEVICE = "DEVICE";
     /** Display-only mode feedback. The durable value stays in the app-created mode file, never in telemetry. */
     public static final String MSG_MODE = "MODE";
+    /**
+     * SENSITIVE packageName aside|restored|leaving: the bridge turned a sensitive app's switches off,
+     * or back on, or (leaving) is about to turn wireless debugging off for it and end. Display only,
+     * like MODE: the app shows its notice; delivery never changes state.
+     */
+    public static final String MSG_SENSITIVE = "SENSITIVE";
+    public static final String SENSITIVE_ASIDE = "aside";
+    public static final String SENSITIVE_RESTORED = "restored";
+    public static final String SENSITIVE_LEAVING = "leaving";
     public static final String MSG_BYE = "BYE";
 
     /**

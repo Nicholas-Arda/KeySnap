@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_sensitive_title_133">Mga sensitibong app</string>
+    <string name="whats_new_sensitive_description_133">Ayaw bumukas ng bangko o laro? Tumatabi ang KeySnap habang bukas ito.</string>
+    <string name="whats_new_picker_title_133">Bago, Sikat at ang phone mo</string>
+    <string name="whats_new_picker_description_133">Mas mabilis mahanap ang tamang aksyon o kondisyon.</string>
+    <string name="whats_new_oem_title_133">Mga feature ng side key sa kahit anong key</string>
+    <string name="whats_new_oem_description_133">Mind Space, I-translate ang screen, Mag-record ng audio, OSee. Experimental.</string>
+    <string name="whats_new_fix_actions_133">Bagong aksyon: I-toggle ang hotspot, Secure na i-lock ang device</string>
+    <string name="whats_new_fix_single_press_133">Agad gumagana ang isang pindot kapag walang dobleng pindot</string>
+    <string name="whats_new_fix_pairing_133">Gumagana ang pairing code mula sa notification</string>
+    <string name="whats_new_fix_app_automation_133">Tumatakbo ang app automation tuwing bubuksan mo ang app</string>
+    <string name="whats_new_fix_large_text_133">Hindi na hinahati ng malaking text ang mga salita</string>
+    <string name="whats_new_more_133">Kasama rin sa update na ito</string>
+    <string name="whats_new_not_supported_133">Hindi suportado sa device na ito</string>
+</resources>

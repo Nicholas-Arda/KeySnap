@@ -12,4 +12,5 @@
     <string name="choice_timeout_5m">5 دقائق</string>
     <string name="choice_timeout_10m">10 دقائق</string>
     <string name="choice_timeout_30m">30 دقيقة</string>
+    <string name="helper_secure_lock_device">يقفل الآن. تبقى البصمة والوجه متوقفين حتى تُدخل رمز PIN.</string>
 </resources>

@@ -855,6 +855,8 @@
     <string name="about_bridge_title">उन्नत मोड आपके अपने फ़ोन का ADB है</string>
     <string name="about_bridge_body">यह आपके लोकल नेटवर्क पर आपके फ़ोन की अपनी वायरलेस डिबगिंग से जुड़ता है — वह कनेक्शन आपके घर से बाहर नहीं जाता। शेल कमांड सिर्फ़ उन्हीं शॉर्टकट के लिए चलाता है जो आपने लिखे हैं। बंद करते ही ब्रिज डिलीट हो जाता है; रीबूट भी उसे रोक देता है।</string>
     <string name="about_illo_bridge_caption">बंद → ब्रिज खुद मिट जाता है</string>
+    <string name="about_sensitive_title">संवेदनशील ऐप सिर्फ़ वही बदलता है जो आप चुनें</string>
+    <string name="about_sensitive_body">आपकी सूची के किसी ऐप के लिए यह सिर्फ़ वे स्विच बंद करता है जो आप चुनें: डेवलपर विकल्प, KeySnap की अपनी सुलभता एंट्री, वायरलेस डिबगिंग। ऐप से निकलते ही पहले दो वापस चालू हो जाते हैं।</string>
     <string name="about_traffic_title">ऐप जो भी कनेक्शन बनाता है</string>
     <string name="about_traffic_device">आपका अपना फ़ोन</string>
     <string name="about_traffic_device_body">वायरलेस डिबगिंग पेयरिंग। सिर्फ़ लोकल नेटवर्क।</string>
@@ -1093,7 +1095,7 @@
     <string name="settings_autostart_title">रीस्टार्ट के बाद शुरू करें</string>
     <string name="settings_autostart_description">रीस्टार्ट के बाद फोन अनलॉक होने और Wi-Fi से जुड़ने पर उन्नत मोड फिर शुरू होता है। कुछ फोन पर KeySnap को अपने आप शुरू होने की अनुमति भी देनी होगी।</string>
     <string name="settings_autostart_permission_description">उन्नत मोड इस कमांड से एक अतिरिक्त अनुमति देता है: %1$s. इस विकल्प या उन्नत मोड को बंद करने पर अनुमति वापस ली जाती है। उन्नत मोड चलते समय वायरलेस डिबगिंग चालू रहती है। अगर KeySnap ने इसे चालू किया था, तो यह विकल्प बंद करने से उन्नत मोड भी रुकता है और वायरलेस डिबगिंग पहले की स्थिति में लौटती है।</string>
-    <string name="settings_autostart_hint_permission">सेटअप पूरा करने के लिए उन्नत मोड एक बार शुरू करें। OPPO, OnePlus और realme पर पहले डेवलपर विकल्पों में “अनुमति की निगरानी बंद करें”, और Xiaomi पर “USB डिबगिंग (सुरक्षा सेटिंग)” चालू करें। डेवलपर विकल्प खोलने के लिए टैप करें।</string>
+    <string name="settings_autostart_hint_permission">सेटअप पूरा करने के लिए उन्नत मोड एक बार शुरू करें। OPPO, OnePlus और realme पर पहले डेवलपर विकल्पों में “सिस्टम ऑप्टिमाइजेशन अक्षम करें”, और Xiaomi पर “USB डिबगिंग (सुरक्षा सेटिंग)” चालू करें। डेवलपर विकल्प खोलने के लिए टैप करें।</string>
     <string name="settings_autostart_hint_prompt">Android 11–12 पर हर रीस्टार्ट के बाद Android के पूछने पर इस नेटवर्क में वायरलेस डिबगिंग की अनुमति दें।</string>
     <string name="settings_autostart_cleanup_failed">रीस्टार्ट की अनुमति वापस नहीं ली जा सकी। उन्नत मोड फिर जोड़ें और यह विकल्प दोबारा बंद करें।</string>
     <string name="notif_autostart_title">रीस्टार्ट के बाद उन्नत मोड शुरू नहीं हुआ</string>
@@ -1147,10 +1149,6 @@
     <string name="accessibility_reconnect_button">फिर से कनेक्ट करें</string>
     <string name="accessibility_reconnecting">फिर से कनेक्ट हो रहा है…</string>
     <string name="accessibility_reconnect_failed">फिर से कनेक्ट नहीं हो सका। यहाँ KeySnap को बंद करके फिर चालू करें।</string>
-    <string name="wizard_manual_title">कोड खुद डालें</string>
-    <string name="wizard_manual_body">वायरलेस डिबगिंग में ‘पेयरिंग कोड से डिवाइस जोड़ें’ पर टैप करें और 6 अंकों का कोड यहाँ लिखें। अगर ऐप बदलने पर Android कोड वाली विंडो बंद कर दे, तो स्प्लिट स्क्रीन या नोटिफ़िकेशन का इस्तेमाल करें।</string>
-    <string name="wizard_manual_code_label">6 अंकों का पेयरिंग कोड</string>
-    <string name="wizard_manual_pair">पेयर करें</string>
     <string name="notif_return_title">उन्नत मोड चालू है</string>
     <string name="notif_return_body">KeySnap पर लौटने के लिए टैप करें।</string>
     <string name="pro_sale_ends_in">छूट %1$s में खत्म होगी</string>

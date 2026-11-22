@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sysopt_title">블루투스에 휴대폰 스위치 하나가 필요해요</string>
+    <string name="sysopt_why">휴대폰이 블루투스 단축키를 막고 있어요.</string>
+    <string name="sysopt_step_find">1 · “%1$s” 찾기</string>
+    <string name="sysopt_step_turn_on">2 · 켜기</string>
+    <string name="sysopt_step_confirm">3 · “%1$s” 누르기</string>
+    <string name="sysopt_switch_column">이 스위치</string>
+    <string name="sysopt_unblocks">블루투스 단축키 허용</string>
+    <string name="sysopt_warns">휴대폰 경고: 배터리, 보안</string>
+    <string name="sysopt_off_anytime">언제든 다시 끄기</string>
+    <string name="sysopt_only_reads">이 스위치만 읽음</string>
+    <string name="sysopt_no_permissions">새 권한 요청 없음</string>
+    <string name="sysopt_open_source">오픈 소스 코드</string>
+    <string name="sysopt_open">개발자 옵션 열기</string>
+    <string name="sysopt_english_hint">안 보이나요? 잠시 영어로 바꾸세요</string>
+    <string name="chain_bt_blocked">블루투스 차단됨 · 개발자 설정 하나 필요</string>
+</resources>

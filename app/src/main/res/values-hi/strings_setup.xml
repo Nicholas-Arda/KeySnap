@@ -39,7 +39,7 @@
     <string name="setup_not_now">अभी नहीं</string>
     <string name="setup_optional_row">वैकल्पिक: सूचनाएँ</string>
     <string name="auto_launch_row">ऐप बंद होने पर भी शॉर्टकट चलें</string>
-    <string name="auto_launch_search_hint">“ऑटो लॉन्च” खोजें और KeySnap चालू करें</string>
+    <string name="auto_launch_search_hint">“ऑटो-लॉन्च होने दें” खोजें और KeySnap चालू करें</string>
     <string name="home_stopped_banner">KeySnap रोक दिया गया। कुछ शॉर्टकट नहीं चलेंगे।</string>
     <string name="auto_launch_row_stopped">KeySnap को फिर से रुकने से बचाएँ</string>
     <string name="reconnect_sheet_body">KeySnap अपनी सुलभता को एक बार बंद करके चालू करता है। और कुछ नहीं बदलता।</string>

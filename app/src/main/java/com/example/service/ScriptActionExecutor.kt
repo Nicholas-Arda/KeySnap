@@ -15,6 +15,7 @@ import android.media.AudioManager
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Build
+import android.os.SystemClock
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
@@ -27,9 +28,11 @@ import android.telephony.TelephonyManager
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import androidx.core.app.NotificationCompat
+import com.example.MainActivity
 import com.example.bridge.AlarmIntents
 import com.example.bridge.RingerBuzz
 import com.example.data.AppLocale
+import com.example.data.OemActions
 import com.example.data.ScriptAction
 import com.example.data.ScriptActionCatalog
 import com.example.data.TriggerPressType
@@ -267,6 +270,69 @@ internal fun wordBoundsAtCursor(text: String, cursor: Int): IntRange? {
     return start..end
 }
 
+/**
+ * Whether Android lets this app open an activity right now. Since Android 10 a start from the
+ * background is dropped silently (BAL_BLOCK, no exception), so without one of the exemptions the
+ * app can see -- a visible KeySnap screen, its bound Accessibility service, or "Display over other
+ * apps", or a home-screen widget tap still inside its grant ([WidgetLaunchGrant]) -- the action must
+ * report failure, not success.
+ */
+internal fun canStartActivityFromBackground(
+    appVisible: Boolean,
+    accessibilityBound: Boolean,
+    canDrawOverlays: Boolean,
+    widgetGrant: Boolean = false,
+): Boolean = appVisible || accessibilityBound || canDrawOverlays || widgetGrant
+
+/**
+ * A widget tap's broadcast lets this process open activities (logcat BAL_ALLOW_TOKEN), a grant the
+ * app cannot query; a Quick Settings tile tap carries none (BAL_BLOCK). The grant is the broadcast's
+ * background-start token on this process: Android 14+ (BroadcastQueueModernImpl.dispatchReceivers,
+ * MSG_BG_ACTIVITY_START_TIMEOUT) adds it when it hands the broadcast to us and removes it
+ * ALLOW_BG_ACTIVITY_START_TIMEOUT later, whether or not the receiver has finished; Android 11-13's
+ * BroadcastQueueImpl.finishReceiverLocked removes it at the same moment when the receiver finishes
+ * sooner, as [com.example.surface.ScriptRunReceiver] does. That timeout (BroadcastConstants) is
+ * 10 s times ro.hw_timeout_multiplier, which is 1 on phones and higher on some emulators, and the
+ * app sees neither the multiplier nor the hand-over time, so the window is the shortest one: 10 s
+ * from onReceive, less [DISPATCH_MARGIN_MS] for the hand-over (longer on a cold start). A launch
+ * after it reports failure even where the token lasts longer (an emulator with a multiplier), never
+ * success where Android blocks it.
+ * ponytail: process-wide, like the grant itself; a key run launching while a widget run's window is
+ * open is reported OK too, which is what Android lets through.
+ */
+internal object WidgetLaunchGrant {
+    private const val BAL_TOKEN_TIMEOUT_MS = 10_000L
+    private const val DISPATCH_MARGIN_MS = 1_000L
+    const val WINDOW_MS = BAL_TOKEN_TIMEOUT_MS - DISPATCH_MARGIN_MS
+
+    @Volatile private var until = 0L
+
+    fun open(now: Long) {
+        until = maxOf(until, now + WINDOW_MS)
+    }
+
+    fun active(now: Long): Boolean = now < until
+}
+
+/**
+ * [first] is null only when its start threw, so nothing opened; a start that went through, even one
+ * judged blocked, never runs [fallback], or a grant the app cannot see opens two screens.
+ */
+internal inline fun startWithFallback(first: () -> Boolean?, fallback: () -> Boolean): Boolean = first() ?: fallback()
+
+/** The field's new text after typing, and where the cursor lands. */
+internal data class TypedText(val text: String, val cursor: Int)
+
+/**
+ * Types [typed] into [current] the way a keyboard does: over the selection, or at the cursor, or at
+ * the end when no selection is reported (-1). Pure so it can be unit-tested without a live node.
+ */
+internal fun typeAtSelection(current: String, selectionStart: Int, selectionEnd: Int, typed: String): TypedText {
+    val start = if (selectionStart < 0 || selectionEnd < 0) current.length else minOf(selectionStart, selectionEnd).coerceIn(0, current.length)
+    val end = if (selectionStart < 0 || selectionEnd < 0) current.length else maxOf(selectionStart, selectionEnd).coerceIn(0, current.length)
+    return TypedText(current.substring(0, start) + typed + current.substring(end), start + typed.length)
+}
+
 class ScriptActionExecutor(
     private val singleActionTest: (suspend (ScriptAction) -> ActionTestResult)? = null,
     private val handler: ScriptActionHandler,
@@ -475,6 +541,9 @@ class ScriptActionExecutor(
                 "dismiss_all_notifications" -> NotificationEventListener.dismissAll()
                 // The WALLET role / nfc_payment_default_component need the shell UID (PaymentApp).
                 "set_payment_app" -> false
+                // The tethering binder and strong auth + lockNow need the shell UID (Hotspot, SecureLock).
+                "toggle_hotspot", "secure_lock_device", OemActions.MIND_SPACE_CAPTURE, OemActions.OPEN_MIND_SPACE,
+                OemActions.TRANSLATE_SCREEN, OemActions.RECORD_AUDIO -> false
                 "lock_device" ->
                     KeyMapperAccessibilityService.performGlobalAction(AccessibilityService.GLOBAL_ACTION_LOCK_SCREEN)
                 "power_dialog" ->
@@ -495,6 +564,12 @@ class ScriptActionExecutor(
                 "open_url" -> openUrl(ctx, action.params["url"])
                 "launch_voice_assistant" -> com.example.assistant.AssistantIntegration.launch(ctx, Intent.ACTION_VOICE_COMMAND)
                 "launch_device_assistant" -> com.example.assistant.AssistantIntegration.launch(ctx)
+                // The screen a long press of power opens on OPPO/OnePlus/realme China builds (OemActions).
+                OemActions.BUILT_IN_ASSISTANT -> startActivitySafely(
+                    ctx,
+                    Intent(OemActions.ASSISTANT_ACTION).setClassName(OemActions.ASSISTANT_PACKAGE, OemActions.ASSISTANT_ACTIVITY),
+                )
+                OemActions.OPEN_OSEE -> startActivitySafely(ctx, Intent(OemActions.OSEE_ACTION).setPackage(OemActions.OSEE_PACKAGE))
                 "open_camera" -> startActivitySafely(ctx, Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA))
                 "open_settings" -> startActivitySafely(ctx, Intent(Settings.ACTION_SETTINGS))
                 "set_timer" -> AlarmIntents.timerSeconds(action.params)?.let { seconds ->
@@ -516,9 +591,11 @@ class ScriptActionExecutor(
                         ctx.getSystemService(ClipboardManager::class.java).setPrimaryClip(ClipData.newPlainText("KeySnap", text))
                     }.isSuccess
                 } ?: false
-                // The AOSP hotspot page; a phone without it gets the network settings.
-                "open_hotspot_settings" -> startActivitySafely(ctx, Intent("com.android.settings.WIFI_TETHER_SETTINGS")) ||
-                    startActivitySafely(ctx, Intent(Settings.ACTION_WIRELESS_SETTINGS))
+                // The AOSP hotspot page; only a phone without it (the start throws) gets the network settings.
+                "open_hotspot_settings" -> startWithFallback(
+                    { tryStartActivity(ctx, Intent("com.android.settings.WIFI_TETHER_SETTINGS")) },
+                    { startActivitySafely(ctx, Intent(Settings.ACTION_WIRELESS_SETTINGS)) },
+                )
                 "send_intent" -> sendIntent(ctx, action.params)
                 "reply_to_notification" -> NotificationEventListener.reply(ctx, action.params)
                 // The chat opens with the text typed in; the user taps Send, or the bridge does.
@@ -758,7 +835,9 @@ class ScriptActionExecutor(
         private fun showInputMethodPicker(context: Context): Boolean {
             val imm = context.getSystemService(android.view.inputmethod.InputMethodManager::class.java) ?: return false
             imm.showInputMethodPicker()
-            return true
+            // Android shows the picker only for the focused app ("Ignoring showInputMethodPickerFromClient"
+            // otherwise, with no error), so from the background this is a failure.
+            return MainActivity.isResumed
         }
 
         private const val TAP_DURATION_MS = 50L
@@ -834,11 +913,26 @@ class ScriptActionExecutor(
             lineTo(toX, toY)
         }
 
-        private fun startActivitySafely(context: Context, intent: Intent): Boolean = try {
-            context.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
-            true
-        } catch (e: Exception) {
-            false
+        private fun startActivitySafely(context: Context, intent: Intent): Boolean = tryStartActivity(context, intent) ?: false
+
+        /**
+         * Null when the start threw (no such screen), so nothing opened; otherwise whether Android
+         * lets it through. Still tries when no exemption is visible: a start the system lets through
+         * anyway must not be lost.
+         */
+        private fun tryStartActivity(context: Context, intent: Intent): Boolean? {
+            val allowed = canStartActivityFromBackground(
+                appVisible = MainActivity.isResumed,
+                accessibilityBound = KeyMapperAccessibilityService.connectedOverlayContext() != null,
+                canDrawOverlays = Settings.canDrawOverlays(context),
+                widgetGrant = WidgetLaunchGrant.active(SystemClock.elapsedRealtime()),
+            )
+            return try {
+                context.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+                allowed
+            } catch (e: Exception) {
+                null
+            }
         }
 
         /**
@@ -849,8 +943,9 @@ class ScriptActionExecutor(
         private suspend fun sendMessage(context: Context, params: Map<String, String>): Boolean {
             lastAutoSendOutcome = null
             val launch = messageLaunchFor(context, params) ?: return false
-            if (!startActivitySafely(context, launch.toIntent())) return false
-            if (!autoSends(params, launch)) return true
+            val opened = tryStartActivity(context, launch.toIntent()) ?: return false
+            // A start judged blocked may still have opened the chat; the bridge checks it before tapping.
+            if (!autoSends(params, launch)) return opened
             val outcome = BridgeController.pressSend(
                 launch.packageName,
                 launch.text,

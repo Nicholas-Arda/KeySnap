@@ -12,4 +12,5 @@
     <string name="choice_timeout_5m">5 मिनट</string>
     <string name="choice_timeout_10m">10 मिनट</string>
     <string name="choice_timeout_30m">30 मिनट</string>
+    <string name="helper_secure_lock_device">तुरंत लॉक करता है। PIN डालने तक फ़िंगरप्रिंट और चेहरा अनलॉक बंद रहते हैं।</string>
 </resources>

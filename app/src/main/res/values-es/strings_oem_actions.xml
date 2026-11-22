@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_mind_space_capture">Mind Space: guardar pantalla</string>
+    <string name="action_open_mind_space">Abrir Mind Space</string>
+    <string name="action_built_in_assistant">Asistente de voz integrado</string>
+    <string name="helper_mind_space_capture">Guarda la pantalla en Mind Space, como la tecla lateral.</string>
+    <string name="helper_open_mind_space">Abre Mind Space, como dos pulsaciones de la tecla lateral.</string>
+    <string name="import_error_not_on_phone">Este atajo usa una acción que este teléfono no tiene.</string>
+    <string name="action_translate_screen">Traducir pantalla</string>
+    <string name="action_record_audio">Grabar audio</string>
+    <string name="action_open_osee">Abrir OSee</string>
+    <string name="helper_translate_screen">Traduce la pantalla en vivo, como mantener la tecla lateral.</string>
+    <string name="helper_record_audio">Empieza a grabar en Grabadora, como mantener la tecla lateral.</string>
+</resources>

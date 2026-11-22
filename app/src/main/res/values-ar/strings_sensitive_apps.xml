@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sensitive_title">التطبيقات الحساسة</string>
+    <string name="sensitive_summary_empty">للتطبيقات التي لا تفتح</string>
+    <plurals name="sensitive_summary_count">
+        <item quantity="zero">%d تطبيق · يتنحى</item>
+        <item quantity="one">%d تطبيق · يتنحى</item>
+        <item quantity="two">%d تطبيقان · يتنحى</item>
+        <item quantity="few">%d تطبيقات · يتنحى</item>
+        <item quantity="many">%d تطبيقًا · يتنحى</item>
+        <item quantity="other">%d تطبيق · يتنحى</item>
+    </plurals>
+    <string name="sensitive_intro_title">بعض التطبيقات لا تفتح أثناء تشغيل KeySnap.</string>
+    <string name="sensitive_intro_body">البنوك، الألعاب، كل ما هو صارم. KeySnap يتنحى جانبًا.</string>
+    <string name="sensitive_master">التنحي لهذه التطبيقات</string>
+    <string name="sensitive_your_apps">تطبيقاتك</string>
+    <string name="sensitive_developer_options">خيارات المطور</string>
+    <string name="sensitive_accessibility">إمكانية الوصول</string>
+    <string name="sensitive_add_app">إضافة تطبيق</string>
+    <string name="sensitive_feedback_label">عندما يتنحى KeySnap</string>
+    <string name="sensitive_show_notification">إظهار إشعار</string>
+    <string name="sensitive_vibrate">اهتزاز</string>
+    <string name="sensitive_footer_keys">أزرارك تبقى تعمل.</string>
+    <string name="sensitive_footer_restore">يعيد KeySnap كل شيء عند مغادرة التطبيق.</string>
+    <string name="sensitive_sheet_question">إخفاء هذه عند فتح هذا التطبيق</string>
+    <string name="sensitive_developer_options_desc">للتطبيقات التي تحظر وضع المطور</string>
+    <string name="sensitive_accessibility_desc">للتطبيقات التي تحظر إمكانية الوصول</string>
+    <string name="sensitive_sheet_note">يعيد KeySnap تشغيلها عند المغادرة. أزرارك الفعلية لا تتوقف أبدًا.</string>
+    <string name="sensitive_remove">إزالة التطبيق</string>
+    <string name="sensitive_card_title">تطبيق لا يفتح؟</string>
+    <string name="sensitive_card_body">يمكن لـ KeySnap أن يتنحى له.</string>
+    <string name="sensitive_card_set_up">إعداد</string>
+    <string name="sensitive_needs_advanced">يعمل فقط مع الوضع المتقدم</string>
+    <string name="sensitive_notif_title">تنحى من أجل %1$s</string>
+    <string name="sensitive_notif_text">الأزرار تعمل · الأتمتة متوقفة مؤقتًا</string>
+    <string name="sensitive_notif_text_dev">كل شيء لا يزال يعمل</string>
+    <string name="sensitive_notif_restore">استعادة الآن</string>
+    <string name="sensitive_wireless_debugging">تصحيح الأخطاء اللاسلكي</string>
+    <string name="sensitive_wireless_debugging_desc">للتطبيقات التي تحظر تصحيح الأخطاء اللاسلكي</string>
+    <string name="sensitive_wireless_warning_off">يوقف الوضع المتقدم</string>
+    <string name="sensitive_wireless_warning_setup">أعد إعداده بعدها · يحتاج Wi-Fi</string>
+    <string name="sensitive_sheet_note_wireless">أزرار الوضع المتقدم تتوقف · لا استعادة تلقائية</string>
+    <string name="sensitive_footer_wireless">تصحيح الأخطاء اللاسلكي: أزرار الوضع المتقدم تتوقف.</string>
+    <string name="sensitive_notif_text_off">الوضع المتقدم متوقف · انقر للإعداد</string>
+    <string name="sensitive_fix_dev_off">خيارات المطور متوقفة</string>
+    <string name="sensitive_fix_dev_hint">اضغط على \"رقم الإصدار\" 7 مرات</string>
+    <string name="sensitive_fix_wireless_off">تصحيح الأخطاء اللاسلكي متوقف</string>
+    <string name="sensitive_fix_accessibility_off">إمكانية الوصول متوقفة</string>
+    <string name="sensitive_fix_advanced_off">الوضع المتقدم متوقف</string>
+</resources>

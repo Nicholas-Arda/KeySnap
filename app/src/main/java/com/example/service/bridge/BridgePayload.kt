@@ -32,11 +32,25 @@ class BridgePayload(context: Context) {
     val baseDir: String = BridgeProtocol.baseDirFor(appContext.packageName)
     private val prefs = appContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
+    init {
+        // Every process of ours reaches the bridge through a payload, cold widget, tile, alarm and place
+        // runs included, so a pre-63 bridge loses its config here first. Nothing writes that name again.
+        val legacy = appContext.getExternalFilesDir(null)?.let { File(File(it, PAYLOAD_DIR), BridgeProtocol.LEGACY_CONFIG_NAME) }
+        if (legacy?.delete() == true) BridgeController.staleReplaced.set(true)
+    }
+
     companion object {
         private const val TAG = "BridgePayload"
         private const val PREFS_NAME = "arda_mapper_bridge_prefs"
         private const val PREF_PORT = "control_port"
-        private const val PREF_TOKEN = "control_token"
+        private const val PREF_TOKEN = "control_token_v63"
+        private const val PREF_SENSITIVE_RESTORE = "sensitive_restore_nonce"
+
+        /**
+         * The token of app versions before protocol 63, which sent it in clear on every connection, so
+         * it may have been captured. Never read again; deleted when its replacement is generated.
+         */
+        private const val PREF_TOKEN_CLEARTEXT = "control_token"
 
         private const val PAYLOAD_DIR = "bridge"
         private const val ASSET_DEX = "bridge.dex"
@@ -55,6 +69,25 @@ class BridgePayload(context: Context) {
          * immediately visible to every subsequent reader.
          */
         private val credentialLock = Any()
+
+        /**
+         * start.sh's step before the dex copy: kills the pre-63 bridge the legacy pid file names, waits
+         * up to 2 s for it to go, then deletes the file. Only pre-63 bridges wrote it, so this can never
+         * hit a bridge another start.sh just spawned: the respawn after an update lands while the old
+         * one still holds the port, and bridges before 2026-10-15 never exit on their own. A pid that
+         * no longer names a bridge is left alone, and a missing, empty or non-numeric file (never `-1`,
+         * which would signal every shell process) does nothing.
+         */
+        internal val KILL_LEFTOVER_BRIDGE =
+            "PID=\$(cat \"\$BASE/${BridgeProtocol.LEGACY_PID_NAME}\" 2>/dev/null)\n" +
+                "case \"\$PID\" in ''|*[!0-9]*) PID= ;; esac\n" +
+                "i=0\n" +
+                "while [ -n \"\$PID\" ] && [ \$i -lt 20 ] && grep -qF ${BridgeProtocol.NICE_NAME} \"/proc/\$PID/cmdline\" 2>/dev/null; do\n" +
+                "    kill -9 \"\$PID\" 2>/dev/null\n" +
+                "    sleep 0.1\n" +
+                "    i=\$((i + 1))\n" +
+                "done\n" +
+                "rm -f \"\$BASE/${BridgeProtocol.LEGACY_PID_NAME}\"\n"
     }
 
     /** Stable for the lifetime of the install; regenerated only if the prefs are cleared. */
@@ -76,9 +109,17 @@ class BridgePayload(context: Context) {
                 return@synchronized stored
             }
             val generated = generateToken()
-            prefs.edit().putString(PREF_TOKEN, generated).commit()
+            prefs.edit().remove(PREF_TOKEN_CLEARTEXT).putString(PREF_TOKEN, generated).commit()
             generated
         }
+
+    /**
+     * Sensitive apps' "Restore now": the bridge acts on a change of this number in the config, so it
+     * is never cleared, and a fresh process rewriting the config does not read as a new tap.
+     */
+    fun requestSensitiveRestore() {
+        prefs.edit().putLong(PREF_SENSITIVE_RESTORE, prefs.getLong(PREF_SENSITIVE_RESTORE, 0L) + 1).commit()
+    }
 
     private fun generateToken(): String {
         val bytes = ByteArray(16)
@@ -145,7 +186,9 @@ class BridgePayload(context: Context) {
             append("#!/system/bin/sh\n")
             append("BASE=").append(base).append('\n')
             append("mkdir -p \"\$BASE\" || exit 1\n")
-            append("chmod 755 \"\$BASE\"\n")
+            // Owner only: the log and SendButton's window dump must not be readable by other apps.
+            append("chmod 700 \"\$BASE\"\n")
+            append(KILL_LEFTOVER_BRIDGE)
             append("cp \"").append(dexSource.absolutePath).append("\" \"\$BASE/")
                 .append(BridgeProtocol.DEX_NAME).append("\" || exit 1\n")
             append("chmod 644 \"\$BASE/").append(BridgeProtocol.DEX_NAME).append("\"\n")
@@ -182,6 +225,19 @@ class BridgePayload(context: Context) {
             root.put("longPressThresholdMs", config.longPressThresholdMs)
             root.put("vibrateOnTrigger", config.vibrateOnTrigger)
             root.put("hapticDurationMs", config.hapticDurationMs)
+            // The bridge enforces Settings → Sensitive apps; the app only lists them (none while the master is off).
+            val sensitiveApps = JSONArray()
+            com.example.service.SensitiveAppsGate.activeApps(appContext).forEach { app ->
+                sensitiveApps.put(
+                    JSONObject()
+                        .put("packageName", app.packageName)
+                        .put("hideDeveloperOptions", app.hideDeveloperOptions)
+                        .put("hideAccessibility", app.hideAccessibility)
+                        .put("hideWirelessDebugging", app.hideWirelessDebugging),
+                )
+            }
+            root.put("sensitiveApps", sensitiveApps)
+            root.put("sensitiveRestoreNonce", prefs.getLong(PREF_SENSITIVE_RESTORE, 0L))
 
             val scriptArray = JSONArray()
             // Only key shortcuts: the bridge drops a trigger-less script anyway, and an automation's
@@ -259,7 +315,7 @@ class BridgePayload(context: Context) {
     fun spawnCommand(): String? {
         val script = startScriptFile() ?: return null
         val base = baseDir
-        return "mkdir -p $base; " +
+        return "mkdir -p $base; chmod 700 $base; " +
             "nohup setsid sh '${script.absolutePath}' </dev/null >$base/spawn.log 2>&1 & " +
             "sleep 1; " +
             "echo ${BridgeProtocol.SPAWN_MARKER} spawned"

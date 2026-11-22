@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sensitive_title">Ứng dụng nhạy cảm</string>
+    <string name="sensitive_summary_empty">Cho ứng dụng không chịu mở</string>
+    <plurals name="sensitive_summary_count">
+        <item quantity="other">%d ứng dụng · tạm lui</item>
+    </plurals>
+    <string name="sensitive_intro_title">Một số ứng dụng không mở khi KeySnap đang bật.</string>
+    <string name="sensitive_intro_body">Ngân hàng, game, mọi thứ nghiêm ngặt. KeySnap tạm lui.</string>
+    <string name="sensitive_master">Tạm lui cho các ứng dụng này</string>
+    <string name="sensitive_your_apps">Ứng dụng của bạn</string>
+    <string name="sensitive_developer_options">Tùy chọn cho nhà phát triển</string>
+    <string name="sensitive_accessibility">Hỗ trợ tiếp cận</string>
+    <string name="sensitive_add_app">Thêm ứng dụng</string>
+    <string name="sensitive_feedback_label">Khi KeySnap tạm lui</string>
+    <string name="sensitive_show_notification">Hiện thông báo</string>
+    <string name="sensitive_vibrate">Rung</string>
+    <string name="sensitive_footer_keys">Nút của bạn vẫn hoạt động.</string>
+    <string name="sensitive_footer_restore">KeySnap khôi phục mọi thứ khi bạn rời ứng dụng.</string>
+    <string name="sensitive_sheet_question">Ẩn những mục này khi ứng dụng mở</string>
+    <string name="sensitive_developer_options_desc">Cho ứng dụng chặn chế độ nhà phát triển</string>
+    <string name="sensitive_accessibility_desc">Cho ứng dụng chặn hỗ trợ tiếp cận</string>
+    <string name="sensitive_sheet_note">KeySnap bật lại khi bạn rời đi. Nút phần cứng không bao giờ dừng.</string>
+    <string name="sensitive_remove">Xóa ứng dụng</string>
+    <string name="sensitive_card_title">Ứng dụng không mở được?</string>
+    <string name="sensitive_card_body">KeySnap có thể tạm lui cho nó.</string>
+    <string name="sensitive_card_set_up">Thiết lập</string>
+    <string name="sensitive_needs_advanced">Chỉ hoạt động với Chế độ nâng cao</string>
+    <string name="sensitive_notif_title">Đã tạm lui cho %1$s</string>
+    <string name="sensitive_notif_text">Nút vẫn hoạt động · tự động hoá tạm dừng</string>
+    <string name="sensitive_notif_text_dev">Mọi thứ vẫn hoạt động</string>
+    <string name="sensitive_notif_restore">Khôi phục ngay</string>
+    <string name="sensitive_wireless_debugging">Gỡ lỗi không dây</string>
+    <string name="sensitive_wireless_debugging_desc">Cho ứng dụng chặn gỡ lỗi không dây</string>
+    <string name="sensitive_wireless_warning_off">Tắt Chế độ nâng cao</string>
+    <string name="sensitive_wireless_warning_setup">Thiết lập lại sau đó · cần Wi-Fi</string>
+    <string name="sensitive_sheet_note_wireless">Nút Chế độ nâng cao dừng · không tự khôi phục</string>
+    <string name="sensitive_footer_wireless">Gỡ lỗi không dây: nút Chế độ nâng cao dừng.</string>
+    <string name="sensitive_notif_text_off">Chế độ nâng cao đã tắt · chạm để thiết lập</string>
+    <string name="sensitive_fix_dev_off">Tùy chọn cho nhà phát triển đang tắt</string>
+    <string name="sensitive_fix_dev_hint">Nhấn \"Số hiệu bản tạo\" 7 lần</string>
+    <string name="sensitive_fix_wireless_off">Gỡ lỗi không dây đang tắt</string>
+    <string name="sensitive_fix_accessibility_off">Hỗ trợ tiếp cận đang tắt</string>
+    <string name="sensitive_fix_advanced_off">Chế độ nâng cao đang tắt</string>
+</resources>

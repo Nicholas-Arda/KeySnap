@@ -12,4 +12,5 @@
     <string name="choice_timeout_5m">5 minuto</string>
     <string name="choice_timeout_10m">10 minuto</string>
     <string name="choice_timeout_30m">30 minuto</string>
+    <string name="helper_secure_lock_device">Nagla-lock agad. Naka-off ang fingerprint at mukha hanggang ilagay mo ang PIN.</string>
 </resources>

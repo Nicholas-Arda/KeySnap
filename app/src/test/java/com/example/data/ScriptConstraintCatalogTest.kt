@@ -81,8 +81,8 @@ class ScriptConstraintCatalogTest {
             assertTrue("$type is not an AVAILABLE constraint", ScriptConstraintCatalog.isAvailable(type))
             assertTrue(ScriptConstraintCatalog.isAutomation(type))
         }
-        // No wake-up source: foreground app, media, keyboard, mobile data, day of week and cooldown only gate.
-        listOf("app_in_foreground", "no_app_open", "media_is_playing", "keyboard_showing", "mobile_data_on", "day_of_week", "cooldown").forEach {
+        // No wake-up source: media, keyboard, mobile data, day of week and cooldown only gate.
+        listOf("media_is_playing", "keyboard_showing", "mobile_data_on", "day_of_week", "cooldown").forEach {
             assertFalse("$it must not be an automation trigger", ScriptConstraintCatalog.isAutomation(it))
         }
     }
@@ -135,5 +135,12 @@ class ScriptConstraintCatalogTest {
         assertTrue(ScriptConstraintCatalog.isAvailable("screen_on"))
         assertTrue(!ScriptConstraintCatalog.isAvailable("hinge_open"))
         assertTrue(!ScriptConstraintCatalog.isAvailable("not_a_real_constraint"))
+    }
+
+    @Test
+    fun pickerTabsNameOnlyRealAvailableConditions() {
+        val popular = ScriptConstraintCatalog.POPULAR
+        assertEquals(popular.size, popular.toSet().size)
+        (popular + ScriptConstraintCatalog.NEW).forEach { assertTrue(it, ScriptConstraintCatalog.isAvailable(it)) }
     }
 }

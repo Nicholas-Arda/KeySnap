@@ -1,5 +1,6 @@
 package com.example.data
 
+import android.content.Context
 import androidx.annotation.StringRes
 import com.example.ai.AiHooks
 import com.example.capsule.CapsuleHooks
@@ -34,6 +35,11 @@ enum class WhatsNewDestination {
     KEY_CAPSULE,
     SHORTCUTS,
     NEW_SHORTCUT,
+    SENSITIVE_APPS,
+    /** A new shortcut with the action picker open on its New tile. */
+    ACTION_PICKER_NEW,
+    /** A new shortcut with the action picker open on the phone-brand tile. */
+    ACTION_PICKER_PHONE,
 }
 
 data class WhatsNewFeature(
@@ -41,6 +47,8 @@ data class WhatsNewFeature(
     @StringRes val description: Int,
     @StringRes val button: Int,
     val destination: WhatsNewDestination,
+    /** False on a phone that cannot use the feature: the card says so instead of offering its button. */
+    val supportedOn: ((Context) -> Boolean)? = null,
 )
 
 data class WhatsNewRelease(
@@ -213,6 +221,38 @@ val whatsNewReleases = mapOf(
             R.string.whats_new_fix_foldable_132,
         ),
         fixesTitle = R.string.whats_new_also_new_132,
+    ),
+    26L to WhatsNewRelease(
+        features = listOf(
+            WhatsNewFeature(
+                R.string.whats_new_sensitive_title_133,
+                R.string.whats_new_sensitive_description_133,
+                R.string.whats_new_open,
+                WhatsNewDestination.SENSITIVE_APPS,
+            ),
+            WhatsNewFeature(
+                R.string.whats_new_picker_title_133,
+                R.string.whats_new_picker_description_133,
+                R.string.whats_new_try,
+                WhatsNewDestination.ACTION_PICKER_NEW,
+            ),
+            // Shown everywhere; usable only where one of those actions exists (OemActions).
+            WhatsNewFeature(
+                R.string.whats_new_oem_title_133,
+                R.string.whats_new_oem_description_133,
+                R.string.whats_new_try,
+                WhatsNewDestination.ACTION_PICKER_PHONE,
+                supportedOn = { context -> OemActions.TYPES.any { OemActions.offered(context, it) } },
+            ),
+        ),
+        fixes = listOf(
+            R.string.whats_new_fix_actions_133,
+            R.string.whats_new_fix_single_press_133,
+            R.string.whats_new_fix_pairing_133,
+            R.string.whats_new_fix_app_automation_133,
+            R.string.whats_new_fix_large_text_133,
+        ),
+        fixesTitle = R.string.whats_new_more_133,
     ),
 ).filterValues { it.features.isNotEmpty() || it.fixes.isNotEmpty() || it.highlightTitle != null } +
     listOf(14L, 15L).mapNotNull { code -> CapsuleHooks.whatsNewRelease(code)?.let { code to it } }.toMap()

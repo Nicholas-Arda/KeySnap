@@ -856,6 +856,8 @@
     <string name="about_bridge_title">O Modo Avançado é o ADB do seu próprio telefone</string>
     <string name="about_bridge_body">Ele pareia com a Depuração sem Fio do seu telefone pela sua rede local — essa conexão nunca sai da sua casa. Executa comandos de shell apenas para os atalhos que você escreveu. Desligue e a ponte é apagada; reiniciar também a interrompe.</string>
     <string name="about_illo_bridge_caption">desligado → a ponte se apaga</string>
+    <string name="about_sensitive_title">Apps sensíveis só mudam o que você marca</string>
+    <string name="about_sensitive_body">Para um app da sua lista, desliga só as chaves que você marcar: opções do desenvolvedor, a entrada de Acessibilidade do próprio KeySnap e a depuração sem fio. As duas primeiras voltam quando você sai do app.</string>
     <string name="about_traffic_title">Todas as conexões que o app faz</string>
     <string name="about_traffic_device">Seu próprio telefone</string>
     <string name="about_traffic_device_body">Pareamento por Depuração sem Fio. Somente rede local.</string>
@@ -1094,7 +1096,7 @@
     <string name="settings_autostart_title">Iniciar após reiniciar</string>
     <string name="settings_autostart_description">Inicia o modo avançado após desbloquear o telefone reiniciado e conectar ao Wi-Fi. Alguns telefones também exigem permitir a inicialização automática do KeySnap.</string>
     <string name="settings_autostart_permission_description">O modo avançado concede uma permissão extra: %1$s. Ela é revogada ao desativar esta opção ou o modo avançado. A depuração sem fio permanece ativa enquanto o modo avançado funciona. Se o KeySnap a ativou, desativar esta opção também encerra o modo avançado e restaura a depuração sem fio.</string>
-    <string name="settings_autostart_hint_permission">Inicie o modo avançado uma vez. Em OPPO, OnePlus e realme, ative primeiro “Desativar monitoramento de permissões”; em Xiaomi, “Depuração USB (Configurações de segurança)” nas opções do desenvolvedor. Toque para abri-las.</string>
+    <string name="settings_autostart_hint_permission">Inicie o modo avançado uma vez. Em OPPO, OnePlus e realme, ative primeiro “Desativar otimização do sistema”; em Xiaomi, “Depuração USB (Configurações de segurança)” nas opções do desenvolvedor. Toque para abri-las.</string>
     <string name="settings_autostart_hint_prompt">No Android 11–12, permita a depuração sem fio nesta rede após cada reinicialização quando o Android solicitar.</string>
     <string name="settings_autostart_cleanup_failed">Não foi possível revogar a permissão de reinício. Reconecte o modo avançado e desative esta opção novamente.</string>
     <string name="notif_autostart_title">Modo avançado não iniciou após reiniciar</string>
@@ -1148,10 +1150,6 @@
     <string name="accessibility_reconnect_button">Reconectar</string>
     <string name="accessibility_reconnecting">Reconectando…</string>
     <string name="accessibility_reconnect_failed">Não foi possível reconectar. Desative e ative o KeySnap de novo aqui.</string>
-    <string name="wizard_manual_title">Digite o código você mesmo</string>
-    <string name="wizard_manual_body">Em Depuração sem fio, toque em ‘Parear dispositivo com código de pareamento’ e digite aqui o código de 6 dígitos. Se o Android fechar a janela do código ao trocar de app, use a tela dividida ou a notificação.</string>
-    <string name="wizard_manual_code_label">Código de pareamento de 6 dígitos</string>
-    <string name="wizard_manual_pair">Parear</string>
     <string name="notif_return_title">O Modo Avançado está ativo</string>
     <string name="notif_return_body">Toque para voltar ao KeySnap.</string>
     <string name="pro_sale_ends_in">A oferta termina em %1$s</string>

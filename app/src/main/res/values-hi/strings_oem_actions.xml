@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_mind_space_capture">Mind Space: स्क्रीन सेव करें</string>
+    <string name="action_open_mind_space">Mind Space खोलें</string>
+    <string name="action_built_in_assistant">बिल्ट-इन वॉइस असिस्टेंट</string>
+    <string name="helper_mind_space_capture">साइड की की तरह स्क्रीन को Mind Space में सेव करता है।</string>
+    <string name="helper_open_mind_space">साइड की को दो बार दबाने की तरह Mind Space खोलता है।</string>
+    <string name="import_error_not_on_phone">यह शॉर्टकट ऐसी ऐक्शन इस्तेमाल करता है जो इस फ़ोन में नहीं है।</string>
+    <string name="action_translate_screen">स्क्रीन अनुवाद</string>
+    <string name="action_record_audio">ऑडियो रिकॉर्ड करें</string>
+    <string name="action_open_osee">OSee खोलें</string>
+    <string name="helper_translate_screen">साइड की को दबाए रखने की तरह स्क्रीन का लाइव अनुवाद करता है।</string>
+    <string name="helper_record_audio">साइड की को दबाए रखने की तरह रिकॉर्डर में रिकॉर्डिंग शुरू करता है।</string>
+</resources>

@@ -33,6 +33,7 @@ import com.example.data.ShortcutScript
 import com.example.data.constraintsMatch
 import com.example.data.TriggerPressType
 import com.example.data.buildRunRecord
+import com.example.data.isLive
 import com.example.data.keyDisplayName
 import com.example.data.keyId
 import com.example.data.resolveHapticPatternForScript
@@ -53,6 +54,9 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -111,6 +115,8 @@ object HardwareKeyTriggerCoordinator {
     private var lastEventKeyCode: Int = 0
     private var lastEventIsDown: Boolean = false
     private var lastEventTimestamp: Long = 0
+    /** (key, isDown) -> the path and time that last passed it, for the cross-path check. */
+    private val lastEdgeByPath = ConcurrentHashMap<Pair<Int, Boolean>, Pair<DiagnosticRecorder.InputPath, Long>>()
     @Volatile private var lastDiagnosticPath = DiagnosticRecorder.InputPath.ACTIVITY
     private const val DEDUPLICATION_WINDOW_MS = 80L
     private const val UNDO_SETTLE_MS = 1_500L
@@ -129,6 +135,14 @@ object HardwareKeyTriggerCoordinator {
      * the recording override, and both paths can observe the same press.
      */
     internal val accessibilityKeyConsumption = KeyConsumptionTracker()
+
+    /** Key code -> elapsedRealtime of the last down Accessibility or the activity swallowed, for [KeyPassThrough]. */
+    private val swallowedDownAt = ConcurrentHashMap<Int, Long>()
+
+    /** Accessibility and the activity call this for each first down they swallow; see [KeyPassThrough]. */
+    fun onKeySwallowed(keyCode: Int) {
+        if (KeyPassThrough.handles(keyCode)) swallowedDownAt[keyCode] = SystemClock.elapsedRealtime()
+    }
 
     /** Test seam. Production installs the real evaluator in [initialize], which replaces this. */
     internal fun setConstraintEvaluatorForTest(evaluator: ConstraintEvaluator?) {
@@ -205,6 +219,19 @@ object HardwareKeyTriggerCoordinator {
                 }
                 // What changed while paused is not an edge to replay on resume.
                 reseedAutomationsSilently()
+            }
+        }
+        // The foreground app has no broadcast: poll it only while it can matter, and stop the
+        // moment the screen goes off or no live automation reads it (collectLatest cancels).
+        val repo = scriptRepository ?: return@launch
+        launch {
+            combine(repo.scripts, repo.globallyEnabled, DeviceEventReceiver.screenOn) { scripts, enabled, screenOn ->
+                ForegroundAppWatch.shouldRun(screenOn, scripts, enabled)
+            }.distinctUntilChanged().collectLatest { run ->
+                val evaluator = constraintEvaluator as? AndroidConstraintEvaluator
+                if (run && evaluator != null) {
+                    ForegroundAppWatch.poll({ withContext(Dispatchers.IO) { evaluator.foregroundSnapshot() } }, ::reevaluateAutomations)
+                }
             }
         }
     }
@@ -302,11 +329,18 @@ object HardwareKeyTriggerCoordinator {
         val ctx = appContext ?: return false
         val config = repo.config.value
 
-        // 1. Deduplicate multi-source arrivals (e.g. Accessibility + getevent arriving concurrently)
-        if (keyCode == lastEventKeyCode && isDown == lastEventIsDown && (now - lastEventTimestamp) < DEDUPLICATION_WINDOW_MS) {
+        // 1. Deduplicate multi-source arrivals (e.g. Accessibility + getevent arriving concurrently).
+        // With KeySnap in front, Accessibility can deliver a quick tap's down AND up before the
+        // Activity gets its down, so the last event alone misses the copy: also match the same key
+        // and direction from another path.
+        val crossPath = lastEdgeByPath[keyCode to isDown]
+        if ((keyCode == lastEventKeyCode && isDown == lastEventIsDown && (now - lastEventTimestamp) < DEDUPLICATION_WINDOW_MS) ||
+            (crossPath != null && crossPath.first != diagnosticPath && now - crossPath.second < DEDUPLICATION_WINDOW_MS)
+        ) {
             if (DiagnosticRecorder.recording) recordKeyDiagnostic(keyCode, isDown, diagnosticPath, deduplicated = true)
             return false
         }
+        lastEdgeByPath[keyCode to isDown] = diagnosticPath to now
         lastEventKeyCode = keyCode
         lastEventIsDown = isDown
         lastEventTimestamp = now
@@ -348,11 +382,11 @@ object HardwareKeyTriggerCoordinator {
         var isMatched = false
 
         // 3. Timing & Debounce Algorithm for Target Key
-        val matchingScripts = if (scriptsRepo.globallyEnabled.value) {
-            scriptsRepo.scripts.value.filter { script ->
-                script.enabled && script.triggers.any { keyCode in it.keyCodes }
-            }
-        } else emptyList()
+        // Paused, only a script that can resume mapping is live (isLive, shared with the bridge).
+        val globallyEnabled = scriptsRepo.globallyEnabled.value
+        val matchingScripts = scriptsRepo.scripts.value.filter { script ->
+            script.isLive(globallyEnabled) && script.triggers.any { keyCode in it.keyCodes }
+        }
         if (matchingScripts.isNotEmpty()) {
             isMatched = true
             // Scheduling always runs, even while the privileged bridge is active: it resolves the
@@ -363,11 +397,9 @@ object HardwareKeyTriggerCoordinator {
             val scripts = scriptsRepo.scripts.value
             coordinatorScope.launch {
                 stateMutex.withLock {
-                    keyGestureFeed?.onEvent(keyCode, isDown, now, scripts, config)
+                    keyGestureFeed?.onEvent(keyCode, isDown, now, scripts, config, globallyEnabled)
                 }
             }
-        } else {
-            Log.d(TAG, "No key match: event=$keyCode scripts=${scriptsRepo.scripts.value.size} global=${scriptsRepo.globallyEnabled.value} source=$source")
         }
 
         // 4. Emit live telemetry
@@ -414,13 +446,10 @@ object HardwareKeyTriggerCoordinator {
     private fun handleGesture(keyId: Int, pressType: TriggerPressType) {
         val scriptsRepo = scriptRepository ?: return
         val context = appContext ?: return
-        if (!scriptsRepo.globallyEnabled.value) {
-            if (DiagnosticRecorder.recording) DiagnosticRecorder.gesture(null, keyId, pressType, lastDiagnosticPath, matched = false)
-            return
-        }
+        val globallyEnabled = scriptsRepo.globallyEnabled.value
 
         val matched = scriptsRepo.scripts.value.filter { script ->
-            script.enabled && script.triggers.any { trigger ->
+            script.isLive(globallyEnabled) && script.triggers.any { trigger ->
                 trigger.keyId() == keyId && trigger.pressType == pressType
             }
         }.filter { script ->
@@ -430,6 +459,11 @@ object HardwareKeyTriggerCoordinator {
                 { evaluator?.isKnownTrue(it) ?: false },
             )
         }.filter { passesCooldown(it, SystemClock.elapsedRealtime()) }
+        giveKeyBack(context, keyId, pressType, nothingRan = matched.isEmpty())
+        if (!globallyEnabled && matched.isEmpty()) {
+            if (DiagnosticRecorder.recording) DiagnosticRecorder.gesture(null, keyId, pressType, lastDiagnosticPath, matched = false)
+            return
+        }
         // While the bridge owns execution it reports its own gesture; logging this one too would
         // read as a double run.
         val assistant = keyId == KeyEventMapping.ASSISTANT_GESTURE
@@ -468,8 +502,26 @@ object HardwareKeyTriggerCoordinator {
     }
 
     /**
+     * A swallowed press no shortcut took does the key's own job ([KeyPassThrough]). Runs on both
+     * owners: with Advanced Mode the bridge performs it, but only this side knows it swallowed the
+     * press. Each gesture uses up the key's swallow mark.
+     */
+    private fun giveKeyBack(context: Context, keyId: Int, pressType: TriggerPressType, nothingRan: Boolean) {
+        val swallowedAt = swallowedDownAt.remove(keyId)
+        val defaults = repository?.config?.value ?: return
+        val timing = resolveTimingForKey(scriptRepository?.scripts?.value.orEmpty(), keyId, defaults)
+        if (!KeyPassThrough.shouldGiveBack(keyId, nothingRan, swallowedAt, SystemClock.elapsedRealtime(), timing)) return
+        coordinatorScope.launch {
+            KeyPassThrough.perform(pressType, isHeld = { keyGestureFeed?.isHeld(keyId) == true }) {
+                BridgeController.runActions(listOf(KeyPassThrough.bridgeAction(keyId))) ?: KeyPassThrough.appJob(context, keyId)
+            }
+        }
+    }
+
+    /**
      * Re-reads every automation script's constraints and fires the scripts whose conjunction just
-     * turned true. Called on every device-state broadcast `DeviceEventReceiver` listens for; cheap
+     * turned true. Called on every device-state broadcast `DeviceEventReceiver` listens for (and on
+     * each foreground-app change [ForegroundAppWatch] sees); cheap
      * enough that no mapping from state to script is kept. A disabled script or a global pause
      * still tracks the edge, so un-pausing never replays it. No constraints means never.
      */
@@ -495,7 +547,7 @@ object HardwareKeyTriggerCoordinator {
             // Read from prefs, not the edge: the If may end in a process that never saw it start.
             if (!satisfied && AutomationUndo.pending(context, script.id)) ended += script
             // update stays first, so the edge is recorded even when the cooldown skips this run.
-            automationEdges.update(script.id, satisfied) && script.enabled && scriptsRepo.globallyEnabled.value &&
+            automationEdges.update(script.id, satisfied) && script.isLive(scriptsRepo.globallyEnabled.value) &&
                 passesCooldown(script, now)
         }
         ended.forEach { undoEnded(context, it) }

@@ -5,7 +5,6 @@ import android.os.Looper;
 import android.os.SystemClock;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -59,6 +58,8 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
     private final ChordTracker chords = new ChordTracker();
     private EventServer server;
     private GeteventReader reader;
+    /** Null when it could not be set up; key handling never depends on it. */
+    private volatile SensitiveAppGuard sensitive;
 
     private volatile BridgeConfig config;
     private volatile long configLastModified;
@@ -160,7 +161,28 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
             System.exit(3);
             return;
         }
-        writePidFile();
+
+        // Now that this is the only bridge: switches a killed predecessor left off come back first.
+        try {
+            SensitiveAppGuard guard = new SensitiveAppGuard(new File(baseDir), new SensitiveAppGuard.Reporter() {
+                @Override
+                public void report(String packageName, boolean steppedAside) {
+                    server.broadcastSensitive(packageName, steppedAside);
+                }
+
+                @Override
+                public void leaving(String packageName) {
+                    server.broadcastSensitiveLeaving(packageName, 500L);
+                    releaseHardware();
+                }
+            });
+            guard.restoreLeftovers(config.packageName);
+            // A no-op once the guard is leaving for wireless debugging: that exit puts nothing back.
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> guard.restoreAll(1_500L), "arda-bridge-sensitive-exit"));
+            sensitive = guard;
+        } catch (Throwable t) {
+            BridgeLog.w("Sensitive apps unavailable: " + t.getClass().getSimpleName());
+        }
 
         pressTiming = new PressTimingMachine(scheduler, this);
 
@@ -187,6 +209,9 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
                 CONFIG_POLL_MS, CONFIG_POLL_MS, TimeUnit.MILLISECONDS);
 
         requestBatteryWhitelist(config.packageName);
+
+        SensitiveAppGuard guard = sensitive;
+        if (guard != null) guard.onConfig(config);
 
         server.setStatus("running");
         BridgeLog.i("Bridge running");
@@ -219,14 +244,6 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
         }
     }
 
-    private void writePidFile() {
-        try (FileWriter writer = new FileWriter(new File(baseDir, "bridge.pid"), false)) {
-            writer.write(String.valueOf(android.os.Process.myPid()));
-        } catch (Exception e) {
-            BridgeLog.w("Could not write pid file: " + e);
-        }
-    }
-
     private void reloadConfigIfChanged() {
         try {
             long modified = configFile.lastModified();
@@ -249,6 +266,8 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
                 chords.reset();
                 pressTiming.reset();
             }
+            SensitiveAppGuard guard = sensitive;
+            if (guard != null) guard.onConfig(updated);
             BridgeLog.i("Config reloaded: scripts=" + updated.scripts.size()
                     + " globallyEnabled=" + updated.globallyEnabled);
         } catch (Exception e) {
@@ -275,12 +294,14 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
         }
         // Lock order: chords, then pressTiming's own lock. onGesture never takes chords.
         synchronized (chords) {
-            for (ChordTracker.Command command : chords.onEvent(key.androidKeyCode, down, now, current.chords(), current.soloKeys())) {
+            List<List<Integer>> liveChords = current.chords();
+            for (ChordTracker.Command command : chords.onEvent(key.androidKeyCode, down, now, liveChords, current.soloKeys())) {
                 if (command.kind == ChordTracker.CANCEL) {
                     pressTiming.cancel(command.keyCode);
                 } else {
                     pressTiming.onEvent(command.keyCode, command.down, now,
-                            current.doublePressWindowFor(command.keyCode), current.longPressThresholdFor(command.keyCode));
+                            current.doublePressWindowFor(command.keyCode), current.longPressThresholdFor(command.keyCode),
+                            PressTimingMachine.singlePressAt(command.keyCode, current.pressTypesFor(command.keyCode), liveChords));
                 }
             }
         }
@@ -376,13 +397,23 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
         if (current != null && current.shouldVibrate(script)) {
             java.util.List<Long> pattern = current.hapticPatternFor(script);
             long duration = BuzzPattern.total(pattern); // What the pauses below wait out.
-            if (pattern.size() == 1) vibrate(duration);
-            else ShellBuzz.play(BuzzPattern.waveform(pattern), false);
+            Runnable buzz = () -> {
+                if (pattern.size() == 1) vibrate(duration);
+                else ShellBuzz.play(BuzzPattern.waveform(pattern), false);
+            };
             long modePause = BridgeModes.triggerPause(script.actions, duration);
             for (BridgeConfig.Action action : script.actions) {
                 modePause = Math.max(modePause, RingerBuzz.triggerPause(action.type, action.params, duration));
             }
-            if (modePause > 0 && !sleepFor(Long.toString(modePause))) return;
+            if (modePause > 0) {
+                buzz.run();
+                if (!sleepFor(Long.toString(modePause))) return;
+            } else {
+                // Nothing below waits for the buzz: start it beside the actions, not before them (a shell spawn, ~0.1 s).
+                Thread thread = new Thread(buzz, "trigger-buzz");
+                thread.setDaemon(true);
+                thread.start();
+            }
         }
         boolean[] ok = new boolean[script.actions.size()];
         java.util.Arrays.fill(ok, true);
@@ -848,6 +879,10 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
         if (BridgeConfig.ACTION_LOCK_DEVICE.equals(action.type)) {
             return false;
         }
+        // Bridge-only: strong auth, then lockNow + screen off (see SecureLock).
+        if (BridgeConfig.ACTION_SECURE_LOCK_DEVICE.equals(action.type)) {
+            return SecureLock.lock();
+        }
         // No shell primitive reliably simulates a long power-button press across Android versions;
         // only reachable through Accessibility's GLOBAL_ACTION_POWER_DIALOG in the app path.
         if (BridgeConfig.ACTION_POWER_DIALOG.equals(action.type)) {
@@ -1010,6 +1045,32 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
             return ShellKeyInjector.runShell("am", "start", "-a", "com.android.settings.WIFI_TETHER_SETTINGS")
                     || ShellKeyInjector.runShell("am", "start", "-a", "android.settings.WIRELESS_SETTINGS");
         }
+        // Bridge-only: the side key's own code while its setting points at Mind Space (see SideKey).
+        if (BridgeConfig.ACTION_MIND_SPACE_CAPTURE.equals(action.type)) {
+            return SideKey.mindSpace(1);
+        }
+        if (BridgeConfig.ACTION_OPEN_MIND_SPACE.equals(action.type)) {
+            return SideKey.mindSpace(2);
+        }
+        // The side key's press-and-hold jobs (see SideKey).
+        if (BridgeConfig.ACTION_TRANSLATE_SCREEN.equals(action.type)) {
+            return SideKey.hold(SideKey.TRANSLATE);
+        }
+        if (BridgeConfig.ACTION_RECORD_AUDIO.equals(action.type)) {
+            return SideKey.hold(SideKey.RECORDING);
+        }
+        if (BridgeConfig.ACTION_OPEN_OSEE.equals(action.type)) {
+            return ShellKeyInjector.runShell("am", "start", "-a", "coloros.ocrscanner.intent.action.OSEE", "-p", "com.coloros.ocrscanner");
+        }
+        // The screen a long press of power opens on OPPO/OnePlus/realme China builds (app: OemActions).
+        if (BridgeConfig.ACTION_BUILT_IN_ASSISTANT.equals(action.type)) {
+            return ShellKeyInjector.runShell("am", "start", "-a", "heytap.speechassist.action.LOCK_SCREEN_UI",
+                    "-n", "com.heytap.speechassist/.business.lockscreen.FloatSpeechActivity");
+        }
+        // Bridge-only: the tethering service's binder as the shell (see Hotspot).
+        if (BridgeConfig.ACTION_TOGGLE_HOTSPOT.equals(action.type)) {
+            return Hotspot.apply(action.params.get("state"));
+        }
         // Fetched from the launcher apps service here, started by the app (see AppShortcuts).
         if (BridgeConfig.ACTION_LAUNCH_APP_SHORTCUT.equals(action.type)) {
             BridgeConfig current = config;
@@ -1127,7 +1188,7 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
         if (BridgeConfig.ACTION_SET_WALLPAPER.equals(action.type)) {
             return false;
         }
-        // The app owns shortcut_scripts_v1 and rewrites bridge_config.json from it; this process
+        // The app owns shortcut_scripts_v1 and rewrites bridge.json from it; this process
         // only reads that file and has no path to write a pause/resume back into the app's state.
         // Only reachable through ScriptRepository in the app/Accessibility path.
         if (BridgeConfig.ACTION_TOGGLE_MAPPING.equals(action.type)
@@ -1353,15 +1414,11 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
 
     private void shutDown() {
         new Thread(() -> {
-            try {
-                if (torch.isOn()) {
-                    torch.set(false);
-                }
-            } catch (Throwable ignored) {
-                // Shutting down regardless.
-            }
-            if (reader != null) {
-                reader.stop();
+            releaseHardware();
+            // Before the socket closes, so the app still hears it, and before the directory holding the note goes.
+            SensitiveAppGuard guard = sensitive;
+            if (guard != null) {
+                guard.restoreAll(2_000L);
             }
             if (server != null) {
                 server.stop();
@@ -1372,6 +1429,20 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
             deleteBaseDir();
             System.exit(0);
         }, "arda-bridge-shutdown").start();
+    }
+
+    /** Torch off and the getevent child gone: what a running bridge holds outside itself, before it exits. */
+    private void releaseHardware() {
+        try {
+            if (torch.isOn()) {
+                torch.set(false);
+            }
+        } catch (Throwable ignored) {
+            // Shutting down regardless.
+        }
+        if (reader != null) {
+            reader.stop();
+        }
     }
 
     private static void deleteBaseDir() {

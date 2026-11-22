@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sensitive_title">संवेदनशील ऐप</string>
+    <string name="sensitive_summary_empty">उन ऐप के लिए जो नहीं खुलते</string>
+    <plurals name="sensitive_summary_count">
+        <item quantity="one">%d ऐप · KeySnap हट जाता है</item>
+        <item quantity="other">%d ऐप · KeySnap हट जाता है</item>
+    </plurals>
+    <string name="sensitive_intro_title">KeySnap चालू रहते कुछ ऐप नहीं खुलते।</string>
+    <string name="sensitive_intro_body">बैंक, गेम, हर सख्त ऐप। KeySnap रास्ते से हट जाता है।</string>
+    <string name="sensitive_master">इन ऐप के लिए हट जाएं</string>
+    <string name="sensitive_your_apps">आपके ऐप</string>
+    <string name="sensitive_developer_options">डेवलपर विकल्प</string>
+    <string name="sensitive_accessibility">सुलभता</string>
+    <string name="sensitive_add_app">ऐप जोड़ें</string>
+    <string name="sensitive_feedback_label">जब KeySnap हट जाए</string>
+    <string name="sensitive_show_notification">सूचना दिखाएं</string>
+    <string name="sensitive_vibrate">वाइब्रेट करें</string>
+    <string name="sensitive_footer_keys">आपके बटन काम करते रहते हैं।</string>
+    <string name="sensitive_footer_restore">ऐप छोड़ने पर KeySnap सब वापस कर देता है।</string>
+    <string name="sensitive_sheet_question">यह ऐप खुलने पर इन्हें छिपाएं</string>
+    <string name="sensitive_developer_options_desc">डेवलपर मोड रोकने वाले ऐप के लिए</string>
+    <string name="sensitive_accessibility_desc">सुलभता रोकने वाले ऐप के लिए</string>
+    <string name="sensitive_sheet_note">आपके निकलते ही KeySnap इन्हें फिर चालू कर देता है। आपके हार्डवेयर बटन कभी नहीं रुकते।</string>
+    <string name="sensitive_remove">ऐप हटाएं</string>
+    <string name="sensitive_card_title">कोई ऐप नहीं खुल रहा?</string>
+    <string name="sensitive_card_body">KeySnap उसके लिए हट सकता है।</string>
+    <string name="sensitive_card_set_up">सेट करें</string>
+    <string name="sensitive_needs_advanced">सिर्फ़ उन्नत मोड में काम करता है</string>
+    <string name="sensitive_notif_title">%1$s के लिए हट गया</string>
+    <string name="sensitive_notif_text">बटन काम कर रहे हैं · ऑटोमेशन रुके हैं</string>
+    <string name="sensitive_notif_text_dev">सब कुछ काम करता रहता है</string>
+    <string name="sensitive_notif_restore">अभी वापस करें</string>
+    <string name="sensitive_wireless_debugging">वायरलेस डिबगिंग</string>
+    <string name="sensitive_wireless_debugging_desc">वायरलेस डिबगिंग रोकने वाले ऐप के लिए</string>
+    <string name="sensitive_wireless_warning_off">उन्नत मोड बंद कर देता है</string>
+    <string name="sensitive_wireless_warning_setup">बाद में फिर सेट करें · Wi-Fi चाहिए</string>
+    <string name="sensitive_sheet_note_wireless">उन्नत मोड के बटन रुक जाते हैं · अपने-आप वापस नहीं</string>
+    <string name="sensitive_footer_wireless">वायरलेस डिबगिंग: उन्नत मोड के बटन रुकते हैं।</string>
+    <string name="sensitive_notif_text_off">उन्नत मोड बंद है · सेट करने के लिए टैप करें</string>
+    <string name="sensitive_fix_dev_off">डेवलपर विकल्प बंद हैं</string>
+    <string name="sensitive_fix_dev_hint">\"बिल्ड नंबर\" पर 7 बार टैप करें</string>
+    <string name="sensitive_fix_wireless_off">वायरलेस डिबगिंग बंद है</string>
+    <string name="sensitive_fix_accessibility_off">सुलभता बंद है</string>
+    <string name="sensitive_fix_advanced_off">उन्नत मोड बंद है</string>
+</resources>

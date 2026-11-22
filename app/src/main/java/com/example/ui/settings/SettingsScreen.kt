@@ -71,6 +71,7 @@ import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material.icons.outlined.NewReleases
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.PrivacyTip
+import androidx.compose.material.icons.outlined.Shield
 import androidx.compose.material.icons.outlined.SmartButton
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -125,6 +126,7 @@ import com.example.data.AppLocale
 import com.example.data.KeyMappingConfig
 import com.example.data.AccessibilityStatus
 import com.example.data.LiveKeyEvent
+import com.example.data.SensitiveAppsRepository
 import com.example.data.TriggerTimingSpecs
 import com.example.capsule.CapsuleHooks
 import com.example.ai.AiHooks
@@ -160,6 +162,7 @@ enum class SettingsSection {
     APPEARANCE,
     ABOUT,
     KEY_CAPSULE,
+    SENSITIVE_APPS,
 }
 
 @Composable
@@ -212,13 +215,16 @@ fun SettingsScreen(
     var showAppearance by rememberSaveable { mutableStateOf(false) }
     var showNotifications by rememberSaveable { mutableStateOf(false) }
     if (showNotifications) NotificationsDialog { showNotifications = false }
+    var showSensitiveApps by rememberSaveable { mutableStateOf(false) }
+    if (showSensitiveApps) SensitiveAppsDialog(onSetUpAdvancedMode = onRunSetupAgain, onOpenAccessibility = onOpenAccessibility) { showSensitiveApps = false }
     var advancedExpanded by rememberSaveable { mutableStateOf(false) }
     val context = LocalContext.current
+    val sensitive by remember(context) { SensitiveAppsRepository.getInstance(context) }.store.collectAsState()
     val capsuleEnabled by remember(context) { CapsuleHooks.enabledFlow(context) }
         .collectAsState(initial = remember(context) { CapsuleHooks.isEnabled(context) })
     val itemKeys = listOfNotNull(
         "title".takeIf { showTitle }, "personalization_label", "personalization",
-        "key_behavior", "saved_keys", "setup_tools", "advanced_label", "input_monitor", "about_label", "about",
+        "key_behavior", "saved_keys", "setup_tools", "sensitive_apps", "advanced_label", "input_monitor", "about_label", "about",
     )
     LaunchedEffect(targetSection) {
         val key = when (targetSection) {
@@ -232,6 +238,10 @@ fun SettingsScreen(
             }
             SettingsSection.ABOUT -> "about"
             SettingsSection.KEY_CAPSULE -> "personalization"
+            SettingsSection.SENSITIVE_APPS -> {
+                showSensitiveApps = true
+                "sensitive_apps"
+            }
             null -> return@LaunchedEffect
         }
         val index = itemKeys.indexOf(key)
@@ -415,6 +425,21 @@ fun SettingsScreen(
                     accessibilityStatus = accessibilityStatus,
                     onOpenAccessibility = onOpenAccessibility,
                     accessibilityButton = accessibilityButton,
+                )
+            }
+        }
+        item(key = "sensitive_apps") {
+            SettingsCard("sensitive_apps", reveal(4)) {
+                SettingsNavRow(
+                    title = stringResource(R.string.sensitive_title),
+                    subtitle = when {
+                        sensitive.apps.isEmpty() -> stringResource(R.string.sensitive_summary_empty)
+                        !sensitive.settings.masterEnabled -> stringResource(R.string.home_status_off)
+                        else -> pluralStringResource(R.plurals.sensitive_summary_count, sensitive.apps.size, sensitive.apps.size)
+                    },
+                    icon = Icons.Outlined.Shield,
+                    testTag = "open_sensitive_apps",
+                    onClick = { showSensitiveApps = true },
                 )
             }
         }

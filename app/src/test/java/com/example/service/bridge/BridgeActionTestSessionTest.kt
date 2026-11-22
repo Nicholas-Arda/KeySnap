@@ -22,9 +22,9 @@ class BridgeActionTestSessionTest {
                 observer.soTimeout = 250
                 val reader = observer.getInputStream().bufferedReader()
                 val writer = observer.getOutputStream().bufferedWriter()
-                writer.write("HELLO\ttest-token\nWATCH\n")
+                assertTrue(loginForTest(observer, reader, writer, "test-token")!!.startsWith("OK\t"))
+                writer.write("WATCH\n")
                 writer.flush()
-                assertTrue(reader.readLine().startsWith("OK\t"))
                 assertEquals("OK\twatching", reader.readLine())
                 val result = BridgeClient(port = port, token = "test-token").requestTestAction("{\"actions\":[]}")!!
                 assertEquals(listOf("private\toutput", "last line"), result.output)

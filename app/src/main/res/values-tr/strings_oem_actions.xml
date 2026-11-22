@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_mind_space_capture">Mind Space: ekranı kaydet</string>
+    <string name="action_open_mind_space">Mind Space\'i aç</string>
+    <string name="action_built_in_assistant">Yerleşik sesli asistan</string>
+    <string name="helper_mind_space_capture">Ekranı yan tuş gibi Mind Space\'e kaydeder.</string>
+    <string name="helper_open_mind_space">Yan tuşa iki kez basmak gibi Mind Space\'i açar.</string>
+    <string name="import_error_not_on_phone">Bu kısayol bu telefonda olmayan bir eylem kullanıyor.</string>
+    <string name="action_translate_screen">Ekranı çevir</string>
+    <string name="action_record_audio">Ses kaydet</string>
+    <string name="action_open_osee">OSee\'yi aç</string>
+    <string name="helper_translate_screen">Yan tuşu basılı tutmak gibi ekranı canlı çevirir.</string>
+    <string name="helper_record_audio">Yan tuşu basılı tutmak gibi Ses Kaydedici\'de kaydı başlatır.</string>
+</resources>

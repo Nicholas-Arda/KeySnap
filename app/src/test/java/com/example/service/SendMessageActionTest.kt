@@ -8,13 +8,20 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
+import org.robolectric.shadows.ShadowSettings
 
 @RunWith(RobolectricTestRunner::class)
 class SendMessageActionTest {
+
+    /** A test process is in the background; this is the exemption that lets its chat start through. */
+    @Before fun allowBackgroundStarts() {
+        ShadowSettings.setCanDrawOverlays(true)
+    }
 
     @Test fun numbersBecomeE164ForTheSimCountry() {
         assertEquals("+905321234567", normalizePhoneNumber("0532 123 45 67", "tr"))

@@ -17,8 +17,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * <p>The app is the client and the bridge is the server, because only the app-to-bridge file
  * direction is reliable: the app owns its external files dir, so the bridge can read the port
  * and token the app chose, while a bridge-written file there would be shell-owned and unreadable
- * by the app. Binding to 127.0.0.1 keeps the socket off the network, and the shared token stops
- * other local apps from driving the bridge.
+ * by the app. Binding to 127.0.0.1 keeps the socket off the network, and a challenge–response over
+ * the shared token ({@link BridgeAuth}) stops other local apps from driving the bridge without the
+ * token ever crossing the socket.
  */
 public final class EventServer implements Runnable {
 
@@ -184,6 +185,37 @@ public final class EventServer implements Runnable {
         }
     }
 
+    /** Live display only, like {@link #broadcastMode}; off the caller's thread, which may be holding a launch. */
+    public void broadcastSensitive(String packageName, boolean steppedAside) {
+        sendSensitive(packageName, steppedAside ? BridgeProtocol.SENSITIVE_ASIDE : BridgeProtocol.SENSITIVE_RESTORED);
+    }
+
+    /**
+     * The bridge is about to turn wireless debugging off and end: the same line with "leaving",
+     * after any line still queued, returning once it is flushed or [waitMs] passed.
+     */
+    public void broadcastSensitiveLeaving(String packageName, long waitMs) {
+        java.util.concurrent.Future<?> sent = sendSensitive(packageName, BridgeProtocol.SENSITIVE_LEAVING);
+        try {
+            if (sent != null) sent.get(waitMs, java.util.concurrent.TimeUnit.MILLISECONDS);
+        } catch (Exception late) {
+            // Display only: the bridge goes regardless.
+        }
+    }
+
+    private java.util.concurrent.Future<?> sendSensitive(String packageName, String state) {
+        String line = BridgeProtocol.MSG_SENSITIVE + SEP + sanitize(packageName) + SEP + state;
+        try {
+            return reports.submit(() -> {
+                for (ClientConnection client : clients) {
+                    if (client.watching) client.send(line);
+                }
+            });
+        } catch (java.util.concurrent.RejectedExecutionException stopped) {
+            return null; // Shutting down: nobody left to tell.
+        }
+    }
+
     private void broadcast(String line) {
         for (ClientConnection client : clients) {
             client.send(line);
@@ -239,20 +271,33 @@ public final class EventServer implements Runnable {
         public void run() {
             try {
                 socket.setTcpNoDelay(true);
+                socket.setSoTimeout(5_000); // Until logged in; a silent connection must not hold a thread.
                 BufferedReader reader = new BufferedReader(
                         new InputStreamReader(socket.getInputStream(), Charset.forName("UTF-8")));
                 writer = new BufferedWriter(
                         new OutputStreamWriter(socket.getOutputStream(), Charset.forName("UTF-8")));
 
+                String clientEndpoint = BridgeAuth.endpoint(socket.getInetAddress(), socket.getPort());
+                String clientNonce = null;
+                String serverNonce = null;
                 String line;
                 while ((line = reader.readLine()) != null) {
                     String[] parts = line.split("\t");
                     String command = parts[0];
 
+                    // HELLO2 then AUTH, once each; anything else, including the old HELLO <token>, ends it.
                     if (!authenticated) {
-                        if (BridgeProtocol.CMD_HELLO.equals(command) && parts.length >= 2
-                                && token.equals(parts[1])) {
+                        if (serverNonce == null && BridgeProtocol.CMD_HELLO2.equals(command) && parts.length >= 2
+                                && BridgeAuth.isNonce(parts[1])) {
+                            clientNonce = parts[1];
+                            serverNonce = BridgeAuth.newNonce();
+                            writeDirect(BridgeProtocol.MSG_CHALLENGE + SEP + serverNonce + SEP
+                                    + BridgeAuth.proof(token, BridgeAuth.ROLE_SERVER, clientEndpoint, clientNonce, serverNonce));
+                        } else if (serverNonce != null && BridgeProtocol.CMD_AUTH.equals(command) && parts.length >= 2
+                                && BridgeAuth.matches(BridgeAuth.proof(
+                                        token, BridgeAuth.ROLE_CLIENT, clientEndpoint, clientNonce, serverNonce), parts[1])) {
                             authenticated = true;
+                            socket.setSoTimeout(0);
                             writeDirect(BridgeProtocol.MSG_OK + SEP + BridgeProtocol.VERSION + SEP
                                     + android.os.Process.myPid() + SEP + startedAtMillis + SEP + statusLine);
                         } else {

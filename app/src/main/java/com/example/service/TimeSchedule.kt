@@ -13,6 +13,7 @@ import com.example.data.ScriptConstraint
 import com.example.data.ScriptConstraintCatalog
 import com.example.data.ScriptRepository
 import com.example.data.ShortcutScript
+import com.example.data.isLive
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDateTime
@@ -88,12 +89,13 @@ object TimeSchedule {
     }
 
     /**
-     * Arms one alarm for the earliest boundary among enabled automations, or cancels it when none or
-     * while every shortcut is paused, so no alarm-clock icon is left in the status bar.
+     * Arms one alarm for the earliest boundary among live automations ([isLive]: while paused, only
+     * one that resumes mapping), or cancels it when none, so no alarm-clock icon is left in the status bar.
      */
     fun sync(context: Context, scripts: List<ShortcutScript>) {
         val alarms = context.getSystemService(AlarmManager::class.java) ?: return
-        val active = if (ScriptRepository.getInstance(context).globallyEnabled.value) scripts else emptyList()
+        val globallyEnabled = ScriptRepository.getInstance(context).globallyEnabled.value
+        val active = scripts.filter { it.isLive(globallyEnabled) }
         // From the wall clock, never the last boundary: a DST gap's phantom ticks are then skipped, not queued.
         val (next, kind) = plan(active, LocalDateTime.now(), CalendarCondition.canScheduleExact(alarms)) ?: run {
             alarms.cancel(alarmIntent(context, 0L))

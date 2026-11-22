@@ -23,11 +23,14 @@ object KeepAwake {
         val turnOn = when (state) {
             "on" -> true
             "off" -> false
-            else -> !awake
+            // A saved timeout means KeySnap turned it on; without one, "never" is the user's own.
+            else -> !awake || saved == null
         }
         return when {
             turnOn && !awake -> Step(NEVER, current)
-            !turnOn && awake -> Step(saved?.takeIf { it != NEVER } ?: FALLBACK_MS, null)
+            // The user's own timeout is already "never": remember that, so "off" leaves it there.
+            turnOn && saved == null -> Step(NEVER, NEVER)
+            !turnOn && awake -> Step(saved ?: FALLBACK_MS, null)
             else -> null
         }
     }

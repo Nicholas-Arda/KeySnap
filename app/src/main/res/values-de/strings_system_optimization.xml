@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sysopt_title">Bluetooth braucht einen Schalter</string>
+    <string name="sysopt_why">Dein Handy blockiert Bluetooth-Kurzbefehle.</string>
+    <string name="sysopt_step_find">1 · „%1$s“ finden</string>
+    <string name="sysopt_step_turn_on">2 · Einschalten</string>
+    <string name="sysopt_step_confirm">3 · „%1$s“ tippen</string>
+    <string name="sysopt_switch_column">Dieser Schalter</string>
+    <string name="sysopt_unblocks">Gibt Bluetooth-Kurzbefehle frei</string>
+    <string name="sysopt_warns">Handy warnt: Akku, Sicherheit</string>
+    <string name="sysopt_off_anytime">Jederzeit wieder aus</string>
+    <string name="sysopt_only_reads">Liest den Schalter nur</string>
+    <string name="sysopt_no_permissions">Fragt keine neuen Rechte an</string>
+    <string name="sysopt_open_source">Offener Quellcode</string>
+    <string name="sysopt_open">Entwickleroptionen öffnen</string>
+    <string name="sysopt_english_hint">Fehlt? Handy kurz auf Englisch stellen</string>
+    <string name="chain_bt_blocked">Bluetooth blockiert · braucht eine Entwickleroption</string>
+</resources>

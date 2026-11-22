@@ -12,4 +12,5 @@
     <string name="choice_timeout_5m">5 minutes</string>
     <string name="choice_timeout_10m">10 minutes</string>
     <string name="choice_timeout_30m">30 minutes</string>
+    <string name="helper_secure_lock_device">Verrouille tout de suite. Empreinte et visage restent désactivés jusqu\'à la saisie de votre code PIN.</string>
 </resources>

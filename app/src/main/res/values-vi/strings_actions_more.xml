@@ -12,4 +12,5 @@
     <string name="choice_timeout_5m">5 phút</string>
     <string name="choice_timeout_10m">10 phút</string>
     <string name="choice_timeout_30m">30 phút</string>
+    <string name="helper_secure_lock_device">Khóa ngay. Vân tay và khuôn mặt bị tắt cho đến khi bạn nhập mã PIN.</string>
 </resources>

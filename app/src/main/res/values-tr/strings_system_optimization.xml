@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sysopt_title">Bluetooth için tek bir telefon ayarı gerekiyor</string>
+    <string name="sysopt_why">Telefonun Bluetooth kısayollarını engelliyor.</string>
+    <string name="sysopt_step_find">1 · “%1$s” ayarını bul</string>
+    <string name="sysopt_step_turn_on">2 · Aç</string>
+    <string name="sysopt_step_confirm">3 · “%1$s” seçeneğine dokun</string>
+    <string name="sysopt_switch_column">Bu ayar</string>
+    <string name="sysopt_unblocks">Bluetooth kısayollarının önünü açar</string>
+    <string name="sysopt_warns">Telefon uyarır: pil, güvenlik riski</string>
+    <string name="sysopt_off_anytime">İstediğin zaman geri kapat</string>
+    <string name="sysopt_only_reads">Bu ayarı yalnızca okur</string>
+    <string name="sysopt_no_permissions">Yeni izin istemez</string>
+    <string name="sysopt_open_source">Açık kaynak kod</string>
+    <string name="sysopt_open">Geliştirici seçeneklerini aç</string>
+    <string name="sysopt_english_hint">Yok mu? Telefonu kısa süre İngilizceye al</string>
+    <string name="chain_bt_blocked">Bluetooth engellendi · bir geliştirici ayarı gerekiyor</string>
+</resources>

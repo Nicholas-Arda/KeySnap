@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sysopt_title">Bluetooth нужен один переключатель</string>
+    <string name="sysopt_why">Телефон блокирует сценарии для Bluetooth.</string>
+    <string name="sysopt_step_find">1 · Найдите «%1$s»</string>
+    <string name="sysopt_step_turn_on">2 · Включите</string>
+    <string name="sysopt_step_confirm">3 · Нажмите «%1$s»</string>
+    <string name="sysopt_switch_column">Этот переключатель</string>
+    <string name="sysopt_unblocks">Разрешает сценарии Bluetooth</string>
+    <string name="sysopt_warns">Телефон предупредит: батарея, безопасность</string>
+    <string name="sysopt_off_anytime">Можно выключить в любой момент</string>
+    <string name="sysopt_only_reads">Только читает переключатель</string>
+    <string name="sysopt_no_permissions">Не просит новых разрешений</string>
+    <string name="sysopt_open_source">Открытый исходный код</string>
+    <string name="sysopt_open">Открыть настройки для разработчиков</string>
+    <string name="sysopt_english_hint">Нет пункта? Включите английский на минуту</string>
+    <string name="chain_bt_blocked">Bluetooth заблокирован · нужна настройка для разработчиков</string>
+</resources>

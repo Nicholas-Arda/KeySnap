@@ -40,7 +40,7 @@ class BridgeRunReplyTest {
         assertEquals(BridgeProtocol.PRESS_SEND_UNCONFIRMED, parsePressSendReply(readReply { unconfirmed.removeFirstOrNull() }))
     }
 
-    /** The bridge marks a connection logged in just before answering HELLO, so a push can come first. */
+    /** The bridge marks a connection logged in just before answering AUTH, so a push can come first. */
     @Test fun theHandshakeSkipsAPushedLine() {
         val lines = ArrayDeque(listOf("EVENT\t1\t24\tdown\t1\tx", "OK\t17\t4242\t1000\trunning"))
         assertEquals(BridgeStatus(17, 4242, 1000L, "running"), parseHandshake(readReply { lines.removeFirstOrNull() }))

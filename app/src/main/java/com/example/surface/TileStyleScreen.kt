@@ -49,6 +49,7 @@ import com.example.data.ScriptActionCatalog
 import com.example.ui.components.InnerShape
 import com.example.ui.components.MinTouchTarget
 import com.example.ui.scripts.actionIconChoices
+import com.example.ui.scripts.actionIconFor
 import io.github.nicholasarda.keysnap.R
 
 /**
@@ -73,7 +74,8 @@ internal fun TileStyleScreen(
     var previewOn by rememberSaveable { mutableStateOf(true) }
     // A run tile is never lit, as in refreshTile.
     val on = toggles && previewOn
-    val glyph = icon?.let { chosen -> actionIconChoices().firstOrNull { it.first == chosen }?.second } ?: defaultIcon
+    // actionIconFor, as the tile itself draws it, so a glyph saved under "input_key_event" still previews.
+    val glyph = icon?.let(::actionIconFor) ?: defaultIcon
     val sub = stringResource(
         when {
             all -> if (on) R.string.scripts_toggle_state_on else R.string.home_status_paused

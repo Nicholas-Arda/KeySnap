@@ -85,6 +85,61 @@ class ScriptActionExecutorTest {
         assertEquals(0..4, wordBoundsAtCursor("hello", cursor = 999))
     }
 
+    @Test fun typingInsertsAtTheCursorAndMovesItPastTheText() {
+        assertEquals(TypedText("hello-typed world", 11), typeAtSelection("hello world", 5, 5, "-typed"))
+    }
+
+    @Test fun typingReplacesTheSelectionWhicheverWayItWasDragged() {
+        assertEquals(TypedText("hello there", 11), typeAtSelection("hello world", 6, 11, "there"))
+        assertEquals(TypedText("hello there", 11), typeAtSelection("hello world", 11, 6, "there"))
+    }
+
+    @Test fun typingWithNoReportedSelectionAppendsAtTheEnd() {
+        assertEquals(TypedText("hello world!", 12), typeAtSelection("hello world", -1, -1, "!"))
+        assertEquals(TypedText("abc", 3), typeAtSelection("", -1, -1, "abc"))
+    }
+
+    @Test fun typingClampsAnOutOfRangeSelection() {
+        assertEquals(TypedText("hi!", 3), typeAtSelection("hi", 7, 9, "!"))
+    }
+
+    @Test fun aBackgroundActivityStartNeedsAVisibleScreenAccessibilityOrOverlay() {
+        assertEquals(false, canStartActivityFromBackground(appVisible = false, accessibilityBound = false, canDrawOverlays = false))
+        assertEquals(true, canStartActivityFromBackground(appVisible = true, accessibilityBound = false, canDrawOverlays = false))
+        assertEquals(true, canStartActivityFromBackground(appVisible = false, accessibilityBound = true, canDrawOverlays = false))
+        assertEquals(true, canStartActivityFromBackground(appVisible = false, accessibilityBound = false, canDrawOverlays = true))
+    }
+
+    @Test fun aWidgetTapMayLaunchInsideItsWindowWhileTilesAndAutomationsKeepTheHonestRule() {
+        val tap = 1_000_000_000L
+        WidgetLaunchGrant.open(tap)
+        fun widgetRun(at: Long) = canStartActivityFromBackground(false, false, false, widgetGrant = WidgetLaunchGrant.active(at))
+        assertEquals(true, widgetRun(tap))
+        // Android drops the token 10 s after handing the tap over, finished or not; 1 s goes to the hand-over.
+        assertEquals(9_000L, WidgetLaunchGrant.WINDOW_MS)
+        assertEquals(true, widgetRun(tap + WidgetLaunchGrant.WINDOW_MS - 1))
+        // A launch behind a longer delay may be blocked by Android, so it reports failure.
+        assertEquals(false, widgetRun(tap + WidgetLaunchGrant.WINDOW_MS))
+        // Each tap brings its own token; a second tap extends the window, an earlier one never shortens it.
+        val second = tap + 5_000L
+        WidgetLaunchGrant.open(second)
+        WidgetLaunchGrant.open(tap)
+        assertEquals(true, widgetRun(second + WidgetLaunchGrant.WINDOW_MS - 1))
+        assertEquals(false, widgetRun(second + WidgetLaunchGrant.WINDOW_MS))
+        // A tile tap or an automation never opens the grant.
+        assertEquals(false, canStartActivityFromBackground(false, false, false, widgetGrant = false))
+    }
+
+    @Test fun theHotspotFallbackRunsOnlyWhenTheFirstStartThrew() {
+        var fallbacks = 0
+        val fallback = { fallbacks++; true }
+        assertEquals(true, startWithFallback({ true }, fallback))
+        assertEquals(false, startWithFallback({ false }, fallback)) // Went through but judged blocked.
+        assertEquals(0, fallbacks)
+        assertEquals(true, startWithFallback({ null }, fallback))
+        assertEquals(1, fallbacks)
+    }
+
     @Test fun ringerModeForMapsEachChoiceToItsAudioManagerConstant() {
         assertEquals(AudioManager.RINGER_MODE_NORMAL, ringerModeFor("normal"))
         assertEquals(AudioManager.RINGER_MODE_VIBRATE, ringerModeFor("vibrate"))

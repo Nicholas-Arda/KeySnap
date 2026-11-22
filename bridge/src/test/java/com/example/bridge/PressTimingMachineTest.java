@@ -58,6 +58,51 @@ public class PressTimingMachineTest {
     }
 
     @Test
+    public void onlyADoublePressIsWorthWaitingFor() {
+        List<List<Integer>> chords = Collections.singletonList(java.util.Arrays.asList(24, 25));
+        assertEquals(PressTimingMachine.SINGLE_AFTER_WINDOW, PressTimingMachine.singlePressAt(7,
+                java.util.Arrays.asList(BridgeConfig.PRESS_SINGLE, BridgeConfig.PRESS_DOUBLE), chords));
+        assertEquals(PressTimingMachine.SINGLE_ON_RELEASE, PressTimingMachine.singlePressAt(7,
+                java.util.Arrays.asList(BridgeConfig.PRESS_SINGLE, BridgeConfig.PRESS_LONG), chords));
+        assertEquals(PressTimingMachine.SINGLE_ON_RELEASE, PressTimingMachine.singlePressAt(24,
+                Collections.singletonList(BridgeConfig.PRESS_SINGLE), chords));
+        assertEquals(PressTimingMachine.SINGLE_ON_RELEASE, PressTimingMachine.singlePressAt(-5,
+                Collections.singletonList(BridgeConfig.PRESS_SINGLE), chords));
+        assertEquals(PressTimingMachine.SINGLE_ON_PRESS, PressTimingMachine.singlePressAt(7,
+                Collections.singletonList(BridgeConfig.PRESS_SINGLE), chords));
+    }
+
+    @Test
+    public void singleOnPressFiresOnTheDownOnly() throws Exception {
+        machine.onEvent(7, true, 1_000L, DOUBLE_WINDOW_MS, LONG_THRESHOLD_MS, PressTimingMachine.SINGLE_ON_PRESS);
+        assertEquals(Collections.singletonList(BridgeConfig.PRESS_SINGLE), new ArrayList<>(gestures));
+
+        // Held past the long threshold and released: still the one single, nothing else.
+        machine.onEvent(7, false, 1_000L + LONG_THRESHOLD_MS + 50, DOUBLE_WINDOW_MS, LONG_THRESHOLD_MS, PressTimingMachine.SINGLE_ON_PRESS);
+        Thread.sleep(LONG_THRESHOLD_MS + DOUBLE_WINDOW_MS + 50);
+        assertEquals(Collections.singletonList(BridgeConfig.PRESS_SINGLE), new ArrayList<>(gestures));
+
+        // A quick second press is a second single.
+        machine.onEvent(7, true, 2_000L, DOUBLE_WINDOW_MS, LONG_THRESHOLD_MS, PressTimingMachine.SINGLE_ON_PRESS);
+        machine.onEvent(7, false, 2_030L, DOUBLE_WINDOW_MS, LONG_THRESHOLD_MS, PressTimingMachine.SINGLE_ON_PRESS);
+        assertEquals(java.util.Arrays.asList(BridgeConfig.PRESS_SINGLE, BridgeConfig.PRESS_SINGLE), new ArrayList<>(gestures));
+    }
+
+    @Test
+    public void singleOnReleaseSkipsTheWindowButKeepsTheLongPress() throws Exception {
+        machine.onEvent(7, true, 1_000L, DOUBLE_WINDOW_MS, LONG_THRESHOLD_MS, PressTimingMachine.SINGLE_ON_RELEASE);
+        assertEquals(Collections.emptyList(), new ArrayList<>(gestures));
+        machine.onEvent(7, false, 1_030L, DOUBLE_WINDOW_MS, LONG_THRESHOLD_MS, PressTimingMachine.SINGLE_ON_RELEASE);
+        assertEquals(Collections.singletonList(BridgeConfig.PRESS_SINGLE), new ArrayList<>(gestures));
+
+        gestures.clear();
+        machine.onEvent(7, true, 2_000L, DOUBLE_WINDOW_MS, LONG_THRESHOLD_MS, PressTimingMachine.SINGLE_ON_RELEASE);
+        Thread.sleep(LONG_THRESHOLD_MS + 60);
+        machine.onEvent(7, false, 2_000L + LONG_THRESHOLD_MS + 60, DOUBLE_WINDOW_MS, LONG_THRESHOLD_MS, PressTimingMachine.SINGLE_ON_RELEASE);
+        assertEquals(Collections.singletonList(BridgeConfig.PRESS_LONG), new ArrayList<>(gestures));
+    }
+
+    @Test
     public void secondPressInsideTheWindowIsADoublePressAndSuppressesTheSingle() throws Exception {
         long now = 2_000L;
         machine.onEvent(7, true, now, DOUBLE_WINDOW_MS, LONG_THRESHOLD_MS);

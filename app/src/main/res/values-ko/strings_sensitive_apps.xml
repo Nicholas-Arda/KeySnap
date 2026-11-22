@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sensitive_title">민감한 앱</string>
+    <string name="sensitive_summary_empty">열리지 않는 앱을 위해</string>
+    <plurals name="sensitive_summary_count">
+        <item quantity="other">앱 %d개 · 비켜 줌</item>
+    </plurals>
+    <string name="sensitive_intro_title">KeySnap이 켜져 있으면 열리지 않는 앱이 있습니다.</string>
+    <string name="sensitive_intro_body">은행, 게임 등 엄격한 앱. KeySnap이 비켜 줍니다.</string>
+    <string name="sensitive_master">이 앱들을 위해 비켜 주기</string>
+    <string name="sensitive_your_apps">내 앱</string>
+    <string name="sensitive_developer_options">개발자 옵션</string>
+    <string name="sensitive_accessibility">접근성</string>
+    <string name="sensitive_add_app">앱 추가</string>
+    <string name="sensitive_feedback_label">KeySnap이 비켜 줄 때</string>
+    <string name="sensitive_show_notification">알림 표시</string>
+    <string name="sensitive_vibrate">진동</string>
+    <string name="sensitive_footer_keys">버튼은 계속 작동합니다.</string>
+    <string name="sensitive_footer_restore">앱을 나가면 KeySnap이 모두 되돌립니다.</string>
+    <string name="sensitive_sheet_question">이 앱이 열리면 다음을 숨기기</string>
+    <string name="sensitive_developer_options_desc">개발자 모드를 막는 앱용</string>
+    <string name="sensitive_accessibility_desc">접근성을 막는 앱용</string>
+    <string name="sensitive_sheet_note">나가면 KeySnap이 다시 켭니다. 하드웨어 버튼은 멈추지 않습니다.</string>
+    <string name="sensitive_remove">앱 삭제</string>
+    <string name="sensitive_card_title">앱이 열리지 않나요?</string>
+    <string name="sensitive_card_body">KeySnap이 그 앱을 위해 비켜 줄 수 있습니다.</string>
+    <string name="sensitive_card_set_up">설정</string>
+    <string name="sensitive_needs_advanced">고급 모드에서만 작동</string>
+    <string name="sensitive_notif_title">%1$s 앱을 위해 비켜 줌</string>
+    <string name="sensitive_notif_text">버튼 작동 중 · 자동화 일시중지</string>
+    <string name="sensitive_notif_text_dev">모두 그대로 작동합니다</string>
+    <string name="sensitive_notif_restore">지금 되돌리기</string>
+    <string name="sensitive_wireless_debugging">무선 디버깅</string>
+    <string name="sensitive_wireless_debugging_desc">무선 디버깅을 막는 앱용</string>
+    <string name="sensitive_wireless_warning_off">고급 모드가 꺼집니다</string>
+    <string name="sensitive_wireless_warning_setup">이후 다시 설정 · Wi-Fi 필요</string>
+    <string name="sensitive_sheet_note_wireless">고급 모드 버튼 멈춤 · 자동 복원 없음</string>
+    <string name="sensitive_footer_wireless">무선 디버깅: 고급 모드 버튼이 멈춥니다.</string>
+    <string name="sensitive_notif_text_off">고급 모드 꺼짐 · 탭하여 설정</string>
+    <string name="sensitive_fix_dev_off">개발자 옵션 꺼짐</string>
+    <string name="sensitive_fix_dev_hint">\"빌드번호\"를 7번 탭하세요</string>
+    <string name="sensitive_fix_wireless_off">무선 디버깅 꺼짐</string>
+    <string name="sensitive_fix_accessibility_off">접근성 꺼짐</string>
+    <string name="sensitive_fix_advanced_off">고급 모드 꺼짐</string>
+</resources>

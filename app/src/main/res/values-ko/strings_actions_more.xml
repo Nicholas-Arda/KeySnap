@@ -12,4 +12,5 @@
     <string name="choice_timeout_5m">5분</string>
     <string name="choice_timeout_10m">10분</string>
     <string name="choice_timeout_30m">30분</string>
+    <string name="helper_secure_lock_device">바로 잠급니다. PIN을 입력할 때까지 지문과 얼굴 인식이 꺼집니다.</string>
 </resources>

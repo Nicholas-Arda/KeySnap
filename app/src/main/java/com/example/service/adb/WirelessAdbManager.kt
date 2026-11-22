@@ -28,6 +28,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -409,7 +410,7 @@ object WirelessAdbManager {
         Log.d(TAG, "🎯 New pairing code captured; invalidated cached pairing port and waiting for mDNS")
         _pairingStatus.value = PairingStatus.CREDENTIALS_CAPTURED
         _statusMessage.value = "Pairing code detected; waiting for a fresh mDNS port."
-        if (_autoAssistantEnabled.value) startMdnsDiscovery()
+        if (_autoAssistantEnabled.value) restartMdnsDiscovery()
     }
 
     
@@ -522,14 +523,28 @@ object WirelessAdbManager {
         }
     }
 
-    /** Re-query mDNS because ADB's TLS connect endpoint changes after pairing. */
-    private fun refreshConnectServiceDiscovery() {
+    /**
+     * A new browse, so the pairing service of the dialog open now is reported after the code. NSD
+     * reports a service once per browse, and the browse started with "Pair with code" usually
+     * resolved the dialog's port before the code existed, when it had to be dropped.
+     */
+    private fun restartMdnsDiscovery() {
+        stopMdnsDiscovery()
+        startMdnsDiscovery()
+    }
+
+    private fun stopMdnsDiscovery() {
         val manager = nsdManager
         discoveryListeners.forEach { listener ->
             runCatching { manager?.stopServiceDiscovery(listener) }
         }
         discoveryListeners.clear()
         isNsdScanning = false
+    }
+
+    /** Re-query mDNS because ADB's TLS connect endpoint changes after pairing. */
+    private fun refreshConnectServiceDiscovery() {
+        stopMdnsDiscovery()
         _discoveredConnectPort.value = null
         synchronized(flowLock) { connectPortCandidates.clear() }
         lastConnectServiceResolutionAtMillis = 0L
@@ -592,6 +607,12 @@ object WirelessAdbManager {
                     appContext?.let { context ->
                         (context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
                             .cancel(PairingNotificationReceiver.NOTIFICATION_ID)
+                        if (setupInProgress()) {
+                            // Started from the wizard, so the user is in Settings: bring them back now
+                            // and let the wizard show "connecting" while the bridge starts.
+                            disarmPairWithCodeTap()
+                            returnToApp(context)
+                        }
                     }
                     _pairingStatus.value = PairingStatus.PAIRED_SUCCESS
                     _statusMessage.value = result.message
@@ -700,13 +721,6 @@ object WirelessAdbManager {
 
                 if (pairingGeneration != null && pairingCode != null) {
                     finishPairingFlow(pairingGeneration, pairingCode)
-                }
-                if (started && setupInProgress()) {
-                    // The user started this from the wizard and is in Settings: the "enter the code"
-                    // notification is now stale, and they should land back on the wizard's result.
-                    context.getSystemService(NotificationManager::class.java).cancel(PairingNotificationReceiver.NOTIFICATION_ID)
-                    disarmPairWithCodeTap()
-                    returnToApp(context)
                 }
                 if (started) {
                     activeStreamEndpoint = currentIp to currentPort
@@ -834,7 +848,7 @@ object WirelessAdbManager {
         }
         _pairingStatus.value = PairingStatus.CREDENTIALS_CAPTURED
         _statusMessage.value = "Pairing code received from notification; waiting for a fresh mDNS port."
-        startMdnsDiscovery()
+        restartMdnsDiscovery()
     }
 
     private fun maybeStartPairing() {
@@ -862,6 +876,7 @@ object WirelessAdbManager {
      * Where that is blocked anyway, a tap on a notification brings the user back.
      */
     private fun returnToApp(context: Context) {
+        if (MainActivity.isResumed) return
         runCatching {
             context.startActivity(Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
         }
@@ -871,6 +886,12 @@ object WirelessAdbManager {
                 delay(500)
                 if (MainActivity.isResumed) return@launch
             }
+            // Called at pairing, before the bridge answers; the notification says
+            // "Advanced Mode is on", so it waits until that is true.
+            val outcome = withTimeoutOrNull(60_000L) {
+                pairingStatus.first { it == PairingStatus.ADVANCED_MODE_RUNNING || it == PairingStatus.ERROR }
+            }
+            if (outcome != PairingStatus.ADVANCED_MODE_RUNNING || MainActivity.isResumed) return@launch
             val open = PendingIntent.getActivity(context, RETURN_NOTIFICATION_ID, Intent(context, MainActivity::class.java),
                 PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
             val notification = NotificationCompat.Builder(context, PAIRING_CHANNEL_ID)

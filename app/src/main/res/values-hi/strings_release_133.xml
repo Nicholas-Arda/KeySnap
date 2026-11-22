@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_sensitive_title_133">संवेदनशील ऐप्स</string>
+    <string name="whats_new_sensitive_description_133">बैंक या गेम ऐप नहीं खुल रहा? जब तक वह खुला है, KeySnap हट जाता है।</string>
+    <string name="whats_new_picker_title_133">नया, लोकप्रिय और आपका फ़ोन</string>
+    <string name="whats_new_picker_description_133">सही ऐक्शन या शर्त जल्दी ढूंढें।</string>
+    <string name="whats_new_oem_title_133">साइड की की सुविधाएं किसी भी की पर</string>
+    <string name="whats_new_oem_description_133">Mind Space, स्क्रीन अनुवाद, ऑडियो रिकॉर्ड, OSee. प्रायोगिक।</string>
+    <string name="whats_new_fix_actions_133">नए ऐक्शन: हॉटस्पॉट टॉगल, डिवाइस सुरक्षित लॉक</string>
+    <string name="whats_new_fix_single_press_133">डबल प्रेस न हो तो सिंगल प्रेस तुरंत चलता है</string>
+    <string name="whats_new_fix_pairing_133">सूचना वाला पेयरिंग कोड काम करता है</string>
+    <string name="whats_new_fix_app_automation_133">ऐप खोलने पर हर बार ऐप ऑटोमेशन चलते हैं</string>
+    <string name="whats_new_fix_large_text_133">बड़ा टेक्स्ट अब शब्द नहीं तोड़ता</string>
+    <string name="whats_new_more_133">इस अपडेट में और भी</string>
+    <string name="whats_new_not_supported_133">इस डिवाइस पर समर्थित नहीं</string>
+</resources>

@@ -72,6 +72,13 @@ import androidx.compose.material.icons.outlined.Place
 import androidx.compose.material.icons.outlined.School
 import androidx.compose.material.icons.outlined.TabletAndroid
 import androidx.compose.material.icons.outlined.Vibration
+import androidx.compose.material.icons.outlined.FormatSize
+import androidx.compose.material.icons.outlined.Link
+import androidx.compose.material.icons.outlined.Speed
+import androidx.compose.material.icons.outlined.WifiTethering
+import androidx.compose.material.icons.outlined.PhoneAndroid
+import androidx.compose.material.icons.outlined.Category
+import androidx.compose.material.icons.outlined.Shield
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
@@ -85,6 +92,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -312,6 +320,9 @@ internal fun WhatsNewFeatureCard(feature: WhatsNewFeature, accent: Color = Mater
         R.string.whats_new_teach_title_132 -> Icons.Outlined.School
         R.string.whats_new_place_title_132 -> Icons.Outlined.Place
         R.string.whats_new_actions_title_132 -> Icons.Outlined.Bolt
+        R.string.whats_new_sensitive_title_133 -> Icons.Outlined.Shield
+        R.string.whats_new_picker_title_133 -> Icons.Outlined.Category
+        R.string.whats_new_oem_title_133 -> Icons.Outlined.PhoneAndroid
         else -> null
     } ?: when (feature.destination) {
         WhatsNewDestination.ADVANCED_MODE -> Icons.Outlined.RestartAlt
@@ -320,7 +331,12 @@ internal fun WhatsNewFeatureCard(feature: WhatsNewFeature, accent: Color = Mater
         WhatsNewDestination.KEY_CAPSULE -> Icons.Outlined.TouchApp
         WhatsNewDestination.SHORTCUTS -> Icons.Outlined.TouchApp
         WhatsNewDestination.NEW_SHORTCUT -> Icons.Outlined.AutoAwesome
+        WhatsNewDestination.SENSITIVE_APPS -> Icons.Outlined.Shield
+        WhatsNewDestination.ACTION_PICKER_NEW -> Icons.Outlined.Category
+        WhatsNewDestination.ACTION_PICKER_PHONE -> Icons.Outlined.PhoneAndroid
     }
+    val context = LocalContext.current
+    val supported = remember(feature) { feature.supportedOn?.invoke(context) ?: true }
     BoxWithConstraints(Modifier.fillMaxWidth().padding(12.dp)) {
         // At larger text/display sizes keep the action trailing, on its own line, rather than crush text.
         val stacked = maxWidth < 280.dp || LocalDensity.current.fontScale > 1.15f
@@ -333,10 +349,18 @@ internal fun WhatsNewFeatureCard(feature: WhatsNewFeature, accent: Color = Mater
                 Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     Text(stringResource(feature.title), style = MaterialTheme.typography.titleSmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph), fontWeight = FontWeight.Bold)
                     Text(stringResource(feature.description), style = MaterialTheme.typography.bodySmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph), color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    if (!supported) {
+                        Text(
+                            stringResource(R.string.whats_new_not_supported_133),
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.onSurface,
+                        )
+                    }
                 }
-                if (!stacked) WhatsNewPill(feature, onClick)
+                if (!stacked && supported) WhatsNewPill(feature, onClick)
             }
-            if (stacked) Box(Modifier.align(Alignment.End)) { WhatsNewPill(feature, onClick) }
+            if (stacked && supported) Box(Modifier.align(Alignment.End)) { WhatsNewPill(feature, onClick) }
         }
     }
 }
@@ -387,6 +411,11 @@ private fun fixIcon(fix: Int): ImageVector = when (fix) {
     R.string.whats_new_fix_undo_132 -> Icons.AutoMirrored.Outlined.Undo
     R.string.whats_new_fix_vibration_132 -> Icons.Outlined.Vibration
     R.string.whats_new_fix_foldable_132 -> Icons.Outlined.TabletAndroid
+    R.string.whats_new_fix_actions_133 -> Icons.Outlined.WifiTethering
+    R.string.whats_new_fix_single_press_133 -> Icons.Outlined.Speed
+    R.string.whats_new_fix_pairing_133 -> Icons.Outlined.Link
+    R.string.whats_new_fix_app_automation_133 -> Icons.Outlined.Apps
+    R.string.whats_new_fix_large_text_133 -> Icons.Outlined.FormatSize
     else -> Icons.Outlined.Check
 }
 

@@ -13,12 +13,16 @@ import com.example.data.ShortcutScript
 import com.example.data.TriggerPressType
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
+import org.junit.Assume.assumeTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
+import java.io.File
+import kotlin.io.path.createTempDirectory
 
 /**
  * Pins the app-to-bridge contract.
@@ -49,6 +53,26 @@ class BridgePayloadTest {
         assertTrue(payload.writeConfig(listOf(flashlightScript().copy(constraints = constraints)),true,KeyMappingConfig()))
         val back = BridgeConfig.read(payload.configFile()!!).scripts.single().constraints
         assertEquals(constraints.map { it.params },back.map { it.params })
+    }
+
+    @Test fun sensitiveAppsReachTheBridgeWithTheirThreeSwitches() {
+        val repo = com.example.data.SensitiveAppsRepository.getInstance(context)
+        repo.store.value.apps.forEach { repo.remove(it.packageName) }
+        repo.updateSettings { it.copy(masterEnabled = true) }
+        repo.add("com.bankid", "BankID")
+        repo.update(com.example.data.SensitiveApp("com.bankid", "BankID", hideDeveloperOptions = true, hideAccessibility = false, hideWirelessDebugging = true))
+        repo.add("com.wifionly", "Wifi only")
+        repo.update(com.example.data.SensitiveApp("com.wifionly", "Wifi only", hideDeveloperOptions = false, hideAccessibility = false, hideWirelessDebugging = true))
+        repo.add("com.bank", "Bank")
+        try {
+            val payload = BridgePayload(context)
+            assertTrue(payload.writeConfig(listOf(flashlightScript()), true, KeyMappingConfig()))
+            val apps = BridgeConfig.read(payload.configFile()!!).sensitiveApps
+            // DEV = 1, A11Y = 2, WIFI = 4 (com.example.bridge.SensitiveApps).
+            assertEquals(mapOf("com.bankid" to (1 or 4), "com.wifionly" to 4, "com.bank" to (1 or 2)), apps)
+        } finally {
+            repo.store.value.apps.forEach { repo.remove(it.packageName) }
+        }
     }
 
     private fun flashlightScript(
@@ -135,6 +159,81 @@ class BridgePayloadTest {
         assertEquals(token, second.controlToken)
         assertTrue(port in 38_200 until 38_700)
         assertEquals(32, token.length)
+    }
+
+    /** Versions before protocol 63 sent their token in clear, so an update must never reuse it. */
+    @Test
+    fun aTokenFromBeforeProtocol63IsReplacedAndDeleted() {
+        val old = "fedcba9876543210fedcba9876543210"
+        val prefs = context.getSharedPreferences("arda_mapper_bridge_prefs", Context.MODE_PRIVATE)
+        prefs.edit().clear().putString("control_token", old).commit()
+
+        val token = BridgePayload(context).controlToken
+        assertNotEquals(old, token)
+        assertEquals(32, token.length)
+        assertEquals(token, prefs.getString("control_token_v63", null))
+        assertFalse(prefs.contains("control_token"))
+    }
+
+    /** start.sh kills a leftover pre-63 bridge of this build before it copies the dex that bridge has open. */
+    @Test
+    fun theStartScriptKillsALeftoverBridgeBeforeCopyingTheDex() {
+        val payload = BridgePayload(context)
+        assertTrue(payload.install())
+        val script = payload.startScriptFile()!!.readText()
+
+        val kill = script.indexOf(BridgePayload.KILL_LEFTOVER_BRIDGE)
+        assertTrue(script.indexOf("chmod 700 \"\$BASE\"") in 0 until kill)
+        assertTrue(kill < script.indexOf("\ncp "))
+    }
+
+    /**
+     * The leftover check under a real POSIX sh, with stand-ins whose command line does or does not
+     * carry the bridge's name; the legacy pid file is gone afterwards either way. Skipped where no `sh`
+     * with a /proc can run (the device pass covers toybox).
+     */
+    @Test
+    fun theLeftoverCheckKillsOnlyALiveBridgeAndNeverStopsTheScript() {
+        assumeTrue("no sh with /proc here", runCatching { sh("[ -r /proc/\$\$/cmdline ]").first == 0 }.getOrDefault(false))
+        val base = createTempDirectory("bridge-base").toFile().absolutePath.replace('\\', '/')
+        val pidFile = "\"\$BASE/${BridgeProtocol.LEGACY_PID_NAME}\""
+        fun standIn(name: String) = "sh -c 'while :; do sleep 1; done' $name >/dev/null 2>&1 &\nV=\$!\necho \$V > $pidFile\n"
+        fun run(setup: String, verdict: String = ""): String {
+            val (exit, out) = sh("BASE='$base'\nrm -f $pidFile\n$setup${BridgePayload.KILL_LEFTOVER_BRIDGE}[ -e $pidFile ] && echo pid-left\necho after\n$verdict")
+            assertEquals(out, 0, exit)
+            assertTrue(out, out.contains("after"))
+            assertFalse(out, out.contains("pid-left"))
+            return out
+        }
+        // 137: the check killed the stand-in (SIGKILL); 143: it was still alive for this SIGTERM.
+        val reap = "kill \$V 2>/dev/null\nwait \$V\necho \"status=\$?\"\n"
+
+        run(setup = "")
+        run(setup = ": > $pidFile\n")
+        for (garbage in listOf("12ab", "-1", "1 2", "\$(echo 1)", "999999999")) run(setup = "printf '%s' '$garbage' > $pidFile\n")
+        val other = run(standIn("some_other_process"), verdict = reap)
+        assertTrue(other, other.contains("status=143"))
+        val bridge = run(standIn(BridgeProtocol.NICE_NAME), verdict = reap)
+        assertTrue(bridge, bridge.contains("status=137"))
+    }
+
+    /** Protocol 63 writes no pid file, so start.sh's kill can never reach a bridge another start.sh spawned. */
+    @Test
+    fun noBridgeSourceWritesThePidFile() {
+        val sources = listOf("../bridge/src", "../pro/bridge/src").map(::File).flatMap { root ->
+            root.walk().filter { it.extension == "java" && it.name != "BridgeProtocol.java" }.toList()
+        }
+        assertTrue(sources.isNotEmpty())
+        for (file in sources) {
+            val text = file.readText()
+            assertFalse(file.path, "LEGACY_PID_NAME" in text || BridgeProtocol.LEGACY_PID_NAME in text)
+        }
+    }
+
+    private fun sh(script: String): Pair<Int, String> {
+        val process = ProcessBuilder("sh", "-c", script).redirectErrorStream(true).start()
+        val out = process.inputStream.bufferedReader().readText()
+        return process.waitFor() to out
     }
 
     @Test

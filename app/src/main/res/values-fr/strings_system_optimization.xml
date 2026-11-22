@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sysopt_title">Le Bluetooth a besoin d’un réglage</string>
+    <string name="sysopt_why">Votre téléphone bloque les raccourcis Bluetooth.</string>
+    <string name="sysopt_step_find">1 · Trouvez « %1$s »</string>
+    <string name="sysopt_step_turn_on">2 · Activez-le</string>
+    <string name="sysopt_step_confirm">3 · Touchez « %1$s »</string>
+    <string name="sysopt_switch_column">Ce réglage</string>
+    <string name="sysopt_unblocks">Débloque les raccourcis Bluetooth</string>
+    <string name="sysopt_warns">Le téléphone avertit : batterie, sécurité</string>
+    <string name="sysopt_off_anytime">Désactivable à tout moment</string>
+    <string name="sysopt_only_reads">Lit seulement ce réglage</string>
+    <string name="sysopt_no_permissions">Ne demande aucune autorisation</string>
+    <string name="sysopt_open_source">Code source ouvert</string>
+    <string name="sysopt_open">Ouvrir les options pour les développeurs</string>
+    <string name="sysopt_english_hint">Absent ? Passez le téléphone en anglais</string>
+    <string name="chain_bt_blocked">Bluetooth bloqué · une option pour les développeurs requise</string>
+</resources>

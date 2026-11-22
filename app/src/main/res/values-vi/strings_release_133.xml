@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_sensitive_title_133">Ứng dụng nhạy cảm</string>
+    <string name="whats_new_sensitive_description_133">Ứng dụng ngân hàng hay trò chơi không mở? KeySnap tạm tránh ra khi nó đang mở.</string>
+    <string name="whats_new_picker_title_133">Mới, Phổ biến và điện thoại của bạn</string>
+    <string name="whats_new_picker_description_133">Tìm thao tác hoặc điều kiện phù hợp nhanh hơn.</string>
+    <string name="whats_new_oem_title_133">Tính năng phím bên trên mọi phím</string>
+    <string name="whats_new_oem_description_133">Mind Space, Dịch màn hình, Ghi âm, OSee. Thử nghiệm.</string>
+    <string name="whats_new_fix_actions_133">Thao tác mới: Bật/tắt điểm phát sóng, Khóa thiết bị an toàn</string>
+    <string name="whats_new_fix_single_press_133">Nhấn một lần chạy ngay khi không có nhấn đúp</string>
+    <string name="whats_new_fix_pairing_133">Mã ghép nối từ thông báo hoạt động</string>
+    <string name="whats_new_fix_app_automation_133">Tự động hóa ứng dụng chạy mỗi lần bạn mở ứng dụng</string>
+    <string name="whats_new_fix_large_text_133">Chữ lớn không còn cắt đôi từ</string>
+    <string name="whats_new_more_133">Cũng có trong bản cập nhật này</string>
+    <string name="whats_new_not_supported_133">Không hỗ trợ trên thiết bị này</string>
+</resources>

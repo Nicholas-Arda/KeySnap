@@ -77,6 +77,7 @@ import android.icu.text.MeasureFormat
 import android.icu.util.Measure
 import android.icu.util.MeasureUnit
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -135,6 +136,9 @@ import androidx.compose.ui.zIndex
 import com.example.capsule.CapsuleHooks
 import com.example.data.EntitlementManager
 import com.example.data.RatingPromptChoice
+import com.example.data.SensitiveAppsRepository
+import com.example.ui.settings.SensitiveAppsDialog
+import com.example.ui.settings.SensitiveAppsHomeCard
 import com.example.data.ScriptActionCatalog
 import com.example.data.ShortcutScript
 import com.example.data.SuggestedShortcut
@@ -220,6 +224,12 @@ fun HomeScreen(
     val showAutoLaunch = !autoLaunchDismissed && hasAutoLaunchSwitch(android.os.Build.MANUFACTURER) &&
         setup.nextStep == null
     val showNudge = setup.nextStep == null && scripts.isEmpty() && !nudgeDismissed
+    val sensitiveApps = remember(context) { SensitiveAppsRepository.getInstance(context) }
+    val sensitive by sensitiveApps.store.collectAsState()
+    var showSensitiveApps by rememberSaveable { mutableStateOf(false) }
+    if (showSensitiveApps) SensitiveAppsDialog(onSetUpAdvancedMode = onOpenWizard, onOpenAccessibility = onOpenAccessibility) { showSensitiveApps = false }
+    // For people already using KeySnap, once: used or closed, it never returns.
+    val showSensitiveCard = setup.nextStep == null && scripts.isNotEmpty() && sensitive.apps.isEmpty() && !sensitive.homeCardDismissed
     if (sheet != null) {
         val current = sheet!!
         SetupStepSheet(current, onConfirm = {
@@ -261,6 +271,8 @@ fun HomeScreen(
             onLogoBounds = onWhatsNewLogoBounds,
             logoAway = whatsNewLogoAway,
         )
+        // A Sensitive app ended Advanced Mode: what is missing comes first. The setup card asks for Accessibility itself.
+        AdvancedModeFixCards(onOpenAccessibility, onOpenWizard, hideAccessibility = setup.nextStep == SetupStep.Accessibility)
         if (!isPro && proPrice?.sale != null) {
             HomeSaleStrip(proPrice) {
                 scope.launch { scrollState.animateScrollTo(scrollState.maxValue) }
@@ -300,6 +312,15 @@ fun HomeScreen(
         if (scripts.isNotEmpty() && wide) {
             WideShortcutSections(scripts, isMappingEnabled, failedScriptIds, onOpenScript, onToggleScriptEnabled, onGiveJob)
         } else if (scripts.isNotEmpty()) YourShortcutsPanel(scripts, onOpenScript)
+        AnimatedVisibility(showSensitiveCard, enter = fadeIn() + expandVertically(), exit = fadeOut() + shrinkVertically()) {
+            SensitiveAppsHomeCard(
+                onSetUp = {
+                    sensitiveApps.dismissHomeCard()
+                    showSensitiveApps = true
+                },
+                onClose = sensitiveApps::dismissHomeCard,
+            )
+        }
         if (showRatingPrompt) RatingPromptCard(onRatingChoice)
         if (showNudge) FirstShortcutNudge(onDismiss = onDismissNudge)
         SuggestedShortcutsPanel(scripts = scripts, onPick = onPickSuggestion)

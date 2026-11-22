@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_sensitive_title_133">Sensitive apps</string>
+    <string name="whats_new_sensitive_description_133">A bank or game won\'t open? KeySnap steps aside while it\'s open.</string>
+    <string name="whats_new_picker_title_133">New, Popular and your phone</string>
+    <string name="whats_new_picker_description_133">Find the right action or condition faster.</string>
+    <string name="whats_new_oem_title_133">Side-key features on any key</string>
+    <string name="whats_new_oem_description_133">Mind Space, Screen translate, Record audio, OSee. Experimental.</string>
+    <string name="whats_new_fix_actions_133">New actions: Toggle hotspot, Secure lock device</string>
+    <string name="whats_new_fix_single_press_133">Single press fires at once when there\'s no double press</string>
+    <string name="whats_new_fix_pairing_133">The pairing code from the notification works</string>
+    <string name="whats_new_fix_app_automation_133">App automations fire every time you open the app</string>
+    <string name="whats_new_fix_large_text_133">Large text no longer splits words</string>
+    <string name="whats_new_more_133">Also in this update</string>
+    <string name="whats_new_not_supported_133">Not supported on this device</string>
+</resources>

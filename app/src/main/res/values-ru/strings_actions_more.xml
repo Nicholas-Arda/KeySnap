@@ -12,4 +12,5 @@
     <string name="choice_timeout_5m">5 минут</string>
     <string name="choice_timeout_10m">10 минут</string>
     <string name="choice_timeout_30m">30 минут</string>
+    <string name="helper_secure_lock_device">Блокирует сразу. Отпечаток и лицо не работают, пока вы не введёте PIN-код.</string>
 </resources>

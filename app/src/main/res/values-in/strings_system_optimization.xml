@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sysopt_title">Bluetooth perlu satu sakelar ponsel</string>
+    <string name="sysopt_why">Ponsel Anda memblokir pintasan Bluetooth.</string>
+    <string name="sysopt_step_find">1 · Cari “%1$s”</string>
+    <string name="sysopt_step_turn_on">2 · Aktifkan</string>
+    <string name="sysopt_step_confirm">3 · Ketuk “%1$s”</string>
+    <string name="sysopt_switch_column">Sakelar ini</string>
+    <string name="sysopt_unblocks">Membuka pintasan Bluetooth</string>
+    <string name="sysopt_warns">Ponsel memperingatkan: baterai, keamanan</string>
+    <string name="sysopt_off_anytime">Matikan lagi kapan saja</string>
+    <string name="sysopt_only_reads">Hanya membaca sakelar ini</string>
+    <string name="sysopt_no_permissions">Tidak meminta izin baru</string>
+    <string name="sysopt_open_source">Kode sumber terbuka</string>
+    <string name="sysopt_open">Buka Opsi pengembang</string>
+    <string name="sysopt_english_hint">Tidak ada? Ubah ponsel ke Inggris sebentar</string>
+    <string name="chain_bt_blocked">Bluetooth diblokir · perlu satu setelan pengembang</string>
+</resources>

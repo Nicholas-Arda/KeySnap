@@ -8,7 +8,11 @@ import com.example.data.AUTO_SEND_NO_REPLY
 import com.example.data.KeyMappingRepository
 import com.example.data.ScriptAction
 import com.example.data.ScriptRepository
+import com.example.data.SensitiveApp
+import com.example.data.activeApps
 import com.example.service.HardwareKeyTriggerCoordinator
+import com.example.service.AdvancedModeRecovery
+import com.example.service.SensitiveAppsGate
 import com.example.service.adb.AdvancedAutostart
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -19,6 +23,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -91,7 +97,10 @@ object BridgeController {
     private val probeLock = Mutex()
     private val lifecycleLock = Mutex()
 
-    /** Set once a stale bridge from before an app update was shut down; see [takeStaleReplacement]. */
+    /**
+     * Set once a stale bridge from before an app update was shut down, or a pre-63 bridge's config
+     * deleted ([BridgePayload]'s init); see [takeStaleReplacement].
+     */
     internal val staleReplaced = AtomicBoolean(false)
 
     private val telemetryListener = object : BridgeClient.Listener {
@@ -131,6 +140,25 @@ object BridgeController {
             appContext?.let { com.example.mode.ModeHooks.showToast(it, mode) }
         }
 
+        override fun onSensitiveApp(packageName: String, steppedAside: Boolean) {
+            val context = appContext ?: return
+            val app = SensitiveAppsGate.store(context).value.apps.firstOrNull { it.packageName == packageName }
+            if (steppedAside) {
+                app?.let { SensitiveAppsGate.onSteppedAside(context, it) }
+            } else {
+                // Cancels the notice even for an app taken off the list meanwhile.
+                SensitiveAppsGate.onRestored(context, app ?: SensitiveApp(packageName, packageName))
+            }
+        }
+
+        // The bridge is about to exit; the watchdog then reports Advanced Mode off. Nothing respawns it.
+        override fun onSensitiveLeaving(packageName: String) {
+            val context = appContext ?: return
+            AdvancedModeRecovery.onEnded(context)
+            SensitiveAppsGate.store(context).value.apps.firstOrNull { it.packageName == packageName }
+                ?.let { SensitiveAppsGate.onSteppedAside(context, it, leaving = true) }
+        }
+
         override fun onDevice(path: String, name: String) {
             _inputDevices.value = _inputDevices.value + (path to name)
         }
@@ -141,8 +169,13 @@ object BridgeController {
         payload = BridgePayload(context)
         feedbackConfigJob?.cancel()
         feedbackConfigJob = scope.launch {
-            combine(com.example.capsule.CapsuleHooks.enabledFlow(context), com.example.data.EntitlementManager.getInstance(context).isPro) { enabled, pro ->
-                enabled to pro
+            combine(
+                com.example.capsule.CapsuleHooks.enabledFlow(context),
+                com.example.data.EntitlementManager.getInstance(context).isPro,
+                // Sensitive apps are enforced by the bridge, so the list rides in its config.
+                SensitiveAppsGate.store(context).map { it.activeApps }.distinctUntilChanged(),
+            ) { enabled, pro, sensitive ->
+                Triple(enabled, pro, sensitive)
             }.collect {
                 if (_state.value == BridgeState.RUNNING) publishConfig()
             }
@@ -150,6 +183,7 @@ object BridgeController {
         // A bridge from a previous app lifetime may still be running. Adopt it instead of
         // relaunching: a second instance would compete for the same gestures.
         scope.launch { detectExistingBridge() }
+        AdvancedModeRecovery.initialize(context)
     }
 
     private fun client(): BridgeClient? {
@@ -162,7 +196,9 @@ object BridgeController {
      * adopting it. An app update can change bridge behavior (e.g. which actions it executes)
      * without touching the socket handshake, but the previous process — spawned by an older
      * app version — keeps running and answering the port until something kills it. Adopting it
-     * silently would resurrect old, already-fixed bugs.
+     * silently would resurrect old, already-fixed bugs. A bridge from before protocol 63 never
+     * authenticates, so it is neither adopted nor told anything: it goes with its config
+     * ([BridgePayload] deletes that on first touch) or with the respawn's start.sh.
      */
     private suspend fun freshBridgeStatus(): BridgeStatus? = probeLock.withLock {
         val status = client()?.probe() ?: return null
@@ -185,7 +221,8 @@ object BridgeController {
     }
 
     /**
-     * True once per process after this process shut down a stale bridge, so exactly one caller gets
+     * True once per process after this process shut down a stale bridge or deleted a pre-63
+     * bridge's config, so exactly one caller gets
      * to bring the new one up: an update, unlike a reboot, leaves Advanced Mode off without the
      * user having done anything.
      */
@@ -200,7 +237,10 @@ object BridgeController {
     /** Ends a restart that never reached a running bridge. */
     fun markStopped(message: String) = setStopped(message)
 
-    /** True once no bridge answers the control port, waiting up to 3 s for one that is exiting. */
+    /**
+     * True once no bridge answers the control port, waiting up to 3 s for one that is exiting. Only an
+     * authenticated answer counts: anything can take the port and refuse the handshake.
+     */
     private suspend fun portStoppedAnswering(): Boolean {
         repeat(6) {
             if (client()?.probe() == null) return true
@@ -450,6 +490,7 @@ object BridgeController {
         // The privileged bridge is authoritative while it runs; the in-app pipeline must not
         // execute the same script a second time.
         HardwareKeyTriggerCoordinator.setAdvancedBridgeActive(true)
+        appContext?.let(SensitiveAppsGate::onBridgeUp)
         publishConfig()
         startStreaming()
         startWatchdog()

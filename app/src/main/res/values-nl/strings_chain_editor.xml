@@ -5,8 +5,8 @@
     <string name="chain_condition_empty">Controleer de voorwaarde-instellingen</string>
     <string name="chain_shell_limited">Shell werkt hier beperkt</string>
     <string name="chain_set_up">Instellen</string>
-    <string name="chain_bt_prompt">Toont kort een Bluetooth-vraag</string>
-    <string name="chain_bt_prompt_hide">Verbergen: Ontwikkelaarsopties → Systeemoptimalisatie uitschakelen</string>
+    <string name="chain_bt_prompt">Vereist één ontwikkelaarsoptie</string>
+    <string name="chain_bt_prompt_hide">Ontwikkelaarsopties → Systeemoptimalisatie uitschakelen</string>
     <string name="chain_open_developer_options">Openen</string>
     <string name="chain_test_running">Actie testen</string>
     <string name="chain_test_success">Test geslaagd</string>

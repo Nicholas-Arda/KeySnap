@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_sensitive_title_133">Apps sensibles</string>
+    <string name="whats_new_sensitive_description_133">¿Un banco o juego no abre? KeySnap se aparta mientras está abierto.</string>
+    <string name="whats_new_picker_title_133">Nuevo, Populares y tu teléfono</string>
+    <string name="whats_new_picker_description_133">Encuentra la acción o condición correcta más rápido.</string>
+    <string name="whats_new_oem_title_133">Funciones de la tecla lateral en cualquier tecla</string>
+    <string name="whats_new_oem_description_133">Mind Space, Traducir pantalla, Grabar audio, OSee. Experimental.</string>
+    <string name="whats_new_fix_actions_133">Acciones nuevas: Alternar punto de acceso, Bloqueo seguro</string>
+    <string name="whats_new_fix_single_press_133">Una pulsación actúa al instante si no hay doble pulsación</string>
+    <string name="whats_new_fix_pairing_133">El código de vinculación de la notificación funciona</string>
+    <string name="whats_new_fix_app_automation_133">Las automatizaciones de apps saltan cada vez que abres la app</string>
+    <string name="whats_new_fix_large_text_133">El texto grande ya no corta palabras</string>
+    <string name="whats_new_more_133">También en esta actualización</string>
+    <string name="whats_new_not_supported_133">No compatible con este dispositivo</string>
+</resources>

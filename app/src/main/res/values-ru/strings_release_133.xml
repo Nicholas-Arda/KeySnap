@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_sensitive_title_133">Особые приложения</string>
+    <string name="whats_new_sensitive_description_133">Банк или игра не открываются? KeySnap отходит в сторону, пока они открыты.</string>
+    <string name="whats_new_picker_title_133">Новое, Популярное и ваш телефон</string>
+    <string name="whats_new_picker_description_133">Нужное действие или условие находится быстрее.</string>
+    <string name="whats_new_oem_title_133">Функции боковой кнопки на любой кнопке</string>
+    <string name="whats_new_oem_description_133">Mind Space, Перевод экрана, Запись звука, OSee. Экспериментально.</string>
+    <string name="whats_new_fix_actions_133">Новые действия: Точка доступа, Безопасная блокировка</string>
+    <string name="whats_new_fix_single_press_133">Одно нажатие срабатывает сразу, если нет двойного</string>
+    <string name="whats_new_fix_pairing_133">Код сопряжения из уведомления работает</string>
+    <string name="whats_new_fix_app_automation_133">Сценарии приложений срабатывают при каждом открытии приложения</string>
+    <string name="whats_new_fix_large_text_133">Крупный текст больше не разрывает слова</string>
+    <string name="whats_new_more_133">Также в этом обновлении</string>
+    <string name="whats_new_not_supported_133">Не поддерживается на этом устройстве</string>
+</resources>

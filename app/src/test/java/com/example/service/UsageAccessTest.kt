@@ -19,7 +19,8 @@ class UsageAccessTest {
             )
             assertTrue(needsUsageAccess(listOf(script)))
             assertFalse(needsUsageAccess(listOf(script.copy(enabled = false))))
-            assertFalse(needsUsageAccess(listOf(script.copy(triggers = emptyList()))))
+            // Key-less automations start on these conditions, so they need it too.
+            assertTrue(needsUsageAccess(listOf(script.copy(triggers = emptyList()))))
             assertFalse(needsUsageAccess(listOf(script.copy(constraints = listOf(ScriptConstraint("no_media_playing"))))))
         }
         assertFalse(needsUsageAccess(emptyList()))

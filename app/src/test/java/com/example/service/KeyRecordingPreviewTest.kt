@@ -52,6 +52,27 @@ class KeyRecordingPreviewTest {
         }
     }
 
+    @Test fun activityCopyOfATapAccessibilityAlreadyFinishedIsDropped() = runTest {
+        Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val a11y = DiagnosticRecorder.InputPath.ACCESSIBILITY
+        val activity = DiagnosticRecorder.InputPath.ACTIVITY
+        try {
+            coordinator.initialize(context, KeyMappingRepository.getInstance(context))
+            coordinator.startRecordingKey()
+            // KeySnap in front: Accessibility reports the whole tap before the Activity's down arrives.
+            assertTrue(coordinator.dispatchKeyEvent(27, true, "Accessibility", a11y))
+            assertTrue(coordinator.dispatchKeyEvent(27, false, "Accessibility", a11y))
+            coordinator.startRecordingKey()
+            assertFalse(coordinator.dispatchKeyEvent(27, true, "Activity", activity))
+            assertFalse(coordinator.dispatchKeyEvent(27, false, "Activity", activity))
+            assertTrue(coordinator.recordingKeys.value.isEmpty())
+        } finally {
+            coordinator.cancelRecordingKey()
+            Dispatchers.resetMain()
+        }
+    }
+
     @Test fun cancelAndRestartClearThePreviewWithoutPublishingARecordedKey() = runTest {
         Dispatchers.setMain(StandardTestDispatcher(testScheduler))
         val context = ApplicationProvider.getApplicationContext<Context>()

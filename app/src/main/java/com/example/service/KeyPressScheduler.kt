@@ -1,5 +1,6 @@
 package com.example.service
 
+import com.example.bridge.PressTimingMachine
 import com.example.data.KeyMappingConfig
 import com.example.data.TriggerPressType
 import com.example.data.TriggerTimingSpecs
@@ -16,6 +17,7 @@ internal class KeyPressScheduler(
     private data class TimingSnapshot(
         val doublePressWindowMs: Long = TriggerTimingSpecs.doublePressWindow.default,
         val longPressThresholdMs: Long = TriggerTimingSpecs.longPressThreshold.default,
+        val singleAt: Int = PressTimingMachine.SINGLE_AFTER_WINDOW,
     )
 
     private data class KeyState(
@@ -33,9 +35,16 @@ internal class KeyPressScheduler(
     private val lock = Any()
     private val states = mutableMapOf<Int, KeyState>()
 
-    fun onEvent(keyCode: Int, isDown: Boolean, eventTime: Long, config: KeyMappingConfig) {
+    /** [singleAt]: `PressTimingMachine.singlePressAt` for this key. */
+    fun onEvent(
+        keyCode: Int,
+        isDown: Boolean,
+        eventTime: Long,
+        config: KeyMappingConfig,
+        singleAt: Int = PressTimingMachine.SINGLE_AFTER_WINDOW,
+    ) {
         if (isDown) {
-            onDown(keyCode, eventTime, config)
+            onDown(keyCode, eventTime, config, singleAt)
         } else {
             onUp(keyCode, eventTime)
         }
@@ -51,6 +60,9 @@ internal class KeyPressScheduler(
         }
     }
 
+    /** From a press's down until its up, [cancel] (it joined a chord) or [reset]; stays true after its long press fires. */
+    fun isHeld(keyCode: Int): Boolean = synchronized(lock) { states[keyCode]?.downAt != null }
+
     /** Drops one key's pending press, e.g. when it turns out to be part of a chord. Mirrors PressTimingMachine.cancel. */
     fun cancel(keyCode: Int) {
         synchronized(lock) {
@@ -58,8 +70,8 @@ internal class KeyPressScheduler(
         }
     }
 
-    private fun onDown(keyCode: Int, eventTime: Long, config: KeyMappingConfig) {
-        var triggerSingle = false
+    private fun onDown(keyCode: Int, eventTime: Long, config: KeyMappingConfig, singleAt: Int) {
+        var singles = 0
         var triggerDouble = false
         synchronized(lock) {
             val state = states.getOrPut(keyCode) { KeyState() }
@@ -83,19 +95,21 @@ internal class KeyPressScheduler(
                     state.singlePressJob = null
                     state.clickCount = 0
                     state.sequence++
-                    triggerSingle = true
-                    beginPressLocked(keyCode, state, eventTime, config)
+                    singles++
+                    beginPressLocked(keyCode, state, eventTime, config, singleAt)
                 }
             } else {
-                beginPressLocked(keyCode, state, eventTime, config)
+                beginPressLocked(keyCode, state, eventTime, config, singleAt)
             }
+            if (state.downAt != null && state.timing.singleAt == PressTimingMachine.SINGLE_ON_PRESS) singles++
         }
-        if (triggerSingle) onTriggered(keyCode, TriggerPressType.SINGLE_PRESS)
+        repeat(singles) { onTriggered(keyCode, TriggerPressType.SINGLE_PRESS) }
         if (triggerDouble) onTriggered(keyCode, TriggerPressType.DOUBLE_PRESS)
     }
 
     private fun onUp(keyCode: Int, eventTime: Long) {
         var triggerLong = false
+        var triggerSingle = false
         synchronized(lock) {
             val state = states[keyCode] ?: return
             val downAt = state.downAt ?: return
@@ -103,13 +117,17 @@ internal class KeyPressScheduler(
             state.longPressJob?.cancel()
             state.longPressJob = null
 
-            if (state.longPressTriggered || state.doublePressTriggered) {
+            // SINGLE_ON_PRESS fired on the down.
+            if (state.longPressTriggered || state.doublePressTriggered || state.timing.singleAt == PressTimingMachine.SINGLE_ON_PRESS) {
                 clearStateLocked(keyCode, state)
                 return
             }
             if (eventTime - downAt >= state.timing.longPressThresholdMs) {
                 state.longPressTriggered = true
                 triggerLong = true
+                clearStateLocked(keyCode, state)
+            } else if (state.timing.singleAt == PressTimingMachine.SINGLE_ON_RELEASE) {
+                triggerSingle = true
                 clearStateLocked(keyCode, state)
             } else {
                 state.clickCount = 1
@@ -118,12 +136,14 @@ internal class KeyPressScheduler(
             }
         }
         if (triggerLong) onTriggered(keyCode, TriggerPressType.LONG_PRESS)
+        if (triggerSingle) onTriggered(keyCode, TriggerPressType.SINGLE_PRESS)
     }
 
-    private fun beginPressLocked(keyCode: Int, state: KeyState, eventTime: Long, config: KeyMappingConfig) {
+    private fun beginPressLocked(keyCode: Int, state: KeyState, eventTime: Long, config: KeyMappingConfig, singleAt: Int) {
         state.timing = TimingSnapshot(
             doublePressWindowMs = normalizeTimingValue(config.doublePressWindowMs, TriggerTimingSpecs.doublePressWindow),
             longPressThresholdMs = normalizeTimingValue(config.longPressThresholdMs, TriggerTimingSpecs.longPressThreshold),
+            singleAt = singleAt,
         )
         state.downAt = eventTime
         state.clickCount = 0
@@ -133,6 +153,8 @@ internal class KeyPressScheduler(
         val sequence = state.sequence
         val threshold = state.timing.longPressThresholdMs
         state.longPressJob?.cancel()
+        state.longPressJob = null
+        if (singleAt == PressTimingMachine.SINGLE_ON_PRESS) return // No long press on this key, and its single fires now.
         state.longPressJob = scope.launch {
             delay(threshold)
             var shouldTrigger = false

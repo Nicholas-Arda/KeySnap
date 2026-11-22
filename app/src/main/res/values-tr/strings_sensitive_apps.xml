@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sensitive_title">Hassas uygulamalar</string>
+    <string name="sensitive_summary_empty">Açılmayan uygulamalar için</string>
+    <plurals name="sensitive_summary_count">
+        <item quantity="one">%d uygulama · kenara çekilir</item>
+        <item quantity="other">%d uygulama · kenara çekilir</item>
+    </plurals>
+    <string name="sensitive_intro_title">Bazı uygulamalar KeySnap açıkken açılmaz.</string>
+    <string name="sensitive_intro_body">Bankalar, oyunlar, katı olan her şey. KeySnap kenara çekilir.</string>
+    <string name="sensitive_master">Bu uygulamalar için kenara çekil</string>
+    <string name="sensitive_your_apps">Uygulamaların</string>
+    <string name="sensitive_developer_options">Geliştirici seçenekleri</string>
+    <string name="sensitive_accessibility">Erişilebilirlik</string>
+    <string name="sensitive_add_app">Uygulama ekle</string>
+    <string name="sensitive_feedback_label">KeySnap kenara çekildiğinde</string>
+    <string name="sensitive_show_notification">Bildirim göster</string>
+    <string name="sensitive_vibrate">Titreşim</string>
+    <string name="sensitive_footer_keys">Tuşların çalışmaya devam eder.</string>
+    <string name="sensitive_footer_restore">Uygulamadan çıkınca KeySnap her şeyi geri açar.</string>
+    <string name="sensitive_sheet_question">Bu uygulama açılınca bunları gizle</string>
+    <string name="sensitive_developer_options_desc">Geliştirici modunu engelleyen uygulamalar için</string>
+    <string name="sensitive_accessibility_desc">Erişilebilirliği engelleyen uygulamalar için</string>
+    <string name="sensitive_sheet_note">Çıkınca KeySnap bunları geri açar. Donanım tuşların hiç durmaz.</string>
+    <string name="sensitive_remove">Uygulamayı kaldır</string>
+    <string name="sensitive_card_title">Bir uygulama açılmıyor mu?</string>
+    <string name="sensitive_card_body">KeySnap onun için kenara çekilebilir.</string>
+    <string name="sensitive_card_set_up">Kur</string>
+    <string name="sensitive_needs_advanced">Yalnızca Uzman Modu ile çalışır</string>
+    <string name="sensitive_notif_title">%1$s için kenara çekildi</string>
+    <string name="sensitive_notif_text">Tuşlar çalışıyor · otomasyonlar duraklatıldı</string>
+    <string name="sensitive_notif_text_dev">Her şey çalışmaya devam ediyor</string>
+    <string name="sensitive_notif_restore">Şimdi geri aç</string>
+    <string name="sensitive_wireless_debugging">Kablosuz hata ayıklama</string>
+    <string name="sensitive_wireless_debugging_desc">Kablosuz hata ayıklamayı engelleyen uygulamalar için</string>
+    <string name="sensitive_wireless_warning_off">Uzman Modu\'nu kapatır</string>
+    <string name="sensitive_wireless_warning_setup">Sonra yeniden kur · Wi-Fi gerekir</string>
+    <string name="sensitive_sheet_note_wireless">Uzman Modu tuşları durur · otomatik geri açılmaz</string>
+    <string name="sensitive_footer_wireless">Kablosuz hata ayıklama: Uzman Modu tuşları durur.</string>
+    <string name="sensitive_notif_text_off">Uzman Modu kapalı · kurmak için dokun</string>
+    <string name="sensitive_fix_dev_off">Geliştirici seçenekleri kapalı</string>
+    <string name="sensitive_fix_dev_hint">\"Yapı numarası\" üzerine 7 kez dokun</string>
+    <string name="sensitive_fix_wireless_off">Kablosuz hata ayıklama kapalı</string>
+    <string name="sensitive_fix_accessibility_off">Erişilebilirlik kapalı</string>
+    <string name="sensitive_fix_advanced_off">Uzman Modu kapalı</string>
+</resources>

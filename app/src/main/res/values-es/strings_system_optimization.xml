@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sysopt_title">El Bluetooth necesita un interruptor</string>
+    <string name="sysopt_why">Tu teléfono bloquea los atajos de Bluetooth.</string>
+    <string name="sysopt_step_find">1 · Busca “%1$s”</string>
+    <string name="sysopt_step_turn_on">2 · Actívalo</string>
+    <string name="sysopt_step_confirm">3 · Toca “%1$s”</string>
+    <string name="sysopt_switch_column">Este interruptor</string>
+    <string name="sysopt_unblocks">Desbloquea atajos de Bluetooth</string>
+    <string name="sysopt_warns">El teléfono avisa: batería, seguridad</string>
+    <string name="sysopt_off_anytime">Desactívalo cuando quieras</string>
+    <string name="sysopt_only_reads">Solo lee este interruptor</string>
+    <string name="sysopt_no_permissions">No pide permisos nuevos</string>
+    <string name="sysopt_open_source">Código abierto</string>
+    <string name="sysopt_open">Abrir opciones de desarrollador</string>
+    <string name="sysopt_english_hint">¿No aparece? Pon el teléfono en inglés</string>
+    <string name="chain_bt_blocked">Bluetooth bloqueado · necesita una opción de desarrollador</string>
+</resources>

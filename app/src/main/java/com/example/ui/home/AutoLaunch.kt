@@ -12,15 +12,13 @@ import io.github.nicholasarda.keysnap.R
  * started again, and the screens that hold that switch. Only ColorOS was checked on a device
  * (2026-11-17): with the switch off, a swipe from Recents leaves the Accessibility service dead
  * ("prevent restart service") and alarms are dropped; with it on, the service is back in a second.
- * Its page is guarded by a signature permission, so there it always falls through to Settings
- * search. The others come from public OEM lists and are tried best-effort.
+ * It gets no direct screen and goes straight to Settings search: its page is guarded by a signature
+ * permission (PLG110), and on some builds a page opens and closes itself at once, which counts as a
+ * successful start and so never reached the search (Reddit report, 2026-11-20). The others come from
+ * public OEM lists and are tried best-effort.
  */
 private val AUTO_LAUNCH_SCREENS: Map<String, List<String>> = run {
-    val colorOs = listOf(
-        "com.oplus.battery/com.oplus.startupapp.view.StartupAppListActivity",
-        "com.coloros.safecenter/.startupapp.StartupAppListActivity",
-        "com.coloros.safecenter/.permission.startup.StartupAppListActivity",
-    )
+    val colorOs = emptyList<String>()
     val miui = listOf("com.miui.securitycenter/com.miui.permcenter.autostart.AutoStartManagementActivity")
     val vivo = listOf(
         "com.vivo.permissionmanager/.activity.BgStartUpManagerActivity",

@@ -790,6 +790,8 @@
     <string name="about_bridge_title">De geavanceerde modus gebruikt ADB op je eigen telefoon</string>
     <string name="about_bridge_body">De app koppelt met Draadloze foutopsporing van je eigen telefoon via je lokale netwerk. Die verbinding verlaat je huis niet. Alleen je eigen snelkoppelingen voeren shellopdrachten uit. Uitschakelen verwijdert het hulpprogramma; opnieuw opstarten stopt het ook.</string>
     <string name="about_illo_bridge_caption">uit → het hulpprogramma verwijdert zichzelf</string>
+    <string name="about_sensitive_title">Gevoelige apps zet alleen uit wat je aanvinkt</string>
+    <string name="about_sensitive_body">Voor een app in je lijst zet het alleen de schakelaars uit die je aanvinkt: ontwikkelaarsopties, KeySnaps eigen toegankelijkheidsitem, draadloze foutopsporing. De eerste twee gaan weer aan als je de app verlaat.</string>
     <string name="about_traffic_title">Alle verbindingen die de app maakt</string>
     <string name="about_traffic_device">Je eigen telefoon</string>
     <string name="about_traffic_device_body">Koppelen via Draadloze foutopsporing. Alleen op het lokale netwerk.</string>
@@ -1016,7 +1018,7 @@
     <string name="settings_autostart_title">Starten na herstart</string>
     <string name="settings_autostart_description">Start de geavanceerde modus opnieuw nadat je de herstartte telefoon ontgrendelt en met wifi verbindt. Op sommige telefoons moet je KeySnap ook toestemming geven om automatisch te starten.</string>
     <string name="settings_autostart_permission_description">De geavanceerde modus verleent één extra toestemming met: %1$s. Deze wordt ingetrokken als je deze optie of de geavanceerde modus uitschakelt. Draadloze foutopsporing blijft aan zolang de geavanceerde modus actief is. Als KeySnap dit heeft ingeschakeld, stopt het uitschakelen van deze optie ook de geavanceerde modus en wordt Draadloze foutopsporing hersteld.</string>
-    <string name="settings_autostart_hint_permission">Start de geavanceerde modus eenmaal om het instellen te voltooien. Schakel op OPPO, OnePlus en realme eerst ‘Toestemmingscontrole uitschakelen’ in bij Ontwikkelaarsopties; op Xiaomi ‘USB-foutopsporing (Beveiligingsinstellingen)’. Tik om Ontwikkelaarsopties te openen.</string>
+    <string name="settings_autostart_hint_permission">Start de geavanceerde modus eenmaal om het instellen te voltooien. Schakel op OPPO, OnePlus en realme eerst ‘Systeemoptimalisatie uitschakelen’ in bij Ontwikkelaarsopties; op Xiaomi ‘USB-foutopsporing (Beveiligingsinstellingen)’. Tik om Ontwikkelaarsopties te openen.</string>
     <string name="settings_autostart_hint_prompt">Sta op Android 11–12 na elke herstart Draadloze foutopsporing op dit netwerk toe wanneer Android het vraagt.</string>
     <string name="settings_autostart_hint_pairing">Stel de geavanceerde modus opnieuw in als Android de koppeling laat verlopen of verwijdert. Dagelijks verbinden houdt een koppeling niet op elke telefoon actief.</string>
     <string name="settings_autostart_cleanup_failed">De toestemming voor starten na herstart kon niet worden ingetrokken. Verbind de geavanceerde modus opnieuw en schakel deze optie nogmaals uit.</string>
@@ -1069,10 +1071,6 @@
     <string name="accessibility_reconnect_button">Opnieuw verbinden</string>
     <string name="accessibility_reconnecting">Opnieuw verbinden…</string>
     <string name="accessibility_reconnect_failed">Opnieuw verbinden mislukt. Schakel KeySnap hier uit en weer in.</string>
-    <string name="wizard_manual_title">Voer de code zelf in</string>
-    <string name="wizard_manual_body">Tik bij Draadloze foutopsporing op ‘Apparaat koppelen met koppelingscode’ en voer hier de 6-cijferige code in. Als Android het codevenster sluit wanneer je van app wisselt, gebruik dan gesplitst scherm of de melding.</string>
-    <string name="wizard_manual_code_label">6-cijferige koppelingscode</string>
-    <string name="wizard_manual_pair">Koppelen</string>
     <string name="notif_return_title">Geavanceerde modus staat aan</string>
     <string name="notif_return_body">Tik om terug te gaan naar KeySnap.</string>
     <string name="pro_sale_ends_in">Aanbieding eindigt over %1$s</string>

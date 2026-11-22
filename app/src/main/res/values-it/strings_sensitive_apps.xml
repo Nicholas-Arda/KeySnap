@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sensitive_title">App sensibili</string>
+    <string name="sensitive_summary_empty">Per le app che non si aprono</string>
+    <plurals name="sensitive_summary_count">
+        <item quantity="one">%d app · si fa da parte</item>
+        <item quantity="many">%d di app · si fa da parte</item>
+        <item quantity="other">%d app · si fa da parte</item>
+    </plurals>
+    <string name="sensitive_intro_title">Alcune app non si aprono con KeySnap attivo.</string>
+    <string name="sensitive_intro_body">Banche, giochi, tutto ciò che è rigido. KeySnap si fa da parte.</string>
+    <string name="sensitive_master">Farsi da parte per queste app</string>
+    <string name="sensitive_your_apps">Le tue app</string>
+    <string name="sensitive_developer_options">Opzioni sviluppatore</string>
+    <string name="sensitive_accessibility">Accessibilità</string>
+    <string name="sensitive_add_app">Aggiungi app</string>
+    <string name="sensitive_feedback_label">Quando KeySnap si fa da parte</string>
+    <string name="sensitive_show_notification">Mostra notifica</string>
+    <string name="sensitive_vibrate">Vibrazione</string>
+    <string name="sensitive_footer_keys">I tuoi tasti continuano a funzionare.</string>
+    <string name="sensitive_footer_restore">KeySnap ripristina tutto quando esci dall\'app.</string>
+    <string name="sensitive_sheet_question">Nascondi questi quando si apre l\'app</string>
+    <string name="sensitive_developer_options_desc">Per le app che bloccano la modalità sviluppatore</string>
+    <string name="sensitive_accessibility_desc">Per le app che bloccano l\'accessibilità</string>
+    <string name="sensitive_sheet_note">KeySnap li riattiva quando esci. I tasti fisici non si fermano mai.</string>
+    <string name="sensitive_remove">Rimuovi app</string>
+    <string name="sensitive_card_title">Un\'app non si apre?</string>
+    <string name="sensitive_card_body">KeySnap può farsi da parte per lei.</string>
+    <string name="sensitive_card_set_up">Configura</string>
+    <string name="sensitive_needs_advanced">Funziona solo con la Modalità avanzata</string>
+    <string name="sensitive_notif_title">Fatto da parte per %1$s</string>
+    <string name="sensitive_notif_text">I tasti funzionano · automazioni in pausa</string>
+    <string name="sensitive_notif_text_dev">Tutto continua a funzionare</string>
+    <string name="sensitive_notif_restore">Ripristina ora</string>
+    <string name="sensitive_wireless_debugging">Debug wireless</string>
+    <string name="sensitive_wireless_debugging_desc">Per le app che bloccano il debug wireless</string>
+    <string name="sensitive_wireless_warning_off">Disattiva la Modalità avanzata</string>
+    <string name="sensitive_wireless_warning_setup">Poi riconfigurala · serve il Wi-Fi</string>
+    <string name="sensitive_sheet_note_wireless">I tasti della Modalità avanzata si fermano · nessun ripristino automatico</string>
+    <string name="sensitive_footer_wireless">Debug wireless: i tasti della Modalità avanzata si fermano.</string>
+    <string name="sensitive_notif_text_off">Modalità avanzata disattivata · tocca per configurarla</string>
+    <string name="sensitive_fix_dev_off">Opzioni sviluppatore disattivate</string>
+    <string name="sensitive_fix_dev_hint">Tocca \"Numero build\" 7 volte</string>
+    <string name="sensitive_fix_wireless_off">Debug wireless disattivato</string>
+    <string name="sensitive_fix_accessibility_off">Accessibilità disattivata</string>
+    <string name="sensitive_fix_advanced_off">Modalità avanzata disattivata</string>
+</resources>

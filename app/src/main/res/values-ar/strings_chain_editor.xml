@@ -5,8 +5,8 @@
     <string name="chain_condition_empty">تحقق من إعدادات الشرط</string>
     <string name="chain_shell_limited">Shell يعمل بقيود هنا</string>
     <string name="chain_set_up">إعداد</string>
-    <string name="chain_bt_prompt">تظهر رسالة Bluetooth قصيرة</string>
-    <string name="chain_bt_prompt_hide">لإخفائها: خيارات المطور ← تعطيل تحسين النظام</string>
+    <string name="chain_bt_prompt">يحتاج إلى إعداد واحد للمطور</string>
+    <string name="chain_bt_prompt_hide">خيارات المطور ← تعطيل تحسين النظام</string>
     <string name="chain_open_developer_options">فتح</string>
     <string name="chain_test_running">جارٍ اختبار الإجراء</string>
     <string name="chain_test_success">نجح الاختبار</string>

@@ -5,8 +5,8 @@
     <string name="chain_condition_empty">Проверьте настройки условия</string>
     <string name="chain_shell_limited">Shell работает с ограничениями</string>
     <string name="chain_set_up">Настроить</string>
-    <string name="chain_bt_prompt">Ненадолго появится запрос Bluetooth</string>
-    <string name="chain_bt_prompt_hide">Скрыть: Для разработчиков → Отключить оптимизацию системы</string>
+    <string name="chain_bt_prompt">Нужна одна настройка для разработчиков</string>
+    <string name="chain_bt_prompt_hide">Для разработчиков → Выключить оптимизацию системы</string>
     <string name="chain_open_developer_options">Открыть</string>
     <string name="chain_test_running">Проверка действия</string>
     <string name="chain_test_success">Проверка успешна</string>

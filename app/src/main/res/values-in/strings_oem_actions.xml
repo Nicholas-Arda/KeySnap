@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_mind_space_capture">Mind Space: simpan layar</string>
+    <string name="action_open_mind_space">Buka Mind Space</string>
+    <string name="action_built_in_assistant">Asisten suara bawaan</string>
+    <string name="helper_mind_space_capture">Menyimpan layar ke Mind Space, seperti tombol samping.</string>
+    <string name="helper_open_mind_space">Membuka Mind Space, seperti tekan dua kali tombol samping.</string>
+    <string name="import_error_not_on_phone">Pintasan ini memakai tindakan yang tidak ada di ponsel ini.</string>
+    <string name="action_translate_screen">Terjemahkan layar</string>
+    <string name="action_record_audio">Rekam audio</string>
+    <string name="action_open_osee">Buka OSee</string>
+    <string name="helper_translate_screen">Menerjemahkan layar secara langsung, seperti menahan tombol samping.</string>
+    <string name="helper_record_audio">Mulai merekam di Perekam, seperti menahan tombol samping.</string>
+</resources>

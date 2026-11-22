@@ -1,5 +1,6 @@
 package com.example.data
 
+import com.example.bridge.BridgeConfig
 import com.example.bridge.BuzzPattern
 import com.example.bridge.ChordTracker
 
@@ -42,7 +43,14 @@ fun resolveConsumeForScript(script: ShortcutScript, globalDefault: Boolean): Boo
     script.consumeOriginalEvent ?: globalDefault
 
 /**
- * Whether a key's own job is swallowed: some enabled script uses it (alone or as a chord member)
+ * Whether this script runs now: enabled, and mapping is on or the script can turn it back on.
+ * The rule is `BridgeConfig.resumesMapping`, shared with the bridge so both sides pick the same scripts.
+ */
+fun ShortcutScript.isLive(globallyEnabled: Boolean): Boolean =
+    enabled && (globallyEnabled || actions.any { BridgeConfig.resumesMapping(it.type) })
+
+/**
+ * Whether a key's own job is swallowed: some live script ([isLive]) uses it (alone or as a chord member)
  * and resolves to consume while its constraints hold. Accessibility and Activity both decide
  * through this; the injected check runs only after the cheap key/enabled/consume gates.
  */
@@ -53,8 +61,8 @@ fun shouldConsumeKey(
     globalDefault: Boolean,
     constraintsSatisfied: (ShortcutScript) -> Boolean = { it.constraints.isEmpty() },
 ): Boolean =
-    globallyEnabled && scripts.any { script ->
-        script.enabled && script.triggers.any { keyCode in it.keyCodes } &&
+    scripts.any { script ->
+        script.isLive(globallyEnabled) && script.triggers.any { keyCode in it.keyCodes } &&
             resolveConsumeForScript(script, globalDefault) && constraintsSatisfied(script)
     }
 

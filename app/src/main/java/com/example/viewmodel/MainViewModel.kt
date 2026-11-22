@@ -620,7 +620,7 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
     fun importShortcutText(text: String) {
         // A second share must not swap what the open review shows under the user's thumb.
         if (_pendingImport.value != null) return
-        when (val result = ShortcutShare.decode(text)) {
+        when (val result = ShortcutShare.decode(text) { type -> com.example.data.OemActions.offered(appContext, type) }) {
             is ImportResult.Ok -> _pendingImport.value = result.shortcut
             is ImportResult.Error -> _scriptsMessage.value = ScriptsMessage(res.getString(result.messageRes))
         }
@@ -1422,11 +1422,6 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
     }
 
     // System Intents
-    /** The wizard's in-app code entry, for when the assisted tap or the notification is unavailable. */
-    fun submitPairingCode(code: String) {
-        WirelessAdbManager.onCredentialsFromNotification(code, null)
-    }
-
     fun openDeveloperSettings(context: Context) {
         WirelessAdbManager.startSearchingMdns()
         WirelessAdbManager.armPairWithCodeTap()

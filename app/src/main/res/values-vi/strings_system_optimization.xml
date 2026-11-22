@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sysopt_title">Bluetooth cần một công tắc trên máy</string>
+    <string name="sysopt_why">Điện thoại chặn phím tắt Bluetooth.</string>
+    <string name="sysopt_step_find">1 · Tìm “%1$s”</string>
+    <string name="sysopt_step_turn_on">2 · Bật lên</string>
+    <string name="sysopt_step_confirm">3 · Nhấn “%1$s”</string>
+    <string name="sysopt_switch_column">Công tắc này</string>
+    <string name="sysopt_unblocks">Mở khóa phím tắt Bluetooth</string>
+    <string name="sysopt_warns">Máy cảnh báo: pin, bảo mật</string>
+    <string name="sysopt_off_anytime">Tắt lại bất cứ lúc nào</string>
+    <string name="sysopt_only_reads">Chỉ đọc công tắc này</string>
+    <string name="sysopt_no_permissions">Không xin quyền mới</string>
+    <string name="sysopt_open_source">Mã nguồn mở</string>
+    <string name="sysopt_open">Mở Tùy chọn nhà phát triển</string>
+    <string name="sysopt_english_hint">Không thấy? Tạm đổi máy sang tiếng Anh</string>
+    <string name="chain_bt_blocked">Bluetooth bị chặn · cần một cài đặt nhà phát triển</string>
+</resources>

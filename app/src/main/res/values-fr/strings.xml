@@ -855,6 +855,8 @@
     <string name="about_bridge_title">Le mode avancé, c\'est l\'ADB de votre propre téléphone</string>
     <string name="about_bridge_body">Il s\'associe au débogage sans fil de votre téléphone via votre réseau local — cette connexion ne quitte jamais votre domicile. Il n\'exécute des commandes shell que pour les raccourcis que vous avez écrits. Désactivez-le et le pont est supprimé ; un redémarrage l\'arrête aussi.</string>
     <string name="about_illo_bridge_caption">désactivé → le pont se supprime</string>
+    <string name="about_sensitive_title">Applis sensibles ne touche qu\'à ce que vous cochez</string>
+    <string name="about_sensitive_body">Pour une appli de votre liste, seuls les interrupteurs cochés sont désactivés : options pour les développeurs, l\'entrée Accessibilité de KeySnap, débogage sans fil. Les deux premiers reviennent quand vous quittez l\'appli.</string>
     <string name="about_traffic_title">Toutes les connexions de l\'application</string>
     <string name="about_traffic_device">Votre propre téléphone</string>
     <string name="about_traffic_device_body">Association au débogage sans fil. Réseau local uniquement.</string>
@@ -1094,7 +1096,7 @@
     <string name="settings_autostart_title">Démarrer après redémarrage</string>
     <string name="settings_autostart_description">Relance le mode avancé après le déverrouillage et la connexion Wi-Fi. Certains téléphones exigent aussi une autorisation de démarrage automatique pour KeySnap.</string>
     <string name="settings_autostart_permission_description">Le mode avancé accorde une permission supplémentaire : %1$s. Elle est retirée lorsque cette option ou le mode avancé est désactivé. Le débogage sans fil reste actif pendant le fonctionnement du mode avancé. Si KeySnap a activé le débogage, désactiver cette option arrête aussi le mode avancé et restaure le débogage sans fil.</string>
-    <string name="settings_autostart_hint_permission">Lancez le mode avancé une fois. Sur OPPO, OnePlus et realme, activez d’abord « Désactiver la surveillance des permissions » ; sur Xiaomi, « Débogage USB (Paramètres de sécurité) » dans les options de développement. Touchez pour les ouvrir.</string>
+    <string name="settings_autostart_hint_permission">Lancez le mode avancé une fois. Sur OPPO, OnePlus et realme, activez d’abord « Désactiver l\'optimisation du système » ; sur Xiaomi, « Débogage USB (Paramètres de sécurité) » dans les options de développement. Touchez pour les ouvrir.</string>
     <string name="settings_autostart_hint_prompt">Sur Android 11–12, autorisez le débogage sans fil sur ce réseau après chaque redémarrage lorsque Android le demande.</string>
     <string name="settings_autostart_cleanup_failed">La permission de redémarrage ne peut pas être retirée. Reconnectez le mode avancé et désactivez cette option à nouveau.</string>
     <string name="notif_autostart_title">Le mode avancé ne démarre pas après redémarrage</string>
@@ -1148,10 +1150,6 @@
     <string name="accessibility_reconnect_button">Reconnecter</string>
     <string name="accessibility_reconnecting">Reconnexion…</string>
     <string name="accessibility_reconnect_failed">Reconnexion impossible. Désactivez puis réactivez KeySnap ici.</string>
-    <string name="wizard_manual_title">Saisir le code vous-même</string>
-    <string name="wizard_manual_body">Dans Débogage sans fil, appuyez sur « Associer l’appareil avec un code d’association » et saisissez ici le code à 6 chiffres. Si Android ferme la fenêtre du code quand vous changez d’appli, utilisez l’écran partagé ou la notification.</string>
-    <string name="wizard_manual_code_label">Code d’association à 6 chiffres</string>
-    <string name="wizard_manual_pair">Associer</string>
     <string name="notif_return_title">Le mode avancé est activé</string>
     <string name="notif_return_body">Appuyez pour revenir à KeySnap.</string>
     <string name="pro_sale_ends_in">Fin de l’offre dans %1$s</string>

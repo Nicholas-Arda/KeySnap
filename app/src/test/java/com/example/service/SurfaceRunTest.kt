@@ -41,6 +41,15 @@ class SurfaceRunTest {
         assertEquals(SurfaceRun.GloballyPaused, surfaceGate(script(enabled = false), globallyEnabled = false, conditionsMet = unmet))
     }
 
+    @Test fun onlyAShortcutThatCanResumeRunsWhilePaused() {
+        val resume = script().copy(actions = listOf(ScriptAction("resume_mapping")))
+        assertNull(surfaceGate(resume, globallyEnabled = false, conditionsMet = met))
+        assertNull(surfaceGate(resume.copy(actions = listOf(ScriptAction("toggle_mapping"))), globallyEnabled = false, conditionsMet = met))
+        assertEquals(SurfaceRun.GloballyPaused, surfaceGate(resume.copy(enabled = false), globallyEnabled = false, conditionsMet = met))
+        assertEquals(SurfaceRun.ConditionsUnmet("Torch"), surfaceGate(resume, globallyEnabled = false, conditionsMet = unmet))
+        assertEquals(SurfaceRun.GloballyPaused, surfaceGate(script(), globallyEnabled = false, conditionsMet = met))
+    }
+
     @Test fun aPausedScriptSaysSoByName() {
         assertEquals(SurfaceRun.ScriptPaused("Torch"), surfaceGate(script(enabled = false), globallyEnabled = true, conditionsMet = met))
     }

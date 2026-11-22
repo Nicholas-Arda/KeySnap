@@ -7,6 +7,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.EnhancedEncryption
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.PlayArrow
@@ -35,6 +36,7 @@ import androidx.compose.material.icons.outlined.BrightnessLow
 import androidx.compose.material.icons.outlined.CallEnd
 import androidx.compose.material.icons.outlined.CallSplit
 import androidx.compose.material.icons.outlined.CameraAlt
+import androidx.compose.material.icons.outlined.CenterFocusWeak
 import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.ContentCut
@@ -56,7 +58,6 @@ import androidx.compose.material.icons.outlined.KeyboardHide
 import androidx.compose.material.icons.outlined.LastPage
 import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.LocationOff
-import androidx.compose.material.icons.outlined.LockOpen
 import androidx.compose.material.icons.outlined.Mic
 import androidx.compose.material.icons.outlined.MusicNote
 import androidx.compose.material.icons.outlined.Navigation
@@ -130,6 +131,12 @@ private val perActionIcons: Map<String, ImageVector> = mapOf(
     "interact_with_app_element" to Icons.Outlined.TouchApp,
     "launch_voice_assistant" to Icons.Outlined.Mic,
     "launch_device_assistant" to Icons.Outlined.Android,
+    "mind_space_capture" to Icons.Outlined.AutoAwesome,
+    "open_mind_space" to Icons.Outlined.AutoAwesome,
+    "built_in_assistant" to Icons.Outlined.RecordVoiceOver,
+    "translate_screen" to Icons.Outlined.Translate,
+    "record_audio" to Icons.Outlined.Mic,
+    "open_osee" to Icons.Outlined.CenterFocusWeak,
     "open_camera" to Icons.Outlined.CameraAlt,
     "open_settings" to Icons.Filled.Settings,
     "force_stop_app" to Icons.Outlined.Block,
@@ -223,7 +230,7 @@ private val perActionIcons: Map<String, ImageVector> = mapOf(
     "select_word_at_cursor" to Icons.Outlined.SelectAll,
     // Device
     "lock_device" to Icons.Filled.Lock,
-    "secure_lock_device" to Icons.Outlined.LockOpen,
+    "secure_lock_device" to Icons.Filled.EnhancedEncryption,
     "power_dialog" to Icons.Outlined.PowerSettingsNew,
     "toggle_dnd" to Icons.Outlined.DoNotDisturbOn,
     "enable_dnd" to Icons.Outlined.DoNotDisturbOn,
@@ -262,9 +269,14 @@ private val categoryFallbackIcons: Map<ActionCategory, ImageVector> = mapOf(
     ActionCategory.AUTOMATION to Icons.Outlined.AutoAwesome,
 )
 
-/** Every distinct action glyph, keyed by the first action type that draws it; a tile's icon is stored by that type. */
+/**
+ * Every distinct action glyph, keyed by the first catalog action type that draws it (so it has a
+ * label; the legacy "input_key_event" has none); a tile's icon is stored by that type.
+ */
 fun actionIconChoices(): List<Pair<String, ImageVector>> =
-    perActionIcons.entries.distinctBy { it.value }.map { it.key to it.value }
+    perActionIcons.entries.groupBy({ it.value }, { it.key }).map { (vector, types) ->
+        (types.firstOrNull { com.example.data.ScriptActionCatalog.descriptor(it) != null } ?: types.first()) to vector
+    }
 
 /** Falls back to a category icon, then to a generic glyph, so a new catalog entry never crashes the picker. */
 fun actionIcon(type: String, category: ActionCategory? = null): ImageVector =

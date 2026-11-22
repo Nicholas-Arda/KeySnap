@@ -44,7 +44,7 @@ class AdbPairingClient(private val context: Context) {
         } catch (cancelled: CancellationException) {
             throw cancelled
         } catch (error: Exception) {
-            Log.e(TAG, "ADB pairing failed", error)
+            Log.e(TAG, "ADB pairing failed: ${adbFailureSummary(error)}")
             PairingResult.Error(
                 "Pairing error: ${error.localizedMessage ?: error.message ?: error.javaClass.simpleName}",
                 error,

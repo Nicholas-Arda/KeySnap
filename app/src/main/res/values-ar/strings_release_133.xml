@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_sensitive_title_133">التطبيقات الحساسة</string>
+    <string name="whats_new_sensitive_description_133">تطبيق بنك أو لعبة لا يفتح؟ يتنحّى KeySnap جانبًا أثناء فتحه.</string>
+    <string name="whats_new_picker_title_133">جديد وشائع وهاتفك</string>
+    <string name="whats_new_picker_description_133">اعثر على الإجراء أو الشرط المناسب أسرع.</string>
+    <string name="whats_new_oem_title_133">ميزات الزر الجانبي على أي زر</string>
+    <string name="whats_new_oem_description_133">Mind Space وترجمة الشاشة وتسجيل الصوت وOSee. تجريبي.</string>
+    <string name="whats_new_fix_actions_133">إجراءات جديدة: تبديل نقطة الاتصال، القفل الآمن للجهاز</string>
+    <string name="whats_new_fix_single_press_133">الضغطة الواحدة تعمل فورًا عند عدم وجود ضغطة مزدوجة</string>
+    <string name="whats_new_fix_pairing_133">رمز الاقتران من الإشعار يعمل</string>
+    <string name="whats_new_fix_app_automation_133">أتمتة التطبيقات تعمل في كل مرة تفتح فيها التطبيق</string>
+    <string name="whats_new_fix_large_text_133">النص الكبير لم يعد يقسم الكلمات</string>
+    <string name="whats_new_more_133">أيضًا في هذا التحديث</string>
+    <string name="whats_new_not_supported_133">غير مدعوم على هذا الجهاز</string>
+</resources>

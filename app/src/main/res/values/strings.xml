@@ -906,6 +906,9 @@
     <string name="about_bridge_title">Advanced Mode is your own phone\'s ADB</string>
     <string name="about_bridge_body">It pairs with your phone\'s own Wireless Debugging over your local network — that connection never leaves your home. It runs shell commands only for the shortcuts you wrote. Switch it off and the helper is deleted; a reboot stops it too.</string>
     <string name="about_illo_bridge_caption">off → the helper deletes itself</string>
+    <string name="about_sensitive_title">Sensitive apps flip only what you tick</string>
+    <string name="about_sensitive_body">For an app you list, it turns off only the switches you tick: developer options, KeySnap\'s own Accessibility entry, wireless debugging. The first two come back when you leave the app.</string>
+    <string name="about_sensitive_settings" translatable="false">development_settings_enabled · enabled_accessibility_services · adb_wifi_enabled=0</string>
     <string name="about_traffic_title">Every connection the app makes</string>
     <string name="about_traffic_device">Your own phone</string>
     <string name="about_traffic_device_body">Wireless Debugging pairing. Local network only.</string>
@@ -1157,7 +1160,7 @@
     <string name="settings_autostart_title">Start after restart</string>
     <string name="settings_autostart_description">Start Advanced Mode again after you unlock your restarted phone and connect to Wi-Fi. Some phones also need KeySnap allowed to auto-launch.</string>
     <string name="settings_autostart_permission_description">Advanced Mode grants one extra permission using: %1$s. It is removed when this option or Advanced Mode is turned off. Wireless debugging stays on while Advanced Mode runs. If KeySnap enabled it, turning this option off also stops Advanced Mode and restores Wireless debugging.</string>
-    <string name="settings_autostart_hint_permission">Start Advanced Mode once to finish setup. On OPPO, OnePlus and realme, enable “Disable permission monitoring” in Developer options first; on Xiaomi, enable “USB debugging (Security settings)”. Tap to open Developer options.</string>
+    <string name="settings_autostart_hint_permission">Start Advanced Mode once to finish setup. On OPPO, OnePlus and realme, enable “Disable system optimization” in Developer options first; on Xiaomi, enable “USB debugging (Security settings)”. Tap to open Developer options.</string>
     <string name="settings_autostart_hint_prompt">On Android 11–12, allow Wireless debugging on this network after each restart when Android asks.</string>
     <string name="settings_autostart_hint_pairing">If Android expires or removes your pairing, set up Advanced Mode again. Daily connections may not keep a pairing active on every phone.</string>
     <string name="settings_autostart_cleanup_failed">The restart permission could not be removed. Reconnect Advanced Mode and turn this option off again.</string>
@@ -1208,10 +1211,6 @@
     <string name="accessibility_reconnect_button">Reconnect</string>
     <string name="accessibility_reconnecting">Reconnecting…</string>
     <string name="accessibility_reconnect_failed">Couldn’t reconnect. Turn KeySnap off, then on again here.</string>
-    <string name="wizard_manual_title">Enter the code yourself</string>
-    <string name="wizard_manual_body">In Wireless debugging, tap ‘Pair device with pairing code’ and type the 6-digit code here. If Android closes the code window when you switch apps, use split screen or the notification.</string>
-    <string name="wizard_manual_code_label">6-digit pairing code</string>
-    <string name="wizard_manual_pair">Pair</string>
     <string name="notif_return_title">Advanced Mode is on</string>
     <string name="notif_return_body">Tap to return to KeySnap.</string>
     <string name="pro_sale_ends_in">Sale ends in %1$s</string>

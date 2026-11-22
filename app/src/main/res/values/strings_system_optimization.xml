@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sysopt_title">Bluetooth needs one phone switch</string>
+    <string name="sysopt_why">Your phone blocks Bluetooth shortcuts.</string>
+    <string name="sysopt_step_find">1 · Find “%1$s”</string>
+    <string name="sysopt_step_turn_on">2 · Turn it on</string>
+    <string name="sysopt_step_confirm">3 · Tap “%1$s”</string>
+    <string name="sysopt_switch_column">This switch</string>
+    <string name="sysopt_unblocks">Unblocks Bluetooth shortcuts</string>
+    <string name="sysopt_warns">Phone warns: battery, security risk</string>
+    <string name="sysopt_off_anytime">Turn off again anytime</string>
+    <string name="sysopt_only_reads">Only reads this switch</string>
+    <string name="sysopt_no_permissions">Asks no new permissions</string>
+    <string name="sysopt_open_source">Open source code</string>
+    <string name="sysopt_open">Open Developer options</string>
+    <string name="sysopt_english_hint">Missing? Switch phone to English briefly</string>
+    <string name="chain_bt_blocked">Bluetooth blocked · needs one developer setting</string>
+</resources>

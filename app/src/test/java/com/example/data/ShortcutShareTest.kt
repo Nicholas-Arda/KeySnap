@@ -22,6 +22,15 @@ class ShortcutShareTest {
         assertFalse((ShortcutShare.decode(crafted) as ImportResult.Ok).shortcut.actions.single().params.containsKey("headers"))
     }
 
+    @Test fun anActionThisPhoneDoesNotHaveRefusesTheShare() {
+        val encoded = ShortcutShare.encode("Mind", false, TriggerPressType.SINGLE_PRESS, listOf(ScriptAction(OemActions.OPEN_MIND_SPACE, emptyMap())), emptyList())
+        assertTrue(ShortcutShare.decode(encoded) is ImportResult.Ok)
+        assertEquals(
+            ImportResult.Error(R.string.import_error_not_on_phone),
+            ShortcutShare.decode(encoded) { it !in OemActions.TYPES },
+        )
+    }
+
     @Test fun newNonSecretOptionsSurviveShareRoundTrip() {
         val actions = listOf(
             ScriptAction("shell_command", mapOf("command" to "echo test", "timeout_sec" to "60")),

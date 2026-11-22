@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sysopt_title">Bluetooth heeft één schakelaar nodig</string>
+    <string name="sysopt_why">Je telefoon blokkeert Bluetooth-snelkoppelingen.</string>
+    <string name="sysopt_step_find">1 · Zoek ‘%1$s’</string>
+    <string name="sysopt_step_turn_on">2 · Zet hem aan</string>
+    <string name="sysopt_step_confirm">3 · Tik op ‘%1$s’</string>
+    <string name="sysopt_switch_column">Deze schakelaar</string>
+    <string name="sysopt_unblocks">Geeft Bluetooth-snelkoppelingen vrij</string>
+    <string name="sysopt_warns">Telefoon waarschuwt: batterij, beveiliging</string>
+    <string name="sysopt_off_anytime">Altijd weer uit te zetten</string>
+    <string name="sysopt_only_reads">Leest alleen deze schakelaar</string>
+    <string name="sysopt_no_permissions">Vraagt geen nieuwe rechten</string>
+    <string name="sysopt_open_source">Open broncode</string>
+    <string name="sysopt_open">Ontwikkelaarsopties openen</string>
+    <string name="sysopt_english_hint">Ontbreekt? Zet de telefoon even op Engels</string>
+    <string name="chain_bt_blocked">Bluetooth geblokkeerd · vereist één ontwikkelaarsoptie</string>
+</resources>

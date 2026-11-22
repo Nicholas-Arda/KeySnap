@@ -390,6 +390,9 @@ class AndroidConstraintEvaluator(
 
     private fun foregroundState(): ForegroundState? = if (decisionSnapshot) decisionForeground else readForegroundState()
 
+    /** A fresh foreground read, only to compare with the previous one ([ForegroundAppWatch]); null while unreadable. */
+    internal fun foregroundSnapshot(): Any? = readForegroundState()
+
     private fun foregroundPackage(): String? = foregroundState()?.lastPackage
 
     private fun defaultHomePackage(): String? = try {

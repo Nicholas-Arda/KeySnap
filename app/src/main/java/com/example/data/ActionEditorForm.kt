@@ -521,7 +521,23 @@ object ActionEditorForms {
             requirementRes = ADVANCED_MODE_BADGE,
             summary = { res, params -> res.choice(params.value("timeout"), *SCREEN_TIMEOUT_CHOICES.toTypedArray()) },
         ),
-        *listOf("always_on_display", "grayscale", "bedtime", "dark_mode", "night_light", "extra_dim").map { type ->
+        ActionEditorForm(
+            type = "secure_lock_device",
+            fields = emptyList(),
+            helperRes = R.string.helper_secure_lock_device,
+            requirementRes = ADVANCED_MODE_BADGE,
+            summary = { _, _ -> "" },
+        ),
+        // The bridge presses the side key's own code (OemActions); the app process cannot.
+        *listOf(
+            OemActions.MIND_SPACE_CAPTURE to R.string.helper_mind_space_capture,
+            OemActions.OPEN_MIND_SPACE to R.string.helper_open_mind_space,
+            OemActions.TRANSLATE_SCREEN to R.string.helper_translate_screen,
+            OemActions.RECORD_AUDIO to R.string.helper_record_audio,
+        ).map { (type, helper) ->
+            ActionEditorForm(type = type, fields = emptyList(), helperRes = helper, requirementRes = ADVANCED_MODE_BADGE, summary = { _, _ -> "" })
+        }.toTypedArray(),
+        *listOf("always_on_display", "grayscale", "bedtime", "dark_mode", "night_light", "extra_dim", "toggle_hotspot").map { type ->
             ActionEditorForm(
                 type = type,
                 fields = listOf(EditorField.Choice("state", R.string.param_state, PRESET_STATES)),

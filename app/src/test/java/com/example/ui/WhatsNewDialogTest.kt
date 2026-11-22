@@ -145,4 +145,23 @@ class WhatsNewDialogTest {
         rule.onNodeWithTag("whats_new_got_it").assertIsDisplayed().performClick()
         assertEquals(1, dismissals)
     }
+    @Test fun release133UnsupportedLabelLight() = checkUnsupported133(ThemeMode.LIGHT)
+
+    @Test fun release133UnsupportedLabelDark() = checkUnsupported133(ThemeMode.DARK)
+
+    @Test fun release133UnsupportedLabelSepia() = checkUnsupported133(ThemeMode.SEPIA)
+
+    @Test fun release133UnsupportedLabelOled() = checkUnsupported133(ThemeMode.DARK, oled = true)
+
+    // Robolectric is no OPPO/OnePlus/realme phone, so the side-key card shows its "not supported" line.
+    private fun checkUnsupported133(theme: ThemeMode, oled: Boolean = false) {
+        rule.setContent {
+            MyApplicationTheme(themeMode = theme, oled = oled) {
+                WhatsNewDialog(whatsNewReleases.getValue(26L), theme, {}, {})
+            }
+        }
+        rule.onNodeWithText("Not supported on this device").performScrollTo().assertIsDisplayed()
+        val name = theme.name.lowercase() + if (oled) "-oled" else ""
+        rule.onNodeWithTag("whats_new_dialog").captureRoboImage("build/outputs/whats-new-review/133-unsupported-$name.png")
+    }
 }

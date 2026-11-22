@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sysopt_title">يحتاج البلوتوث إلى مفتاح واحد في الهاتف</string>
+    <string name="sysopt_why">هاتفك يمنع اختصارات البلوتوث.</string>
+    <string name="sysopt_step_find">1 · ابحث عن “%1$s”</string>
+    <string name="sysopt_step_turn_on">2 · شغّله</string>
+    <string name="sysopt_step_confirm">3 · اضغط “%1$s”</string>
+    <string name="sysopt_switch_column">هذا المفتاح</string>
+    <string name="sysopt_unblocks">يسمح باختصارات البلوتوث</string>
+    <string name="sysopt_warns">الهاتف يحذّر: البطارية والأمان</string>
+    <string name="sysopt_off_anytime">أطفئه مجددًا متى شئت</string>
+    <string name="sysopt_only_reads">يقرأ هذا المفتاح فقط</string>
+    <string name="sysopt_no_permissions">لا يطلب أذونات جديدة</string>
+    <string name="sysopt_open_source">شيفرة مفتوحة المصدر</string>
+    <string name="sysopt_open">افتح خيارات المطور</string>
+    <string name="sysopt_english_hint">غير موجود؟ اجعل لغة الهاتف الإنجليزية لدقيقة</string>
+    <string name="chain_bt_blocked">البلوتوث محظور · يحتاج إلى إعداد واحد للمطور</string>
+</resources>

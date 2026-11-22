@@ -30,8 +30,7 @@ class BridgeStreamCancelTest {
         thread(isDaemon = true) {
             val socket = server.accept().also { accepted = it }
             val reader = socket.getInputStream().bufferedReader()
-            reader.readLine() // HELLO
-            socket.getOutputStream().write("${BridgeProtocol.MSG_OK}\t${BridgeProtocol.VERSION}\t1\t0\t\n".toByteArray())
+            acceptLoginForTest(socket, reader, socket.getOutputStream().bufferedWriter(), "t")
             reader.readLine() // WATCH explicitly subscribes this stream.
             connected.countDown()
             // A healthy bridge with no key presses: never writes again.

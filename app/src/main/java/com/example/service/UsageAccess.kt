@@ -17,7 +17,7 @@ fun hasUsageAccess(context: Context): Boolean = try {
 }
 
 internal fun needsUsageAccess(scripts: List<ShortcutScript>): Boolean = scripts.any { script ->
-    script.enabled && script.triggers.isNotEmpty() && script.constraints.any {
+    script.enabled && script.constraints.any {
         it.type == "no_app_open" || it.type == "app_in_foreground" || it.type == "app_not_in_foreground"
     }
 }

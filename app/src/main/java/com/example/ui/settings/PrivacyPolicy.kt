@@ -29,7 +29,7 @@ import com.example.ui.theme.MonoLabel
  */
 object PrivacyPolicy {
 
-    const val LAST_UPDATED = "17 November 2026"
+    const val LAST_UPDATED = "22 November 2026"
 
     /**
      * Left blank deliberately. A published policy needs a contact address, but which address to
@@ -96,7 +96,10 @@ object PrivacyPolicy {
             "The accessibility service detects physical hardware key presses to run the shortcuts " +
             "you configure. It also performs the tap, swipe and pinch gestures you configure in " +
             "your shortcuts, including when Advanced Mode is off. These gestures do not require " +
-            "reading the screen content of the app where they run. It is restricted to reading screen " +
+            "reading the screen content of the app where they run. For the \"Keyboard is showing\" " +
+            "condition it checks whether an on-screen keyboard window is open, and for the \"Hide " +
+            "keyboard\" action it asks Android to hide it; both use only which kinds of windows are " +
+            "on screen, never what they show or what you type. It is restricted to reading screen " +
             "content from the system Settings app only, and it uses that solely while you are " +
             "setting up Advanced Mode: after you tap Open settings, it opens Wireless Debugging " +
             "from Developer options if your phone cannot open it directly, taps \"Pair device " +
@@ -120,6 +123,17 @@ object PrivacyPolicy {
             "again; other services stay as they are, and an entry that is off when you tap is " +
             "never turned on. Turning Advanced Mode off, or rebooting, stops " +
             "it; turning it off also deletes it from the device.",
+
+        "Sensitive apps (optional)" to
+            "Off until you add an app. While Advanced Mode runs, the program learns which app comes " +
+            "to the front from Android's own launch and task reports and compares it with your list " +
+            "in memory; it does not log, store or send which apps you open. For an app on your list " +
+            "it turns off only the switches you ticked for that app: developer options, KeySnap's own " +
+            "entry in the list of enabled accessibility services, and Wireless Debugging. It notes " +
+            "the first two in a file in its own folder and puts them back when you leave that app, or " +
+            "at its next start if it was stopped in between. Turning Wireless Debugging off also " +
+            "stops Advanced Mode; nothing turns it back on until you set Advanced Mode up again. " +
+            "Other accessibility services and settings are never changed.",
 
         "Automatic restart (optional)" to
             "Start after restart is off by default. When you enable it, KeySnap listens for the " +
@@ -208,7 +222,10 @@ object PrivacyPolicy {
             "boundaries you configure for automations. When you enable exact timing, the app may " +
             "schedule an Android alarm clock so the automation can run while the screen is off; " +
             "Android may show an alarm icon. Without this permission, time-based automations use " +
-            "inexact alarms and may run late. Nothing is read or sent through this permission. Do Not " +
+            "inexact alarms and may run late. Nothing is read or sent through this permission. Set " +
+            "alarms: for the \"Set timer\" and \"Set alarm\" actions; the app asks your clock app to " +
+            "create the timer or alarm you set up in that shortcut, and reads nothing from the clock " +
+            "app. Do Not " +
             "Disturb access: to switch the ringer to Silent. Modify system settings: to change " +
             "brightness and screen rotation without Advanced Mode. " +
             "Notification access: used by a \"Notification received\" condition or a " +

@@ -758,6 +758,8 @@
     <string name="about_bridge_title">Sariling ADB ng iyong telepono ang Advanced Mode</string>
     <string name="about_bridge_body">Nagpe-pair ito sa sariling Wireless Debugging ng iyong telepono sa lokal mong network — hindi kailanman lumalabas sa iyong bahay ang koneksyong iyon. Nagpapatakbo lang ito ng shell command para sa mga shortcut na isinulat mo. I-off ito at ide-delete ang helper; nahihinto rin ito sa pag-reboot.</string>
     <string name="about_illo_bridge_caption">naka-off → dine-delete ng helper ang sarili nito</string>
+    <string name="about_sensitive_title">Binabago lang ng Mga sensitibong app ang tsine-check mo</string>
+    <string name="about_sensitive_body">Para sa app sa listahan mo, pinapatay lang nito ang mga switch na tsine-check mo: mga opsyon ng developer, sariling Accessibility entry ng KeySnap, wireless debugging. Bumabalik ang unang dalawa kapag umalis ka sa app.</string>
     <string name="about_traffic_title">Bawat koneksyong ginagawa ng app</string>
     <string name="about_traffic_device">Sarili mong telepono</string>
     <string name="about_traffic_device_body">Pag-pair sa Wireless Debugging. Lokal na network lang.</string>
@@ -973,7 +975,7 @@
     <string name="settings_autostart_title">Magsimula pagkatapos mag-restart</string>
     <string name="settings_autostart_description">Simulan muli ang Advanced Mode pagkatapos mong i-unlock ang na-restart mong telepono at kumonekta sa Wi-Fi. Sa ilang telepono, kailangan ding payagang awtomatikong magbukas ang KeySnap.</string>
     <string name="settings_autostart_permission_description">Nagbibigay ang Advanced Mode ng isang dagdag na pahintulot gamit ang: %1$s. Inaalis ito kapag naka-off ang opsyong ito o ang Advanced Mode. Nananatiling naka-on ang Wireless debugging habang tumatakbo ang Advanced Mode. Kung KeySnap ang nag-on nito, hihinto rin ang Advanced Mode at ibabalik ang dating estado ng Wireless debugging kapag in-off ang opsyong ito.</string>
-    <string name="settings_autostart_hint_permission">Simulan ang Advanced Mode nang isang beses para tapusin ang setup. Sa OPPO, OnePlus at realme, i-on muna ang “Disable permission monitoring” sa Developer options; sa Xiaomi, i-on ang “USB debugging (Security settings)”. I-tap para buksan ang Developer options.</string>
+    <string name="settings_autostart_hint_permission">Simulan ang Advanced Mode nang isang beses para tapusin ang setup. Sa OPPO, OnePlus at realme, i-on muna ang “I-disable ang pag-optimize ng system” sa Developer options; sa Xiaomi, i-on ang “USB debugging (Security settings)”. I-tap para buksan ang Developer options.</string>
     <string name="settings_autostart_hint_prompt">Sa Android 11–12, payagan ang Wireless debugging sa network na ito pagkatapos ng bawat restart kapag nagtanong ang Android.</string>
     <string name="settings_autostart_hint_pairing">Kung mag-expire o alisin ng Android ang iyong pairing, i-set up muli ang Advanced Mode. Maaaring hindi mapanatiling aktibo ng araw-araw na koneksyon ang pairing sa bawat telepono.</string>
     <string name="settings_autostart_cleanup_failed">Hindi maalis ang pahintulot para sa restart. Ikonekta muli ang Advanced Mode at i-off muli ang opsyong ito.</string>
@@ -1024,10 +1026,6 @@
     <string name="accessibility_reconnect_button">Kumonekta muli</string>
     <string name="accessibility_reconnecting">Kumokonekta muli…</string>
     <string name="accessibility_reconnect_failed">Hindi makakonekta muli. I-off ang KeySnap, saka i-on muli rito.</string>
-    <string name="wizard_manual_title">Ilagay mismo ang code</string>
-    <string name="wizard_manual_body">Sa Wireless debugging, i-tap ang ‘Pair device with pairing code’ at i-type rito ang 6-digit na code. Kung isasara ng Android ang code window kapag lumipat ka ng app, gumamit ng split screen o ng notification.</string>
-    <string name="wizard_manual_code_label">6-digit na pairing code</string>
-    <string name="wizard_manual_pair">I-pair</string>
     <string name="notif_return_title">Naka-on ang Advanced Mode</string>
     <string name="notif_return_body">I-tap para bumalik sa KeySnap.</string>
     <string name="pro_sale_ends_in">Matatapos ang sale sa loob ng %1$s</string>

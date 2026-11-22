@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_mind_space_capture">Mind Space: salvar tela</string>
+    <string name="action_open_mind_space">Abrir Mind Space</string>
+    <string name="action_built_in_assistant">Assistente de voz integrado</string>
+    <string name="helper_mind_space_capture">Salva a tela no Mind Space, como a tecla lateral.</string>
+    <string name="helper_open_mind_space">Abre o Mind Space, como dois toques na tecla lateral.</string>
+    <string name="import_error_not_on_phone">Este atalho usa uma ação que este celular não tem.</string>
+    <string name="action_translate_screen">Traduzir tela</string>
+    <string name="action_record_audio">Gravar áudio</string>
+    <string name="action_open_osee">Abrir OSee</string>
+    <string name="helper_translate_screen">Traduz a tela ao vivo, como segurar a tecla lateral.</string>
+    <string name="helper_record_audio">Começa a gravar no Gravador, como segurar a tecla lateral.</string>
+</resources>

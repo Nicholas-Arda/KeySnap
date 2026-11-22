@@ -91,6 +91,8 @@ internal val ADVANCED_MODE_TYPES = setOf(
     "toggle_notification_drawer", "toggle_quick_settings",
     "switch_keyboard", "force_stop_app", "close_and_clear_app", "launch_app_shortcut", "modify_setting", "shell_command",
     "screen_on", "screen_off", "toggle_screen", "answer_call", "end_call",
+    "toggle_hotspot", "secure_lock_device", OemActions.MIND_SPACE_CAPTURE, OemActions.OPEN_MIND_SPACE,
+    OemActions.TRANSLATE_SCREEN, OemActions.RECORD_AUDIO,
 )
 
 /** Run without Advanced Mode, but only partly: shell has app privileges, assistants miss the overlay. */

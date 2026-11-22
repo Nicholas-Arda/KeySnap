@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sensitive_title">Gevoelige apps</string>
+    <string name="sensitive_summary_empty">Voor apps die niet openen</string>
+    <plurals name="sensitive_summary_count">
+        <item quantity="one">%d app · gaat opzij</item>
+        <item quantity="other">%d apps · gaat opzij</item>
+    </plurals>
+    <string name="sensitive_intro_title">Sommige apps openen niet als KeySnap aan staat.</string>
+    <string name="sensitive_intro_body">Banken, games, alles wat streng is. KeySnap gaat opzij.</string>
+    <string name="sensitive_master">Opzij gaan voor deze apps</string>
+    <string name="sensitive_your_apps">Je apps</string>
+    <string name="sensitive_developer_options">Ontwikkelaarsopties</string>
+    <string name="sensitive_accessibility">Toegankelijkheid</string>
+    <string name="sensitive_add_app">App toevoegen</string>
+    <string name="sensitive_feedback_label">Als KeySnap opzij gaat</string>
+    <string name="sensitive_show_notification">Melding tonen</string>
+    <string name="sensitive_vibrate">Trillen</string>
+    <string name="sensitive_footer_keys">Je knoppen blijven werken.</string>
+    <string name="sensitive_footer_restore">KeySnap zet alles terug als je de app verlaat.</string>
+    <string name="sensitive_sheet_question">Dit verbergen als deze app opent</string>
+    <string name="sensitive_developer_options_desc">Voor apps die ontwikkelaarsmodus blokkeren</string>
+    <string name="sensitive_accessibility_desc">Voor apps die toegankelijkheid blokkeren</string>
+    <string name="sensitive_sheet_note">KeySnap zet dit weer aan als je weggaat. Je hardwareknoppen stoppen nooit.</string>
+    <string name="sensitive_remove">App verwijderen</string>
+    <string name="sensitive_card_title">Opent een app niet?</string>
+    <string name="sensitive_card_body">KeySnap kan ervoor opzij gaan.</string>
+    <string name="sensitive_card_set_up">Instellen</string>
+    <string name="sensitive_needs_advanced">Werkt alleen met Geavanceerde modus</string>
+    <string name="sensitive_notif_title">Opzij gegaan voor %1$s</string>
+    <string name="sensitive_notif_text">Knoppen werken · automatiseringen gepauzeerd</string>
+    <string name="sensitive_notif_text_dev">Alles blijft werken</string>
+    <string name="sensitive_notif_restore">Nu terugzetten</string>
+    <string name="sensitive_wireless_debugging">Draadloze foutopsporing</string>
+    <string name="sensitive_wireless_debugging_desc">Voor apps die draadloze foutopsporing blokkeren</string>
+    <string name="sensitive_wireless_warning_off">Zet Geavanceerde modus uit</string>
+    <string name="sensitive_wireless_warning_setup">Daarna opnieuw instellen · wifi nodig</string>
+    <string name="sensitive_sheet_note_wireless">Knoppen in Geavanceerde modus stoppen · geen automatisch herstel</string>
+    <string name="sensitive_footer_wireless">Draadloze foutopsporing: knoppen in Geavanceerde modus stoppen.</string>
+    <string name="sensitive_notif_text_off">Geavanceerde modus is uit · tik om in te stellen</string>
+    <string name="sensitive_fix_dev_off">Ontwikkelaarsopties staan uit</string>
+    <string name="sensitive_fix_dev_hint">Tik 7 keer op ‘Buildnummer’</string>
+    <string name="sensitive_fix_wireless_off">Draadloze foutopsporing staat uit</string>
+    <string name="sensitive_fix_accessibility_off">Toegankelijkheid staat uit</string>
+    <string name="sensitive_fix_advanced_off">Geavanceerde modus is uit</string>
+</resources>

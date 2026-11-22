@@ -64,7 +64,6 @@ import androidx.compose.material.icons.filled.DeveloperMode
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.OpenInNew
-import androidx.compose.material.icons.filled.Terminal
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -242,11 +241,8 @@ fun SetupWizardModal(
                         }
                         Folding(step == 1) {
                             PairingContent(
-                                pairingStatus = pairingStatus,
-                                settingsOpened = settingsOpened,
                                 onOpenSettings = { viewModel.openDeveloperSettings(context) },
                                 onSettingsOpened = { settingsOpened = true },
-                                onSubmitCode = viewModel::submitPairingCode,
                                 capsuleClearance = bottomBar + 32.dp + capsuleHeight,
                             )
                         }
@@ -492,11 +488,8 @@ private fun WizardKernelIllustration(reduced: Boolean) {
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun PairingContent(
-    pairingStatus: PairingStatus,
-    settingsOpened: Boolean,
     onOpenSettings: () -> Unit,
     onSettingsOpened: () -> Unit,
-    onSubmitCode: (String) -> Unit,
     capsuleClearance: Dp,
 ) {
     val colors = MaterialTheme.colorScheme
@@ -545,20 +538,6 @@ private fun PairingContent(
         Text(stringResource(R.string.wizard_open_settings), style = MaterialTheme.typography.labelLarge)
     }
 
-    // No code within a few seconds of opening Settings: the assisted tap found nothing to tap, or
-    // Android needs the user first. The manual path works without the notification too.
-    var showManual by remember { mutableStateOf(false) }
-    LaunchedEffect(settingsOpened, pairingStatus) {
-        if (settingsOpened && pairingStatus == PairingStatus.SEARCHING_MDNS_AND_SCREEN) {
-            kotlinx.coroutines.delay(MANUAL_FALLBACK_MS)
-            showManual = true
-        } else if (pairingStatus == PairingStatus.ERROR) {
-            showManual = true
-        }
-    }
-    Folding(showManual && pairingStatus != PairingStatus.PAIRED_SUCCESS && pairingStatus != PairingStatus.ADVANCED_MODE_RUNNING) {
-        ManualPairingCard(onSubmitCode)
-    }
     DeveloperOptionsGuideCard()
 }
 
@@ -656,44 +635,6 @@ private fun pairingStatusLabel(status: PairingStatus): String = when (status) {
     PairingStatus.CONNECTING_STREAM -> stringResource(R.string.pairing_connecting)
     PairingStatus.ADVANCED_MODE_RUNNING -> stringResource(R.string.pairing_connected)
     PairingStatus.ERROR -> stringResource(R.string.pairing_error)
-}
-
-/** How long after opening Settings the pairing step offers the manual path. */
-internal const val MANUAL_FALLBACK_MS = 10_000L
-
-@Composable
-private fun ManualPairingCard(onSubmitCode: (String) -> Unit) {
-    val colors = MaterialTheme.colorScheme
-    // Not saveable: a one-time pairing code has no business in the saved-instance bundle.
-    var code by remember { mutableStateOf("") }
-    Column(
-        Modifier.fillMaxWidth().glassCard(LocalGlass.current).padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            Icon(Icons.Filled.Terminal, null, tint = colors.primary, modifier = Modifier.size(20.dp))
-            Text(stringResource(R.string.wizard_manual_title), style = MaterialTheme.typography.titleSmall, color = colors.onSurface)
-        }
-        Text(stringResource(R.string.wizard_manual_body), style = MaterialTheme.typography.bodyMedium, color = colors.onSurface)
-        androidx.compose.material3.OutlinedTextField(
-            value = code,
-            onValueChange = { code = it.filter(Char::isDigit).take(6) },
-            label = { Text(stringResource(R.string.wizard_manual_code_label)) },
-            singleLine = true,
-            keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
-                keyboardType = androidx.compose.ui.text.input.KeyboardType.NumberPassword,
-            ),
-            modifier = Modifier.fillMaxWidth().testTag("manual_pairing_code"),
-        )
-        Button(
-            onClick = { onSubmitCode(code) },
-            enabled = code.length == 6,
-            modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp).testTag("manual_pairing_submit"),
-            shape = RoundedCornerShape(50),
-        ) {
-            Text(stringResource(R.string.wizard_manual_pair), style = MaterialTheme.typography.labelLarge)
-        }
-    }
 }
 
 /** How long the last step waits for the bridge before it calls the attempt failed. */

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sensitive_title">Sensitive apps</string>
+    <string name="sensitive_summary_empty">For apps that won\'t open</string>
+    <plurals name="sensitive_summary_count">
+        <item quantity="one">%d app · steps aside</item>
+        <item quantity="other">%d apps · steps aside</item>
+    </plurals>
+    <string name="sensitive_intro_title">Some apps won\'t open while KeySnap is on.</string>
+    <string name="sensitive_intro_body">Banks, games, anything strict. KeySnap steps aside.</string>
+    <string name="sensitive_master">Step aside for these apps</string>
+    <string name="sensitive_your_apps">Your apps</string>
+    <string name="sensitive_developer_options">Developer options</string>
+    <string name="sensitive_accessibility">Accessibility</string>
+    <string name="sensitive_add_app">Add app</string>
+    <string name="sensitive_feedback_label">When KeySnap steps aside</string>
+    <string name="sensitive_show_notification">Show notification</string>
+    <string name="sensitive_vibrate">Vibrate</string>
+    <string name="sensitive_footer_keys">Your keys keep working.</string>
+    <string name="sensitive_footer_restore">KeySnap restores everything when you leave the app.</string>
+    <string name="sensitive_sheet_question">Hide these when this app opens</string>
+    <string name="sensitive_developer_options_desc">For apps that block developer mode</string>
+    <string name="sensitive_accessibility_desc">For apps that block accessibility</string>
+    <string name="sensitive_sheet_note">KeySnap turns these back on when you leave. Your hardware keys never stop.</string>
+    <string name="sensitive_remove">Remove app</string>
+    <string name="sensitive_card_title">An app won\'t open?</string>
+    <string name="sensitive_card_body">KeySnap can step aside for it.</string>
+    <string name="sensitive_card_set_up">Set up</string>
+    <string name="sensitive_needs_advanced">Works only with Advanced Mode</string>
+    <string name="sensitive_notif_title">Stepped aside for %1$s</string>
+    <string name="sensitive_notif_text">Keys still work · automations paused</string>
+    <string name="sensitive_notif_text_dev">Everything still works</string>
+    <string name="sensitive_notif_restore">Restore now</string>
+    <string name="sensitive_wireless_debugging">Wireless debugging</string>
+    <string name="sensitive_wireless_debugging_desc">For apps that block wireless debugging</string>
+    <string name="sensitive_wireless_warning_off">Turns Advanced Mode off</string>
+    <string name="sensitive_wireless_warning_setup">Set it up again after · needs Wi-Fi</string>
+    <string name="sensitive_sheet_note_wireless">Advanced Mode keys stop · no auto restore</string>
+    <string name="sensitive_footer_wireless">Wireless debugging: Advanced Mode keys stop.</string>
+    <string name="sensitive_notif_text_off">Advanced Mode is off · tap to set up</string>
+    <string name="sensitive_fix_dev_off">Developer options are off</string>
+    <string name="sensitive_fix_dev_hint">Tap Build number 7 times</string>
+    <string name="sensitive_fix_wireless_off">Wireless debugging is off</string>
+    <string name="sensitive_fix_accessibility_off">Accessibility is off</string>
+    <string name="sensitive_fix_advanced_off">Advanced Mode is off</string>
+</resources>

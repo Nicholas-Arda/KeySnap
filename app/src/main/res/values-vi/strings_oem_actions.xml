@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_mind_space_capture">Mind Space: lưu màn hình</string>
+    <string name="action_open_mind_space">Mở Mind Space</string>
+    <string name="action_built_in_assistant">Trợ lý giọng nói tích hợp</string>
+    <string name="helper_mind_space_capture">Lưu màn hình vào Mind Space, như phím bên.</string>
+    <string name="helper_open_mind_space">Mở Mind Space, như nhấn đúp phím bên.</string>
+    <string name="import_error_not_on_phone">Phím tắt này dùng một thao tác mà máy này không có.</string>
+    <string name="action_translate_screen">Dịch màn hình</string>
+    <string name="action_record_audio">Ghi âm</string>
+    <string name="action_open_osee">Mở OSee</string>
+    <string name="helper_translate_screen">Dịch màn hình trực tiếp, như nhấn giữ phím bên.</string>
+    <string name="helper_record_audio">Bắt đầu ghi âm trong Máy ghi âm, như nhấn giữ phím bên.</string>
+</resources>

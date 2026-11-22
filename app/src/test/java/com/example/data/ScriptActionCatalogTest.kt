@@ -60,6 +60,8 @@ class ScriptActionCatalogTest {
                 "toggle_airplane_mode",
                 "toggle_location",
                 "lock_device",
+                "secure_lock_device",
+                "toggle_hotspot",
                 "power_dialog",
                 "toggle_dnd",
                 "enable_dnd",
@@ -92,6 +94,12 @@ class ScriptActionCatalogTest {
                 "open_url",
                 "launch_voice_assistant",
                 "launch_device_assistant",
+                "mind_space_capture",
+                "open_mind_space",
+                "built_in_assistant",
+                "translate_screen",
+                "record_audio",
+                "open_osee",
                 "open_camera",
                 "open_settings",
                 "open_hotspot_settings",
@@ -293,5 +301,12 @@ class ScriptActionCatalogTest {
             ScriptActionCatalog.PRIVILEGED,
         )
         ScriptActionCatalog.PRIVILEGED.forEach { assertTrue(it, ScriptActionCatalog.isAvailable(it)) }
+    }
+
+    @Test
+    fun pickerTabsNameOnlyRealAvailableActions() {
+        val popular = ScriptActionCatalog.POPULAR
+        assertEquals(popular.size, popular.toSet().size)
+        (popular + ScriptActionCatalog.NEW).forEach { assertTrue(it, ScriptActionCatalog.isAvailable(it)) }
     }
 }

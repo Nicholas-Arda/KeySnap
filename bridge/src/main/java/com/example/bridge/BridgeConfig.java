@@ -52,6 +52,7 @@ public final class BridgeConfig {
     public static final String ACTION_ENABLE_BLUETOOTH = "enable_bluetooth";
     public static final String ACTION_DISABLE_BLUETOOTH = "disable_bluetooth";
     public static final String ACTION_LOCK_DEVICE = "lock_device";
+    public static final String ACTION_SECURE_LOCK_DEVICE = "secure_lock_device";
     public static final String ACTION_POWER_DIALOG = "power_dialog";
     public static final String ACTION_TOGGLE_DND = "toggle_dnd";
     public static final String ACTION_ENABLE_DND = "enable_dnd";
@@ -82,9 +83,16 @@ public final class BridgeConfig {
     public static final String ACTION_OPEN_URL = "open_url";
     public static final String ACTION_LAUNCH_VOICE_ASSISTANT = "launch_voice_assistant";
     public static final String ACTION_LAUNCH_DEVICE_ASSISTANT = "launch_device_assistant";
+    public static final String ACTION_MIND_SPACE_CAPTURE = "mind_space_capture";
+    public static final String ACTION_OPEN_MIND_SPACE = "open_mind_space";
+    public static final String ACTION_BUILT_IN_ASSISTANT = "built_in_assistant";
+    public static final String ACTION_TRANSLATE_SCREEN = "translate_screen";
+    public static final String ACTION_RECORD_AUDIO = "record_audio";
+    public static final String ACTION_OPEN_OSEE = "open_osee";
     public static final String ACTION_OPEN_CAMERA = "open_camera";
     public static final String ACTION_OPEN_SETTINGS = "open_settings";
     public static final String ACTION_OPEN_HOTSPOT_SETTINGS = "open_hotspot_settings";
+    public static final String ACTION_TOGGLE_HOTSPOT = "toggle_hotspot";
     public static final String ACTION_GO_LAST_APP = "go_last_app";
     public static final String ACTION_HIDE_KEYBOARD = "hide_keyboard";
     public static final String ACTION_CHANGE_FLASHLIGHT_BRIGHTNESS = "change_flashlight_brightness";
@@ -273,6 +281,13 @@ public final class BridgeConfig {
     /** Global haptic defaults; an old config without them gets the app's own (on, 60 ms). */
     public final boolean vibrateOnTrigger;
     public final long hapticDurationMs;
+    /**
+     * Settings → Sensitive apps, active ones only: package → {@link SensitiveApps#DEV} |
+     * {@link SensitiveApps#A11Y} | {@link SensitiveApps#WIFI}.
+     */
+    public final Map<String, Integer> sensitiveApps;
+    /** The app changes it on "Restore now"; a change, never the value, asks for the switches back. */
+    public final long sensitiveRestoreNonce;
 
     public static final class Trigger {
         public final List<Integer> keyCodes;
@@ -348,7 +363,9 @@ public final class BridgeConfig {
     private BridgeConfig(int port, String token, String packageName, boolean globallyEnabled,
                          long doublePressWindowMs, long longPressThresholdMs, List<Script> scripts,
                          boolean vibrateOnTrigger, long hapticDurationMs, boolean capsuleFeedbackEnabled,
-                         boolean foregroundReadable) {
+                         boolean foregroundReadable, Map<String, Integer> sensitiveApps, long sensitiveRestoreNonce) {
+        this.sensitiveApps = sensitiveApps;
+        this.sensitiveRestoreNonce = sensitiveRestoreNonce;
         this.foregroundReadable = foregroundReadable;
         this.capsuleFeedbackEnabled = capsuleFeedbackEnabled;
         this.vibrateOnTrigger = vibrateOnTrigger;
@@ -362,14 +379,30 @@ public final class BridgeConfig {
         this.scripts = scripts;
     }
 
-    /** Enabled scripts with a trigger for this key id (a key code, or a chord id) and press type. */
+    /**
+     * "Resume mapping" and "Toggle mapping" are the only way back from a global pause, so a shortcut
+     * carrying one still runs while paused; every other shortcut stays off. The app's
+     * {@code ShortcutScript.isLive} calls this too, so both sides pick the same shortcuts.
+     */
+    public static boolean resumesMapping(String actionType) {
+        return ACTION_RESUME_MAPPING.equals(actionType) || ACTION_TOGGLE_MAPPING.equals(actionType);
+    }
+
+    /** Enabled, and mapping is on or the script can turn it back on ({@link #resumesMapping}). */
+    private boolean isLive(Script script) {
+        if (!script.enabled) return false;
+        if (globallyEnabled) return true;
+        for (Action action : script.actions) {
+            if (resumesMapping(action.type)) return true;
+        }
+        return false;
+    }
+
+    /** Live scripts ({@link #isLive}) with a trigger for this key id (a key code, or a chord id) and press type. */
     public List<Script> scriptsFor(int keyId, String pressType) {
         List<Script> matched = new ArrayList<>();
-        if (!globallyEnabled) {
-            return matched;
-        }
         for (Script script : scripts) {
-            if (!script.enabled) {
+            if (!isLive(script)) {
                 continue;
             }
             for (Trigger trigger : script.triggers) {
@@ -383,15 +416,12 @@ public final class BridgeConfig {
     }
 
     /**
-     * True when at least one enabled script listens to this key, alone or as a chord member,
-     * regardless of press type.
+     * True when at least one live script ({@link #isLive}) listens to this key, alone or as a chord
+     * member, regardless of press type.
      */
     public boolean isMappedKey(int keyCode) {
-        if (!globallyEnabled) {
-            return false;
-        }
         for (Script script : scripts) {
-            if (!script.enabled) {
+            if (!isLive(script)) {
                 continue;
             }
             for (Trigger trigger : script.triggers) {
@@ -415,11 +445,8 @@ public final class BridgeConfig {
 
     private List<List<Integer>> triggerKeyLists() {
         List<List<Integer>> lists = new ArrayList<>();
-        if (!globallyEnabled) {
-            return lists;
-        }
         for (Script script : scripts) {
-            if (!script.enabled) {
+            if (!isLive(script)) {
                 continue;
             }
             for (Trigger trigger : script.triggers) {
@@ -480,6 +507,15 @@ public final class BridgeConfig {
         return pattern.isEmpty() ? Collections.singletonList(hapticDurationFor(script)) : pattern;
     }
 
+    /** Press types of the enabled triggers on {@code keyId}, for {@link PressTimingMachine#singlePressAt}. Mirrors KeyGestureFeed. */
+    public java.util.Set<String> pressTypesFor(int keyId) {
+        java.util.Set<String> types = new java.util.HashSet<>();
+        for (Trigger trigger : triggersForKeyLocked(keyId)) {
+            types.add(trigger.pressType);
+        }
+        return types;
+    }
+
     /** Enabled triggers whose key id (a key code, or a chord id) equals {@code keyId}. */
     private List<Trigger> triggersForKeyLocked(int keyId) {
         List<Trigger> result = new ArrayList<>();
@@ -511,7 +547,13 @@ public final class BridgeConfig {
 
     public static BridgeConfig read(File file) throws Exception {
         String json = readFully(file);
-        JSONObject root = new JSONObject(json);
+        JSONObject root;
+        try {
+            root = new JSONObject(json);
+        } catch (org.json.JSONException e) {
+            // Its message quotes the whole document: the control token and the user's commands.
+            throw new java.io.IOException("Config is not valid JSON");
+        }
 
         int port = root.optInt("port", 0);
         String token = root.optString("token", "");
@@ -534,7 +576,27 @@ public final class BridgeConfig {
                 Collections.unmodifiableList(scripts),
                 root.optBoolean("vibrateOnTrigger", true), root.optLong("hapticDurationMs", 60L),
                 root.optBoolean("capsuleFeedbackEnabled", false),
-                root.optBoolean("foregroundReadable", false));
+                root.optBoolean("foregroundReadable", false),
+                parseSensitiveApps(root.optJSONArray("sensitiveApps"), packageName),
+                root.optLong("sensitiveRestoreNonce", 0L));
+    }
+
+    /**
+     * Mirrors BridgePayload's "sensitiveApps": an entry with nothing to hide is dropped. KeySnap's own
+     * package [own] never carries {@link SensitiveApps#WIFI}: opening KeySnap must never end the bridge.
+     */
+    private static Map<String, Integer> parseSensitiveApps(JSONArray array, String own) {
+        Map<String, Integer> apps = new LinkedHashMap<>();
+        for (int i = 0; array != null && i < array.length(); i++) {
+            JSONObject app = array.optJSONObject(i);
+            if (app == null) continue;
+            String pkg = app.optString("packageName", "");
+            int bits = (app.optBoolean("hideDeveloperOptions", false) ? SensitiveApps.DEV : 0)
+                    | (app.optBoolean("hideAccessibility", false) ? SensitiveApps.A11Y : 0)
+                    | (app.optBoolean("hideWirelessDebugging", false) && !pkg.equals(own) ? SensitiveApps.WIFI : 0);
+            if (!pkg.isEmpty() && bits != 0) apps.put(pkg, bits);
+        }
+        return Collections.unmodifiableMap(apps);
     }
 
     /** Actions out of a bare {"actions":[...]} object, as the control port's RUN command sends. */

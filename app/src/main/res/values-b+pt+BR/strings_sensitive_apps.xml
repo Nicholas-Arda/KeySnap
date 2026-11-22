@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sensitive_title">Apps sensíveis</string>
+    <string name="sensitive_summary_empty">Para apps que não abrem</string>
+    <plurals name="sensitive_summary_count">
+        <item quantity="one">%d app · sai da frente</item>
+        <item quantity="many">%d de apps · sai da frente</item>
+        <item quantity="other">%d apps · sai da frente</item>
+    </plurals>
+    <string name="sensitive_intro_title">Alguns apps não abrem com o KeySnap ligado.</string>
+    <string name="sensitive_intro_body">Bancos, jogos, tudo que é rígido. O KeySnap sai da frente.</string>
+    <string name="sensitive_master">Sair da frente para estes apps</string>
+    <string name="sensitive_your_apps">Seus apps</string>
+    <string name="sensitive_developer_options">Opções do desenvolvedor</string>
+    <string name="sensitive_accessibility">Acessibilidade</string>
+    <string name="sensitive_add_app">Adicionar app</string>
+    <string name="sensitive_feedback_label">Quando o KeySnap sai da frente</string>
+    <string name="sensitive_show_notification">Mostrar notificação</string>
+    <string name="sensitive_vibrate">Vibrar</string>
+    <string name="sensitive_footer_keys">Seus botões continuam funcionando.</string>
+    <string name="sensitive_footer_restore">O KeySnap restaura tudo quando você sai do app.</string>
+    <string name="sensitive_sheet_question">Ocultar isto quando este app abrir</string>
+    <string name="sensitive_developer_options_desc">Para apps que bloqueiam o modo desenvolvedor</string>
+    <string name="sensitive_accessibility_desc">Para apps que bloqueiam a acessibilidade</string>
+    <string name="sensitive_sheet_note">O KeySnap religa isso quando você sai. Seus botões físicos nunca param.</string>
+    <string name="sensitive_remove">Remover app</string>
+    <string name="sensitive_card_title">Um app não abre?</string>
+    <string name="sensitive_card_body">O KeySnap pode sair da frente por ele.</string>
+    <string name="sensitive_card_set_up">Configurar</string>
+    <string name="sensitive_needs_advanced">Só funciona com o Modo Avançado</string>
+    <string name="sensitive_notif_title">Saiu da frente para %1$s</string>
+    <string name="sensitive_notif_text">Botões funcionando · automações pausadas</string>
+    <string name="sensitive_notif_text_dev">Tudo continua funcionando</string>
+    <string name="sensitive_notif_restore">Restaurar agora</string>
+    <string name="sensitive_wireless_debugging">Depuração sem fio</string>
+    <string name="sensitive_wireless_debugging_desc">Para apps que bloqueiam a depuração sem fio</string>
+    <string name="sensitive_wireless_warning_off">Desliga o Modo Avançado</string>
+    <string name="sensitive_wireless_warning_setup">Configure de novo depois · precisa de Wi-Fi</string>
+    <string name="sensitive_sheet_note_wireless">Botões do Modo Avançado param · sem restauração automática</string>
+    <string name="sensitive_footer_wireless">Depuração sem fio: botões do Modo Avançado param.</string>
+    <string name="sensitive_notif_text_off">Modo Avançado desligado · toque para configurar</string>
+    <string name="sensitive_fix_dev_off">Opções do desenvolvedor desligadas</string>
+    <string name="sensitive_fix_dev_hint">Toque em \"Número da versão\" 7 vezes</string>
+    <string name="sensitive_fix_wireless_off">Depuração sem fio desligada</string>
+    <string name="sensitive_fix_accessibility_off">Acessibilidade desligada</string>
+    <string name="sensitive_fix_advanced_off">Modo Avançado desligado</string>
+</resources>

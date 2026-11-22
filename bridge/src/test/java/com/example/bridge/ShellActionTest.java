@@ -11,6 +11,8 @@ public class ShellActionTest {
     public static void main(String[] args) throws Exception {
         if (args[0].equals("wait")) {
             Thread.sleep(30_000);
+        } else if (args[0].equals("nap")) {
+            Thread.sleep(2_000);
         } else {
             for (int i = 0; i < 10_000; i++) System.out.println("line " + i);
             System.err.println("last stderr line");
@@ -31,6 +33,18 @@ public class ShellActionTest {
         assertTrue(process.waitFor(2, TimeUnit.SECONDS));
         assertFalse(process.isAlive());
         assertTrue(result.durationMs < 4_000);
+    }
+
+    /** Sensitive apps' two switches: one launch must wait for the slower command, not the sum. */
+    @Test public void severalCommandsRunSideBySide() {
+        long start = System.nanoTime();
+        ActionTestResult[] results = ShellKeyInjector.runAllUnlogged(10, false,
+                new String[][]{childCommand("nap"), null, childCommand("nap")});
+        long elapsedMs = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start);
+        assertTrue(results[0].ok);
+        assertNull(results[1]);
+        assertTrue(results[2].ok);
+        assertTrue("took " + elapsedMs + " ms; one after the other takes at least 4000", elapsedMs < 4_000);
     }
 
     @Test public void realLargeOutputDoesNotDeadlockAndIncludesStderr() {

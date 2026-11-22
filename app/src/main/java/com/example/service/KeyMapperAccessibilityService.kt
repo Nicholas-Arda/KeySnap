@@ -116,16 +116,35 @@ class KeyMapperAccessibilityService : AccessibilityService() {
         fun performGesture(gesture: GestureDescription): Boolean = instance?.dispatchGesture(gesture, null, null) ?: false
 
         /**
-         * Sets text directly on whichever node currently has input focus, via
-         * [AccessibilityNodeInfo.ACTION_SET_TEXT]. False when nothing editable is focused.
+         * Types [text] into whichever node has input focus like a keyboard: over the selection or at
+         * the cursor ([typeAtSelection]), then puts the cursor after it. ACTION_SET_TEXT replaces the
+         * whole field, so the current text is read and rebuilt first. A password field reads back
+         * only mask characters and a showing hint is not content, so both count as empty: the
+         * password field gets [text] alone, never its dots written back. False when nothing editable
+         * is focused. The text is user data, often a password: never logged.
          */
         fun setFocusedText(text: String): Boolean {
             val node = instance?.rootInActiveWindow?.findFocus(AccessibilityNodeInfo.FOCUS_INPUT) ?: return false
             return try {
-                val arguments = Bundle().apply {
-                    putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, text)
+                val readable = !node.isPassword && !node.isShowingHintText
+                val typed = if (readable) {
+                    typeAtSelection(node.text?.toString().orEmpty(), node.textSelectionStart, node.textSelectionEnd, text)
+                } else {
+                    typeAtSelection("", -1, -1, text)
                 }
-                node.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments)
+                val arguments = Bundle().apply {
+                    putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, typed.text)
+                }
+                node.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments) &&
+                    run {
+                        val cursor = Bundle().apply {
+                            putInt(AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_START_INT, typed.cursor)
+                            putInt(AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_END_INT, typed.cursor)
+                        }
+                        // The text is in; a field that refuses the cursor move still got it typed.
+                        node.performAction(AccessibilityNodeInfo.ACTION_SET_SELECTION, cursor)
+                        true
+                    }
             } finally {
                 @Suppress("DEPRECATION")
                 node.recycle()
@@ -359,6 +378,8 @@ class KeyMapperAccessibilityService : AccessibilityService() {
 
     override fun onKeyEvent(event: KeyEvent): Boolean {
         if (event.action != KeyEvent.ACTION_DOWN && event.action != KeyEvent.ACTION_UP) return super.onKeyEvent(event)
+        // A key's own job given back (KeyPassThrough). Injected events skip the input filter, so this is a safeguard.
+        if (KeyPassThrough.isInjected(event.keyCode, event.deviceId)) return super.onKeyEvent(event)
         if (!::repository.isInitialized) {
             repository = KeyMappingRepository.getInstance(applicationContext)
             HardwareKeyTriggerCoordinator.initialize(applicationContext, repository)
@@ -371,6 +392,7 @@ class KeyMapperAccessibilityService : AccessibilityService() {
         ) {
             HardwareKeyTriggerCoordinator.shouldConsumeKey(keyCode)
         }
+        if (shouldConsume && isDown && event.repeatCount == 0) HardwareKeyTriggerCoordinator.onKeySwallowed(keyCode)
 
         val isMatched = HardwareKeyTriggerCoordinator.dispatchKeyEvent(
             keyCode = keyCode,

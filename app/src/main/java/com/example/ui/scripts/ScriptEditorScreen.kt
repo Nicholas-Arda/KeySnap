@@ -2,6 +2,7 @@ package com.example.ui.scripts
 
 import android.view.KeyEvent
 import android.widget.Toast
+import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -25,6 +26,9 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -68,6 +72,8 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.ArrowDownward
 import androidx.compose.material.icons.outlined.ArrowUpward
 import androidx.compose.material.icons.outlined.AutoAwesome
+import androidx.compose.material.icons.outlined.LocalFireDepartment
+import androidx.compose.material.icons.outlined.PhoneAndroid
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material.icons.outlined.ExpandMore
 import androidx.compose.material.icons.outlined.Tune
@@ -135,6 +141,8 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.Hyphens
+import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.font.FontWeight
@@ -147,6 +155,7 @@ import com.example.data.ActionCategory
 import com.example.data.ActionDescriptor
 import com.example.data.ActionEditorForms
 import com.example.data.ScriptAction
+import com.example.data.OemActions
 import com.example.data.ScriptActionCatalog
 import com.example.data.ConstraintEditorForms
 import com.example.data.InstalledApp
@@ -234,6 +243,8 @@ fun ScriptEditorScreen(
     isPro: Boolean = false,
     onSetRunsIn: (Int?) -> Unit = {},
     keyPickerOpen: Boolean = false,
+    openPickerOn: PickerTab? = null,
+    onPickerOpened: () -> Unit = {},
     savedKeys: List<PhysicalKeyOption> = emptyList(),
     isRecordingKey: Boolean = false,
     recordingKeys: List<Int> = emptyList(),
@@ -270,7 +281,10 @@ fun ScriptEditorScreen(
     var selectedCategory by rememberSaveable { mutableStateOf<ActionCategory?>(null) }
     var confirmDelete by remember { mutableStateOf(false) }
     var confirmDiscard by remember { mutableStateOf(false) }
-    var pane by rememberSaveable { mutableStateOf(EditorPane.CHAIN) }
+    var pane by rememberSaveable { mutableStateOf(if (openPickerOn != null) EditorPane.ADD_ACTION else EditorPane.CHAIN) }
+    // Read once, when the editor opens; the caller forgets it so the next shortcut opens normally.
+    val pickerTab by rememberSaveable { mutableStateOf(openPickerOn) }
+    LaunchedEffect(Unit) { if (openPickerOn != null) onPickerOpened() }
     // A wide screen keeps the chain on screen and opens the catalogs as a panel over it.
     val wide = isWideLayout()
     // The draft as the editor received it. Every edit goes through updateDraft's copy(), and the
@@ -327,6 +341,7 @@ fun ScriptEditorScreen(
             },
             onClose = { pane = EditorPane.CHAIN },
             advancedModeActive = advancedModeActive,
+            initialTab = pickerTab,
         )
     }
     val addConstraintPane = @Composable {
@@ -407,7 +422,12 @@ fun ScriptEditorScreen(
                             modifier = Modifier.weight(1f),
                             flagMissing = saveRefused && feedback != null,
                         )
-                        EditorFeedbackPill(feedback, Modifier.align(Alignment.CenterHorizontally).padding(horizontal = 16.dp))
+                        var showSystemOptimization by remember { mutableStateOf(false) }
+                        if (showSystemOptimization) SystemOptimizationSheet(onDismiss = { showSystemOptimization = false })
+                        EditorFeedbackPill(
+                            feedback, Modifier.align(Alignment.CenterHorizontally).padding(horizontal = 16.dp),
+                            onFix = { showSystemOptimization = true },
+                        )
                         AnimatedContent(
                             targetState = keyPickerOpen,
                             transitionSpec = { fadeIn(tween(180)) togetherWith fadeOut(tween(100)) },
@@ -1001,7 +1021,12 @@ internal fun TriggerCard(
         return
     }
     FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(stringResource(R.string.editor_press), style = textStyle, color = colors.onSurface, modifier = Modifier.padding(vertical = 8.dp))
+        Text(
+            stringResource(R.string.editor_press),
+            style = textStyle.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
+            color = colors.onSurface,
+            modifier = Modifier.padding(vertical = 8.dp),
+        )
         val shownKeys = if (recording) heldKeys else trigger?.keyCodes.orEmpty()
         val keyText = if (shownKeys.isNotEmpty()) shownKeys.joinToString(" + ") { keyDisplayName(res, it, savedKeys) }
             else stringResource(if (recording) R.string.inline_key_listening else R.string.inline_key_placeholder)
@@ -1019,7 +1044,12 @@ internal fun TriggerCard(
         ) {
             Icon(if (assistant && !recording) Icons.Outlined.AutoAwesome else Icons.Outlined.Keyboard, null, Modifier.size(22.dp), tint = ink)
             Spacer(Modifier.width(8.dp))
-            Text(value, Modifier.weight(1f, fill = false), style = textStyle.copy(fontWeight = FontWeight.SemiBold), color = ink)
+            Text(
+                value,
+                Modifier.weight(1f, fill = false),
+                style = textStyle.copy(fontWeight = FontWeight.SemiBold, hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
+                color = ink,
+            )
             Icon(Icons.Outlined.ExpandMore, null, Modifier.size(18.dp), tint = ink)
         }
         }
@@ -1121,7 +1151,11 @@ internal fun ConstraintsCard(
                 stringResource(R.string.editor_always_runs),
                 Modifier.padding(vertical = 4.dp),
                 color = colors.onSurfaceVariant,
-                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold),
+                style = MaterialTheme.typography.titleLarge.copy(
+                    fontWeight = FontWeight.SemiBold,
+                    hyphens = Hyphens.Auto,
+                    lineBreak = LineBreak.Paragraph,
+                ),
             )
         } else {
             val row: @Composable (Int, ScriptConstraint) -> Unit = { index, constraint ->
@@ -1148,8 +1182,8 @@ internal fun ConstraintsCard(
                 val (fill, glyph) = categoryTileColors(descriptor?.category?.let(::constraintTileCategory))
                 val description: @Composable (Modifier) -> Unit = { modifier ->
                     Column(modifier) {
-                        Text(title, color = glyph, style = titleStyle)
-                        if (summary != null) Text(summary, style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant)
+                        Text(title, color = glyph, style = titleStyle.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph))
+                        if (summary != null) Text(summary, style = MaterialTheme.typography.bodySmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph), color = colors.onSurfaceVariant)
                         if (constraint.type == ScriptConstraintCatalog.AT_PLACE && !incomplete) PlaceStatusLine(constraint.params)
                     }
                 }
@@ -1254,7 +1288,11 @@ internal fun ActionChainCard(
         Column(modifier) {
             Text(
                 title,
-                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold),
+                style = MaterialTheme.typography.titleLarge.copy(
+                    fontWeight = FontWeight.SemiBold,
+                    hyphens = Hyphens.Auto,
+                    lineBreak = LineBreak.Paragraph,
+                ),
                 color = glyph,
             )
             Row(
@@ -1265,13 +1303,13 @@ internal fun ActionChainCard(
                     incomplete -> Text(
                         stringResource(R.string.editor_tap_to_configure),
                         Modifier.weight(1f, fill = false),
-                        style = MaterialTheme.typography.bodySmall,
+                        style = MaterialTheme.typography.bodySmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
                         color = colors.error,
                     )
                     summary != null -> Text(
                         summary,
                         Modifier.weight(1f, fill = false),
-                        style = MaterialTheme.typography.bodySmall,
+                        style = MaterialTheme.typography.bodySmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
                         color = colors.onSurfaceVariant,
                     )
                 }
@@ -1453,6 +1491,7 @@ private fun AddActionScreen(
     onClose: () -> Unit,
     advancedModeActive: Boolean = false,
     onPickLearned: (Map<String, String>) -> Unit = {},
+    initialTab: PickerTab? = null,
 ) {
     val colors = MaterialTheme.colorScheme
     Column(Modifier.fillMaxSize().statusBarsPadding().testTag("action_picker_sheet")) {
@@ -1471,6 +1510,17 @@ private fun AddActionScreen(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).testTag("action_picker_search"),
         )
         Spacer(Modifier.height(12.dp))
+        val context = LocalContext.current
+        // Saveable: folding or unfolding the phone recreates the activity. Opens on "All".
+        var tab by rememberSaveable { mutableStateOf(initialTab) }
+        val brand = remember { OemActions.brandLabel(Build.MANUFACTURER.orEmpty()) }
+        val catalog = ScriptActionCatalog.all
+            .filter { ModeHooks.offered(it.type) && it.type != ScriptActionCatalog.LEARNED_SETTING && OemActions.offered(context, it.type) }
+        val shownTabs = buildList {
+            if (catalog.any { it.type in ScriptActionCatalog.NEW }) add(PickerTab.NEW)
+            add(PickerTab.POPULAR)
+            if (brand != null && catalog.any { it.type in OemActions.TYPES }) add(PickerTab.PHONE)
+        }
         val categoryScroll = rememberLazyListState()
         LazyRow(
             Modifier.fillMaxWidth().trailingEdgeFade(categoryScroll.canScrollForward),
@@ -1482,9 +1532,16 @@ private fun AddActionScreen(
                 CategoryIconChip(
                     icon = Icons.Outlined.GridView,
                     label = stringResource(R.string.picker_category_all),
-                    selected = selectedCategory == null,
-                    onClick = { onSelectCategory(null) },
+                    selected = selectedCategory == null && tab == null,
+                    onClick = { tab = null; onSelectCategory(null) },
                 )
+            }
+            items(shownTabs.size) { i ->
+                val shown = shownTabs[i]
+                PickerTabChip(shown, brand.orEmpty(), selected = tab == shown) {
+                    tab = if (tab == shown) null else shown
+                    onSelectCategory(null)
+                }
             }
             items(ActionCategory.entries.size) { i ->
                 val category = ActionCategory.entries[i]
@@ -1492,7 +1549,7 @@ private fun AddActionScreen(
                     icon = categoryIcon(category),
                     label = stringResource(category.titleRes),
                     selected = selectedCategory == category,
-                    onClick = { onSelectCategory(if (selectedCategory == category) null else category) },
+                    onClick = { tab = null; onSelectCategory(if (selectedCategory == category) null else category) },
                     category = category,
                 )
             }
@@ -1500,25 +1557,32 @@ private fun AddActionScreen(
         Spacer(Modifier.height(8.dp))
 
         val searching = query.isNotBlank()
-        val context = LocalContext.current
-        val offered = (if (searching) ScriptActionCatalog.search(query, context.resources) else ScriptActionCatalog.all)
-            .filter { ModeHooks.offered(it.type) && it.type != ScriptActionCatalog.LEARNED_SETTING }
-        val filtered = selectedCategory?.let { cat -> offered.filter { it.category == cat } } ?: offered
+        val offered = if (searching) ScriptActionCatalog.search(query, context.resources).filter { it in catalog } else catalog
+        val filtered = when (tab) {
+            PickerTab.NEW -> offered.filter { it.type in ScriptActionCatalog.NEW }
+            PickerTab.POPULAR -> ScriptActionCatalog.POPULAR.mapNotNull { type -> offered.find { it.type == type } }
+            PickerTab.PHONE -> offered.filter { it.type in OemActions.TYPES }
+            null -> selectedCategory?.let { cat -> offered.filter { it.category == cat } } ?: offered
+        }
         // "Teach a setting" and the switches taught on this phone live under Device.
-        val deviceShown = selectedCategory == null || selectedCategory == ActionCategory.DEVICE
+        val deviceShown = tab == null && (selectedCategory == null || selectedCategory == ActionCategory.DEVICE)
         val needle = query.trim()
         val showTeach = deviceShown && (!searching || stringResource(R.string.teach_setting_title).contains(needle, ignoreCase = true))
         val learned by LearnedSettings.flow(context).collectAsState()
         val learnedShown = if (deviceShown) learned.filter { !searching || it.name.contains(needle, ignoreCase = true) } else emptyList()
         var editingLearned by remember { mutableStateOf<LearnedSwitch?>(null) }
         editingLearned?.let { LearnedSwitchDialog(it) { editingLearned = null } }
-        val grouped = ActionCategory.entries.mapNotNull { category ->
-            val entries = filtered.filter { it.category == category }
-            if (entries.isEmpty()) null else category to entries
+        // A tab is one flat list (Popular keeps its own order); categories group under headers.
+        val grouped: List<Pair<ActionCategory?, List<ActionDescriptor>>> = when {
+            tab != null -> if (filtered.isEmpty()) emptyList() else listOf(null to filtered)
+            else -> ActionCategory.entries.mapNotNull { category ->
+                val entries = filtered.filter { it.category == category }
+                if (entries.isEmpty()) null else category to entries
+            }
         }
         // In the wide panel the rows go two to a line, so a name never has to wrap.
         val columns = if (isWideLayout()) 2 else 1
-        LazyColumn(Modifier.fillMaxWidth().weight(1f)) {
+        LazyColumn(Modifier.fillMaxWidth().weight(1f), contentPadding = WindowInsets.navigationBars.asPaddingValues()) {
             if (grouped.isEmpty() && !showTeach && learnedShown.isEmpty()) {
                 item {
                     Text(
@@ -1565,13 +1629,15 @@ private fun AddActionScreen(
                 }
             }
             grouped.forEach { (category, entries) ->
-                item(key = "header_${category.name}") {
-                    Text(
-                        stringResource(category.titleRes),
-                        Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                        style = SectionLabel,
-                        color = colors.onSurfaceVariant,
-                    )
+                if (category != null) {
+                    item(key = "header_${category.name}") {
+                        Text(
+                            stringResource(category.titleRes),
+                            Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                            style = SectionLabel,
+                            color = colors.onSurfaceVariant,
+                        )
+                    }
                 }
                 val rows = entries.chunked(columns)
                 items(rows.size, key = { "action_${rows[it][0].type}" }) { i ->
@@ -1665,7 +1731,11 @@ fun CategoryIconChip(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Box(
-            Modifier.size(46.dp).clip(InnerShape).background(fill),
+            Modifier
+                .size(46.dp)
+                .clip(InnerShape)
+                .background(fill)
+                .then(if (selected) Modifier else Modifier.border(1.dp, glyph.copy(alpha = .45f), InnerShape)),
             contentAlignment = Alignment.Center,
         ) {
             Icon(icon, null, tint = glyph, modifier = Modifier.size(22.dp))
@@ -1678,6 +1748,20 @@ fun CategoryIconChip(
             maxLines = 1,
             textAlign = TextAlign.Center,
         )
+    }
+}
+
+/** The picker tiles that are not categories: what's new, hand-picked favourites, and this phone's own. */
+enum class PickerTab { NEW, POPULAR, PHONE }
+
+/** A [PickerTab] tile; [brand] names the phone tile ("OPPO"). Tinted like the categories beside it. */
+@Composable
+internal fun PickerTabChip(tab: PickerTab, brand: String, selected: Boolean, onClick: () -> Unit) {
+    when (tab) {
+        PickerTab.NEW -> CategoryIconChip(Icons.Outlined.AutoAwesome, stringResource(R.string.picker_tab_new), selected, onClick)
+        PickerTab.POPULAR ->
+            CategoryIconChip(Icons.Outlined.LocalFireDepartment, stringResource(R.string.picker_tab_popular), selected, onClick, ActionCategory.DISPLAY)
+        PickerTab.PHONE -> CategoryIconChip(Icons.Outlined.PhoneAndroid, brand, selected, onClick, ActionCategory.APPS)
     }
 }
 
@@ -1713,6 +1797,7 @@ private fun ActionRow(descriptor: ActionDescriptor, onPickAction: (String) -> Un
                     overflow = TextOverflow.Ellipsis,
                 )
                 if (descriptor.type in ScriptActionCatalog.NEW) NewBadge()
+                if (descriptor.type in OemActions.EXPERIMENTAL) ExperimentalBadge(Modifier.padding(start = 6.dp))
             }
             if (!available) {
                 Text(

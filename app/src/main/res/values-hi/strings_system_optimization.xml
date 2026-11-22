@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sysopt_title">Bluetooth के लिए एक फ़ोन स्विच चाहिए</string>
+    <string name="sysopt_why">आपका फ़ोन Bluetooth शॉर्टकट रोकता है।</string>
+    <string name="sysopt_step_find">1 · “%1$s” ढूँढें</string>
+    <string name="sysopt_step_turn_on">2 · इसे चालू करें</string>
+    <string name="sysopt_step_confirm">3 · “%1$s” दबाएँ</string>
+    <string name="sysopt_switch_column">यह स्विच</string>
+    <string name="sysopt_unblocks">Bluetooth शॉर्टकट खोलता है</string>
+    <string name="sysopt_warns">फ़ोन चेतावनी देता है: बैटरी, सुरक्षा</string>
+    <string name="sysopt_off_anytime">कभी भी फिर बंद करें</string>
+    <string name="sysopt_only_reads">सिर्फ़ यह स्विच पढ़ता है</string>
+    <string name="sysopt_no_permissions">कोई नई अनुमति नहीं</string>
+    <string name="sysopt_open_source">ओपन सोर्स कोड</string>
+    <string name="sysopt_open">डेवलपर विकल्प खोलें</string>
+    <string name="sysopt_english_hint">नहीं दिखा? फ़ोन थोड़ी देर English में करें</string>
+    <string name="chain_bt_blocked">Bluetooth रुका हुआ · एक डेवलपर सेटिंग चाहिए</string>
+</resources>

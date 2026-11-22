@@ -39,7 +39,7 @@
     <string name="setup_not_now">Jetzt nicht</string>
     <string name="setup_optional_row">Optional: Benachrichtigungen</string>
     <string name="auto_launch_row">Kurzbefehle auch geschlossen ausführen</string>
-    <string name="auto_launch_search_hint">Nach „Autostart“ suchen und KeySnap einschalten</string>
+    <string name="auto_launch_search_hint">Nach „Automatisch starten“ suchen und KeySnap einschalten</string>
     <string name="home_stopped_banner">KeySnap wurde beendet. Manche Kurzbefehle laufen nicht.</string>
     <string name="auto_launch_row_stopped">Verhindern, dass KeySnap wieder stoppt</string>
     <string name="reconnect_sheet_body">KeySnap schaltet seine eigene Bedienungshilfe einmal aus und wieder ein. Sonst ändert sich nichts.</string>

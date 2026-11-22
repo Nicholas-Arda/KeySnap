@@ -855,6 +855,8 @@
     <string name="about_bridge_title">Der Erweiterte Modus ist das ADB deines eigenen Telefons</string>
     <string name="about_bridge_body">Er koppelt sich über dein lokales Netzwerk mit dem kabellosen Debugging deines Telefons — diese Verbindung verlässt dein Zuhause nie. Shell-Befehle führt er nur für die Kurzbefehle aus, die du geschrieben hast. Schaltest du ihn aus, wird die Bridge gelöscht; ein Neustart stoppt sie ebenfalls.</string>
     <string name="about_illo_bridge_caption">aus → die Bridge löscht sich selbst</string>
+    <string name="about_sensitive_title">Sensible Apps schalten nur, was Sie ankreuzen</string>
+    <string name="about_sensitive_body">Für eine App auf Ihrer Liste schaltet es nur die angekreuzten Schalter aus: Entwickleroptionen, KeySnaps eigenen Bedienungshilfen-Eintrag, kabelloses Debugging. Die ersten beiden kommen zurück, wenn Sie die App verlassen.</string>
     <string name="about_traffic_title">Jede Verbindung, die die App aufbaut</string>
     <string name="about_traffic_device">Dein eigenes Telefon</string>
     <string name="about_traffic_device_body">Kopplung per kabellosem Debugging. Nur im lokalen Netzwerk.</string>
@@ -1093,7 +1095,7 @@
     <string name="settings_autostart_title">Nach Neustart starten</string>
     <string name="settings_autostart_description">Startet den erweiterten Modus nach dem Entsperren und der WLAN-Verbindung erneut. Manche Geräte benötigen auch die Autostart-Freigabe für KeySnap.</string>
     <string name="settings_autostart_permission_description">Der erweiterte Modus erteilt eine zusätzliche Berechtigung: %1$s. Sie wird beim Ausschalten dieser Option oder des erweiterten Modus entzogen. WLAN-Debugging bleibt während des Betriebs an. Hat KeySnap es aktiviert, beendet das Ausschalten dieser Option auch den erweiterten Modus und stellt WLAN-Debugging wieder her.</string>
-    <string name="settings_autostart_hint_permission">Starten Sie den erweiterten Modus einmal. Aktivieren Sie bei OPPO, OnePlus und realme zuerst „Berechtigungsüberwachung deaktivieren“, bei Xiaomi „USB-Debugging (Sicherheitseinstellungen)“ in den Entwickleroptionen. Tippen öffnet die Entwickleroptionen.</string>
+    <string name="settings_autostart_hint_permission">Starten Sie den erweiterten Modus einmal. Aktivieren Sie bei OPPO, OnePlus und realme zuerst „Systemoptimierung deaktivieren“, bei Xiaomi „USB-Debugging (Sicherheitseinstellungen)“ in den Entwickleroptionen. Tippen öffnet die Entwickleroptionen.</string>
     <string name="settings_autostart_hint_prompt">Erlauben Sie unter Android 11–12 nach jedem Neustart WLAN-Debugging für dieses Netzwerk, wenn Android fragt.</string>
     <string name="settings_autostart_cleanup_failed">Die Neustart-Berechtigung konnte nicht entzogen werden. Verbinden Sie den erweiterten Modus erneut und schalten Sie diese Option wieder aus.</string>
     <string name="notif_autostart_title">Erweiterter Modus nach Neustart nicht gestartet</string>
@@ -1147,10 +1149,6 @@
     <string name="accessibility_reconnect_button">Neu verbinden</string>
     <string name="accessibility_reconnecting">Wird verbunden…</string>
     <string name="accessibility_reconnect_failed">Neu verbinden fehlgeschlagen. Schalte KeySnap hier aus und wieder ein.</string>
-    <string name="wizard_manual_title">Code selbst eingeben</string>
-    <string name="wizard_manual_body">Tippe unter „Kabelloses Debugging“ auf ‘Gerät mit Kopplungscode koppeln’ und gib den 6-stelligen Code hier ein. Schließt Android das Codefenster beim App-Wechsel, nutze den geteilten Bildschirm oder die Benachrichtigung.</string>
-    <string name="wizard_manual_code_label">6-stelliger Kopplungscode</string>
-    <string name="wizard_manual_pair">Koppeln</string>
     <string name="notif_return_title">Der Erweiterte Modus ist an</string>
     <string name="notif_return_body">Tippe, um zu KeySnap zurückzukehren.</string>
     <string name="pro_sale_ends_in">Angebot endet in %1$s</string>

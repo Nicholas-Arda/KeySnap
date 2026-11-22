@@ -54,6 +54,8 @@ class KeyGestureFeedTest {
     fun chordDoublePressFires() = runTest {
         val fired = mutableListOf<Pair<Int, TriggerPressType>>()
         val feed = KeyGestureFeed(this) { id, type -> fired += id to type }
+        // Only a double-press shortcut makes a press wait for its second tap.
+        val scripts = scripts + script("chordDouble", ScriptTrigger(listOf(24, 25), TriggerPressType.DOUBLE_PRESS))
 
         feed.onEvent(24, true, 0, scripts, KeyMappingConfig())
         feed.onEvent(25, true, 20, scripts, KeyMappingConfig())
@@ -78,6 +80,34 @@ class KeyGestureFeedTest {
         advanceUntilIdle()
 
         assertEquals(listOf(24 to TriggerPressType.SINGLE_PRESS), fired)
+    }
+
+    @Test
+    fun singleOnlyKeyFiresOnTheDown() = runTest {
+        val fired = mutableListOf<Pair<Int, TriggerPressType>>()
+        val feed = KeyGestureFeed(this) { id, type -> fired += id to type }
+        val torch = listOf(script("torch", ScriptTrigger(listOf(27), TriggerPressType.SINGLE_PRESS)))
+
+        feed.onEvent(27, true, 0, torch, KeyMappingConfig())
+        assertEquals(listOf(27 to TriggerPressType.SINGLE_PRESS), fired)
+        feed.onEvent(27, false, 900, torch, KeyMappingConfig())
+        advanceUntilIdle()
+        assertEquals(listOf(27 to TriggerPressType.SINGLE_PRESS), fired)
+    }
+
+    @Test
+    fun singleWithLongPressFiresOnRelease() = runTest {
+        val fired = mutableListOf<Pair<Int, TriggerPressType>>()
+        val feed = KeyGestureFeed(this) { id, type -> fired += id to type }
+        val keys = listOf(
+            script("torch", ScriptTrigger(listOf(27), TriggerPressType.SINGLE_PRESS)),
+            script("hold", ScriptTrigger(listOf(27), TriggerPressType.LONG_PRESS)),
+        )
+
+        feed.onEvent(27, true, 0, keys, KeyMappingConfig())
+        assertEquals(emptyList<Pair<Int, TriggerPressType>>(), fired)
+        feed.onEvent(27, false, 60, keys, KeyMappingConfig())
+        assertEquals(listOf(27 to TriggerPressType.SINGLE_PRESS), fired)
     }
 
     @Test

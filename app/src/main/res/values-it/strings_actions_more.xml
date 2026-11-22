@@ -12,4 +12,5 @@
     <string name="choice_timeout_5m">5 minuti</string>
     <string name="choice_timeout_10m">10 minuti</string>
     <string name="choice_timeout_30m">30 minuti</string>
+    <string name="helper_secure_lock_device">Blocca subito. Impronta e volto restano disattivati finché non inserisci il PIN.</string>
 </resources>

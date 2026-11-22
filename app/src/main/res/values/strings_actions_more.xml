@@ -12,4 +12,5 @@
     <string name="choice_timeout_5m">5 minutes</string>
     <string name="choice_timeout_10m">10 minutes</string>
     <string name="choice_timeout_30m">30 minutes</string>
+    <string name="helper_secure_lock_device">Locks now. Fingerprint and face stay off until you enter your PIN.</string>
 </resources>

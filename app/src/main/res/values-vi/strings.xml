@@ -758,6 +758,8 @@
     <string name="about_bridge_title">Chế độ nâng cao là ADB của chính điện thoại bạn</string>
     <string name="about_bridge_body">Nó ghép nối với Gỡ lỗi không dây của chính điện thoại qua mạng cục bộ — kết nối đó không bao giờ ra khỏi nhà bạn. Nó chỉ chạy lệnh shell cho các phím tắt bạn viết. Tắt đi là trình trợ giúp bị xóa; khởi động lại cũng dừng nó.</string>
     <string name="about_illo_bridge_caption">tắt → trình trợ giúp tự xóa</string>
+    <string name="about_sensitive_title">Ứng dụng nhạy cảm chỉ đổi mục bạn chọn</string>
+    <string name="about_sensitive_body">Với ứng dụng trong danh sách, chỉ các công tắc bạn chọn bị tắt: tùy chọn cho nhà phát triển, mục Hỗ trợ tiếp cận của riêng KeySnap, gỡ lỗi không dây. Hai mục đầu bật lại khi bạn rời ứng dụng.</string>
     <string name="about_traffic_title">Mọi kết nối ứng dụng tạo ra</string>
     <string name="about_traffic_device">Chính điện thoại của bạn</string>
     <string name="about_traffic_device_body">Ghép nối Gỡ lỗi không dây. Chỉ mạng cục bộ.</string>
@@ -973,7 +975,7 @@
     <string name="settings_autostart_title">Khởi động sau khi bật lại máy</string>
     <string name="settings_autostart_description">Khởi động lại Chế độ nâng cao sau khi bạn mở khóa điện thoại vừa khởi động lại và kết nối Wi-Fi. Một số điện thoại cũng cần cho phép KeySnap tự khởi chạy.</string>
     <string name="settings_autostart_permission_description">Chế độ nâng cao cấp thêm một quyền bằng: %1$s. Quyền này bị gỡ khi tắt tùy chọn này hoặc Chế độ nâng cao. Gỡ lỗi không dây vẫn bật khi Chế độ nâng cao chạy. Nếu KeySnap đã bật nó, tắt tùy chọn này cũng dừng Chế độ nâng cao và khôi phục Gỡ lỗi không dây.</string>
-    <string name="settings_autostart_hint_permission">Khởi động Chế độ nâng cao một lần để hoàn tất thiết lập. Trên OPPO, OnePlus và realme, trước tiên bật “Tắt giám sát quyền” trong Tùy chọn nhà phát triển; trên Xiaomi, bật “Gỡ lỗi USB (Cài đặt bảo mật)”. Nhấn để mở Tùy chọn nhà phát triển.</string>
+    <string name="settings_autostart_hint_permission">Khởi động Chế độ nâng cao một lần để hoàn tất thiết lập. Trên OPPO, OnePlus và realme, trước tiên bật “Tắt tối ưu hóa hệ thống” trong Tùy chọn nhà phát triển; trên Xiaomi, bật “Gỡ lỗi USB (Cài đặt bảo mật)”. Nhấn để mở Tùy chọn nhà phát triển.</string>
     <string name="settings_autostart_hint_prompt">Trên Android 11–12, hãy cho phép Gỡ lỗi không dây trên mạng này sau mỗi lần khởi động lại khi Android hỏi.</string>
     <string name="settings_autostart_hint_pairing">Nếu Android hết hạn hoặc xóa ghép nối, hãy thiết lập lại Chế độ nâng cao. Kết nối hằng ngày có thể không giữ ghép nối trên mọi điện thoại.</string>
     <string name="settings_autostart_cleanup_failed">Không gỡ được quyền khởi động lại. Kết nối lại Chế độ nâng cao và tắt lại tùy chọn này.</string>
@@ -1024,10 +1026,6 @@
     <string name="accessibility_reconnect_button">Kết nối lại</string>
     <string name="accessibility_reconnecting">Đang kết nối lại…</string>
     <string name="accessibility_reconnect_failed">Không kết nối lại được. Hãy tắt rồi bật lại KeySnap tại đây.</string>
-    <string name="wizard_manual_title">Tự nhập mã</string>
-    <string name="wizard_manual_body">Trong Gỡ lỗi không dây, nhấn ‘Ghép nối thiết bị bằng mã ghép nối’ và nhập mã 6 chữ số vào đây. Nếu Android đóng cửa sổ mã khi bạn chuyển ứng dụng, hãy dùng chia đôi màn hình hoặc thông báo.</string>
-    <string name="wizard_manual_code_label">Mã ghép nối 6 chữ số</string>
-    <string name="wizard_manual_pair">Ghép nối</string>
     <string name="notif_return_title">Chế độ nâng cao đã bật</string>
     <string name="notif_return_body">Nhấn để quay lại KeySnap.</string>
     <string name="pro_sale_ends_in">Ưu đãi kết thúc sau %1$s</string>

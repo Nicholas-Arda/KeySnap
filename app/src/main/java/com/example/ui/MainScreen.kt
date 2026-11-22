@@ -106,6 +106,7 @@ import com.example.ui.scripts.ScriptSettingsSheet
 import com.example.ui.scripts.ScriptsScreen
 import com.example.ui.scripts.ShortcutReviewDialog
 import com.example.ui.scripts.InlineKeyPicker
+import com.example.ui.scripts.PickerTab
 import com.example.ui.scripts.shareShortcutText
 import com.example.ui.settings.SettingsGear
 import com.example.capsule.CapsuleHooks
@@ -169,6 +170,8 @@ fun MainScreen(viewModel: MainViewModel) {
     var capsuleEditorOpen by rememberSaveable { mutableStateOf(false) }
     var capsuleIntroOpen by rememberSaveable { mutableStateOf(false) }
     var settingsOpen by rememberSaveable { mutableStateOf(false) }
+    // What's new can open a new shortcut straight on the action picker; consumed by the editor.
+    var editorPickerTab by remember { mutableStateOf<PickerTab?>(null) }
     // Where the header logo sat when it opened What's New; it flies from and back to there.
     var whatsNewLogoOrigin by remember { mutableStateOf<Rect?>(null) }
     var whatsNewLogoLifted by remember { mutableStateOf(false) }
@@ -245,7 +248,8 @@ fun MainScreen(viewModel: MainViewModel) {
     LaunchedEffect(scriptsMessage) {
         val message = scriptsMessage ?: return@LaunchedEffect
         val autoDismiss = launch {
-            delay(4000)
+            // A shortcut saved as off by the free limit is easy to miss in 4 s; give it Material's long time.
+            delay(if (message.showProAction) 10_000 else 4000)
             snackbarHostState.currentSnackbarData?.dismiss()
         }
         val result = snackbarHostState.showSnackbar(
@@ -541,6 +545,15 @@ fun MainScreen(viewModel: MainViewModel) {
                                 settingsSection = SettingsSection.ABOUT
                                 settingsOpen = true
                             }
+                            WhatsNewDestination.SENSITIVE_APPS -> {
+                                settingsSection = SettingsSection.SENSITIVE_APPS
+                                settingsOpen = true
+                            }
+                            WhatsNewDestination.ACTION_PICKER_NEW, WhatsNewDestination.ACTION_PICKER_PHONE -> {
+                                settingsOpen = false
+                                editorPickerTab = if (destination == WhatsNewDestination.ACTION_PICKER_NEW) PickerTab.NEW else PickerTab.PHONE
+                                viewModel.createScript(ModeHooks.modeForNewShortcut(pagerState.currentPage == 1))
+                            }
                         }
                     },
                 )
@@ -635,6 +648,8 @@ fun MainScreen(viewModel: MainViewModel) {
             }
             ScriptEditorScreen(
                 draft = draft,
+                openPickerOn = editorPickerTab,
+                onPickerOpened = { editorPickerTab = null },
                 message = editorMessage,
                 onConsumeMessage = viewModel::consumeEditorMessage,
                 onSetName = viewModel::draftSetName,

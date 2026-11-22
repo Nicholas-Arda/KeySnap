@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_sensitive_title_133">Gevoelige apps</string>
+    <string name="whats_new_sensitive_description_133">Opent een bank- of game-app niet? KeySnap stapt opzij zolang die open is.</string>
+    <string name="whats_new_picker_title_133">Nieuw, Populair en je telefoon</string>
+    <string name="whats_new_picker_description_133">Vind sneller de juiste actie of voorwaarde.</string>
+    <string name="whats_new_oem_title_133">Zijknopfuncties op elke knop</string>
+    <string name="whats_new_oem_description_133">Mind Space, Scherm vertalen, Audio opnemen, OSee. Experimenteel.</string>
+    <string name="whats_new_fix_actions_133">Nieuwe acties: Hotspot schakelen, Apparaat veilig vergrendelen</string>
+    <string name="whats_new_fix_single_press_133">Eén keer drukken werkt meteen als er geen dubbeldruk is</string>
+    <string name="whats_new_fix_pairing_133">De koppelcode uit de melding werkt</string>
+    <string name="whats_new_fix_app_automation_133">App-automatiseringen starten elke keer dat je de app opent</string>
+    <string name="whats_new_fix_large_text_133">Grote tekst breekt geen woorden meer af</string>
+    <string name="whats_new_more_133">Ook in deze update</string>
+    <string name="whats_new_not_supported_133">Niet ondersteund op dit apparaat</string>
+</resources>

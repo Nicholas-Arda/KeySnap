@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_mind_space_capture">Mind Space : enregistrer l\'écran</string>
+    <string name="action_open_mind_space">Ouvrir Mind Space</string>
+    <string name="action_built_in_assistant">Assistant vocal intégré</string>
+    <string name="helper_mind_space_capture">Enregistre l\'écran dans Mind Space, comme la touche latérale.</string>
+    <string name="helper_open_mind_space">Ouvre Mind Space, comme un double appui sur la touche latérale.</string>
+    <string name="import_error_not_on_phone">Ce raccourci utilise une action absente de ce téléphone.</string>
+    <string name="action_translate_screen">Traduire l\'écran</string>
+    <string name="action_record_audio">Enregistrer l\'audio</string>
+    <string name="action_open_osee">Ouvrir OSee</string>
+    <string name="helper_translate_screen">Traduit l\'écran en direct, comme un appui long sur la touche latérale.</string>
+    <string name="helper_record_audio">Lance un enregistrement dans Dictaphone, comme un appui long sur la touche latérale.</string>
+</resources>

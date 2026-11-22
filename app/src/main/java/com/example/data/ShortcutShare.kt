@@ -124,7 +124,8 @@ object ShortcutShare {
         ),
     )
 
-    fun decode(text: String): ImportResult {
+    /** [offeredHere]: false for an action this phone cannot run at all (OemActions); the share is refused. */
+    fun decode(text: String, offeredHere: (String) -> Boolean = { true }): ImportResult {
         if (text.length > MAX_LENGTH) return ImportResult.Error(R.string.import_error_too_large)
         // The share intro and chat apps wrap the JSON in text of their own.
         val start = text.indexOf('{')
@@ -148,6 +149,7 @@ object ShortcutShare {
             val descriptor = ScriptActionCatalog.descriptor(action.type)
                 ?.takeIf { it.availability == ActionAvailability.AVAILABLE }
                 ?: return unsupported
+            if (!offeredHere(action.type)) return ImportResult.Error(R.string.import_error_not_on_phone)
             val specs = descriptor.parameters.associateBy { it.key }
             // Undeclared keys are inert today but would be invisible in the review, so they stay out.
             val params = portableParams(action.type, action.params.filterKeys { it in specs })

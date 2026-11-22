@@ -22,6 +22,9 @@ import android.os.PowerManager
 import android.util.Log
 import java.util.Collections
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 /**
  * Wakes [HardwareKeyTriggerCoordinator.reevaluateAutomations] on every device-state change Android
@@ -35,6 +38,8 @@ class DeviceEventReceiver : BroadcastReceiver() {
         when (intent.action) {
             BluetoothDevice.ACTION_ACL_CONNECTED -> onAcl(intent, isConnected = true)
             BluetoothDevice.ACTION_ACL_DISCONNECTED -> onAcl(intent, isConnected = false)
+            Intent.ACTION_SCREEN_ON -> _screenOn.value = true
+            Intent.ACTION_SCREEN_OFF -> _screenOn.value = false
         }
         HardwareKeyTriggerCoordinator.reevaluateAutomations()
     }
@@ -75,6 +80,11 @@ class DeviceEventReceiver : BroadcastReceiver() {
          */
         private val connected: MutableMap<String, String> = Collections.synchronizedMap(mutableMapOf())
         private val seeded = AtomicBoolean(false)
+
+        private val _screenOn = MutableStateFlow(false)
+
+        /** Screen state while registered; false otherwise, so the [ForegroundAppWatch] poll ends with this receiver. */
+        val screenOn: StateFlow<Boolean> = _screenOn.asStateFlow()
 
         internal fun knownBluetoothDeviceConnected(address: String?, name: String?): Boolean? {
             if (isBluetoothDeviceConnected(address, name)) return true
@@ -202,6 +212,7 @@ class DeviceEventReceiver : BroadcastReceiver() {
                 context.registerReceiver(receiver, aclFilter())
             }
             context.applicationContext.registerComponentCallbacks(configurationCallbacks)
+            _screenOn.value = (context.getSystemService(Context.POWER_SERVICE) as? PowerManager)?.isInteractive ?: true
             runCatching {
                 (context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager)
                     ?.registerDefaultNetworkCallback(networkCallback)
@@ -209,6 +220,7 @@ class DeviceEventReceiver : BroadcastReceiver() {
         }
 
         fun unregister(context: Context, receiver: DeviceEventReceiver) {
+            _screenOn.value = false
             runCatching { context.unregisterReceiver(receiver) }
             runCatching { context.applicationContext.unregisterComponentCallbacks(configurationCallbacks) }
             runCatching {

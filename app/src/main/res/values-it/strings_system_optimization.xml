@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sysopt_title">Il Bluetooth richiede un interruttore</string>
+    <string name="sysopt_why">Il telefono blocca le scorciatoie Bluetooth.</string>
+    <string name="sysopt_step_find">1 · Trova “%1$s”</string>
+    <string name="sysopt_step_turn_on">2 · Attivalo</string>
+    <string name="sysopt_step_confirm">3 · Tocca “%1$s”</string>
+    <string name="sysopt_switch_column">Questo interruttore</string>
+    <string name="sysopt_unblocks">Sblocca le scorciatoie Bluetooth</string>
+    <string name="sysopt_warns">Il telefono avvisa: batteria, sicurezza</string>
+    <string name="sysopt_off_anytime">Disattivalo quando vuoi</string>
+    <string name="sysopt_only_reads">Legge solo l\'interruttore</string>
+    <string name="sysopt_no_permissions">Nessun nuovo permesso</string>
+    <string name="sysopt_open_source">Codice open source</string>
+    <string name="sysopt_open">Apri Opzioni sviluppatore</string>
+    <string name="sysopt_english_hint">Non c\'è? Metti il telefono in inglese</string>
+    <string name="chain_bt_blocked">Bluetooth bloccato · serve un\'opzione sviluppatore</string>
+</resources>

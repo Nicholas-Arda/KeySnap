@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sensitive_title">Aplikasi sensitif</string>
+    <string name="sensitive_summary_empty">Untuk aplikasi yang tidak mau terbuka</string>
+    <plurals name="sensitive_summary_count">
+        <item quantity="other">%d aplikasi · menyingkir</item>
+    </plurals>
+    <string name="sensitive_intro_title">Beberapa aplikasi tidak mau terbuka saat KeySnap aktif.</string>
+    <string name="sensitive_intro_body">Bank, game, apa pun yang ketat. KeySnap menyingkir.</string>
+    <string name="sensitive_master">Menyingkir untuk aplikasi ini</string>
+    <string name="sensitive_your_apps">Aplikasi Anda</string>
+    <string name="sensitive_developer_options">Opsi developer</string>
+    <string name="sensitive_accessibility">Aksesibilitas</string>
+    <string name="sensitive_add_app">Tambah aplikasi</string>
+    <string name="sensitive_feedback_label">Saat KeySnap menyingkir</string>
+    <string name="sensitive_show_notification">Tampilkan notifikasi</string>
+    <string name="sensitive_vibrate">Getar</string>
+    <string name="sensitive_footer_keys">Tombol Anda tetap berfungsi.</string>
+    <string name="sensitive_footer_restore">KeySnap memulihkan semuanya saat Anda keluar dari aplikasi.</string>
+    <string name="sensitive_sheet_question">Sembunyikan ini saat aplikasi ini terbuka</string>
+    <string name="sensitive_developer_options_desc">Untuk aplikasi yang memblokir mode developer</string>
+    <string name="sensitive_accessibility_desc">Untuk aplikasi yang memblokir aksesibilitas</string>
+    <string name="sensitive_sheet_note">KeySnap menyalakannya lagi saat Anda keluar. Tombol fisik Anda tidak pernah berhenti.</string>
+    <string name="sensitive_remove">Hapus aplikasi</string>
+    <string name="sensitive_card_title">Ada aplikasi yang tidak mau terbuka?</string>
+    <string name="sensitive_card_body">KeySnap bisa menyingkir untuknya.</string>
+    <string name="sensitive_card_set_up">Atur</string>
+    <string name="sensitive_needs_advanced">Hanya berfungsi dengan Mode Lanjutan</string>
+    <string name="sensitive_notif_title">Menyingkir untuk %1$s</string>
+    <string name="sensitive_notif_text">Tombol tetap berfungsi · otomatisasi dijeda</string>
+    <string name="sensitive_notif_text_dev">Semua tetap berfungsi</string>
+    <string name="sensitive_notif_restore">Pulihkan sekarang</string>
+    <string name="sensitive_wireless_debugging">Proses debug nirkabel</string>
+    <string name="sensitive_wireless_debugging_desc">Untuk aplikasi yang memblokir proses debug nirkabel</string>
+    <string name="sensitive_wireless_warning_off">Mematikan Mode Lanjutan</string>
+    <string name="sensitive_wireless_warning_setup">Siapkan lagi setelahnya · perlu Wi-Fi</string>
+    <string name="sensitive_sheet_note_wireless">Tombol Mode Lanjutan berhenti · tidak dipulihkan otomatis</string>
+    <string name="sensitive_footer_wireless">Proses debug nirkabel: tombol Mode Lanjutan berhenti.</string>
+    <string name="sensitive_notif_text_off">Mode Lanjutan nonaktif · ketuk untuk menyiapkan</string>
+    <string name="sensitive_fix_dev_off">Opsi developer nonaktif</string>
+    <string name="sensitive_fix_dev_hint">Ketuk \"Nomor build\" 7 kali</string>
+    <string name="sensitive_fix_wireless_off">Proses debug nirkabel nonaktif</string>
+    <string name="sensitive_fix_accessibility_off">Aksesibilitas nonaktif</string>
+    <string name="sensitive_fix_advanced_off">Mode Lanjutan nonaktif</string>
+</resources>

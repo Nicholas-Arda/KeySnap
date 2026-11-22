@@ -129,6 +129,31 @@ public final class ShellKeyInjector {
         }
     }
 
+    /**
+     * {@link #runShellUnlogged(int, boolean, String...)} for several commands started together, so
+     * the caller waits for the slowest one rather than their sum. A null command is skipped and its
+     * result left null.
+     */
+    static ActionTestResult[] runAllUnlogged(int timeoutSeconds, boolean capture, String[][] commands) {
+        long start = System.nanoTime();
+        Process[] processes = new Process[commands.length];
+        for (int i = 0; i < commands.length; i++) {
+            if (commands[i] == null) continue;
+            try {
+                processes[i] = new ProcessBuilder(commands[i]).redirectErrorStream(true).start();
+            } catch (Exception ignored) {
+                // Reported as a failure below.
+            }
+        }
+        ActionTestResult[] results = new ActionTestResult[commands.length];
+        for (int i = 0; i < commands.length; i++) {
+            if (commands[i] == null) continue;
+            results[i] = processes[i] == null ? ActionTestResult.outcome(false, start)
+                    : awaitProcess(processes[i], timeoutSeconds, capture, start);
+        }
+        return results;
+    }
+
     public static ActionTestResult shellCommand(java.util.Map<String, String> params, boolean capture) {
         long start = System.nanoTime();
         try {

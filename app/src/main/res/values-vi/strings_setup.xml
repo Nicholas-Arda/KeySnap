@@ -39,7 +39,7 @@
     <string name="setup_not_now">Để sau</string>
     <string name="setup_optional_row">Không bắt buộc: thông báo</string>
     <string name="auto_launch_row">Phím tắt vẫn chạy khi ứng dụng đóng</string>
-    <string name="auto_launch_search_hint">Tìm “Tự khởi chạy” và bật KeySnap</string>
+    <string name="auto_launch_search_hint">Tìm “Tự động khởi chạy” và bật KeySnap</string>
     <string name="home_stopped_banner">KeySnap đã bị dừng. Một số phím tắt sẽ không chạy.</string>
     <string name="auto_launch_row_stopped">Ngăn KeySnap dừng lại lần nữa</string>
     <string name="reconnect_sheet_body">KeySnap tắt rồi bật lại quyền hỗ trợ tiếp cận của chính nó một lần. Không có gì khác thay đổi.</string>

@@ -12,4 +12,5 @@
     <string name="choice_timeout_5m">5 minutos</string>
     <string name="choice_timeout_10m">10 minutos</string>
     <string name="choice_timeout_30m">30 minutos</string>
+    <string name="helper_secure_lock_device">Bloquea al instante. La huella y el rostro quedan desactivados hasta que introduzcas el PIN.</string>
 </resources>

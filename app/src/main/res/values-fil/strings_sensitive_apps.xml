@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sensitive_title">Mga sensitibong app</string>
+    <string name="sensitive_summary_empty">Para sa mga app na ayaw magbukas</string>
+    <plurals name="sensitive_summary_count">
+        <item quantity="one">%d app · tumatabi</item>
+        <item quantity="other">%d app · tumatabi</item>
+    </plurals>
+    <string name="sensitive_intro_title">May mga app na ayaw magbukas habang naka-on ang KeySnap.</string>
+    <string name="sensitive_intro_body">Bangko, laro, anumang mahigpit. Tumatabi ang KeySnap.</string>
+    <string name="sensitive_master">Tumabi para sa mga app na ito</string>
+    <string name="sensitive_your_apps">Iyong mga app</string>
+    <string name="sensitive_developer_options">Mga opsyon ng developer</string>
+    <string name="sensitive_accessibility">Accessibility</string>
+    <string name="sensitive_add_app">Magdagdag ng app</string>
+    <string name="sensitive_feedback_label">Kapag tumabi ang KeySnap</string>
+    <string name="sensitive_show_notification">Magpakita ng notification</string>
+    <string name="sensitive_vibrate">Mag-vibrate</string>
+    <string name="sensitive_footer_keys">Gumagana pa rin ang iyong mga button.</string>
+    <string name="sensitive_footer_restore">Ibinabalik ng KeySnap ang lahat paglabas mo sa app.</string>
+    <string name="sensitive_sheet_question">Itago ang mga ito kapag bumukas ang app na ito</string>
+    <string name="sensitive_developer_options_desc">Para sa mga app na humaharang sa developer mode</string>
+    <string name="sensitive_accessibility_desc">Para sa mga app na humaharang sa accessibility</string>
+    <string name="sensitive_sheet_note">Ibinabalik ito ng KeySnap paglabas mo. Hindi tumitigil ang iyong mga hardware button.</string>
+    <string name="sensitive_remove">Alisin ang app</string>
+    <string name="sensitive_card_title">May app na ayaw magbukas?</string>
+    <string name="sensitive_card_body">Puwedeng tumabi ang KeySnap para dito.</string>
+    <string name="sensitive_card_set_up">I-set up</string>
+    <string name="sensitive_needs_advanced">Gumagana lang sa Advanced Mode</string>
+    <string name="sensitive_notif_title">Tumabi para sa %1$s</string>
+    <string name="sensitive_notif_text">Gumagana ang mga button · naka-pause ang automation</string>
+    <string name="sensitive_notif_text_dev">Gumagana pa ang lahat</string>
+    <string name="sensitive_notif_restore">Ibalik ngayon</string>
+    <string name="sensitive_wireless_debugging">Wireless debugging</string>
+    <string name="sensitive_wireless_debugging_desc">Para sa mga app na humaharang sa wireless debugging</string>
+    <string name="sensitive_wireless_warning_off">Pinapatay ang Advanced Mode</string>
+    <string name="sensitive_wireless_warning_setup">I-set up ulit pagkatapos · kailangan ng Wi-Fi</string>
+    <string name="sensitive_sheet_note_wireless">Titigil ang mga button ng Advanced Mode · walang awtomatikong pagbabalik</string>
+    <string name="sensitive_footer_wireless">Wireless debugging: titigil ang mga button ng Advanced Mode.</string>
+    <string name="sensitive_notif_text_off">Naka-off ang Advanced Mode · i-tap para i-set up</string>
+    <string name="sensitive_fix_dev_off">Naka-off ang Mga opsyon ng developer</string>
+    <string name="sensitive_fix_dev_hint">I-tap ang \"Build number\" nang 7 beses</string>
+    <string name="sensitive_fix_wireless_off">Naka-off ang Wireless debugging</string>
+    <string name="sensitive_fix_accessibility_off">Naka-off ang Accessibility</string>
+    <string name="sensitive_fix_advanced_off">Naka-off ang Advanced Mode</string>
+</resources>

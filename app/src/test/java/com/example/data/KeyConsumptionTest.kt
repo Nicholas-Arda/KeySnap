@@ -32,6 +32,17 @@ class KeyConsumptionTest {
         assertFalse(shouldConsumeKey(listOf(script), 25, true, false, unexpected))
     }
 
+    @Test fun whilePausedOnlyAKeyThatCanResumeIsConsumed() {
+        val resume = script.copy(id = "resume", triggers = listOf(ScriptTrigger(listOf(24), TriggerPressType.SINGLE_PRESS)), actions = listOf(ScriptAction("resume_mapping")))
+        assertTrue(shouldConsumeKey(listOf(script, resume), 24, false, true) { true })
+        assertFalse(shouldConsumeKey(listOf(script, resume), 25, false, true) { true })
+        assertTrue(resume.isLive(false))
+        assertTrue(resume.copy(actions = listOf(ScriptAction("toggle_mapping"))).isLive(false))
+        assertFalse(resume.copy(actions = listOf(ScriptAction("pause_mapping"))).isLive(false))
+        assertFalse(resume.copy(enabled = false).isLive(false))
+        assertTrue(script.isLive(true))
+    }
+
     @Test fun anyEligibleScriptCanConsumeAndChordMembersKeepTheirOldMeaning() {
         val chord = script.copy(id = "chord", triggers = listOf(ScriptTrigger(listOf(24, 25), TriggerPressType.LONG_PRESS)))
         assertTrue(shouldConsumeKey(listOf(script, chord), 25, true, true) { it.id == "chord" })

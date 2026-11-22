@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_mind_space_capture">Mind Space: 화면 저장</string>
+    <string name="action_open_mind_space">Mind Space 열기</string>
+    <string name="action_built_in_assistant">기본 음성 비서</string>
+    <string name="helper_mind_space_capture">측면 키처럼 화면을 Mind Space에 저장해요.</string>
+    <string name="helper_open_mind_space">측면 키를 두 번 누른 것처럼 Mind Space를 열어요.</string>
+    <string name="import_error_not_on_phone">이 단축키는 이 휴대폰에 없는 동작을 사용해요.</string>
+    <string name="action_translate_screen">화면 번역</string>
+    <string name="action_record_audio">오디오 녹음</string>
+    <string name="action_open_osee">OSee 열기</string>
+    <string name="helper_translate_screen">측면 키를 길게 누른 것처럼 화면을 실시간 번역해요.</string>
+    <string name="helper_record_audio">측면 키를 길게 누른 것처럼 녹음기에서 녹음을 시작해요.</string>
+</resources>

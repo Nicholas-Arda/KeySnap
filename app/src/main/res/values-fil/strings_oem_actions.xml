@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_mind_space_capture">Mind Space: i-save ang screen</string>
+    <string name="action_open_mind_space">Buksan ang Mind Space</string>
+    <string name="action_built_in_assistant">Built-in na voice assistant</string>
+    <string name="helper_mind_space_capture">Sine-save ang screen sa Mind Space, gaya ng side key.</string>
+    <string name="helper_open_mind_space">Binubuksan ang Mind Space, gaya ng dobleng pindot sa side key.</string>
+    <string name="import_error_not_on_phone">Gumagamit ang shortcut na ito ng aksyon na wala sa phone na ito.</string>
+    <string name="action_translate_screen">I-translate ang screen</string>
+    <string name="action_record_audio">Mag-record ng audio</string>
+    <string name="action_open_osee">Buksan ang OSee</string>
+    <string name="helper_translate_screen">Live na tina-translate ang screen, gaya ng pagpindot nang matagal sa side key.</string>
+    <string name="helper_record_audio">Nagsisimulang mag-record sa Recorder, gaya ng pagpindot nang matagal sa side key.</string>
+</resources>

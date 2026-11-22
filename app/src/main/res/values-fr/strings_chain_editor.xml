@@ -5,8 +5,8 @@
     <string name="chain_condition_empty">Vérifier les paramètres de condition</string>
     <string name="chain_shell_limited">Shell est limité ici</string>
     <string name="chain_set_up">Configurer</string>
-    <string name="chain_bt_prompt">Affiche brièvement une demande Bluetooth</string>
-    <string name="chain_bt_prompt_hide">Pour la masquer : Options pour les développeurs → Désactiver l\'optimisation du système</string>
+    <string name="chain_bt_prompt">Nécessite une option pour les développeurs</string>
+    <string name="chain_bt_prompt_hide">Options pour les développeurs → Désactiver l\'optimisation du système</string>
     <string name="chain_open_developer_options">Ouvrir</string>
     <string name="chain_test_running">Test de l’action</string>
     <string name="chain_test_success">Test réussi</string>

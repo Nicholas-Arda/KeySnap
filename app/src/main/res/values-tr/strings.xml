@@ -853,6 +853,8 @@
     <string name="about_bridge_title">Uzman Modu, kendi telefonunuzun ADB\'sidir</string>
     <string name="about_bridge_body">Telefonunuzun kendi Kablosuz Hata Ayıklama özelliğiyle yerel ağınız üzerinden eşleşir — bu bağlantı evinizden dışarı çıkmaz. Kabuk komutlarını yalnızca sizin yazdığınız kısayollar için çalıştırır. Kapattığınızda köprü silinir; yeniden başlatmak da durdurur.</string>
     <string name="about_illo_bridge_caption">kapalı → köprü kendini siler</string>
+    <string name="about_sensitive_title">Hassas uygulamalar yalnızca seçtiğinizi kapatır</string>
+    <string name="about_sensitive_body">Listenizdeki bir uygulama için yalnızca işaretlediğiniz anahtarları kapatır: geliştirici seçenekleri, KeySnap\'in kendi Erişilebilirlik girdisi, kablosuz hata ayıklama. İlk ikisi uygulamadan çıkınca geri açılır.</string>
     <string name="about_traffic_title">Uygulamanın kurduğu tüm bağlantılar</string>
     <string name="about_traffic_device">Kendi telefonunuz</string>
     <string name="about_traffic_device_body">Kablosuz Hata Ayıklama eşleştirmesi. Yalnızca yerel ağ.</string>
@@ -1091,7 +1093,7 @@
     <string name="settings_autostart_title">Yeniden başlatınca çalıştır</string>
     <string name="settings_autostart_description">Telefon yeniden başladıktan sonra kilidi açıp Wi-Fi’a bağlanınca Uzman Modu yeniden başlar. Bazı telefonlarda KeySnap için otomatik başlatmaya da izin vermeniz gerekir.</string>
     <string name="settings_autostart_permission_description">Uzman Modu şu komutla bir ek izin verir: %1$s. Bu seçenek veya Uzman Modu kapatılınca izin geri alınır. Uzman Modu çalışırken kablosuz hata ayıklama açık kalır. KeySnap açtıysa bu seçeneği kapatmak Uzman Modu’nu da durdurur ve kablosuz hata ayıklamayı eski hâline getirir.</string>
-    <string name="settings_autostart_hint_permission">Kurulumu bitirmek için Uzman Modu’nu bir kez başlatın. OPPO, OnePlus ve realme’de önce Geliştirici seçeneklerinden “İzin izlemeyi devre dışı bırak”, Xiaomi’de “USB hata ayıklama (Güvenlik ayarları)” seçeneğini açın. Geliştirici seçeneklerini açmak için dokunun.</string>
+    <string name="settings_autostart_hint_permission">Kurulumu bitirmek için Uzman Modu’nu bir kez başlatın. OPPO, OnePlus ve realme’de önce Geliştirici seçeneklerinden “Sistem optimizasyonunu devre dışı bırak”, Xiaomi’de “USB hata ayıklama (Güvenlik ayarları)” seçeneğini açın. Geliştirici seçeneklerini açmak için dokunun.</string>
     <string name="settings_autostart_hint_prompt">Android 11–12’de her yeniden başlatmadan sonra Android sorunca bu ağda kablosuz hata ayıklamaya izin verin.</string>
     <string name="settings_autostart_cleanup_failed">Yeniden başlatma izni geri alınamadı. Uzman Modu’na yeniden bağlanıp bu seçeneği tekrar kapatın.</string>
     <string name="notif_autostart_title">Yeniden başlatma sonrası Uzman Modu başlamadı</string>
@@ -1145,10 +1147,6 @@
     <string name="accessibility_reconnect_button">Yeniden bağla</string>
     <string name="accessibility_reconnecting">Yeniden bağlanıyor…</string>
     <string name="accessibility_reconnect_failed">Yeniden bağlanamadı. Burada KeySnap’i kapatıp yeniden açın.</string>
-    <string name="wizard_manual_title">Kodu kendiniz girin</string>
-    <string name="wizard_manual_body">Kablosuz Hata Ayıklama’da \"Cihazı eşleştirme koduyla eşleştir\" seçeneğine dokunun ve 6 haneli kodu buraya yazın. Uygulama değiştirince Android kod penceresini kapatırsa bölünmüş ekranı veya bildirimi kullanın.</string>
-    <string name="wizard_manual_code_label">6 haneli eşleştirme kodu</string>
-    <string name="wizard_manual_pair">Eşleştir</string>
     <string name="notif_return_title">Uzman Modu açık</string>
     <string name="notif_return_body">KeySnap’e dönmek için dokunun.</string>
     <string name="pro_sale_ends_in">İndirimin bitmesine %1$s kaldı</string>

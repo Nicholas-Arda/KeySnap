@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sysopt_title">O Bluetooth precisa de uma chave do celular</string>
+    <string name="sysopt_why">Seu celular bloqueia atalhos de Bluetooth.</string>
+    <string name="sysopt_step_find">1 · Encontre “%1$s”</string>
+    <string name="sysopt_step_turn_on">2 · Ative</string>
+    <string name="sysopt_step_confirm">3 · Toque em “%1$s”</string>
+    <string name="sysopt_switch_column">Esta chave</string>
+    <string name="sysopt_unblocks">Libera atalhos de Bluetooth</string>
+    <string name="sysopt_warns">O celular avisa: bateria, segurança</string>
+    <string name="sysopt_off_anytime">Desative quando quiser</string>
+    <string name="sysopt_only_reads">Só lê esta chave</string>
+    <string name="sysopt_no_permissions">Não pede novas permissões</string>
+    <string name="sysopt_open_source">Código aberto</string>
+    <string name="sysopt_open">Abrir opções do desenvolvedor</string>
+    <string name="sysopt_english_hint">Não aparece? Mude o celular para inglês</string>
+    <string name="chain_bt_blocked">Bluetooth bloqueado · precisa de uma opção do desenvolvedor</string>
+</resources>

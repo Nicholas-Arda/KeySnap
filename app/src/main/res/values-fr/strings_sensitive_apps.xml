@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sensitive_title">Applis sensibles</string>
+    <string name="sensitive_summary_empty">Pour les applis qui refusent de s\'ouvrir</string>
+    <plurals name="sensitive_summary_count">
+        <item quantity="one">%d appli · se met en retrait</item>
+        <item quantity="many">%d d\'applis · se met en retrait</item>
+        <item quantity="other">%d applis · se met en retrait</item>
+    </plurals>
+    <string name="sensitive_intro_title">Certaines applis refusent de s\'ouvrir quand KeySnap est actif.</string>
+    <string name="sensitive_intro_body">Banques, jeux, tout ce qui est strict. KeySnap se met en retrait.</string>
+    <string name="sensitive_master">Se mettre en retrait pour ces applis</string>
+    <string name="sensitive_your_apps">Vos applis</string>
+    <string name="sensitive_developer_options">Options pour les développeurs</string>
+    <string name="sensitive_accessibility">Accessibilité</string>
+    <string name="sensitive_add_app">Ajouter une appli</string>
+    <string name="sensitive_feedback_label">Quand KeySnap se met en retrait</string>
+    <string name="sensitive_show_notification">Afficher une notification</string>
+    <string name="sensitive_vibrate">Vibrer</string>
+    <string name="sensitive_footer_keys">Vos boutons fonctionnent toujours.</string>
+    <string name="sensitive_footer_restore">KeySnap rétablit tout quand vous quittez l\'appli.</string>
+    <string name="sensitive_sheet_question">Masquer ceci à l\'ouverture de cette appli</string>
+    <string name="sensitive_developer_options_desc">Pour les applis qui bloquent le mode développeur</string>
+    <string name="sensitive_accessibility_desc">Pour les applis qui bloquent l\'accessibilité</string>
+    <string name="sensitive_sheet_note">KeySnap les réactive quand vous partez. Vos boutons physiques ne s\'arrêtent jamais.</string>
+    <string name="sensitive_remove">Retirer l\'appli</string>
+    <string name="sensitive_card_title">Une appli refuse de s\'ouvrir ?</string>
+    <string name="sensitive_card_body">KeySnap peut se mettre en retrait pour elle.</string>
+    <string name="sensitive_card_set_up">Configurer</string>
+    <string name="sensitive_needs_advanced">Fonctionne uniquement en mode avancé</string>
+    <string name="sensitive_notif_title">En retrait pour %1$s</string>
+    <string name="sensitive_notif_text">Les boutons marchent · automatisations en pause</string>
+    <string name="sensitive_notif_text_dev">Tout fonctionne encore</string>
+    <string name="sensitive_notif_restore">Rétablir</string>
+    <string name="sensitive_wireless_debugging">Débogage sans fil</string>
+    <string name="sensitive_wireless_debugging_desc">Pour les applis qui bloquent le débogage sans fil</string>
+    <string name="sensitive_wireless_warning_off">Désactive le mode avancé</string>
+    <string name="sensitive_wireless_warning_setup">À reconfigurer ensuite · Wi-Fi requis</string>
+    <string name="sensitive_sheet_note_wireless">Les boutons du mode avancé s\'arrêtent · rien n\'est rétabli</string>
+    <string name="sensitive_footer_wireless">Débogage sans fil : les boutons du mode avancé s\'arrêtent.</string>
+    <string name="sensitive_notif_text_off">Mode avancé désactivé · touchez pour configurer</string>
+    <string name="sensitive_fix_dev_off">Options pour les développeurs désactivées</string>
+    <string name="sensitive_fix_dev_hint">Appuyez 7 fois sur « Numéro de build »</string>
+    <string name="sensitive_fix_wireless_off">Débogage sans fil désactivé</string>
+    <string name="sensitive_fix_accessibility_off">Accessibilité désactivée</string>
+    <string name="sensitive_fix_advanced_off">Mode avancé désactivé</string>
+</resources>

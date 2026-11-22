@@ -28,6 +28,7 @@ import androidx.compose.material.icons.filled.Terminal
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material.icons.outlined.CloudOff
 import androidx.compose.material.icons.outlined.RemoveRedEye
+import androidx.compose.material.icons.outlined.Shield
 import androidx.compose.material.icons.outlined.Wifi
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -189,6 +190,16 @@ fun AboutDialog(
                 AboutCard(Icons.Filled.Terminal, stringResource(R.string.about_bridge_title)) {
                     BridgeOffIllustration(reduced)
                     AboutBody(stringResource(R.string.about_bridge_body))
+                }
+
+                AboutCard(Icons.Outlined.Shield, stringResource(R.string.about_sensitive_title)) {
+                    AboutBody(stringResource(R.string.about_sensitive_body))
+                    // The check: the only settings it ever writes, readable with `settings get`.
+                    Text(
+                        stringResource(R.string.about_sensitive_settings),
+                        style = MonoLabel,
+                        color = colors.onSurfaceVariant,
+                    )
                 }
 
                 AboutCard(Icons.Outlined.Wifi, stringResource(R.string.about_traffic_title)) {

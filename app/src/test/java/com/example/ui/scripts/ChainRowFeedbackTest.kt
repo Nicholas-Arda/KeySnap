@@ -100,6 +100,15 @@ class ChainRowFeedbackTest {
             actionTestSummary(res, ScriptAction("enable_bluetooth"), failed).lines().last(),
         )
         assertEquals(1, actionTestSummary(res, ScriptAction("shell_command", mapOf("command" to "x")), failed).lines().size)
+        val trace = ActionTestResult(false, 255, null, 50, false, listOf(
+            "Exception occurred while executing 'disable':",
+            "java.lang.SecurityException: uid 2000 does not have android.permission.UPDATE_APP_OPS_STATS.",
+            "\tat android.os.Binder.execTransact(Binder.java:1340)",
+        ))
+        assertEquals(
+            "java.lang.SecurityException: uid 2000 does not have android.permission.UPDATE_APP_OPS_STATS.",
+            actionTestSummary(res, ScriptAction("disable_bluetooth"), trace).lines().last(),
+        )
     }
 
     @Test fun timeoutDisplaysSafeReason() {

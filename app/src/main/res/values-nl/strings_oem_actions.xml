@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_mind_space_capture">Mind Space: scherm bewaren</string>
+    <string name="action_open_mind_space">Mind Space openen</string>
+    <string name="action_built_in_assistant">Ingebouwde spraakassistent</string>
+    <string name="helper_mind_space_capture">Bewaart het scherm in Mind Space, zoals de zijknop.</string>
+    <string name="helper_open_mind_space">Opent Mind Space, zoals twee keer op de zijknop drukken.</string>
+    <string name="import_error_not_on_phone">Deze snelkoppeling gebruikt een actie die deze telefoon niet heeft.</string>
+    <string name="action_translate_screen">Scherm vertalen</string>
+    <string name="action_record_audio">Audio opnemen</string>
+    <string name="action_open_osee">OSee openen</string>
+    <string name="helper_translate_screen">Vertaalt het scherm live, zoals de zijknop ingedrukt houden.</string>
+    <string name="helper_record_audio">Start een opname in Recorder, zoals de zijknop ingedrukt houden.</string>
+</resources>

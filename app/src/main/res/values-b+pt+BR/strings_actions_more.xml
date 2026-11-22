@@ -12,4 +12,5 @@
     <string name="choice_timeout_5m">5 minutos</string>
     <string name="choice_timeout_10m">10 minutos</string>
     <string name="choice_timeout_30m">30 minutos</string>
+    <string name="helper_secure_lock_device">Bloqueia na hora. Digital e rosto ficam desativados até você digitar o PIN.</string>
 </resources>

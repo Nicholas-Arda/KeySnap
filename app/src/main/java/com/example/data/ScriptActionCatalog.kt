@@ -139,6 +139,13 @@ object ScriptActionCatalog {
         ActionDescriptor("interact_with_app_element", R.string.action_interact_with_app_element, ActionCategory.APPS, parameters = listOf(param("packageName", R.string.param_app, ActionParameterKind.PACKAGE), param("element", R.string.param_element, ActionParameterKind.TEXT))),
         ActionDescriptor("launch_voice_assistant", R.string.action_launch_voice_assistant, ActionCategory.APPS, ActionAvailability.AVAILABLE),
         ActionDescriptor("launch_device_assistant", R.string.action_launch_device_assistant, ActionCategory.APPS, ActionAvailability.AVAILABLE),
+        // OPPO, OnePlus and realme only, and only where the feature is installed (OemActions).
+        ActionDescriptor(OemActions.MIND_SPACE_CAPTURE, R.string.action_mind_space_capture, ActionCategory.APPS, ActionAvailability.AVAILABLE),
+        ActionDescriptor(OemActions.OPEN_MIND_SPACE, R.string.action_open_mind_space, ActionCategory.APPS, ActionAvailability.AVAILABLE),
+        ActionDescriptor(OemActions.BUILT_IN_ASSISTANT, R.string.action_built_in_assistant, ActionCategory.APPS, ActionAvailability.AVAILABLE),
+        ActionDescriptor(OemActions.TRANSLATE_SCREEN, R.string.action_translate_screen, ActionCategory.APPS, ActionAvailability.AVAILABLE),
+        ActionDescriptor(OemActions.RECORD_AUDIO, R.string.action_record_audio, ActionCategory.APPS, ActionAvailability.AVAILABLE),
+        ActionDescriptor(OemActions.OPEN_OSEE, R.string.action_open_osee, ActionCategory.APPS, ActionAvailability.AVAILABLE),
         ActionDescriptor("open_camera", R.string.action_open_camera, ActionCategory.APPS, ActionAvailability.AVAILABLE),
         ActionDescriptor("open_settings", R.string.action_open_settings, ActionCategory.APPS, ActionAvailability.AVAILABLE),
         ActionDescriptor("force_stop_app", R.string.action_force_stop_app, ActionCategory.APPS, ActionAvailability.AVAILABLE, listOf(param("packageName", R.string.param_app, ActionParameterKind.PACKAGE))),
@@ -225,10 +232,10 @@ object ScriptActionCatalog {
         ActionDescriptor("toggle_nfc", R.string.action_toggle_nfc, ActionCategory.CONNECTIVITY, ActionAvailability.AVAILABLE),
         ActionDescriptor("toggle_airplane_mode", R.string.action_toggle_airplane_mode, ActionCategory.CONNECTIVITY, ActionAvailability.AVAILABLE),
         ActionDescriptor("toggle_location", R.string.action_toggle_location, ActionCategory.CONNECTIVITY, ActionAvailability.AVAILABLE),
-        // Turning the hotspot on is closed to shell and to apps (Android 16, checked on PLG110
-        // 2026-11-18), so this opens its page and the user flips the switch.
+        // Opens the page so the user flips the switch; toggle_hotspot flips it itself through
+        // the bridge (the tethering binder as the shell, PLG110 2026-11-21; see Hotspot).
         ActionDescriptor("open_hotspot_settings", R.string.action_open_hotspot_settings, ActionCategory.CONNECTIVITY, ActionAvailability.AVAILABLE),
-        ActionDescriptor("toggle_hotspot", R.string.action_toggle_hotspot, ActionCategory.CONNECTIVITY),
+        ActionDescriptor("toggle_hotspot", R.string.action_toggle_hotspot, ActionCategory.CONNECTIVITY, ActionAvailability.AVAILABLE, listOf(stateParam())),
 
         // Keyboard
         ActionDescriptor("show_keyboard", R.string.action_show_keyboard, ActionCategory.KEYBOARD),
@@ -244,7 +251,7 @@ object ScriptActionCatalog {
 
         // Device
         ActionDescriptor("lock_device", R.string.action_lock_device, ActionCategory.DEVICE, ActionAvailability.AVAILABLE),
-        ActionDescriptor("secure_lock_device", R.string.action_secure_lock_device, ActionCategory.DEVICE),
+        ActionDescriptor("secure_lock_device", R.string.action_secure_lock_device, ActionCategory.DEVICE, ActionAvailability.AVAILABLE),
         ActionDescriptor("power_dialog", R.string.action_power_dialog, ActionCategory.DEVICE, ActionAvailability.AVAILABLE),
         // "filter" absent = priority only, so scripts saved before the choice existed keep working.
         ActionDescriptor("toggle_dnd", R.string.action_toggle_dnd, ActionCategory.DEVICE, ActionAvailability.AVAILABLE, listOf(param("filter", R.string.param_dnd_type, ActionParameterKind.CHOICE, required = false, choices = listOf("priority", "alarms", "none")))),
@@ -421,19 +428,20 @@ object ScriptActionCatalog {
     )
 
     /**
-     * Actions the picker tags with a blue NEW badge: everything added since the last Play release
-     * (1.3.1), and every "Coming soon" row the day it becomes available. Clear this set's older
-     * entries one release later, so NEW always means "new in this update".
+     * Actions the picker tags with a blue NEW badge and lists under its "New" tile: everything added
+     * since the last Play release (1.3.2), and every "Coming soon" row the day it becomes available.
+     * Empty it when a release ships, so NEW always means "new in this update".
      */
     val NEW: Set<String> = setOf(
-        "toggle_battery_saver", "enable_battery_saver", "disable_battery_saver",
-        "always_on_display", "grayscale", "charge_limit", "bedtime",
-        LEARNED_SETTING, "set_payment_app",
-        "dark_mode", "night_light", "extra_dim", "screen_timeout", "toggle_nfc",
-        "toggle_notification_drawer", "toggle_quick_settings", "dismiss_all_notifications",
-        "open_hotspot_settings", "go_last_app", "hide_keyboard", "change_flashlight_brightness",
-        "set_timer", "set_alarm", "copy_to_clipboard", "keep_screen_awake", "close_and_clear_app",
-        "launch_app_shortcut", "answer_call", "end_call",
+        "toggle_hotspot", "secure_lock_device",
+        OemActions.MIND_SPACE_CAPTURE, OemActions.OPEN_MIND_SPACE, OemActions.BUILT_IN_ASSISTANT,
+        OemActions.TRANSLATE_SCREEN, OemActions.RECORD_AUDIO, OemActions.OPEN_OSEE,
+    )
+
+    /** The picker's "Popular" tile, in this order. Hand-picked (no usage is counted): the basics plus what Reddit asked for most. */
+    val POPULAR: List<String> = listOf(
+        "toggle_flashlight", "take_screenshot", "media_play_pause", "launch_app", "open_camera",
+        "cycle_ringer_mode", "toggle_dnd", "toggle_bluetooth", "always_on_display", "toggle_battery_saver",
     )
 
     /**

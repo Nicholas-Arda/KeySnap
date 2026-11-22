@@ -130,6 +130,36 @@ class BridgeFeedbackDeliveryTest {
         assertEquals(feedback.single().capsuleRunId, triggers.single().capsuleRunId)
     }
 
+    @Test fun sensitiveLeavingIsFlushedAfterEarlierLinesBeforeItReturns() {
+        withServer { server, port, _ ->
+            connect(port).use { client ->
+                client.send(BridgeProtocol.CMD_WATCH)
+                assertEquals("OK\twatching", client.read())
+                server.broadcastSensitive("com.game", false)
+                server.broadcastSensitiveLeaving("com.bank", 2_000)
+                // Both lines are on the socket once it returns: the bridge writes the setting only then.
+                client.socket.soTimeout = 100
+                assertEquals("SENSITIVE\tcom.game\trestored", client.read())
+                assertEquals("SENSITIVE\tcom.bank\tleaving", client.read())
+            }
+        }
+    }
+
+    @Test fun clientTellsLeavingApartFromSteppingAside() {
+        val client = BridgeClient(port = 1, token = "test-token")
+        val dispatch = client.javaClass.getDeclaredMethod("dispatch", String::class.java, BridgeClient.Listener::class.java)
+            .apply { isAccessible = true }
+        val heard = mutableListOf<String>()
+        val listener = object : BridgeClient.Listener {
+            override fun onSensitiveApp(packageName: String, steppedAside: Boolean) { heard += "$packageName $steppedAside" }
+            override fun onSensitiveLeaving(packageName: String) { heard += "$packageName leaving" }
+        }
+        dispatch.invoke(client, "SENSITIVE\tcom.bank\taside", listener)
+        dispatch.invoke(client, "SENSITIVE\tcom.bank\tleaving", listener)
+        dispatch.invoke(client, "SENSITIVE\tcom.bank\trestored", listener)
+        assertEquals(listOf("com.bank true", "com.bank leaving", "com.bank false"), heard)
+    }
+
     private fun awaitWakes(wakes: AtomicInteger, count: Int) {
         val deadline = System.nanoTime() + 2_000_000_000L
         while (wakes.get() < count && System.nanoTime() < deadline) Thread.sleep(1)
@@ -137,14 +167,14 @@ class BridgeFeedbackDeliveryTest {
     }
 
     private fun connect(port: Int): Client = Client(Socket("127.0.0.1", port)).also {
-        it.send("HELLO\ttest-token")
-        assertTrue(it.read().startsWith("OK\t${BridgeProtocol.VERSION}\t"))
+        assertTrue(it.login("test-token")!!.startsWith("OK\t${BridgeProtocol.VERSION}\t"))
     }
 
     private class Client(val socket: Socket) : AutoCloseable {
         private val reader = socket.getInputStream().bufferedReader()
         private val writer = socket.getOutputStream().bufferedWriter()
         init { socket.soTimeout = 2000 }
+        fun login(token: String) = loginForTest(socket, reader, writer, token)
         fun send(line: String) { writer.write(line); writer.newLine(); writer.flush() }
         fun read(): String = reader.readLine()
         override fun close() = socket.close()

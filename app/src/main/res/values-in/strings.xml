@@ -758,6 +758,8 @@
     <string name="about_bridge_title">Mode Lanjutan adalah ADB ponsel Anda sendiri</string>
     <string name="about_bridge_body">Mode ini tersambung ke Proses debug nirkabel ponsel Anda sendiri lewat jaringan lokal — koneksi itu tidak pernah keluar dari rumah Anda. Mode ini hanya menjalankan perintah shell untuk pintasan yang Anda buat. Nonaktifkan dan helper-nya terhapus; mulai ulang juga menghentikannya.</string>
     <string name="about_illo_bridge_caption">nonaktif → helper menghapus dirinya</string>
+    <string name="about_sensitive_title">Aplikasi sensitif hanya mengubah yang Anda centang</string>
+    <string name="about_sensitive_body">Untuk aplikasi di daftar Anda, hanya sakelar yang Anda centang yang dimatikan: opsi developer, entri Aksesibilitas milik KeySnap, proses debug nirkabel. Dua yang pertama kembali saat Anda keluar dari aplikasi.</string>
     <string name="about_traffic_title">Semua koneksi yang dibuat aplikasi</string>
     <string name="about_traffic_device">Ponsel Anda sendiri</string>
     <string name="about_traffic_device_body">Penyambungan Proses debug nirkabel. Hanya jaringan lokal.</string>
@@ -973,7 +975,7 @@
     <string name="settings_autostart_title">Mulai setelah dinyalakan ulang</string>
     <string name="settings_autostart_description">Mulai Mode Lanjutan lagi setelah Anda membuka kunci ponsel yang baru dinyalakan ulang dan terhubung ke Wi-Fi. Beberapa ponsel juga perlu mengizinkan KeySnap mulai otomatis.</string>
     <string name="settings_autostart_permission_description">Mode Lanjutan memberikan satu izin tambahan melalui: %1$s. Izin ini dicabut saat opsi ini atau Mode Lanjutan dinonaktifkan. Proses debug nirkabel tetap aktif selama Mode Lanjutan berjalan. Jika KeySnap yang mengaktifkannya, menonaktifkan opsi ini juga menghentikan Mode Lanjutan dan memulihkan Proses debug nirkabel.</string>
-    <string name="settings_autostart_hint_permission">Mulai Mode Lanjutan sekali untuk menyelesaikan penyiapan. Di OPPO, OnePlus, dan realme, aktifkan dulu “Nonaktifkan pemantauan izin” di Opsi developer; di Xiaomi, aktifkan “Debugging USB (Setelan keamanan)”. Ketuk untuk membuka Opsi developer.</string>
+    <string name="settings_autostart_hint_permission">Mulai Mode Lanjutan sekali untuk menyelesaikan penyiapan. Di OPPO, OnePlus, dan realme, aktifkan dulu “Nonaktifkan pengoptimalan sistem” di Opsi developer; di Xiaomi, aktifkan “Debugging USB (Setelan keamanan)”. Ketuk untuk membuka Opsi developer.</string>
     <string name="settings_autostart_hint_prompt">Di Android 11–12, izinkan Proses debug nirkabel di jaringan ini setiap kali dinyalakan ulang saat Android bertanya.</string>
     <string name="settings_autostart_hint_pairing">Jika Android mengakhiri atau menghapus penyambungan, siapkan Mode Lanjutan lagi. Koneksi harian mungkin tidak menjaga penyambungan tetap aktif di semua ponsel.</string>
     <string name="settings_autostart_cleanup_failed">Izin mulai ulang tidak bisa dicabut. Hubungkan ulang Mode Lanjutan dan nonaktifkan opsi ini lagi.</string>
@@ -1024,10 +1026,6 @@
     <string name="accessibility_reconnect_button">Hubungkan ulang</string>
     <string name="accessibility_reconnecting">Menghubungkan ulang…</string>
     <string name="accessibility_reconnect_failed">Tidak bisa terhubung ulang. Nonaktifkan KeySnap, lalu aktifkan lagi di sini.</string>
-    <string name="wizard_manual_title">Masukkan kode sendiri</string>
-    <string name="wizard_manual_body">Di Proses debug nirkabel, ketuk ‘Sambungkan perangkat dengan kode penyambungan’ dan ketik kode 6 digit di sini. Jika Android menutup jendela kode saat Anda berpindah aplikasi, gunakan layar terpisah atau notifikasi.</string>
-    <string name="wizard_manual_code_label">Kode penyambungan 6 digit</string>
-    <string name="wizard_manual_pair">Sambungkan</string>
     <string name="notif_return_title">Mode Lanjutan aktif</string>
     <string name="notif_return_body">Ketuk untuk kembali ke KeySnap.</string>
     <string name="pro_sale_ends_in">Diskon berakhir dalam %1$s</string>

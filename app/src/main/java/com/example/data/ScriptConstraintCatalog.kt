@@ -72,6 +72,15 @@ object ScriptConstraintCatalog {
     /** Conditions still being tested on real devices: the picker and the sheet say so. */
     val EXPERIMENTAL: Set<String> = setOf(AT_PLACE)
 
+    /** The picker's "New" tile: conditions added since the last Play release; hidden while empty. Empty it when a release ships. */
+    val NEW: Set<String> = emptySet()
+
+    /** The picker's "Popular" tile, in this order. Hand-picked (no usage is counted). */
+    val POPULAR: List<String> = listOf(
+        "charging", "bluetooth_device_connected", "headphones_connected", "app_in_foreground", "time",
+        AT_PLACE, "media_is_playing", "connected_to_wifi_network", NOTIFICATION_RECEIVED,
+    )
+
     val all: List<ConstraintDescriptor> = listOf(
         ConstraintDescriptor(MODE_IS, R.string.constraint_mode_is, ConstraintCategory.DEVICE, ConstraintAvailability.AVAILABLE),
         // Apps
@@ -182,12 +191,12 @@ object ScriptConstraintCatalog {
 
     /**
      * Constraints that can wake a key-less (automation) script: states Android announces with a
-     * broadcast or callback, on which `DeviceEventReceiver` re-evaluates — nothing polls — or, for
-     * the [AUTOMATION_ONLY] types, their own wake-up (the NotificationEventListener callback, the
-     * RSS feed job, the calendar alarm, the time conditions' alarm (TimeSchedule)). An
-     * automation needs at least one of these; the others still gate it. Foreground app, media,
-     * keyboard and mobile data are left out for that reason; add one only together with its
-     * wake-up source.
+     * broadcast or callback, on which `DeviceEventReceiver` re-evaluates, the foreground app
+     * (polled by `ForegroundAppWatch` only while the screen is on and an automation reads it) or,
+     * for the [AUTOMATION_ONLY] types, their own wake-up (the NotificationEventListener callback,
+     * the RSS feed job, the calendar alarm, the time conditions' alarm (TimeSchedule)). An
+     * automation needs at least one of these; the others still gate it. Media, keyboard and mobile
+     * data are left out for that reason; add one only together with its wake-up source.
      */
     val AUTOMATION_TYPES: Set<String> = setOf(
         "screen_on", "screen_off",
@@ -202,6 +211,7 @@ object ScriptConstraintCatalog {
         "headphones_connected", "headphones_disconnected",
         "airplane_mode_on", "airplane_mode_off",
         "location_on", "location_off",
+        "app_in_foreground", "app_not_in_foreground", "no_app_open",
         NOTIFICATION_RECEIVED, NOTIFICATION_WAITING, RSS_NEW_ITEM, CALENDAR_EVENT_ACTIVE,
         "time", AT_TIME, INTERVAL, AT_PLACE,
     )

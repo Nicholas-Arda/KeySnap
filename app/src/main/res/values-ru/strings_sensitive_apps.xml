@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sensitive_title">Чувствительные приложения</string>
+    <string name="sensitive_summary_empty">Для приложений, которые не открываются</string>
+    <plurals name="sensitive_summary_count">
+        <item quantity="one">%d приложение · уступает</item>
+        <item quantity="few">%d приложения · уступает</item>
+        <item quantity="many">%d приложений · уступает</item>
+        <item quantity="other">%d приложения · уступает</item>
+    </plurals>
+    <string name="sensitive_intro_title">Некоторые приложения не открываются, пока KeySnap включён.</string>
+    <string name="sensitive_intro_body">Банки, игры, всё строгое. KeySnap уступает им.</string>
+    <string name="sensitive_master">Уступать этим приложениям</string>
+    <string name="sensitive_your_apps">Ваши приложения</string>
+    <string name="sensitive_developer_options">Параметры разработчика</string>
+    <string name="sensitive_accessibility">Специальные возможности</string>
+    <string name="sensitive_add_app">Добавить приложение</string>
+    <string name="sensitive_feedback_label">Когда KeySnap уступает</string>
+    <string name="sensitive_show_notification">Показывать уведомление</string>
+    <string name="sensitive_vibrate">Вибрация</string>
+    <string name="sensitive_footer_keys">Ваши кнопки продолжают работать.</string>
+    <string name="sensitive_footer_restore">KeySnap всё вернёт, когда вы выйдете из приложения.</string>
+    <string name="sensitive_sheet_question">Скрывать это, когда открыто приложение</string>
+    <string name="sensitive_developer_options_desc">Для приложений, блокирующих режим разработчика</string>
+    <string name="sensitive_accessibility_desc">Для приложений, блокирующих специальные возможности</string>
+    <string name="sensitive_sheet_note">KeySnap включит это снова, когда вы выйдете. Аппаратные кнопки не останавливаются.</string>
+    <string name="sensitive_remove">Удалить приложение</string>
+    <string name="sensitive_card_title">Приложение не открывается?</string>
+    <string name="sensitive_card_body">KeySnap может ему уступить.</string>
+    <string name="sensitive_card_set_up">Настроить</string>
+    <string name="sensitive_needs_advanced">Работает только в Расширенном режиме</string>
+    <string name="sensitive_notif_title">Уступил приложению %1$s</string>
+    <string name="sensitive_notif_text">Кнопки работают · автоматизации на паузе</string>
+    <string name="sensitive_notif_text_dev">Всё работает</string>
+    <string name="sensitive_notif_restore">Вернуть сейчас</string>
+    <string name="sensitive_wireless_debugging">Отладка по Wi-Fi</string>
+    <string name="sensitive_wireless_debugging_desc">Для приложений, блокирующих отладку по Wi-Fi</string>
+    <string name="sensitive_wireless_warning_off">Выключает Расширенный режим</string>
+    <string name="sensitive_wireless_warning_setup">Потом настройте заново · нужен Wi-Fi</string>
+    <string name="sensitive_sheet_note_wireless">Кнопки Расширенного режима остановятся · без автовосстановления</string>
+    <string name="sensitive_footer_wireless">Отладка по Wi-Fi: кнопки Расширенного режима остановятся.</string>
+    <string name="sensitive_notif_text_off">Расширенный режим выключен · нажмите для настройки</string>
+    <string name="sensitive_fix_dev_off">Параметры разработчика выключены</string>
+    <string name="sensitive_fix_dev_hint">Нажмите на \"Номер сборки\" 7 раз</string>
+    <string name="sensitive_fix_wireless_off">Отладка по Wi-Fi выключена</string>
+    <string name="sensitive_fix_accessibility_off">Специальные возможности выключены</string>
+    <string name="sensitive_fix_advanced_off">Расширенный режим выключен</string>
+</resources>

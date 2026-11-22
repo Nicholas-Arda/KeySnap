@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_sensitive_title_133">Apps sensibles</string>
+    <string name="whats_new_sensitive_description_133">Une appli bancaire ou un jeu refuse de s\'ouvrir ? KeySnap s\'efface tant qu\'il est ouvert.</string>
+    <string name="whats_new_picker_title_133">Nouveau, Populaires et ton téléphone</string>
+    <string name="whats_new_picker_description_133">Trouve plus vite la bonne action ou condition.</string>
+    <string name="whats_new_oem_title_133">Les fonctions de la touche latérale sur n\'importe quelle touche</string>
+    <string name="whats_new_oem_description_133">Mind Space, Traduire l\'écran, Enregistrer l\'audio, OSee. Expérimental.</string>
+    <string name="whats_new_fix_actions_133">Nouvelles actions : Activer/désactiver le partage de connexion, Verrouillage sécurisé</string>
+    <string name="whats_new_fix_single_press_133">Un appui agit tout de suite s\'il n\'y a pas de double appui</string>
+    <string name="whats_new_fix_pairing_133">Le code d\'association de la notification fonctionne</string>
+    <string name="whats_new_fix_app_automation_133">Les automatisations d\'appli se lancent à chaque ouverture de l\'appli</string>
+    <string name="whats_new_fix_large_text_133">Le grand texte ne coupe plus les mots</string>
+    <string name="whats_new_more_133">Aussi dans cette mise à jour</string>
+    <string name="whats_new_not_supported_133">Non pris en charge sur cet appareil</string>
+</resources>

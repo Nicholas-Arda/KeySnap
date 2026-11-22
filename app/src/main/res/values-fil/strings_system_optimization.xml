@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sysopt_title">Kailangan ng Bluetooth ng isang switch</string>
+    <string name="sysopt_why">Bina-block ng phone mo ang Bluetooth shortcuts.</string>
+    <string name="sysopt_step_find">1 · Hanapin ang “%1$s”</string>
+    <string name="sysopt_step_turn_on">2 · I-on ito</string>
+    <string name="sysopt_step_confirm">3 · I-tap ang “%1$s”</string>
+    <string name="sysopt_switch_column">Ang switch na ito</string>
+    <string name="sysopt_unblocks">Ina-unblock ang Bluetooth shortcuts</string>
+    <string name="sysopt_warns">Nagbababala ang phone: baterya, seguridad</string>
+    <string name="sysopt_off_anytime">Puwedeng i-off anumang oras</string>
+    <string name="sysopt_only_reads">Binabasa lang ang switch</string>
+    <string name="sysopt_no_permissions">Walang bagong permiso</string>
+    <string name="sysopt_open_source">Open source na code</string>
+    <string name="sysopt_open">Buksan ang Developer options</string>
+    <string name="sysopt_english_hint">Wala? Gawing English muna ang phone</string>
+    <string name="chain_bt_blocked">Naka-block ang Bluetooth · kailangan ng isang developer setting</string>
+</resources>

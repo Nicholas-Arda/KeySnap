@@ -855,6 +855,8 @@
     <string name="about_bridge_title">Расширенный режим — это ADB вашего же телефона</string>
     <string name="about_bridge_body">Он подключается к беспроводной отладке вашего телефона по локальной сети — это соединение никогда не выходит из дома. Команды оболочки он выполняет только для написанных вами сценариев. Выключите его — мост будет удалён; перезагрузка тоже его останавливает.</string>
     <string name="about_illo_bridge_caption">выкл. → мост удаляет себя</string>
+    <string name="about_sensitive_title">Чувствительные приложения меняют только отмеченное</string>
+    <string name="about_sensitive_body">Для приложения из вашего списка выключаются только отмеченные переключатели: параметры разработчика, собственный пункт KeySnap в специальных возможностях, отладка по Wi-Fi. Первые два возвращаются, когда вы выходите из приложения.</string>
     <string name="about_traffic_title">Все соединения, которые создаёт приложение</string>
     <string name="about_traffic_device">Ваш собственный телефон</string>
     <string name="about_traffic_device_body">Сопряжение по беспроводной отладке. Только локальная сеть.</string>
@@ -1093,7 +1095,7 @@
     <string name="settings_autostart_title">Запуск после перезагрузки</string>
     <string name="settings_autostart_description">Запускает расширенный режим после разблокировки телефона и подключения к Wi-Fi. На некоторых телефонах нужно разрешить автозапуск KeySnap.</string>
     <string name="settings_autostart_permission_description">Расширенный режим выдаёт дополнительное разрешение командой: %1$s. Оно отзывается при отключении этой опции или расширенного режима. Беспроводная отладка остаётся включённой во время работы режима. Если KeySnap включил её, отключение этой опции также останавливает расширенный режим и восстанавливает беспроводную отладку.</string>
-    <string name="settings_autostart_hint_permission">Запустите расширенный режим один раз. На OPPO, OnePlus и realme сначала включите «Отключить мониторинг разрешений», на Xiaomi — «Отладка по USB (Настройки безопасности)» в настройках разработчика. Нажмите, чтобы открыть их.</string>
+    <string name="settings_autostart_hint_permission">Запустите расширенный режим один раз. На OPPO, OnePlus и realme сначала включите «Выключить оптимизацию системы», на Xiaomi — «Отладка по USB (Настройки безопасности)» в настройках разработчика. Нажмите, чтобы открыть их.</string>
     <string name="settings_autostart_hint_prompt">На Android 11–12 после каждой перезагрузки разрешайте беспроводную отладку в этой сети, когда Android запрашивает её.</string>
     <string name="settings_autostart_cleanup_failed">Не удалось отозвать разрешение перезапуска. Подключите расширенный режим и снова отключите эту опцию.</string>
     <string name="notif_autostart_title">Расширенный режим не запущен после перезагрузки</string>
@@ -1147,10 +1149,6 @@
     <string name="accessibility_reconnect_button">Переподключить</string>
     <string name="accessibility_reconnecting">Переподключение…</string>
     <string name="accessibility_reconnect_failed">Не удалось переподключить. Выключите и снова включите KeySnap здесь.</string>
-    <string name="wizard_manual_title">Введите код вручную</string>
-    <string name="wizard_manual_body">В разделе «Отладка по Wi-Fi» нажмите «Сопряжение устройства по коду» и введите здесь 6-значный код. Если Android закрывает окно с кодом при переключении приложений, используйте разделённый экран или уведомление.</string>
-    <string name="wizard_manual_code_label">6-значный код подключения</string>
-    <string name="wizard_manual_pair">Подключить</string>
     <string name="notif_return_title">Расширенный режим включён</string>
     <string name="notif_return_body">Нажмите, чтобы вернуться в KeySnap.</string>
     <string name="pro_sale_ends_in">Скидка закончится через %1$s</string>

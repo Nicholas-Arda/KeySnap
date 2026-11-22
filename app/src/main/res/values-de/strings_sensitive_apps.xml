@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sensitive_title">Sensible Apps</string>
+    <string name="sensitive_summary_empty">Für Apps, die nicht starten</string>
+    <plurals name="sensitive_summary_count">
+        <item quantity="one">%d App · tritt zurück</item>
+        <item quantity="other">%d Apps · tritt zurück</item>
+    </plurals>
+    <string name="sensitive_intro_title">Manche Apps starten nicht, solange KeySnap an ist.</string>
+    <string name="sensitive_intro_body">Banken, Spiele, alles Strenge. KeySnap tritt zurück.</string>
+    <string name="sensitive_master">Für diese Apps zurücktreten</string>
+    <string name="sensitive_your_apps">Deine Apps</string>
+    <string name="sensitive_developer_options">Entwickleroptionen</string>
+    <string name="sensitive_accessibility">Bedienungshilfen</string>
+    <string name="sensitive_add_app">App hinzufügen</string>
+    <string name="sensitive_feedback_label">Wenn KeySnap zurücktritt</string>
+    <string name="sensitive_show_notification">Benachrichtigung zeigen</string>
+    <string name="sensitive_vibrate">Vibrieren</string>
+    <string name="sensitive_footer_keys">Deine Tasten funktionieren weiter.</string>
+    <string name="sensitive_footer_restore">KeySnap stellt alles wieder her, wenn du die App verlässt.</string>
+    <string name="sensitive_sheet_question">Das ausblenden, wenn diese App startet</string>
+    <string name="sensitive_developer_options_desc">Für Apps, die den Entwicklermodus blockieren</string>
+    <string name="sensitive_accessibility_desc">Für Apps, die Bedienungshilfen blockieren</string>
+    <string name="sensitive_sheet_note">KeySnap schaltet das wieder ein, wenn du gehst. Deine Hardwaretasten stoppen nie.</string>
+    <string name="sensitive_remove">App entfernen</string>
+    <string name="sensitive_card_title">Eine App startet nicht?</string>
+    <string name="sensitive_card_body">KeySnap kann für sie zurücktreten.</string>
+    <string name="sensitive_card_set_up">Einrichten</string>
+    <string name="sensitive_needs_advanced">Funktioniert nur im Erweiterten Modus</string>
+    <string name="sensitive_notif_title">Zurückgetreten für %1$s</string>
+    <string name="sensitive_notif_text">Tasten funktionieren · Automationen pausiert</string>
+    <string name="sensitive_notif_text_dev">Alles funktioniert weiter</string>
+    <string name="sensitive_notif_restore">Jetzt wiederherstellen</string>
+    <string name="sensitive_wireless_debugging">Kabelloses Debugging</string>
+    <string name="sensitive_wireless_debugging_desc">Für Apps, die kabelloses Debugging blockieren</string>
+    <string name="sensitive_wireless_warning_off">Schaltet den Erweiterten Modus aus</string>
+    <string name="sensitive_wireless_warning_setup">Danach neu einrichten · braucht WLAN</string>
+    <string name="sensitive_sheet_note_wireless">Tasten im Erweiterten Modus stoppen · keine automatische Wiederherstellung</string>
+    <string name="sensitive_footer_wireless">Kabelloses Debugging: Tasten im Erweiterten Modus stoppen.</string>
+    <string name="sensitive_notif_text_off">Erweiterter Modus ist aus · zum Einrichten tippen</string>
+    <string name="sensitive_fix_dev_off">Entwickleroptionen sind aus</string>
+    <string name="sensitive_fix_dev_hint">Tippe 7-mal auf „Build-Nummer“</string>
+    <string name="sensitive_fix_wireless_off">Kabelloses Debugging ist aus</string>
+    <string name="sensitive_fix_accessibility_off">Bedienungshilfen sind aus</string>
+    <string name="sensitive_fix_advanced_off">Erweiterter Modus ist aus</string>
+</resources>

@@ -34,6 +34,7 @@ import com.example.service.PlacePick
 import com.example.service.RunFailureNotifier
 import com.example.service.DiagnosticRecorder
 import com.example.service.HardwareKeyTriggerCoordinator
+import com.example.service.KeyPassThrough
 import com.example.ui.MainScreen
 import com.example.ui.components.BottomBarClearance
 import com.example.ui.settings.RecordingIndicator
@@ -166,6 +167,8 @@ class MainActivity : ComponentActivity() {
     private val keyConsumption = KeyConsumptionTracker()
 
     private fun consumes(keyCode: Int, action: Int, event: KeyEvent?): Boolean {
+        // A key's own job given back while KeySnap is in front: the system must get it untouched.
+        if (event != null && KeyPassThrough.isInjected(keyCode, event.deviceId)) return false
         // Read before dispatch: the release that ends a recording clears the flag.
         val recording = viewModel.isRecordingKey.value
         val config = viewModel.config.value
@@ -174,6 +177,9 @@ class MainActivity : ComponentActivity() {
             action == KeyEvent.ACTION_DOWN, event?.repeatCount ?: 0,
         ) {
             (recording && config.consumeOriginalEvent) || HardwareKeyTriggerCoordinator.shouldConsumeKey(keyCode)
+        }
+        if (consumed && action == KeyEvent.ACTION_DOWN && (event?.repeatCount ?: 0) == 0) {
+            HardwareKeyTriggerCoordinator.onKeySwallowed(keyCode)
         }
         val isMatched = viewModel.onDirectActivityKeyEvent(keyCode, action)
         if (DiagnosticRecorder.recording) {

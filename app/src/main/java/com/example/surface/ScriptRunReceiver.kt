@@ -8,10 +8,12 @@ import android.content.Intent
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import android.os.SystemClock
 import android.widget.Toast
 import com.example.data.RunRecord
 import com.example.service.HardwareKeyTriggerCoordinator
 import com.example.service.SurfaceRun
+import com.example.service.WidgetLaunchGrant
 import com.example.service.showSurfaceRunToast
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -45,6 +47,8 @@ class ScriptRunReceiver : BroadcastReceiver() {
             SurfaceToggle.flip(app, scriptId)?.let { Toast.makeText(app, it, Toast.LENGTH_SHORT).show() }
             return
         }
+        // This tap's broadcast lets the run open screens for about 10 s, held or not; a tile tap gets none.
+        WidgetLaunchGrant.open(SystemClock.elapsedRealtime())
         val pending = goAsync()
         val released = AtomicBoolean(false)
         val release = Runnable { if (released.compareAndSet(false, true)) pending.finish() }
@@ -65,6 +69,7 @@ class ScriptRunReceiver : BroadcastReceiver() {
     companion object {
         internal const val EXTRA_SCRIPT_ID = "com.example.surface.SCRIPT_ID"
         private const val EXTRA_TOGGLE = "com.example.surface.TOGGLE"
+        // Under the 10 s foreground-broadcast timeout, so a held broadcast never ANRs.
         private const val BROADCAST_BUDGET_MS = 9_000L
 
         private const val ACTION_LIST_TOGGLE = "com.example.surface.LIST_TOGGLE"

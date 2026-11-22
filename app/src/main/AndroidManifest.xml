@@ -106,6 +106,12 @@
             <action android:name="android.intent.action.SENDTO" />
             <data android:scheme="smsto" />
         </intent>
+        <!-- OPPO/OnePlus/realme actions are offered only where these are installed (OemActions). -->
+        <package android:name="com.oplus.aimemory" />
+        <package android:name="com.heytap.speechassist" />
+        <package android:name="com.coloros.translate" />
+        <package android:name="com.coloros.soundrecorder" />
+        <package android:name="com.coloros.ocrscanner" />
     </queries>
 
     <application
@@ -219,6 +225,8 @@
              wall clock after a clock or time-zone change or a reboot. The system sends all of these,
              so the receiver stays unexported. -->
         <receiver android:name="com.example.service.PlaceAlertReceiver" android:exported="false" />
+        <!-- "Restore now" on the Sensitive apps notice; only KeySnap's own PendingIntent reaches it. -->
+        <receiver android:name="com.example.service.SensitiveAppsRestoreReceiver" android:exported="false" />
         <!-- "Launch app shortcut": the Advanced Mode bridge (shell) hands a shortcut's PendingIntent here.
              Exported only to holders of START_ACTIVITIES_FROM_BACKGROUND (shell, system), never to apps. -->
         <receiver

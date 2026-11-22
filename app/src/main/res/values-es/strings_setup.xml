@@ -39,7 +39,7 @@
     <string name="setup_not_now">Ahora no</string>
     <string name="setup_optional_row">Opcional: notificaciones</string>
     <string name="auto_launch_row">Atajos activos con la app cerrada</string>
-    <string name="auto_launch_search_hint">Busca «Inicio automático» y activa KeySnap</string>
+    <string name="auto_launch_search_hint">Busca «Iniciar automáticamente» y activa KeySnap</string>
     <string name="home_stopped_banner">KeySnap se detuvo. Algunos atajos no funcionarán.</string>
     <string name="auto_launch_row_stopped">Evitar que KeySnap se detenga otra vez</string>
     <string name="reconnect_sheet_body">KeySnap desactiva y activa una vez su propia accesibilidad. No cambia nada más.</string>

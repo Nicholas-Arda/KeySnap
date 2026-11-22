@@ -1,6 +1,7 @@
 package com.example.ui.home
 
 import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,6 +18,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.WarningAmber
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.RocketLaunch
@@ -71,13 +73,15 @@ fun SetupCard(
     }
 }
 
-/** Tinted banner: message (+ optional extra line) on the left, a filled Fix button on the right. */
+/** Tinted banner: message (+ optional extra line) on the left, a filled button on the right; [busy] spins in place of its label. */
 @Composable
-private fun BannerRow(
+internal fun BannerRow(
     text: String,
     tint: Color,
     onFix: () -> Unit,
     modifier: Modifier = Modifier,
+    @StringRes buttonLabel: Int = R.string.setup_fix,
+    busy: Boolean = false,
     extra: @Composable () -> Unit = {},
 ) {
     Row(
@@ -99,7 +103,13 @@ private fun BannerRow(
             modifier = Modifier.padding(start = 8.dp),
             colors = ButtonDefaults.buttonColors(containerColor = lerp(tint, Color.Black, .2f), contentColor = Color.White),
         ) {
-            Text(stringResource(R.string.setup_fix), fontWeight = FontWeight.Bold)
+            AnimatedContent(busy, label = "bannerButton") { spinning ->
+                if (spinning) {
+                    CircularProgressIndicator(Modifier.size(18.dp), color = Color.White, strokeWidth = 2.dp)
+                } else {
+                    Text(stringResource(buttonLabel), fontWeight = FontWeight.Bold)
+                }
+            }
         }
     }
 }
@@ -159,7 +169,8 @@ private fun OptionalRow(icon: ImageVector, text: Int, tag: String, onTurnOn: () 
         .testTag(tag).padding(start = 14.dp, top = 2.dp, bottom = 2.dp, end = 2.dp),
         verticalAlignment = Alignment.CenterVertically) {
         Icon(icon, null, Modifier.padding(end = 8.dp).size(18.dp), tint = colors.onSurfaceVariant)
-        Text(stringResource(text), Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium)
+        // No Surface above this row on Home, so the inherited content colour is black in dark theme.
+        Text(stringResource(text), Modifier.weight(1f), color = colors.onSurface, style = MaterialTheme.typography.bodyMedium)
         TextButton(onClick = onTurnOn) { Text(stringResource(R.string.setup_turn_on)) }
         IconButton(onClick = onClose) {
             Icon(Icons.Default.Close, stringResource(R.string.common_close), tint = colors.onSurfaceVariant)
