@@ -31,6 +31,8 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
     private static final int MAX_REPEAT_COUNT = 20;
 
     private final File configFile;
+    /** From the spawn command only, never from disk: it keys the control handshake and the config signature. */
+    private final String token;
     // 5 missed 1 s polls: the app's rewrite never removes the file, so this only trips on uninstall.
     private final MissingConfigWatch missingConfig = new MissingConfigWatch(5);
     private final ScheduledExecutorService scheduler =
@@ -92,14 +94,15 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
         });
     }
 
-    private BridgeMain(File configFile) {
+    private BridgeMain(File configFile, String token) {
         this.configFile = configFile;
+        this.token = token;
         // Sibling of the disposable bridge directory, created by the app before config publication.
         this.modes = BridgeModes.open(configFile);
         this.constraints = new ConstraintEvaluator(torch, modes);
     }
 
-    /** This bridge's working directory, from start.sh's --base; older scripts omit it. */
+    /** This bridge's working directory, from the launcher's --base; older scripts omit it. */
     private static volatile String baseDir = BridgeProtocol.BASE_DIR;
 
     static String baseDir() {
@@ -119,18 +122,22 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
         BridgeLog.init(new File(base, BridgeProtocol.LOG_NAME));
 
         String configPath = null;
+        String token = null;
         for (int i = 0; i < args.length - 1; i++) {
             if ("--config".equals(args[i])) {
                 configPath = args[i + 1];
             }
+            if ("--token".equals(args[i])) {
+                token = args[i + 1];
+            }
         }
-        if (configPath == null) {
-            BridgeLog.w("Missing --config argument; refusing to start");
+        if (configPath == null || !BridgeAuth.isToken(token)) {
+            BridgeLog.w("Missing --config or --token argument; refusing to start");
             System.exit(2);
             return;
         }
         try {
-            new BridgeMain(new File(configPath)).start();
+            new BridgeMain(new File(configPath), token).start();
         } catch (Throwable t) {
             BridgeLog.e("Bridge failed to start", t);
             System.exit(1);
@@ -140,10 +147,10 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
     private void start() throws Exception {
         Looper.prepareMainLooper();
 
-        config = BridgeConfig.read(configFile);
+        config = BridgeConfig.readSigned(configFile, token);
         configLastModified = configFile.lastModified();
-        if (config.port <= 0 || config.token.isEmpty()) {
-            BridgeLog.w("Config has no control port/token; refusing to start");
+        if (config.port <= 0) {
+            BridgeLog.w("Config has no control port; refusing to start");
             System.exit(2);
             return;
         }
@@ -151,7 +158,7 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
                 + android.os.Process.myPid() + " uid=" + android.os.Process.myUid()
                 + " scripts=" + config.scripts.size() + " port=" + config.port);
 
-        server = new EventServer(config.port, config.token, this);
+        server = new EventServer(config.port, token, this);
         try {
             server.bind();
         } catch (Exception e) {
@@ -255,10 +262,12 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
             if (modified == configLastModified || modified == 0L) {
                 return;
             }
-            BridgeConfig updated = BridgeConfig.read(configFile);
+            // Noted before the read: a document that fails (an unsigned change) is reported once,
+            // not every poll; the app's next write is a new modification and is read again.
             configLastModified = modified;
-            if (updated.port != config.port || !updated.token.equals(config.token)) {
-                BridgeLog.w("Control port/token changed in config; a bridge restart is required to apply it");
+            BridgeConfig updated = BridgeConfig.readSigned(configFile, token);
+            if (updated.port != config.port) {
+                BridgeLog.w("Control port changed in config; a bridge restart is required to apply it");
             }
             config = updated;
             // Same lock as onKeyEvent, so a reset never lands between a chord decision and its commands.
@@ -865,6 +874,12 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
         if (BridgeConfig.ACTION_TOGGLE_MOBILE_DATA.equals(action.type)) {
             return ShellKeyInjector.runShell("svc", "data", ConstraintEvaluator.isMobileDataOn() ? "disable" : "enable");
         }
+        if (BridgeConfig.ACTION_ENABLE_MOBILE_DATA.equals(action.type)) {
+            return ShellKeyInjector.runShell("svc", "data", "enable");
+        }
+        if (BridgeConfig.ACTION_DISABLE_MOBILE_DATA.equals(action.type)) {
+            return ShellKeyInjector.runShell("svc", "data", "disable");
+        }
         if (BridgeConfig.ACTION_TOGGLE_AIRPLANE_MODE.equals(action.type)) {
             return ShellKeyInjector.runShell("cmd", "connectivity", "airplane-mode",
                     ConstraintEvaluator.isAirplaneModeOn() ? "disable" : "enable");
@@ -970,13 +985,13 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
         }
         // `dumpsys nfc` prints mState=on|off (PLG110, 2026-11-18).
         if (BridgeConfig.ACTION_TOGGLE_NFC.equals(action.type)) {
-            // `svc nfc disable` is killed outright on ColorOS 17 (exit 137, PLG110 2026-11-18) while
-            // `cmd nfc disable-nfc` works; `cmd nfc` is newer than minSdk, so svc stays the fallback.
-            // "persist" keeps it off across a reboot, as the user's own switch does.
-            boolean on = ShellKeyInjector.runShellForOutput("dumpsys", "nfc").contains("mState=on");
-            return on
-                    ? ShellKeyInjector.runShell("cmd", "nfc", "disable-nfc", "persist") || ShellKeyInjector.runShell("svc", "nfc", "disable")
-                    : ShellKeyInjector.runShell("cmd", "nfc", "enable-nfc") || ShellKeyInjector.runShell("svc", "nfc", "enable");
+            return setNfc(!ShellKeyInjector.runShellForOutput("dumpsys", "nfc").contains("mState=on"));
+        }
+        if (BridgeConfig.ACTION_ENABLE_NFC.equals(action.type)) {
+            return setNfc(true);
+        }
+        if (BridgeConfig.ACTION_DISABLE_NFC.equals(action.type)) {
+            return setNfc(false);
         }
         // KEYCODE_CUT/COPY/PASTE only reach a view that handles those key codes itself, which
         // WebViews and many custom editors don't; the app's AccessibilityNodeInfo ACTION_CUT/
@@ -1267,6 +1282,17 @@ public final class BridgeMain implements GeteventReader.Listener, EventServer.Li
     /** `cmd notification set_dnd` word for a DND action's "filter" param; mirrors the app's dndFilterFor. */
     static String dndArgument(String filter) {
         return "alarms".equals(filter) || "none".equals(filter) ? filter : "priority";
+    }
+
+    /**
+     * `svc nfc disable` is killed outright on ColorOS 17 (exit 137, PLG110 2026-11-18) while
+     * `cmd nfc disable-nfc` works; `cmd nfc` is newer than minSdk, so svc stays the fallback.
+     * "persist" keeps it off across a reboot, as the user's own switch does.
+     */
+    private static boolean setNfc(boolean on) {
+        return on
+                ? ShellKeyInjector.runShell("cmd", "nfc", "enable-nfc") || ShellKeyInjector.runShell("svc", "nfc", "enable")
+                : ShellKeyInjector.runShell("cmd", "nfc", "disable-nfc", "persist") || ShellKeyInjector.runShell("svc", "nfc", "disable");
     }
 
     /**

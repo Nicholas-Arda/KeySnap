@@ -57,6 +57,7 @@ internal const val BRIDGE_NOT_RUNNING_MESSAGE =
     "Advanced Mode is on but the bridge isn't running (normal after a reboot). " +
         "Restart it from the setup wizard."
 private const val RESTART_AFTER_UPDATE_TIMEOUT_MS = 20_000L
+private const val KEEP_WITHOUT_WIFI_MESSAGE = "Restarting Advanced Mode to work without Wi-Fi…"
 
 /** What the launch-time bridge check found, and did about it. */
 internal enum class StartupBridge { ADOPTED, RESTARTED, RESTART_FAILED, NOT_RUNNING, OFF }
@@ -114,6 +115,16 @@ object WirelessAdbManager {
      *  so a user who had it on before the rename doesn't see it come back off. */
     private const val PREF_ADVANCED_ENABLED_LEGACY = "expert_mode_enabled"
 
+    private const val PREF_KEEP_WITHOUT_WIFI = "keep_without_wifi"
+
+    /**
+     * adbd's TCP port for "Keep running without Wi-Fi" and the "Start from a computer" command
+     * (`adb tcpip`). Off 5555, which scanners probe, and off the bridge's 38200–38699. Only keys
+     * the phone already trusts get in; anyone else gets Android's own allow prompt.
+     */
+    const val WIFI_FREE_PORT = 41555
+    private const val LOOPBACK = "127.0.0.1"
+
     /** Extra spawn attempts after a fresh mDNS re-browse when the resolved connect port refuses. */
     private const val MAX_CONNECT_RETRIES = 2
     private const val PAIR_TAP_WINDOW_MS = 120_000L
@@ -125,6 +136,8 @@ object WirelessAdbManager {
     val advancedAutostartEnabled: StateFlow<Boolean> = _advancedAutostartEnabled.asStateFlow()
     private val _autostartPermissionHeld = MutableStateFlow(false)
     val autostartPermissionHeld: StateFlow<Boolean> = _autostartPermissionHeld.asStateFlow()
+    private val _keepWithoutWifi = MutableStateFlow(false)
+    val keepWithoutWifi: StateFlow<Boolean> = _keepWithoutWifi.asStateFlow()
     private var initialized = false
 
     /**
@@ -221,6 +234,7 @@ object WirelessAdbManager {
         initialized = true
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         _autoAssistantEnabled.value = prefs.getBoolean(PREF_AUTO_ASSISTANT, true)
+        _keepWithoutWifi.value = prefs.getBoolean(PREF_KEEP_WITHOUT_WIFI, false)
         val savedPort = prefs.getInt(PREF_SAVED_CONNECT_PORT, -1)
         if (savedPort > 0) _discoveredConnectPort.value = savedPort
         val savedIp = prefs.getString(PREF_SAVED_IP, "127.0.0.1") ?: "127.0.0.1"
@@ -237,12 +251,15 @@ object WirelessAdbManager {
         // this process just shut down after an app update: that is respawned once, below.
         BridgeController.initialize(context)
         managerScope.launch {
-            val outcome = resolveStartupBridge(
+            var outcome = resolveStartupBridge(
                 adoptExisting = BridgeController::detectExistingBridge,
                 takeStaleReplacement = BridgeController::takeStaleReplacement,
                 advancedWanted = prefs.getBoolean(PREF_ADVANCED_ENABLED, prefs.getBoolean(PREF_ADVANCED_ENABLED_LEGACY, false)),
                 restart = ::restartAfterUpdate,
             )
+            // No Wi-Fi needed while adbd listens on the loopback port (this app's switch, or a
+            // computer's `adb tcpip`): start the bridge the user wants without asking.
+            if (outcome == StartupBridge.NOT_RUNNING && startOverLoopback()) outcome = StartupBridge.RESTARTED
             when (outcome) {
                 StartupBridge.ADOPTED, StartupBridge.RESTARTED -> _pairingStatus.value = PairingStatus.ADVANCED_MODE_RUNNING
                 StartupBridge.RESTART_FAILED -> _pairingStatus.value = PairingStatus.IDLE
@@ -269,7 +286,11 @@ object WirelessAdbManager {
 
     suspend fun restartAfterBoot(): Boolean = restartBridge("Starting Advanced Mode after the restart…", true)
 
-    private suspend fun restartBridge(message: String, freshDiscovery: Boolean): Boolean {
+    private suspend fun restartBridge(
+        message: String,
+        freshDiscovery: Boolean,
+        failMessage: String = if (freshDiscovery) BRIDGE_NOT_RUNNING_MESSAGE else BRIDGE_UPDATED_RESTART_MESSAGE,
+    ): Boolean {
         BridgeController.markStarting(message)
         _pairingStatus.value = PairingStatus.CONNECTING_STREAM
         _statusMessage.value = message
@@ -282,12 +303,14 @@ object WirelessAdbManager {
                     expectedPairingHost = null
                     synchronized(flowLock) { triedConnectPorts.clear() }
                 }
-                val port = (if (freshDiscovery) null else _discoveredConnectPort.value?.takeIf { it > 0 }) ?: run {
+                // The loopback port needs no Wi-Fi and no mDNS, so it goes first when adbd listens there.
+                val loopback = loopbackOpen()
+                val port = if (loopback) WIFI_FREE_PORT else (if (freshDiscovery) null else _discoveredConnectPort.value?.takeIf { it > 0 }) ?: run {
                     refreshConnectServiceDiscovery()
                     awaitVerifiedConnectPort()
                 }
                 if (port != null) {
-                    job = connectShellStream(_discoveredIp.value, port)
+                    job = connectShellStream(if (loopback) LOOPBACK else _discoveredIp.value, port)
                     job?.join()
                 }
             }
@@ -300,7 +323,79 @@ object WirelessAdbManager {
         if (BridgeController.state.value == BridgeState.RUNNING) return true
         // A spawn cut off by the cap may still bind its port; adopt it rather than call it failed.
         if (adoptLateSpawn(BridgeController::detectExistingBridge)) return true
-        BridgeController.markStopped(if (freshDiscovery) BRIDGE_NOT_RUNNING_MESSAGE else BRIDGE_UPDATED_RESTART_MESSAGE)
+        BridgeController.markStopped(failMessage)
+        return false
+    }
+
+    /** True while adbd answers on [WIFI_FREE_PORT]: set by this app's switch or a computer's `adb tcpip`; gone after a restart. */
+    suspend fun wifiFreePortOpen(): Boolean = loopbackOpen()
+
+    /**
+     * Only adbd's own listener counts. `service.adb.tcp.port` is set by adbd's tcpip switch, never by
+     * an app, so after a restart (0) another app listening on the port gets nothing from KeySnap.
+     * ponytail: an app that bound 127.0.0.1 there before the switch still answers in adbd's place;
+     * it learns only the spawn command (paths) and a signature no other adbd port accepts.
+     */
+    private suspend fun loopbackOpen(): Boolean = withContext(Dispatchers.IO) {
+        adbdTcpPort() == WIFI_FREE_PORT && runCatching {
+            java.net.Socket().use { it.connect(java.net.InetSocketAddress(LOOPBACK, WIFI_FREE_PORT), 500) }
+            true
+        }.getOrDefault(false)
+    }
+
+    /** adbd's plain-TCP port, readable by apps (checked on ColorOS 17); null when unset or unreadable. */
+    private fun adbdTcpPort(): Int? = runCatching {
+        ProcessBuilder("getprop", "service.adb.tcp.port").start().inputStream.bufferedReader().use { it.readText() }.trim().toInt()
+    }.getOrNull()
+
+    /**
+     * Starts the bridge over the loopback port when adbd listens there and none is running. "Start
+     * from a computer" polls this, so a phone that never paired over Wi-Fi gets Android's allow
+     * prompt for KeySnap's key here, once.
+     */
+    suspend fun startOverLoopback(): Boolean {
+        if (BridgeController.state.value == BridgeState.RUNNING || !loopbackOpen()) return false
+        connectShellStream(LOOPBACK, WIFI_FREE_PORT).join()
+        return BridgeController.state.value == BridgeState.RUNNING
+    }
+
+    /**
+     * "Keep running without Wi-Fi". On with a bridge running over wireless debugging, it is
+     * restarted at once: adbd's switch to TCP ends it anyway, so do it now rather than at some
+     * later spawn. Off only stops KeySnap opening the port; adbd keeps listening until the phone
+     * restarts, because switching it back (`adb usb`) also turns wireless debugging off on ColorOS.
+     */
+    fun setKeepWithoutWifi(enabled: Boolean) {
+        val context = appContext ?: return
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit().putBoolean(PREF_KEEP_WITHOUT_WIFI, enabled).apply()
+        _keepWithoutWifi.value = enabled
+        if (!enabled || BridgeController.state.value != BridgeState.RUNNING) return
+        managerScope.launch {
+            if (!loopbackOpen()) restartBridge(KEEP_WITHOUT_WIFI_MESSAGE, true)
+        }
+    }
+
+    /**
+     * Asks adbd over the wireless transport at [ip]:[port] to listen on [WIFI_FREE_PORT] too, as
+     * `adb tcpip` does. adbd restarts and that ends a running bridge, so this runs before a spawn and
+     * waits for the old bridge to stop answering. True once the loopback port answers.
+     */
+    private suspend fun openWifiFreePort(context: Context, ip: String, port: Int): Boolean {
+        val manager = LibAdbConnectionManager.get(context)
+        val asked = runCatching {
+            check(manager.connect(ip, port))
+            manager.openStream("tcpip:$WIFI_FREE_PORT").use { it.openInputStream().bufferedReader().readLine() }
+            true
+        }.onFailure { Log.w(TAG, "Could not switch adbd to TCP: ${adbFailureSummary(it)}") }.getOrDefault(false)
+        runCatching { manager.disconnect() }
+        if (!asked) return false
+        repeat(20) {
+            if (loopbackOpen()) {
+                BridgeController.awaitGone()
+                return true
+            }
+            delay(500)
+        }
         return false
     }
 
@@ -686,9 +781,21 @@ object WirelessAdbManager {
                 var adbConnected = false
                 var attempt = 0
                 synchronized(flowLock) { triedConnectPorts.clear() }
+                // The loopback port first: open already (this switch earlier, or a computer's
+                // `adb tcpip`), or opened now over the wireless transport when the user asked for
+                // it. A bridge spawned either way outlives wireless debugging going off.
+                if (currentPort != WIFI_FREE_PORT &&
+                    (loopbackOpen() || (_keepWithoutWifi.value && openWifiFreePort(context, ip, port)))
+                ) {
+                    currentIp = LOOPBACK
+                    currentPort = WIFI_FREE_PORT
+                }
                 while (true) {
-                    synchronized(flowLock) { triedConnectPorts.add(currentPort) }
-                    saveConnectPort(currentPort)
+                    val overLoopback = currentIp == LOOPBACK && currentPort == WIFI_FREE_PORT
+                    if (!overLoopback) {
+                        synchronized(flowLock) { triedConnectPorts.add(currentPort) }
+                        saveConnectPort(currentPort)
+                    }
                     _pairingStatus.value = PairingStatus.CONNECTING_STREAM
                     _statusMessage.value = "ADB connected; starting the detached bridge..."
 
@@ -703,6 +810,13 @@ object WirelessAdbManager {
                         ).also { if (it) adbConnected = true }
                     }
                     if (started || attempt >= MAX_CONNECT_RETRIES) break
+                    if (overLoopback && port != WIFI_FREE_PORT) {
+                        // The loopback port refused this key; the wireless transport still can.
+                        currentIp = ip
+                        currentPort = port
+                        attempt++
+                        continue
+                    }
 
                     // A refused port does not mean Wireless Debugging is off: the daemon can
                     // advertise several `_adb-tls-connect._tcp` records and only one of them

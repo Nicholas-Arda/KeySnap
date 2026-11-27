@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="external_control_title">التحكم من تطبيقات أخرى</string>
+    <string name="external_control_description">أوقف KeySnap مؤقتًا واستأنفه من تطبيق آخر أو عبر adb.</string>
+    <string name="external_control_can">يمكنه الإيقاف المؤقت والاستئناف والتبديل</string>
+    <string name="external_control_cannot">لا يمكنه تشغيل اختصار</string>
+    <string name="external_control_package">الحزمة</string>
+    <string name="external_control_class">الفئة</string>
+    <string name="external_control_pause">إيقاف مؤقت</string>
+    <string name="external_control_resume">استئناف</string>
+    <string name="external_control_toggle">تبديل</string>
+    <string name="external_control_try_adb">جرّبه عبر adb</string>
+    <string name="external_control_paused">أوقف تطبيق آخر KeySnap مؤقتًا</string>
+    <string name="external_control_resumed">استأنف تطبيق آخر KeySnap</string>
+    <string name="external_control_names">أسماء للتطبيقات الأخرى</string>
+</resources>

@@ -260,6 +260,12 @@ fun ScriptEditorScreen(
     onSetActionUndo: (Int, Boolean) -> Unit = { _, _ -> },
     onSetAllUndo: (Boolean) -> Unit = {},
     onSetMatchAny: (Boolean) -> Unit = {},
+    // "When it ends" counterparts of the action callbacks above; see [ShortcutScript.endActions].
+    onAddEndAction: (String, Map<String, String>) -> Unit = { _, _ -> },
+    onConfigureNewEndAction: (String) -> Unit = {},
+    onConfigureEndAction: (Int) -> Unit = {},
+    onRemoveEndAction: (Int) -> Unit = {},
+    onMoveEndAction: (Int, Int) -> Unit = { _, _ -> },
 ) {
     val context = LocalContext.current
     var feedback by remember { mutableStateOf<EditorFeedback?>(null) }
@@ -282,6 +288,8 @@ fun ScriptEditorScreen(
     var confirmDelete by remember { mutableStateOf(false) }
     var confirmDiscard by remember { mutableStateOf(false) }
     var pane by rememberSaveable { mutableStateOf(if (openPickerOn != null) EditorPane.ADD_ACTION else EditorPane.CHAIN) }
+    // Which list the action picker adds to: Do, or an automation's "When it ends".
+    var addingToEnd by rememberSaveable { mutableStateOf(false) }
     // Read once, when the editor opens; the caller forgets it so the next shortcut opens normally.
     val pickerTab by rememberSaveable { mutableStateOf(openPickerOn) }
     LaunchedEffect(Unit) { if (openPickerOn != null) onPickerOpened() }
@@ -333,11 +341,15 @@ fun ScriptEditorScreen(
             onSelectCategory = { selectedCategory = it },
             onPickAction = { type ->
                 pane = EditorPane.CHAIN
-                if (ActionEditorForms.isConfigurable(type)) onConfigureNewAction(type) else onAddAction(type, emptyMap())
+                when {
+                    !ActionEditorForms.isConfigurable(type) -> if (addingToEnd) onAddEndAction(type, emptyMap()) else onAddAction(type, emptyMap())
+                    addingToEnd -> onConfigureNewEndAction(type)
+                    else -> onConfigureNewAction(type)
+                }
             },
             onPickLearned = { params ->
                 pane = EditorPane.CHAIN
-                onAddAction(ScriptActionCatalog.LEARNED_SETTING, params)
+                if (addingToEnd) onAddEndAction(ScriptActionCatalog.LEARNED_SETTING, params) else onAddAction(ScriptActionCatalog.LEARNED_SETTING, params)
             },
             onClose = { pane = EditorPane.CHAIN },
             advancedModeActive = advancedModeActive,
@@ -414,7 +426,11 @@ fun ScriptEditorScreen(
                             runs = runs,
                             onSetName = onSetName,
                             onOpenScriptSettings = onOpenScriptSettings,
-                            onOpenAddAction = { onDismissKeyPicker(); pane = EditorPane.ADD_ACTION },
+                            onOpenAddAction = { onDismissKeyPicker(); addingToEnd = false; pane = EditorPane.ADD_ACTION },
+                            onOpenAddEndAction = { onDismissKeyPicker(); addingToEnd = true; pane = EditorPane.ADD_ACTION },
+                            onConfigureEndAction = { onDismissKeyPicker(); onConfigureEndAction(it) },
+                            onRemoveEndAction = onRemoveEndAction,
+                            onMoveEndAction = onMoveEndAction,
                             keyPickerOpen = keyPickerOpen,
                             isRecordingKey = isRecordingKey,
                             recordingKeys = recordingKeys,
@@ -640,6 +656,10 @@ private fun ChainArea(
     onOpenConstraintPicker: () -> Unit,
     onRemoveConstraint: (Int) -> Unit,
     onOpenAddAction: () -> Unit,
+    onOpenAddEndAction: () -> Unit = {},
+    onConfigureEndAction: (Int) -> Unit = {},
+    onRemoveEndAction: (Int) -> Unit = {},
+    onMoveEndAction: (Int, Int) -> Unit = { _, _ -> },
     modifier: Modifier = Modifier,
     keyPickerOpen: Boolean = false,
     isRecordingKey: Boolean = false,
@@ -679,7 +699,7 @@ private fun ChainArea(
     val sideOptions = wide && LocalConfiguration.current.screenWidthDp >= 800
     val half: @Composable (@Composable () -> Unit) -> Unit = { content -> if (wide) LeftColumn { content() } else content() }
     val doSection = @Composable {
-        SentenceSection(stringResource(R.string.editor_chain_do), actionColor, last = true,
+        SentenceSection(stringResource(R.string.editor_chain_do), actionColor, last = !draft.automation,
             modifier = Modifier.alpha(if (keyPickerOpen) .4f else 1f)) {
             draft.actions.forEachIndexed { index, action ->
                 key(index, action) {
@@ -709,6 +729,33 @@ private fun ChainArea(
             AddActionRow(onOpenAddAction)
             if (!sideOptions && undoOffered && undoable.isNotEmpty()) UndoWhenItEndsRow(undoing, undoable.size, onSetAllUndo)
             if (draft.actions.isEmpty()) ChainHint(stringResource(R.string.editor_needs_action), flagMissing)
+        }
+    }
+    // An automation's "When it ends": its own cards and menu, no undo badges (nothing to put back).
+    var openEndMenuFor by remember { mutableStateOf<Int?>(null) }
+    val endSection = @Composable {
+        SentenceSection(stringResource(R.string.editor_chain_when_it_ends), sentenceActionColor(draft.endActions), last = true,
+            modifier = Modifier.alpha(if (keyPickerOpen) .4f else 1f).testTag("editor_when_it_ends")) {
+            draft.endActions.forEachIndexed { index, action ->
+                key("end", index, action) {
+                    ActionChainCard(
+                        action = action, index = index, total = draft.endActions.size,
+                        menuOpen = openEndMenuFor == index, advancedModeActive = advancedModeActive,
+                        startsFromNotification = false,
+                        onOpenMenu = { openEndMenuFor = index }, onDismissMenu = { openEndMenuFor = null },
+                        onConfigure = { onConfigureEndAction(index) },
+                        onRemove = { openEndMenuFor = null; onRemoveEndAction(index) },
+                        onMoveUp = { onMoveEndAction(index, index - 1) },
+                        onMoveDown = { onMoveEndAction(index, index + 1) },
+                        onTestAction = onTestAction,
+                        onTestResult = onTestResult,
+                        onSetUpAdvancedMode = onSetUpAdvancedMode,
+                        undoBadge = null,
+                        onSetUndo = null,
+                    )
+                }
+            }
+            AddActionRow(onOpenAddEndAction)
         }
     }
     val fineTune = @Composable {
@@ -795,6 +842,7 @@ private fun ChainArea(
         if (draft.automation) item {
             half { ChainHint(stringResource(if (anyOffered && draft.matchAny) R.string.automation_card_subtitle_any else R.string.automation_card_subtitle)) }
         }
+        if (draft.automation) item { half { endSection() } }
         // An empty automation has no highlighted word yet (the key clause is what a key press highlights).
         if (showHighlightHint && (!draft.automation || draft.constraints.isNotEmpty())) {
             item { half { ChainHint(stringResource(R.string.editor_highlight_hint)) } }

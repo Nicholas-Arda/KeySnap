@@ -77,6 +77,10 @@ import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.Speed
 import androidx.compose.material.icons.outlined.WifiTethering
 import androidx.compose.material.icons.outlined.PhoneAndroid
+import androidx.compose.material.icons.automirrored.outlined.KeyboardReturn
+import androidx.compose.material.icons.outlined.SettingsRemote
+import androidx.compose.material.icons.outlined.Usb
+import androidx.compose.material.icons.outlined.WifiOff
 import androidx.compose.material.icons.outlined.Category
 import androidx.compose.material.icons.outlined.Shield
 import androidx.compose.material3.Button
@@ -323,6 +327,10 @@ internal fun WhatsNewFeatureCard(feature: WhatsNewFeature, accent: Color = Mater
         R.string.whats_new_sensitive_title_133 -> Icons.Outlined.Shield
         R.string.whats_new_picker_title_133 -> Icons.Outlined.Category
         R.string.whats_new_oem_title_133 -> Icons.Outlined.PhoneAndroid
+        R.string.whats_new_wifi_free_title_134 -> Icons.Outlined.WifiOff
+        R.string.whats_new_computer_title_134 -> Icons.Outlined.Usb
+        R.string.whats_new_external_title_134 -> Icons.Outlined.SettingsRemote
+        R.string.whats_new_end_title_134 -> Icons.AutoMirrored.Outlined.KeyboardReturn
         else -> null
     } ?: when (feature.destination) {
         WhatsNewDestination.ADVANCED_MODE -> Icons.Outlined.RestartAlt
@@ -331,6 +339,7 @@ internal fun WhatsNewFeatureCard(feature: WhatsNewFeature, accent: Color = Mater
         WhatsNewDestination.KEY_CAPSULE -> Icons.Outlined.TouchApp
         WhatsNewDestination.SHORTCUTS -> Icons.Outlined.TouchApp
         WhatsNewDestination.NEW_SHORTCUT -> Icons.Outlined.AutoAwesome
+        WhatsNewDestination.NEW_AUTOMATION -> Icons.Outlined.TouchApp
         WhatsNewDestination.SENSITIVE_APPS -> Icons.Outlined.Shield
         WhatsNewDestination.ACTION_PICKER_NEW -> Icons.Outlined.Category
         WhatsNewDestination.ACTION_PICKER_PHONE -> Icons.Outlined.PhoneAndroid

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="external_control_title">Bediening door andere apps</string>
+    <string name="external_control_description">Pauzeer en hervat KeySnap vanuit een andere app of met adb.</string>
+    <string name="external_control_can">Kan pauzeren, hervatten, wisselen</string>
+    <string name="external_control_cannot">Kan geen snelkoppeling uitvoeren</string>
+    <string name="external_control_package">Pakket</string>
+    <string name="external_control_class">Klasse</string>
+    <string name="external_control_pause">Pauzeren</string>
+    <string name="external_control_resume">Hervatten</string>
+    <string name="external_control_toggle">Wisselen</string>
+    <string name="external_control_try_adb">Probeer het met adb</string>
+    <string name="external_control_paused">KeySnap gepauzeerd door een andere app</string>
+    <string name="external_control_resumed">KeySnap hervat door een andere app</string>
+    <string name="external_control_names">Namen voor andere apps</string>
+</resources>

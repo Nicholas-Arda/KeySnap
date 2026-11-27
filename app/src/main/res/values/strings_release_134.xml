@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_wifi_free_title_134">Works without Wi-Fi</string>
+    <string name="whats_new_wifi_free_description_134">Advanced Mode stays on, even with Wi-Fi off.</string>
+    <string name="whats_new_computer_title_134">Start from a computer</string>
+    <string name="whats_new_computer_description_134">Set up Advanced Mode with a USB cable.</string>
+    <string name="whats_new_fix_switch_actions_134">New actions: Enable/Disable mobile data and NFC</string>
+    <string name="whats_new_fix_security_134">Advanced Mode files are better protected</string>
+    <string name="whats_new_external_title_134">Control from other apps</string>
+    <string name="whats_new_external_description_134">Other apps can pause and resume KeySnap.</string>
+    <string name="whats_new_fix_teach_134">Teach a setting skips switches only your phone can apply</string>
+    <string name="whats_new_end_title_134">When it ends</string>
+    <string name="whats_new_end_description_134">Automations can also act when their condition stops.</string>
+</resources>

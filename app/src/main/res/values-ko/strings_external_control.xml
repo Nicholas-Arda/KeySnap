@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="external_control_title">다른 앱에서 제어</string>
+    <string name="external_control_description">다른 앱이나 adb로 KeySnap을 일시중지하고 다시 시작하세요.</string>
+    <string name="external_control_can">일시중지, 다시 시작, 전환 가능</string>
+    <string name="external_control_cannot">단축키를 실행할 수 없음</string>
+    <string name="external_control_package">패키지</string>
+    <string name="external_control_class">클래스</string>
+    <string name="external_control_pause">일시중지</string>
+    <string name="external_control_resume">다시 시작</string>
+    <string name="external_control_toggle">전환</string>
+    <string name="external_control_try_adb">adb로 테스트</string>
+    <string name="external_control_paused">다른 앱이 KeySnap을 일시중지했어요</string>
+    <string name="external_control_resumed">다른 앱이 KeySnap을 다시 시작했어요</string>
+    <string name="external_control_names">다른 앱용 이름</string>
+</resources>

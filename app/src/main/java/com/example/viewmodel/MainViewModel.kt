@@ -119,6 +119,8 @@ data class ScriptDraft(
     val surfaceOnly: Boolean = false,
     val actions: List<ScriptAction>,
     val constraints: List<ScriptConstraint> = emptyList(),
+    /** An automation's "When it ends"; see [ShortcutScript.endActions]. */
+    val endActions: List<ScriptAction> = emptyList(),
     val isNew: Boolean,
     /** A draft started from a Home suggestion skips the editor: assigning a key saves it outright. */
     val fromSuggestion: Boolean = false,
@@ -340,6 +342,7 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
             surfaceOnly = script.isSurfaceOnly,
             actions = script.actions,
             constraints = script.constraints,
+            endActions = script.endActions,
             isNew = false,
             consumeOriginalEvent = script.consumeOriginalEvent,
             vibrateOnTrigger = script.vibrateOnTrigger,
@@ -398,31 +401,33 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
         return types.all { acceptProFeature(it) }
     }
 
-    fun draftAddAction(type: String, params: Map<String, String> = emptyMap()) {
+    // [end]: the draft's "When it ends" list instead of Do.
+    private fun ScriptDraft.list(end: Boolean) = if (end) endActions else actions
+    private fun ScriptDraft.withList(end: Boolean, list: List<ScriptAction>) = if (end) copy(endActions = list) else copy(actions = list)
+
+    fun draftAddAction(type: String, params: Map<String, String> = emptyMap(), end: Boolean = false) {
         if (!ScriptActionCatalog.isAvailable(type) || !acceptProFeature(type)) return
-        updateDraft { it.copy(actions = it.actions + ScriptAction(type, params)) }
+        updateDraft { it.withList(end, it.list(end) + ScriptAction(type, params)) }
     }
 
-    fun draftRemoveAction(index: Int) = updateDraft { draft ->
-        draft.copy(actions = draft.actions.filterIndexed { i, _ -> i != index })
+    fun draftRemoveAction(index: Int, end: Boolean = false) = updateDraft { draft ->
+        draft.withList(end, draft.list(end).filterIndexed { i, _ -> i != index })
     }
 
-    fun draftMoveAction(from: Int, to: Int) = updateDraft { draft ->
-        if (from !in draft.actions.indices || to !in draft.actions.indices) return@updateDraft draft
-        val mutable = draft.actions.toMutableList()
+    fun draftMoveAction(from: Int, to: Int, end: Boolean = false) = updateDraft { draft ->
+        val list = draft.list(end)
+        if (from !in list.indices || to !in list.indices) return@updateDraft draft
+        val mutable = list.toMutableList()
         val item = mutable.removeAt(from)
         mutable.add(to, item)
-        draft.copy(actions = mutable)
+        draft.withList(end, mutable)
     }
 
     /** Replaces the whole map rather than merging, so a cleared optional field actually clears. */
-    fun draftSetActionParams(index: Int, params: Map<String, String>) = updateDraft { draft ->
-        if (index !in draft.actions.indices) return@updateDraft draft
-        draft.copy(
-            actions = draft.actions.mapIndexed { i, action ->
-                if (i == index) action.copy(params = params) else action
-            },
-        )
+    fun draftSetActionParams(index: Int, params: Map<String, String>, end: Boolean = false) = updateDraft { draft ->
+        val list = draft.list(end)
+        if (index !in list.indices) return@updateDraft draft
+        draft.withList(end, list.mapIndexed { i, action -> if (i == index) action.copy(params = params) else action })
     }
 
     fun draftSetMatchAny(any: Boolean) = updateDraft { it.copy(matchAny = any) }
@@ -608,6 +613,7 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
             constraints = draft.constraints,
             surfaceOnly = draft.surfaceOnly,
             showCapsule = draft.showCapsule,
+            endActions = if (draft.automation) draft.endActions else emptyList(),
         )
         return res.getString(R.string.share_text_intro) + "\n\n" + json
     }
@@ -676,6 +682,7 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
             surfaceOnly = imported.surfaceOnly,
             actions = imported.actions,
             constraints = imported.constraints,
+            endActions = imported.endActions,
             showCapsule = imported.showCapsule,
             matchAny = imported.matchAny,
             isNew = true,
@@ -718,12 +725,12 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
             _editorMessage.value = res.getString(R.string.editor_condition_needs_automation, title)
             return
         }
-        if (!acceptsModeFeatures(draft.actions, draft.constraints)) {
+        if (!acceptsModeFeatures(draft.actions + draft.endActions, draft.constraints)) {
             if (!ModeHooks.AVAILABLE) _editorMessage.value = res.getString(R.string.import_error_unsupported)
             return
         }
         val fromNotification = ScriptConstraintCatalog.startsFromNotification(draft.automation, draft.constraints)
-        val unconfigured = draft.actions.count { ActionEditorForms.missingRequired(it, fromNotification).isNotEmpty() }
+        val unconfigured = (draft.actions + draft.endActions).count { ActionEditorForms.missingRequired(it, fromNotification).isNotEmpty() }
         val overLimit = draft.enabled && !entitlementManager.isPro.value &&
             scriptRepository.scripts.value.count { it.enabled && it.id != draft.id } >= entitlementManager.activeScriptLimit
         val name = draft.name.ifBlank { nextUnnamedShortcutName() }
@@ -736,6 +743,7 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
                 actions = draft.actions,
                 constraints = draft.constraints,
                 automation = draft.automation,
+                endActions = if (draft.automation) draft.endActions else emptyList(),
                 consumeOriginalEvent = draft.consumeOriginalEvent,
                 vibrateOnTrigger = draft.vibrateOnTrigger,
                 hapticDurationMs = draft.hapticDurationMs,
@@ -817,6 +825,10 @@ val isMappingEnabled: StateFlow<Boolean> = scriptRepository.globallyEnabled
             } finally { _autostartChanging.value = false }
         }
     }
+    val keepWithoutWifi: StateFlow<Boolean> = WirelessAdbManager.keepWithoutWifi
+    fun setKeepWithoutWifi(enabled: Boolean) = WirelessAdbManager.setKeepWithoutWifi(enabled)
+    suspend fun wifiFreePortOpen(): Boolean = WirelessAdbManager.wifiFreePortOpen()
+    suspend fun startOverLoopback() { WirelessAdbManager.startOverLoopback() }
     val discoveredIp: StateFlow<String> = WirelessAdbManager.discoveredIp
     val discoveredPairingPort: StateFlow<Int?> = WirelessAdbManager.discoveredPairingPort
     val discoveredPairingCode: StateFlow<String?> = WirelessAdbManager.discoveredPairingCode

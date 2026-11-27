@@ -541,17 +541,30 @@ object HardwareKeyTriggerCoordinator {
         val scripts = scriptsRepo.scripts.value
         // A run whose script is gone has nothing left to undo against.
         (AutomationUndo.pendingIds(context) - scripts.map { it.id }.toSet()).forEach { AutomationUndo.forget(context, it) }
+        (AutomationEnd.pendingIds(context) - scripts.map { it.id }.toSet()).forEach { AutomationEnd.forget(context, it) }
+        val endRuns = mutableListOf<ShortcutScript>()
         val fired = scripts.filter { script ->
             if (!script.automation) return@filter false
             val satisfied = script.constraints.isNotEmpty() && script.constraintsMatch(evaluator::isSatisfied, evaluator::isKnownTrue)
             // Read from prefs, not the edge: the If may end in a process that never saw it start.
             if (!satisfied && AutomationUndo.pending(context, script.id)) ended += script
+            // Taken even when paused or emptied since, so a later end never runs a stale start.
+            if (!satisfied && AutomationEnd.take(context, script.id) && script.endActions.isNotEmpty() &&
+                script.isLive(scriptsRepo.globallyEnabled.value)
+            ) {
+                endRuns += script.copy(actions = script.endActions, endActions = emptyList())
+            }
             // update stays first, so the edge is recorded even when the cooldown skips this run.
             automationEdges.update(script.id, satisfied) && script.isLive(scriptsRepo.globallyEnabled.value) &&
                 passesCooldown(script, now)
         }
         ended.forEach { undoEnded(context, it) }
-        if (fired.isEmpty()) return ended.isNotEmpty()
+        fired.filter { it.endActions.isNotEmpty() }.forEach { AutomationEnd.start(context, it.id) }
+        if (endRuns.isNotEmpty()) {
+            Log.d(TAG, "Automation ended, running its end actions: scripts=${endRuns.map { it.id }}")
+            executeActions(context, defaults, endRuns, context.getString(R.string.trigger_kind_automation), keyCode = null, pressType = null)
+        }
+        if (fired.isEmpty()) return ended.isNotEmpty() || endRuns.isNotEmpty()
         Log.d(TAG, "Automation fired: scripts=${fired.map { it.id }}")
         executeActions(context, defaults, fired, context.getString(R.string.trigger_kind_automation), keyCode = null, pressType = null)
         return true

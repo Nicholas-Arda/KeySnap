@@ -78,6 +78,8 @@
          deliberately not declared: it would put "take pictures and videos" on the store listing
          for a capability this app does not have. -->
     <uses-feature android:name="android.hardware.camera.flash" android:required="false" />
+    <!-- CHANGE_WIFI_MULTICAST_STATE implies Wi-Fi is required; only Advanced Mode needs it, so Play may list KeySnap without it. -->
+    <uses-feature android:name="android.hardware.wifi" android:required="false" />
 
     <!-- Lets the action picker list launchable apps. A manifest declaration, not a runtime
          permission: the user sees no dialog, and QUERY_ALL_PACKAGES (which needs a Play Store
@@ -265,6 +267,18 @@
             android:exported="false">
             <intent-filter>
                 <action android:name="com.example.action.SUBMIT_PAIRING_CODE" />
+            </intent-filter>
+        </receiver>
+
+        <!-- "Control from other apps": pause/resume/toggle only, ignored unless the Settings switch
+             (off by default) is on. No permission: automation apps cannot request one of ours. -->
+        <receiver
+            android:name="com.example.surface.ExternalControlReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="${applicationId}.PAUSE" />
+                <action android:name="${applicationId}.RESUME" />
+                <action android:name="${applicationId}.TOGGLE" />
             </intent-filter>
         </receiver>
 

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="teach_err_record_only">Só o app do próprio celular pode aplicar isso</string>
+</resources>

@@ -71,16 +71,16 @@ class BridgePayload(context: Context) {
         private val credentialLock = Any()
 
         /**
-         * start.sh's step before the dex copy: kills the pre-63 bridge the legacy pid file names, waits
+         * The launcher's step before the dex copy: kills the pre-63 bridge the legacy pid file names, waits
          * up to 2 s for it to go, then deletes the file. Only pre-63 bridges wrote it, so this can never
-         * hit a bridge another start.sh just spawned: the respawn after an update lands while the old
+         * hit a bridge another launcher just spawned: the respawn after an update lands while the old
          * one still holds the port, and bridges before 2026-10-15 never exit on their own. A pid that
          * no longer names a bridge is left alone, and a missing, empty or non-numeric file (never `-1`,
          * which would signal every shell process) does nothing.
          */
         internal val KILL_LEFTOVER_BRIDGE =
             "PID=\$(cat \"\$BASE/${BridgeProtocol.LEGACY_PID_NAME}\" 2>/dev/null)\n" +
-                "case \"\$PID\" in ''|*[!0-9]*) PID= ;; esac\n" +
+                "case \"x\$PID\" in x|x*[!0-9]*) PID= ;; esac\n" +
                 "i=0\n" +
                 "while [ -n \"\$PID\" ] && [ \$i -lt 20 ] && grep -qF ${BridgeProtocol.NICE_NAME} \"/proc/\$PID/cmdline\" 2>/dev/null; do\n" +
                 "    kill -9 \"\$PID\" 2>/dev/null\n" +
@@ -144,20 +144,24 @@ class BridgePayload(context: Context) {
     fun hasConfig(): Boolean =
         appContext.getExternalFilesDir(null)?.let { File(File(it, PAYLOAD_DIR), BridgeProtocol.CONFIG_NAME).exists() } == true
 
-    fun startScriptFile(): File? = payloadDir()?.let { File(it, BridgeProtocol.START_SCRIPT_NAME) }
+    /** SHA-256 of the dex just installed; [spawnCommand] runs the shell's copy only if it matches. */
+    private var dexSha256: String? = null
 
     /**
-     * Copies the dex out of assets and (re)writes the launcher script. Both are rewritten on
-     * every install so an app update always ships a matching payload to the shell side.
+     * Copies the dex out of assets, rewritten on every install so an app update always ships a
+     * matching payload to the shell side.
      */
     fun install(): Boolean {
         val dir = payloadDir() ?: return false
         return try {
             val dexTarget = File(dir, BridgeProtocol.DEX_NAME)
+            val digest = java.security.MessageDigest.getInstance("SHA-256")
             appContext.assets.open(ASSET_DEX).use { input ->
-                dexTarget.outputStream().use(input::copyTo)
+                dexTarget.outputStream().use { java.security.DigestInputStream(input, digest).copyTo(it) }
             }
-            writeStartScript(dir, dexTarget)
+            dexSha256 = digest.digest().joinToString("") { "%02x".format(it) }
+            // Builds before protocol 73 ran a start.sh from here; nothing runs it now.
+            File(dir, "start.sh").delete()
             Log.d(TAG, "Bridge payload installed at $dir (${dexTarget.length()} bytes)")
             true
         } catch (e: Exception) {
@@ -176,28 +180,29 @@ class BridgePayload(context: Context) {
     }
 
     /**
-     * The dex is copied to /data/local/tmp before launching: app_process must load it as the
-     * shell UID, and executing code straight off the FUSE-backed external volume is not reliable.
+     * The launcher, sent inside the spawn command and never written to disk: the app's external
+     * files dir is reachable by more than the two UIDs on Android 11–12 (an app granted that folder),
+     * and a script or dex changed there would run as the shell. The dex is copied to
+     * /data/local/tmp (app_process must load it as the shell UID, and executing code straight off
+     * the FUSE-backed volume is not reliable) and runs only when its SHA-256 is the one installed.
+     * The token goes on the bridge's command line, which other apps cannot read. Single quotes
+     * never appear in it: the whole script travels inside one `sh -c '…'`.
      */
-    private fun writeStartScript(dir: File, dexSource: File) {
-        val configPath = File(dir, BridgeProtocol.CONFIG_NAME).absolutePath
-        val base = baseDir
-        val script = buildString {
-            append("#!/system/bin/sh\n")
-            append("BASE=").append(base).append('\n')
-            append("mkdir -p \"\$BASE\" || exit 1\n")
-            // Owner only: the log and SendButton's window dump must not be readable by other apps.
-            append("chmod 700 \"\$BASE\"\n")
-            append(KILL_LEFTOVER_BRIDGE)
-            append("cp \"").append(dexSource.absolutePath).append("\" \"\$BASE/")
-                .append(BridgeProtocol.DEX_NAME).append("\" || exit 1\n")
-            append("chmod 644 \"\$BASE/").append(BridgeProtocol.DEX_NAME).append("\"\n")
-            append("export CLASSPATH=\"\$BASE/").append(BridgeProtocol.DEX_NAME).append("\"\n")
-            append("exec app_process /system/bin --nice-name=").append(BridgeProtocol.NICE_NAME)
-                .append(' ').append(BridgeProtocol.MAIN_CLASS)
-                .append(" --config \"").append(configPath).append("\" --base \"\$BASE\"\n")
-        }
-        File(dir, BridgeProtocol.START_SCRIPT_NAME).writeText(script)
+    internal fun startScript(dexSource: File, configPath: String, sha256: String, token: String): String = buildString {
+        append("BASE=").append(baseDir).append('\n')
+        append("mkdir -p \"\$BASE\" || exit 1\n")
+        // Owner only: the log and SendButton's window dump must not be readable by other apps.
+        append("chmod 700 \"\$BASE\"\n")
+        append(KILL_LEFTOVER_BRIDGE)
+        append("cp \"").append(dexSource.absolutePath).append("\" \"\$BASE/")
+            .append(BridgeProtocol.DEX_NAME).append("\" || exit 1\n")
+        append("[ \"\$(sha256sum \"\$BASE/").append(BridgeProtocol.DEX_NAME).append("\" | cut -d\" \" -f1)\" = ")
+            .append(sha256).append(" ] || { echo dex-mismatch; exit 1; }\n")
+        append("chmod 644 \"\$BASE/").append(BridgeProtocol.DEX_NAME).append("\"\n")
+        append("export CLASSPATH=\"\$BASE/").append(BridgeProtocol.DEX_NAME).append("\"\n")
+        append("exec app_process /system/bin --nice-name=").append(BridgeProtocol.NICE_NAME)
+            .append(' ').append(BridgeProtocol.MAIN_CLASS)
+            .append(" --config \"").append(configPath).append("\" --base \"\$BASE\" --token ").append(token).append('\n')
     }
 
     /**
@@ -216,7 +221,6 @@ class BridgePayload(context: Context) {
             root.put("version", BridgeProtocol.VERSION)
             root.put("packageName", appContext.packageName)
             root.put("port", controlPort)
-            root.put("token", controlToken)
             root.put("globallyEnabled", globallyEnabled)
             root.put("foregroundReadable", com.example.service.hasUsageAccess(appContext))
             root.put("capsuleFeedbackEnabled", com.example.capsule.CapsuleHooks.isEnabled(appContext) &&
@@ -292,17 +296,25 @@ class BridgePayload(context: Context) {
             }
             root.put("scripts", scriptArray)
 
-            val temp = File(target.parentFile, "${BridgeProtocol.CONFIG_NAME}.tmp")
-            temp.writeText(root.toString())
-            if (!temp.renameTo(target)) {
-                // renameTo can fail on the FUSE-backed volume; fall back to a direct rewrite.
-                target.writeText(root.toString())
-                temp.delete()
-            }
+            val json = root.toString()
+            // The signature first: the bridge reloads when the document changes, and by then it is there.
+            writeAtomically(File(target.parentFile, BridgeProtocol.CONFIG_MAC_NAME), com.example.bridge.BridgeAuth.configMac(controlToken, json))
+            writeAtomically(target, json)
             true
         } catch (e: Exception) {
             Log.e(TAG, "Failed to write bridge config", e)
             false
+        }
+    }
+
+    /** Temp file and rename, so the bridge never observes a half-written file. */
+    private fun writeAtomically(target: File, text: String) {
+        val temp = File(target.parentFile, "${target.name}.tmp")
+        temp.writeText(text)
+        if (!temp.renameTo(target)) {
+            // renameTo can fail on the FUSE-backed volume; fall back to a direct rewrite.
+            target.writeText(text)
+            temp.delete()
         }
     }
 
@@ -313,10 +325,13 @@ class BridgePayload(context: Context) {
      * to init and survives both the ADB stream closing and the app being force-stopped.
      */
     fun spawnCommand(): String? {
-        val script = startScriptFile() ?: return null
+        val dir = payloadDir() ?: return null
+        val sha256 = dexSha256 ?: return null
+        val script = startScript(File(dir, BridgeProtocol.DEX_NAME), File(dir, BridgeProtocol.CONFIG_NAME).absolutePath, sha256, controlToken)
+        check('\'' !in script)
         val base = baseDir
         return "mkdir -p $base; chmod 700 $base; " +
-            "nohup setsid sh '${script.absolutePath}' </dev/null >$base/spawn.log 2>&1 & " +
+            "nohup setsid sh -c '$script' </dev/null >$base/spawn.log 2>&1 & " +
             "sleep 1; " +
             "echo ${BridgeProtocol.SPAWN_MARKER} spawned"
     }

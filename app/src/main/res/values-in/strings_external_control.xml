@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="external_control_title">Kontrol dari aplikasi lain</string>
+    <string name="external_control_description">Jeda dan lanjutkan KeySnap dari aplikasi lain atau adb.</string>
+    <string name="external_control_can">Bisa menjeda, melanjutkan, mengalihkan</string>
+    <string name="external_control_cannot">Tidak bisa menjalankan pintasan</string>
+    <string name="external_control_package">Paket</string>
+    <string name="external_control_class">Kelas</string>
+    <string name="external_control_pause">Jeda</string>
+    <string name="external_control_resume">Lanjutkan</string>
+    <string name="external_control_toggle">Alihkan</string>
+    <string name="external_control_try_adb">Coba dengan adb</string>
+    <string name="external_control_paused">KeySnap dijeda oleh aplikasi lain</string>
+    <string name="external_control_resumed">KeySnap dilanjutkan oleh aplikasi lain</string>
+    <string name="external_control_names">Nama untuk aplikasi lain</string>
+</resources>

@@ -91,6 +91,7 @@ internal fun ShortcutQuickSettingsSheet(
             surfaceOnly = script.isSurfaceOnly,
             showCapsule = script.showCapsule,
             matchAny = script.matchAny,
+            endActions = script.endActions,
         )
         shareShortcutText(context, context.getString(R.string.share_text_intro) + "\n\n" + encoded)
     }
@@ -160,7 +161,8 @@ internal fun ShortcutQuickSettingsSheet(
         confirmLabel = stringResource(R.string.share_action),
         onConfirm = { reviewing = false; share() },
         onDismiss = { reviewing = false },
-        repliesToEveryChat = ActionEditorForms.repliesToEveryChat(script.automation, script.constraints, script.actions),
+        repliesToEveryChat = ActionEditorForms.repliesToEveryChat(script.automation, script.constraints, script.actions + script.endActions),
+        endActions = script.endActions.map(ShortcutShare::portable),
     )
 }
 

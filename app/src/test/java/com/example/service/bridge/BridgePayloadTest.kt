@@ -97,9 +97,9 @@ class BridgePayloadTest {
         )
         assertTrue(written)
 
-        val parsed = BridgeConfig.read(payload.configFile()!!)
+        val parsed = BridgeConfig.readSigned(payload.configFile()!!, payload.controlToken)
         assertEquals(payload.controlPort, parsed.port)
-        assertEquals(payload.controlToken, parsed.token)
+        assertFalse("the token never goes on disk", payload.controlToken in payload.configFile()!!.readText())
         assertEquals(300L, parsed.doublePressWindowMs)
         assertEquals(500L, parsed.longPressThresholdMs)
         assertEquals(1, parsed.scripts.size)
@@ -175,16 +175,43 @@ class BridgePayloadTest {
         assertFalse(prefs.contains("control_token"))
     }
 
-    /** start.sh kills a leftover pre-63 bridge of this build before it copies the dex that bridge has open. */
+    /** The launcher kills a leftover pre-63 bridge of this build before it copies the dex that bridge has open. */
     @Test
     fun theStartScriptKillsALeftoverBridgeBeforeCopyingTheDex() {
         val payload = BridgePayload(context)
         assertTrue(payload.install())
-        val script = payload.startScriptFile()!!.readText()
+        val command = payload.spawnCommand()!!
 
-        val kill = script.indexOf(BridgePayload.KILL_LEFTOVER_BRIDGE)
-        assertTrue(script.indexOf("chmod 700 \"\$BASE\"") in 0 until kill)
-        assertTrue(kill < script.indexOf("\ncp "))
+        val kill = command.indexOf(BridgePayload.KILL_LEFTOVER_BRIDGE)
+        assertTrue(command.indexOf("chmod 700 \"\$BASE\"") in 0 until kill)
+        assertTrue(kill < command.indexOf("\ncp "))
+    }
+
+    /** Nothing the shell runs comes from the shared folder unchecked, and the token is only on the command line. */
+    @Test
+    fun theLauncherTravelsInTheCommandAndChecksTheDex() {
+        val payload = BridgePayload(context)
+        assertTrue(payload.install())
+        val command = payload.spawnCommand()!!
+        assertFalse(java.io.File(payload.payloadDir(), "start.sh").exists())
+        assertTrue(command.contains("sh -c '"))
+        val sha = java.security.MessageDigest.getInstance("SHA-256")
+            .digest(java.io.File(payload.payloadDir(), com.example.bridge.BridgeProtocol.DEX_NAME).readBytes())
+            .joinToString("") { "%02x".format(it) }
+        val check = command.indexOf(sha)
+        assertTrue(check > command.indexOf("\ncp ") && check < command.indexOf("exec app_process"))
+        assertTrue(command.contains("--token ${payload.controlToken}"))
+    }
+
+    @Test
+    fun aConfigChangedWithoutTheTokenIsRefused() {
+        val payload = BridgePayload(context)
+        assertTrue(payload.writeConfig(listOf(flashlightScript()), true, KeyMappingConfig()))
+        val file = payload.configFile()!!
+        BridgeConfig.readSigned(file, payload.controlToken)
+        file.writeText(file.readText().replace("\"globallyEnabled\":true", "\"globallyEnabled\":false"))
+        assertTrue(runCatching { BridgeConfig.readSigned(file, payload.controlToken) }.isFailure)
+        assertTrue(runCatching { BridgeConfig.readSigned(file, "0".repeat(32)) }.isFailure)
     }
 
     /**
@@ -285,7 +312,9 @@ class BridgePayloadTest {
 
     @Test
     fun spawnCommandDetachesTheBridgeFromTheAdbSession() {
-        val command = BridgePayload(context).spawnCommand()
+        val payload = BridgePayload(context)
+        assertTrue(payload.install())
+        val command = payload.spawnCommand()
         assertNotNull(command)
         // setsid gives the bridge its own session so closing the ADB stream cannot SIGHUP it,
         // and redirecting all three standard streams detaches it from the transport.

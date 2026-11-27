@@ -192,6 +192,10 @@ fun SettingsScreen(
     autostartPermissionHeld: Boolean = false,
     autostartChanging: Boolean = false,
     onToggleAutostart: (Boolean) -> Unit = {},
+    keepWithoutWifi: Boolean = false,
+    onToggleKeepWithoutWifi: (Boolean) -> Unit = {},
+    wifiFreePortOpen: suspend () -> Boolean = { false },
+    onStartOverLoopback: suspend () -> Unit = {},
     reveal: (index: Int) -> Modifier = { Modifier },
     targetSection: SettingsSection? = null,
     onSectionShown: () -> Unit = {},
@@ -420,6 +424,10 @@ fun SettingsScreen(
                     grantHeld = autostartPermissionHeld,
                     changing = autostartChanging,
                     onToggleAutostart = onToggleAutostart,
+                    keepWithoutWifi = keepWithoutWifi,
+                    onToggleKeepWithoutWifi = onToggleKeepWithoutWifi,
+                    wifiFreePortOpen = wifiFreePortOpen,
+                    onStartOverLoopback = onStartOverLoopback,
                     expanded = advancedExpanded,
                     onToggleExpanded = { advancedExpanded = !advancedExpanded },
                     accessibilityStatus = accessibilityStatus,
@@ -603,6 +611,10 @@ private fun AdvancedModePanel(
     grantHeld: Boolean,
     changing: Boolean,
     onToggleAutostart: (Boolean) -> Unit,
+    keepWithoutWifi: Boolean,
+    onToggleKeepWithoutWifi: (Boolean) -> Unit,
+    wifiFreePortOpen: suspend () -> Boolean,
+    onStartOverLoopback: suspend () -> Unit,
     expanded: Boolean,
     onToggleExpanded: () -> Unit,
     accessibilityStatus: AccessibilityStatus,
@@ -703,6 +715,15 @@ private fun AdvancedModePanel(
             Text(stringResource(R.string.settings_autostart_cleanup_failed),
                 style = MaterialTheme.typography.bodySmall, color = colors.error)
         }
+        WifiFreeRows(
+            isRunning = isRunning,
+            keepWithoutWifi = keepWithoutWifi,
+            onToggleKeepWithoutWifi = onToggleKeepWithoutWifi,
+            portOpen = wifiFreePortOpen,
+            onStartOverLoopback = onStartOverLoopback,
+        )
+        HorizontalDivider(color = colors.outline.copy(alpha = .45f))
+        ExternalControlRows()
         HorizontalDivider(color = colors.outline.copy(alpha = .45f))
         Row(
             Modifier
@@ -822,7 +843,7 @@ private fun SavedKeysPanel(
 }
 
 /** [text] with the literal [command] in it set apart in the code face and [tint]. */
-private fun highlightCommand(text: String, command: String, tint: Color): AnnotatedString = buildAnnotatedString {
+internal fun highlightCommand(text: String, command: String, tint: Color): AnnotatedString = buildAnnotatedString {
     val at = text.indexOf(command)
     if (at < 0) {
         append(text)

@@ -46,7 +46,9 @@ import java.util.concurrent.atomic.AtomicLong;
  * {@link SensitiveApps#WIFI} in front ends this bridge ({@link #leave}). After its other switches,
  * the app is told, adb_wifi_enabled goes to 0 and the process exits with nothing restored and its
  * directory kept, so the marker brings the rest back when the user sets Advanced Mode up again.
- * That is the only write of adb_wifi_enabled, never to 1; adb_enabled is never written.
+ * That is the only write of adb_wifi_enabled, never to 1; adb_enabled is never written. While adbd
+ * also listens on TCP ("Keep running without Wi-Fi") the 0 is written after the step and the bridge
+ * stays: the app is told "aside" as for any listed app, and nothing ends.
  */
 final class SensitiveAppGuard extends Binder {
 
@@ -351,6 +353,12 @@ final class SensitiveAppGuard extends Binder {
 
     private void run(int[] step) {
         String leavingFor = state.leavingFor(); // Decided with [step], which is computed before this runs.
+        boolean staying = leavingFor != null
+                && SensitiveApps.adbOverTcp(ShellKeyInjector.runShellForOutput("getprop", "service.adb.tcp.port"));
+        if (staying) {
+            state.stayed();
+            leavingFor = null;
+        }
         try {
             apply(step);
         } catch (Throwable t) {
@@ -360,6 +368,12 @@ final class SensitiveAppGuard extends Binder {
             saveMarker(state.changed());
             if (leavingFor == null) report(); // Otherwise the app hears "leaving", not "aside".
             idle = state.idle();
+        }
+        if (staying) {
+            BridgeLog.i("Sensitive apps: turning wireless debugging off; adbd is on TCP, bridge stays");
+            if (!ShellKeyInjector.runShellUnlogged(SHELL_TIMEOUT_S, false, SensitiveApps.wirelessDebuggingOff()).ok) {
+                BridgeLog.w("Sensitive apps: could not turn wireless debugging off");
+            }
         }
         if (leavingFor != null) leave(leavingFor);
     }

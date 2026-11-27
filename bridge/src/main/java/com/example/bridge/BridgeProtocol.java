@@ -18,7 +18,7 @@ public final class BridgeProtocol {
     /** Bumped whenever the on-disk payload or the socket protocol changes incompatibly, or when
      *  :bridge behavior changes at all — an already-running detached bridge has no way to pick up
      *  a source-only fix otherwise. */
-    public static final int VERSION = 71;
+    public static final int VERSION = 74;
 
     /** Process name given to app_process, used by `pidof` for liveness checks. */
     public static final String NICE_NAME = "arda_bridge";
@@ -44,16 +44,18 @@ public final class BridgeProtocol {
     }
 
     public static final String DEX_NAME = "bridge.dex";
-    public static final String START_SCRIPT_NAME = "start.sh";
     public static final String LOG_NAME = "bridge.log";
     /**
-     * Written by bridges before protocol 63 once their port was bound; start.sh kills that leftover by
+     * Written by bridges before protocol 63 once their port was bound; the launcher kills that leftover by
      * it, then deletes it. Protocol 63 writes none, so the kill can never reach a bridge it spawned.
      */
     public static final String LEGACY_PID_NAME = "bridge.pid";
 
     /** Written by the app into its external files dir; read by the bridge (shell is in ext_data_rw). */
     public static final String CONFIG_NAME = "bridge.json";
+
+    /** Beside {@link #CONFIG_NAME}: {@link BridgeAuth#configMac} of it, written first; a config without a matching one is ignored. */
+    public static final String CONFIG_MAC_NAME = "bridge.json.mac";
 
     /**
      * The config of bridges before protocol 63, which they poll and exit on their own once it is gone
@@ -64,7 +66,7 @@ public final class BridgeProtocol {
     /** Entry point class launched by app_process. */
     public static final String MAIN_CLASS = "com.example.bridge.BridgeMain";
 
-    /** Printed by start.sh once the detached process has been spawned. */
+    /** Printed by the spawn command once the detached process has been spawned. */
     public static final String SPAWN_MARKER = "ARDA_SPAWN";
 
     // ---- Loopback socket protocol (app connects as client; bridge listens) ----

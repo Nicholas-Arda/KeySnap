@@ -22,6 +22,22 @@ class ShortcutShareTest {
         assertFalse((ShortcutShare.decode(crafted) as ImportResult.Ok).shortcut.actions.single().params.containsKey("headers"))
     }
 
+    @Test fun whenItEndsTravelsAsFormatTwoAndOnlyOnAnAutomation() {
+        val condition = listOf(ScriptConstraint("charging"))
+        val plain = ShortcutShare.encode("Plain", true, TriggerPressType.SINGLE_PRESS, listOf(ScriptAction("enable_dnd")), condition)
+        assertTrue(plain.contains("\"keysnap\":1"))
+        val encoded = ShortcutShare.encode(
+            "Car", true, TriggerPressType.SINGLE_PRESS, listOf(ScriptAction("enable_dnd")), condition,
+            endActions = listOf(ScriptAction("disable_dnd")),
+        )
+        assertTrue(encoded.contains("\"keysnap\":2"))
+        val shortcut = (ShortcutShare.decode(encoded) as ImportResult.Ok).shortcut
+        assertEquals(listOf("disable_dnd"), shortcut.endActions.map { it.type })
+        // A format-1 reader would drop the list, so a share claiming 1 with one is refused.
+        assertTrue(ShortcutShare.decode(encoded.replace("\"keysnap\":2", "\"keysnap\":1")) is ImportResult.Error)
+        assertTrue(ShortcutShare.decode(encoded.replace("\"automation\":true", "\"automation\":false")) is ImportResult.Error)
+    }
+
     @Test fun anActionThisPhoneDoesNotHaveRefusesTheShare() {
         val encoded = ShortcutShare.encode("Mind", false, TriggerPressType.SINGLE_PRESS, listOf(ScriptAction(OemActions.OPEN_MIND_SPACE, emptyMap())), emptyList())
         assertTrue(ShortcutShare.decode(encoded) is ImportResult.Ok)
@@ -180,7 +196,7 @@ class ShortcutShareTest {
     }
 
     @Test fun aNewerExportSaysSoInsteadOfDroppingSteps() {
-        assertEquals(R.string.import_error_newer, error(encode().replace("\"keysnap\":1", "\"keysnap\":2")))
+        assertEquals(R.string.import_error_newer, error(encode().replace("\"keysnap\":1", "\"keysnap\":3")))
         assertEquals(R.string.import_error_unsupported, error(encode(actions = listOf(torch, ScriptAction("teleport")))))
         // Coming-soon catalog entries are known ids that cannot run yet.
         assertEquals(R.string.import_error_unsupported, error(encode(actions = listOf(ScriptAction("show_keyboard")))))

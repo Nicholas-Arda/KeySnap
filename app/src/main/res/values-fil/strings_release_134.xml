@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_wifi_free_title_134">Gumagana kahit walang Wi-Fi</string>
+    <string name="whats_new_wifi_free_description_134">Naka-on pa rin ang Advanced Mode kahit naka-off ang Wi-Fi.</string>
+    <string name="whats_new_computer_title_134">Simulan mula sa computer</string>
+    <string name="whats_new_computer_description_134">I-set up ang Advanced Mode gamit ang USB cable.</string>
+    <string name="whats_new_fix_switch_actions_134">Mga bagong action: I-on/i-off ang mobile data at NFC</string>
+    <string name="whats_new_fix_security_134">Mas protektado na ang mga file ng Advanced Mode</string>
+    <string name="whats_new_external_title_134">Kontrol mula sa ibang app</string>
+    <string name="whats_new_external_description_134">Puwedeng i-pause at ituloy ng ibang app ang KeySnap.</string>
+    <string name="whats_new_fix_teach_134">Nilalaktawan ng Magturo ng setting ang mga switch na phone lang ang makakapag-apply</string>
+    <string name="whats_new_end_title_134">Kapag natapos</string>
+    <string name="whats_new_end_description_134">Puwede ring kumilos ang automation kapag natapos ang kondisyon.</string>
+</resources>

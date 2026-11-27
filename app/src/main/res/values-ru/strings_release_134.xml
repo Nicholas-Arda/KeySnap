@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_wifi_free_title_134">Работает без Wi-Fi</string>
+    <string name="whats_new_wifi_free_description_134">Расширенный режим остаётся включённым даже без Wi-Fi.</string>
+    <string name="whats_new_computer_title_134">Запуск с компьютера</string>
+    <string name="whats_new_computer_description_134">Настройте расширенный режим через USB-кабель.</string>
+    <string name="whats_new_fix_switch_actions_134">Новые действия: включить/выключить мобильный интернет и NFC</string>
+    <string name="whats_new_fix_security_134">Файлы расширенного режима защищены лучше</string>
+    <string name="whats_new_external_title_134">Управление из других приложений</string>
+    <string name="whats_new_external_description_134">Другие приложения могут приостанавливать и возобновлять KeySnap.</string>
+    <string name="whats_new_fix_teach_134">«Научить настройке» пропускает переключатели, которые применяет только телефон</string>
+    <string name="whats_new_end_title_134">Когда закончится</string>
+    <string name="whats_new_end_description_134">Автоматизации действуют и тогда, когда условие заканчивается.</string>
+</resources>

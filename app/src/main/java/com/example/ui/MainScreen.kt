@@ -154,6 +154,7 @@ fun MainScreen(viewModel: MainViewModel) {
     val advancedAutostart by viewModel.advancedAutostart.collectAsState()
     val autostartPermissionHeld by viewModel.autostartPermissionHeld.collectAsState()
     val autostartChanging by viewModel.autostartChanging.collectAsState()
+    val keepWithoutWifi by viewModel.keepWithoutWifi.collectAsState()
     val storedThemeMode by viewModel.themeMode.collectAsState()
     val themeFollowSystem by viewModel.themeFollowSystem.collectAsState()
     val oledMode by viewModel.oledMode.collectAsState()
@@ -481,6 +482,10 @@ fun MainScreen(viewModel: MainViewModel) {
                     autostartPermissionHeld = autostartPermissionHeld,
                     autostartChanging = autostartChanging,
                     onToggleAutostart = viewModel::setAdvancedAutostart,
+                    keepWithoutWifi = keepWithoutWifi,
+                    onToggleKeepWithoutWifi = viewModel::setKeepWithoutWifi,
+                    wifiFreePortOpen = viewModel::wifiFreePortOpen,
+                    onStartOverLoopback = viewModel::startOverLoopback,
                     onToggleAdvancedMode = viewModel::toggleAdvancedMode,
                     onRunSetupAgain = { viewModel.openSetupWizard(0) },
                     reveal = settingsMotion::reveal,
@@ -532,6 +537,11 @@ fun MainScreen(viewModel: MainViewModel) {
                                 if (AiHooks.AVAILABLE) {
                                     aiWindowOpen = true
                                 }
+                            }
+                            WhatsNewDestination.NEW_AUTOMATION -> {
+                                settingsOpen = false
+                                viewModel.createScript(ModeHooks.modeForNewShortcut(pagerState.currentPage == 1))
+                                viewModel.draftSetAutomation()
                             }
                             WhatsNewDestination.ADVANCED_MODE -> {
                                 settingsSection = SettingsSection.ADVANCED_MODE
@@ -614,6 +624,8 @@ fun MainScreen(viewModel: MainViewModel) {
             // Non-null while the sheet is open: the action type, and the chain index when editing.
             var configuringType by remember { mutableStateOf<String?>(null) }
             var configuringIndex by remember { mutableStateOf<Int?>(null) }
+            // True while that sheet edits an automation's "When it ends" list instead of Do.
+            var configuringEnd by remember { mutableStateOf(false) }
             // Same shape for constraints: the type while the sheet is open, the index when editing.
             var pendingConstraintType by remember { mutableStateOf<String?>(null) }
             var pendingConstraintIndex by remember { mutableStateOf<Int?>(null) }
@@ -658,6 +670,7 @@ fun MainScreen(viewModel: MainViewModel) {
                     if (viewModel.acceptProFeature(type)) {
                         viewModel.loadInstalledApps()
                         configuringIndex = null
+                        configuringEnd = false
                         configuringType = type
                     }
                 },
@@ -669,12 +682,37 @@ fun MainScreen(viewModel: MainViewModel) {
                         } else {
                             viewModel.loadInstalledApps()
                             configuringIndex = index
+                            configuringEnd = false
                             configuringType = type
                         }
                     }
                 },
                 onRemoveAction = viewModel::draftRemoveAction,
                 onMoveAction = viewModel::draftMoveAction,
+                onAddEndAction = { type, params -> viewModel.draftAddAction(type, params, end = true) },
+                onConfigureNewEndAction = { type ->
+                    if (viewModel.acceptProFeature(type)) {
+                        viewModel.loadInstalledApps()
+                        configuringIndex = null
+                        configuringEnd = true
+                        configuringType = type
+                    }
+                },
+                onConfigureEndAction = { index ->
+                    val type = draft.endActions.getOrNull(index)?.type
+                    if (type != null && viewModel.acceptProFeature(type)) {
+                        if (type in ASSISTANT_SETTINGS_ACTION_TYPES) {
+                            viewModel.openAssistantSettings(context)
+                        } else {
+                            viewModel.loadInstalledApps()
+                            configuringIndex = index
+                            configuringEnd = true
+                            configuringType = type
+                        }
+                    }
+                },
+                onRemoveEndAction = { viewModel.draftRemoveAction(it, end = true) },
+                onMoveEndAction = { from, to -> viewModel.draftMoveAction(from, to, end = true) },
                 onSetActionUndo = viewModel::draftSetActionUndo,
                 onSetAllUndo = viewModel::draftSetAllUndo,
                 onSetMatchAny = viewModel::draftSetMatchAny,
@@ -772,9 +810,9 @@ fun MainScreen(viewModel: MainViewModel) {
                 val index = configuringIndex
                 ActionConfigSheet(
                     actionType = type,
-                    initialParams = index?.let { draft.actions.getOrNull(it)?.params }.orEmpty(),
+                    initialParams = index?.let { (if (configuringEnd) draft.endActions else draft.actions).getOrNull(it)?.params }.orEmpty(),
                     isEdit = index != null,
-                    startsFromNotification = ScriptConstraintCatalog.startsFromNotification(draft.automation, draft.constraints),
+                    startsFromNotification = !configuringEnd && ScriptConstraintCatalog.startsFromNotification(draft.automation, draft.constraints),
                     isRecordingKey = isRecordingKey,
                     installedApps = installedApps,
                     canDrawOverlays = canDrawOverlays,
@@ -800,7 +838,7 @@ fun MainScreen(viewModel: MainViewModel) {
                     scripts = scripts,
                     onConfirm = { params ->
                         val aligned = ModeHooks.alignCycleCount(type, params, scripts)
-                        if (index == null) viewModel.draftAddAction(type, aligned) else viewModel.draftSetActionParams(index, aligned)
+                        if (index == null) viewModel.draftAddAction(type, aligned, configuringEnd) else viewModel.draftSetActionParams(index, aligned, configuringEnd)
                         configuringType = null
                         configuringIndex = null
                     },
@@ -882,7 +920,8 @@ fun MainScreen(viewModel: MainViewModel) {
                         viewModel.draftShareText()?.let { shareShortcutText(context, it) }
                     },
                     onDismiss = { confirmShare = false },
-                    repliesToEveryChat = ActionEditorForms.repliesToEveryChat(draft.automation, draft.constraints, draft.actions),
+                    repliesToEveryChat = ActionEditorForms.repliesToEveryChat(draft.automation, draft.constraints, draft.actions + draft.endActions),
+                    endActions = if (draft.automation) draft.endActions.map(ShortcutShare::portable) else emptyList(),
                 )
             }
         }
@@ -972,7 +1011,8 @@ fun MainScreen(viewModel: MainViewModel) {
             confirmLabel = stringResource(R.string.import_confirm),
             onConfirm = viewModel::confirmImport,
             onDismiss = viewModel::dismissImport,
-            repliesToEveryChat = ActionEditorForms.repliesToEveryChat(imported.automation, imported.constraints, imported.actions),
+            repliesToEveryChat = ActionEditorForms.repliesToEveryChat(imported.automation, imported.constraints, imported.actions + imported.endActions),
+            endActions = imported.endActions,
         )
     }
     if (showReconnectSheet) {

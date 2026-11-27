@@ -59,6 +59,7 @@ fun ShortcutReviewDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
     repliesToEveryChat: Boolean = false,
+    endActions: List<ScriptAction> = emptyList(),
 ) {
     val colors = MaterialTheme.colorScheme
     val context = LocalContext.current
@@ -69,8 +70,14 @@ fun ShortcutReviewDialog(
             Column(Modifier.verticalScroll(rememberScrollState()).testTag("shortcut_review")) {
                 if (name.isNotBlank()) Text(name, style = MaterialTheme.typography.titleSmall, color = colors.onSurface)
                 if (automation) Text(stringResource(R.string.home_suggestions_group_automation), style = MaterialTheme.typography.bodySmall)
-                actions.forEach { action ->
-                    val descriptor = ScriptActionCatalog.descriptor(action.type) ?: return@forEach
+                (actions + endActions).forEachIndexed { index, action ->
+                    // "When it ends" steps are part of the trust review too, literals included.
+                    if (index == actions.size) Text(
+                        stringResource(R.string.editor_chain_when_it_ends),
+                        Modifier.padding(top = 12.dp),
+                        style = MaterialTheme.typography.labelLarge,
+                    )
+                    val descriptor = ScriptActionCatalog.descriptor(action.type) ?: return@forEachIndexed
                     Text(
                         stringResource(descriptor.titleRes),
                         Modifier.padding(top = 8.dp),

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="external_control_title">Diğer uygulamalardan kontrol</string>
+    <string name="external_control_description">KeySnap’i başka bir uygulamadan ya da adb ile duraklat ve devam ettir.</string>
+    <string name="external_control_can">Duraklatabilir, devam ettirebilir, değiştirebilir</string>
+    <string name="external_control_cannot">Kısayol çalıştıramaz</string>
+    <string name="external_control_package">Paket</string>
+    <string name="external_control_class">Sınıf</string>
+    <string name="external_control_pause">Duraklat</string>
+    <string name="external_control_resume">Devam ettir</string>
+    <string name="external_control_toggle">Değiştir</string>
+    <string name="external_control_try_adb">adb ile dene</string>
+    <string name="external_control_paused">KeySnap başka bir uygulama tarafından duraklatıldı</string>
+    <string name="external_control_resumed">KeySnap başka bir uygulama tarafından devam ettirildi</string>
+    <string name="external_control_names">Diğer uygulamalar için adlar</string>
+</resources>

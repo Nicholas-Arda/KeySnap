@@ -30,7 +30,10 @@ internal object LibAdbConnectionManager {
         }.apply {
             setApi(Build.VERSION.SDK_INT)
             setTimeout(15, TimeUnit.SECONDS)
-            setThrowOnUnauthorised(true)
+            // Only plain-TCP adbd (the Wi-Fi-free loopback port) asks for a key; the TLS transport
+            // never does. Throwing would skip sending the public key, so a phone that never paired
+            // over Wi-Fi would not show its "Allow debugging?" prompt and could never let KeySnap in.
+            setThrowOnUnauthorised(false)
         }
     }
 

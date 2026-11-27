@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_wifi_free_title_134">Chạy cả khi không có Wi-Fi</string>
+    <string name="whats_new_wifi_free_description_134">Chế độ nâng cao vẫn bật, kể cả khi tắt Wi-Fi.</string>
+    <string name="whats_new_computer_title_134">Khởi động từ máy tính</string>
+    <string name="whats_new_computer_description_134">Thiết lập Chế độ nâng cao bằng cáp USB.</string>
+    <string name="whats_new_fix_switch_actions_134">Thao tác mới: Bật/tắt dữ liệu di động và NFC</string>
+    <string name="whats_new_fix_security_134">Tệp của Chế độ nâng cao được bảo vệ tốt hơn</string>
+    <string name="whats_new_external_title_134">Điều khiển từ ứng dụng khác</string>
+    <string name="whats_new_external_description_134">Ứng dụng khác có thể tạm dừng và tiếp tục KeySnap.</string>
+    <string name="whats_new_fix_teach_134">Dạy một cài đặt bỏ qua các công tắc chỉ điện thoại áp dụng được</string>
+    <string name="whats_new_end_title_134">Khi kết thúc</string>
+    <string name="whats_new_end_description_134">Tự động hóa cũng có thể chạy khi điều kiện kết thúc.</string>
+</resources>

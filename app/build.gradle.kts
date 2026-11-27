@@ -133,8 +133,8 @@ android {
     // Mode — is an Android 11 feature anyway, so nothing below 30 could use the app's core.
     minSdk = 30
     targetSdk = 36
-    versionCode = 26
-    versionName = "1.3.3"
+    versionCode = 27
+    versionName = "1.3.4"
     buildConfigField("boolean", "CAPSULE_ACCEPTANCE_PRO", capsuleAcceptancePro.toString())
 
     val autostartStateProbe = project.hasProperty("autostartStateProbe")

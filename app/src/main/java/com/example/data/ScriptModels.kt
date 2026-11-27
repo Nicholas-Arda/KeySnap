@@ -28,6 +28,8 @@ data class ShortcutScript(
     val matchAny: Boolean = false,
     /** An automation's own "Notifications"; see AutomationRunNotifier. */
     val notice: RunNotice = RunNotice(),
+    /** An automation's "When it ends": runs once its If turns from true to false. Empty for key shortcuts. */
+    val endActions: List<ScriptAction> = emptyList(),
 )
 
 /**
@@ -108,6 +110,7 @@ internal data class PersistedShortcutScript(
     val hapticPattern: String? = null,
     val matchAny: Boolean = false,
     val notice: RunNotice? = null,
+    val endActions: List<PersistedScriptAction> = emptyList(),
 )
 
 @JsonClass(generateAdapter = true)
@@ -141,6 +144,7 @@ internal fun ShortcutScript.toPersisted() = PersistedShortcutScript(
     hapticPattern = hapticPattern,
     matchAny = matchAny,
     notice = notice.takeIf { it != RunNotice() },
+    endActions = endActions.map { PersistedScriptAction(it.type, it.params) },
 )
 
 /** Dropped from the catalog because it ran the identical `input keyevent` the bridge runs for
@@ -179,6 +183,9 @@ internal fun PersistedShortcutScript.toDomain(): ShortcutScript? {
         val migrated = migrateAction(action.type, action.params).copy(undoOnEnd = action.undoOnEnd)
         if (ScriptActionCatalog.descriptor(migrated.type) == null) null else migrated
     }
+    val validEndActions = endActions.mapNotNull { action ->
+        migrateAction(action.type, action.params).takeIf { ScriptActionCatalog.descriptor(it.type) != null }
+    }
     val validConstraints = constraints.mapNotNull { constraint ->
         if (ScriptConstraintCatalog.descriptor(constraint.type)?.availability != ConstraintAvailability.AVAILABLE) null
         else ScriptConstraint(constraint.type, constraint.params)
@@ -191,6 +198,7 @@ internal fun PersistedShortcutScript.toDomain(): ShortcutScript? {
         automation || eventTriggers.isNotEmpty(),
         consumeOriginalEvent, vibrateOnTrigger, hapticDurationMs, exactTiming, showCapsule, hapticPattern, matchAny,
         notice ?: RunNotice(),
+        validEndActions,
     )
 }
 

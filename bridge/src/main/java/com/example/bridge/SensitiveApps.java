@@ -14,7 +14,8 @@ import java.util.Set;
  * {@link #DEV_KEY} and {@link #A11Y_KEY}. The third, {@link #WIFI}, is one-way: a listed app with it
  * coming to the front ends this bridge ({@link #leavingFor}), and the guard's last act is
  * {@link #wirelessDebuggingOff}. adb_wifi_enabled is never written otherwise, never to 1, and
- * adb_enabled never at all.
+ * adb_enabled never at all. While adbd also listens on TCP ({@link #adbOverTcp}) turning wireless
+ * debugging off does not end the bridge, so it writes the 0 and stays ({@link #stayed}).
  */
 final class SensitiveApps {
 
@@ -45,7 +46,7 @@ final class SensitiveApps {
     private int changed;
     /** "Restore now" was tapped while this app was in front: leave it alone until another one is. */
     private String suppressed;
-    /** The listed app with {@link #WIFI} that came to the front; never cleared, the bridge ends after that step. */
+    /** The listed app with {@link #WIFI} that came to the front; cleared only by {@link #stayed}, otherwise the bridge ends after that step. */
     private String leaving;
 
     /** {hide, restore} for [pkg] coming to the front; [apps] maps a package to its DEV|A11Y|WIFI bits. */
@@ -66,6 +67,23 @@ final class SensitiveApps {
      */
     String leavingFor() {
         return leaving;
+    }
+
+    /** Wireless debugging went off for [leavingFor] and the bridge carries on (adbd over TCP): back to normal steps. */
+    void stayed() {
+        leaving = null;
+    }
+
+    /**
+     * True when `getprop service.adb.tcp.port` names a port: adbd then also listens on TCP, and
+     * turning wireless debugging off leaves it, and this bridge, running (seen on ColorOS 17).
+     */
+    static boolean adbOverTcp(String getprop) {
+        try {
+            return getprop != null && Integer.parseInt(getprop.trim()) > 0;
+        } catch (NumberFormatException notAPort) {
+            return false;
+        }
     }
 
     /**

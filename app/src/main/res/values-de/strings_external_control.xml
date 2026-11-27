@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="external_control_title">Steuerung durch andere Apps</string>
+    <string name="external_control_description">KeySnap aus einer anderen App oder per adb pausieren und fortsetzen.</string>
+    <string name="external_control_can">Kann pausieren, fortsetzen, umschalten</string>
+    <string name="external_control_cannot">Kann keinen Shortcut ausführen</string>
+    <string name="external_control_package">Paket</string>
+    <string name="external_control_class">Klasse</string>
+    <string name="external_control_pause">Pausieren</string>
+    <string name="external_control_resume">Fortsetzen</string>
+    <string name="external_control_toggle">Umschalten</string>
+    <string name="external_control_try_adb">Mit adb testen</string>
+    <string name="external_control_paused">KeySnap wurde von einer anderen App pausiert</string>
+    <string name="external_control_resumed">KeySnap wurde von einer anderen App fortgesetzt</string>
+    <string name="external_control_names">Namen für andere Apps</string>
+</resources>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="external_control_title">Controle por outros apps</string>
+    <string name="external_control_description">Pause e retome o KeySnap por outro app ou pelo adb.</string>
+    <string name="external_control_can">Pode pausar, retomar, alternar</string>
+    <string name="external_control_cannot">Não pode executar um atalho</string>
+    <string name="external_control_package">Pacote</string>
+    <string name="external_control_class">Classe</string>
+    <string name="external_control_pause">Pausar</string>
+    <string name="external_control_resume">Retomar</string>
+    <string name="external_control_toggle">Alternar</string>
+    <string name="external_control_try_adb">Teste com adb</string>
+    <string name="external_control_paused">KeySnap pausado por outro app</string>
+    <string name="external_control_resumed">KeySnap retomado por outro app</string>
+    <string name="external_control_names">Nomes para outros apps</string>
+</resources>

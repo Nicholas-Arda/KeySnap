@@ -526,7 +526,7 @@ class ScriptActionExecutor(
                 // .setWifiEnabled and friends are no-ops for non-privileged apps); only reachable
                 // through Advanced Mode/the bridge's shell `svc`/`cmd` commands.
                 "toggle_wifi", "enable_wifi", "disable_wifi",
-                "toggle_mobile_data", "toggle_airplane_mode", "toggle_location" -> false
+                "toggle_mobile_data", "enable_mobile_data", "disable_mobile_data", "toggle_airplane_mode", "toggle_location" -> false
                 // BluetoothAdapter.enable()/disable() have been no-ops for non-privileged apps since
                 // Android 13; only reachable through Advanced Mode/the bridge's shell `svc bluetooth`.
                 "toggle_bluetooth", "enable_bluetooth", "disable_bluetooth" -> false
@@ -535,7 +535,7 @@ class ScriptActionExecutor(
                 // Secure/brand settings from the bridge's known-keys list (PresetSettings).
                 "always_on_display", "grayscale", "charge_limit", "bedtime", "learned_setting" -> false
                 // UiModeManager.setNightMode, the secure display keys and NFC power need the shell UID.
-                "dark_mode", "night_light", "extra_dim", "screen_timeout", "toggle_nfc" -> false
+                "dark_mode", "night_light", "extra_dim", "screen_timeout", "toggle_nfc", "enable_nfc", "disable_nfc" -> false
                 // Whether the shade is open is only readable from the shell (`dumpsys window`).
                 "toggle_notification_drawer", "toggle_quick_settings" -> false
                 "dismiss_all_notifications" -> NotificationEventListener.dismissAll()

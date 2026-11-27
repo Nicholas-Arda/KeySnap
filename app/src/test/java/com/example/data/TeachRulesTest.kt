@@ -21,6 +21,13 @@ class TeachRulesTest {
         assertEquals(TeachOutcome.Lost, TeachRules.parseBack(null))
     }
 
+    @Test fun aRecordOnlyKeyIsNotLearned() {
+        // OPPO sound effects: the key flips, the sound does not (25 Nov 2026 support mail).
+        val reply = """{"status":"ok","changes":[{"ns":"system","key":"system_dolby_category","changed":"2","back":"0"},""" +
+            """{"ns":"secure","key":"aod","changed":"1","back":"0"}]}"""
+        assertEquals(TeachOutcome.RecordOnly, TeachRules.parseBack(reply))
+    }
+
     @Test fun aOneZeroKeyGoesFirstAndSaysWhichSideIsOn() {
         // The user turned it OFF first: the 0 the change produced is still Off.
         val keys = listOf(TaughtKey("system", "mode_name", "dark", "light"), TaughtKey("secure", "aod", "0", "1"))

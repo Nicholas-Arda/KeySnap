@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_wifi_free_title_134">Wi-Fi olmadan da çalışır</string>
+    <string name="whats_new_wifi_free_description_134">Uzman Modu, Wi-Fi kapalıyken bile açık kalır.</string>
+    <string name="whats_new_computer_title_134">Bilgisayardan başlat</string>
+    <string name="whats_new_computer_description_134">Uzman Modu’nu USB kablosuyla kur.</string>
+    <string name="whats_new_fix_switch_actions_134">Yeni eylemler: Mobil veri ve NFC’yi aç/kapat (ayrı ayrı)</string>
+    <string name="whats_new_fix_security_134">Uzman Modu dosyaları daha iyi korunuyor</string>
+    <string name="whats_new_external_title_134">Diğer uygulamalardan kontrol</string>
+    <string name="whats_new_external_description_134">Diğer uygulamalar KeySnap’i duraklatıp devam ettirebilir.</string>
+    <string name="whats_new_fix_teach_134">Ayar öğret, yalnız telefonun uygulayabildiği ayarları atlıyor</string>
+    <string name="whats_new_end_title_134">Bitince</string>
+    <string name="whats_new_end_description_134">Otomasyonlar, koşul bitince de eylem çalıştırabilir.</string>
+</resources>

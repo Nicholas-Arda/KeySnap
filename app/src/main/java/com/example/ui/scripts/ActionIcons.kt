@@ -62,6 +62,9 @@ import androidx.compose.material.icons.outlined.Mic
 import androidx.compose.material.icons.outlined.MusicNote
 import androidx.compose.material.icons.outlined.Navigation
 import androidx.compose.material.icons.outlined.Nfc
+import androidx.compose.material.icons.outlined.DoNotTouch
+import androidx.compose.material.icons.outlined.MobiledataOff
+import androidx.compose.material.icons.outlined.SignalCellular4Bar
 import androidx.compose.material.icons.outlined.NotificationsActive
 import androidx.compose.material.icons.outlined.NotificationsOff
 import androidx.compose.material.icons.outlined.OpenInNew
@@ -196,7 +199,11 @@ private val perActionIcons: Map<String, ImageVector> = mapOf(
     "enable_bluetooth" to Icons.Outlined.Bluetooth,
     "disable_bluetooth" to Icons.Outlined.BluetoothDisabled,
     "toggle_mobile_data" to Icons.Outlined.SignalCellularAlt,
+    "enable_mobile_data" to Icons.Outlined.SignalCellular4Bar,
+    "disable_mobile_data" to Icons.Outlined.MobiledataOff,
     "toggle_nfc" to Icons.Outlined.Nfc,
+    "enable_nfc" to Icons.Outlined.Contactless,
+    "disable_nfc" to Icons.Outlined.DoNotTouch,
     "toggle_airplane_mode" to Icons.Outlined.AirplanemodeActive,
     "toggle_location" to Icons.Outlined.LocationOff,
     "toggle_hotspot" to Icons.Outlined.WifiTethering,

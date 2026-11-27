@@ -26,6 +26,8 @@ internal data class SharedShortcut(
     val constraints: List<PersistedScriptConstraint> = emptyList(),
     val showCapsule: Boolean = true,
     val matchAny: Boolean = false,
+    /** An automation's "When it ends"; present only from format 2. */
+    val endActions: List<PersistedScriptAction> = emptyList(),
 )
 
 /** A shortcut decoded from shared text and validated. Nothing about it is saved yet. */
@@ -38,9 +40,10 @@ data class ImportedShortcut(
     val surfaceOnly: Boolean = false,
     val showCapsule: Boolean = true,
     val matchAny: Boolean = false,
+    val endActions: List<ScriptAction> = emptyList(),
 ) {
     /** CLAUDE.md: an imported shortcut that runs anything privileged is never switched on for the user. */
-    val startsEnabled: Boolean get() = actions.none { it.type in ScriptActionCatalog.PRIVILEGED }
+    val startsEnabled: Boolean get() = (actions + endActions).none { it.type in ScriptActionCatalog.PRIVILEGED }
 }
 
 sealed interface ImportResult {
@@ -55,8 +58,13 @@ sealed interface ImportResult {
  */
 object ShortcutShare {
 
-    /** Bumped only when an older KeySnap could no longer read what a newer one writes. */
-    const val FORMAT_VERSION = 1
+    /**
+     * Bumped only when an older KeySnap could no longer read what a newer one writes. 2: "When it
+     * ends" actions, which a format-1 reader would silently drop; a share without them stays 1.
+     */
+    const val FORMAT_VERSION = 2
+    /** What a share without "When it ends" (and the AI, which never writes one) uses. */
+    const val PLAIN_FORMAT = 1
 
     /** Far above any real shortcut (the 36-step SOS recipe is about 2 KB); bounds memory for a picked file. */
     const val MAX_LENGTH = 64 * 1024
@@ -110,9 +118,11 @@ object ShortcutShare {
         surfaceOnly: Boolean = false,
         showCapsule: Boolean = true,
         matchAny: Boolean = false,
+        endActions: List<ScriptAction> = emptyList(),
     ): String = adapter.toJson(
         SharedShortcut(
-            keysnap = FORMAT_VERSION,
+            keysnap = if (endActions.isEmpty()) PLAIN_FORMAT else FORMAT_VERSION,
+            endActions = endActions.map { PersistedScriptAction(it.type, portableParams(it.type, it.params)) },
             name = name,
             automation = automation,
             surfaceOnly = surfaceOnly,
@@ -133,19 +143,21 @@ object ShortcutShare {
         if (start < 0 || end < start) return invalid
         val shared = runCatching { adapter.fromJson(text.substring(start, end + 1)) }.getOrNull() ?: return invalid
         if (shared.keysnap > FORMAT_VERSION) return ImportResult.Error(R.string.import_error_newer)
-        if (shared.keysnap != FORMAT_VERSION || shared.actions.isEmpty() || hasHiddenNull(shared)) return invalid
+        if (shared.keysnap < PLAIN_FORMAT || shared.actions.isEmpty() || hasHiddenNull(shared)) return invalid
         if (shared.automation && shared.surfaceOnly) return invalid
+        if (shared.endActions.isNotEmpty() && (!shared.automation || shared.keysnap < FORMAT_VERSION)) return invalid
         // The editor refuses to save these on anything but an automation (MainViewModel.commitDraft);
         // an import must not be a way around that.
         if (!shared.automation && shared.constraints.any { it.type in ScriptConstraintCatalog.AUTOMATION_ONLY }) return invalid
-        val paramTexts = (shared.actions.map { it.params } + shared.constraints.map { it.params }).flatMap { it.keys + it.values }
+        val paramTexts = (shared.actions.map { it.params } + shared.endActions.map { it.params } + shared.constraints.map { it.params })
+            .flatMap { it.keys + it.values }
         if (shared.name.any { it in HIDDEN } || paramTexts.any { value -> value.any(::hiddenInParam) }) {
             return ImportResult.Error(R.string.import_error_hidden)
         }
         val pressType = shared.pressType?.let { name ->
             TriggerPressType.entries.firstOrNull { it.name == name } ?: return invalid
         } ?: TriggerPressType.SINGLE_PRESS
-        val actions = shared.actions.map { action ->
+        val checked = (shared.actions + shared.endActions).map { action ->
             val descriptor = ScriptActionCatalog.descriptor(action.type)
                 ?.takeIf { it.availability == ActionAvailability.AVAILABLE }
                 ?: return unsupported
@@ -156,6 +168,8 @@ object ShortcutShare {
             if (params.any { (key, value) -> !isValid(specs.getValue(key), value) }) return invalid
             ScriptAction(action.type, params, action.undoOnEnd)
         }
+        val actions = checked.take(shared.actions.size)
+        val endActions = checked.drop(shared.actions.size).map { it.copy(undoOnEnd = false) }
         val constraints = shared.constraints.map {
             if (!ScriptConstraintCatalog.isAvailable(it.type)) return unsupported
             val fields = ConstraintEditorForms.form(it.type)?.fields.orEmpty()
@@ -169,11 +183,13 @@ object ShortcutShare {
         // The public build cannot run mode actions or conditions. Reject the share, as with any
         // unavailable action, instead of dropping the step and saving a different shortcut.
         if (!ModeHooks.AVAILABLE &&
-            (actions.any { ModeHooks.requiresPro(it.type) } || constraints.any { ModeHooks.requiresPro(it.type) })
+            (checked.any { ModeHooks.requiresPro(it.type) } || constraints.any { ModeHooks.requiresPro(it.type) })
         ) {
             return unsupported
         }
-        return ImportResult.Ok(ImportedShortcut(name, shared.automation, pressType, actions, constraints, shared.surfaceOnly, shared.showCapsule, shared.matchAny))
+        return ImportResult.Ok(
+            ImportedShortcut(name, shared.automation, pressType, actions, constraints, shared.surfaceOnly, shared.showCapsule, shared.matchAny, endActions),
+        )
     }
 
     /**
@@ -218,9 +234,9 @@ object ShortcutShare {
 
     /** Moshi does not enforce nullability inside lists and maps, so a crafted file can hide a null there. */
     private fun hasHiddenNull(shared: SharedShortcut): Boolean {
-        val items: List<Any?> = shared.actions + shared.constraints
+        val items: List<Any?> = shared.actions + shared.endActions + shared.constraints
         if (null in items) return true
-        val values: List<Any?> = shared.actions.flatMap { it.params.values } + shared.constraints.flatMap { it.params.values }
+        val values: List<Any?> = (shared.actions + shared.endActions).flatMap { it.params.values } + shared.constraints.flatMap { it.params.values }
         return null in values
     }
 

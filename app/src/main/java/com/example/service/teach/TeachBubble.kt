@@ -183,6 +183,7 @@ object TeachBubble {
                     TeachOutcome.NoChange -> error(R.string.teach_err_no_change, Step.HALF, counts = false)
                     TeachOutcome.TooMany -> error(R.string.teach_err_too_many, Step.READY)
                     TeachOutcome.Blocked -> error(R.string.teach_err_not_allowed, Step.READY)
+                    TeachOutcome.RecordOnly -> error(R.string.teach_err_record_only, Step.READY)
                     TeachOutcome.Lost -> lost()
                 }
                 Step.GOT_IT -> if (flip(context, toChanged = true)) Ui(Step.ASK, R.string.teach_cap_ask) else error(R.string.teach_err_not_allowed, Step.READY)

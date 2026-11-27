@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_wifi_free_title_134">Funciona sin Wi-Fi</string>
+    <string name="whats_new_wifi_free_description_134">El modo avanzado sigue activo, incluso sin Wi-Fi.</string>
+    <string name="whats_new_computer_title_134">Iniciar desde un ordenador</string>
+    <string name="whats_new_computer_description_134">Configura el modo avanzado con un cable USB.</string>
+    <string name="whats_new_fix_switch_actions_134">Acciones nuevas: activar/desactivar datos móviles y NFC</string>
+    <string name="whats_new_fix_security_134">Los archivos del modo avanzado están mejor protegidos</string>
+    <string name="whats_new_external_title_134">Control desde otras apps</string>
+    <string name="whats_new_external_description_134">Otras apps pueden pausar y reanudar KeySnap.</string>
+    <string name="whats_new_fix_teach_134">Enseñar un ajuste omite los que solo tu teléfono puede aplicar</string>
+    <string name="whats_new_end_title_134">Cuando termine</string>
+    <string name="whats_new_end_description_134">Las automatizaciones también actúan cuando su condición termina.</string>
+</resources>

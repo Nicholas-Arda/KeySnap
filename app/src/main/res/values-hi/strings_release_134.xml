@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_wifi_free_title_134">Wi-Fi के बिना भी चलता है</string>
+    <string name="whats_new_wifi_free_description_134">Wi-Fi बंद होने पर भी उन्नत मोड चालू रहता है।</string>
+    <string name="whats_new_computer_title_134">कंप्यूटर से शुरू करें</string>
+    <string name="whats_new_computer_description_134">USB केबल से उन्नत मोड सेट करें।</string>
+    <string name="whats_new_fix_switch_actions_134">नई कार्रवाइयाँ: मोबाइल डेटा और NFC चालू/बंद करें</string>
+    <string name="whats_new_fix_security_134">उन्नत मोड की फ़ाइलें अब बेहतर सुरक्षित हैं</string>
+    <string name="whats_new_external_title_134">दूसरे ऐप्स से नियंत्रण</string>
+    <string name="whats_new_external_description_134">दूसरे ऐप्स KeySnap को रोक और फिर शुरू कर सकते हैं।</string>
+    <string name="whats_new_fix_teach_134">सेटिंग सिखाएं अब उन स्विच को छोड़ देता है जिन्हें सिर्फ़ फ़ोन लागू कर सकता है</string>
+    <string name="whats_new_end_title_134">जब यह खत्म हो</string>
+    <string name="whats_new_end_description_134">शर्त खत्म होने पर भी ऑटोमेशन काम कर सकते हैं।</string>
+</resources>

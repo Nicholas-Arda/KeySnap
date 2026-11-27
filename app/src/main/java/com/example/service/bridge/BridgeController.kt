@@ -198,7 +198,7 @@ object BridgeController {
      * app version — keeps running and answering the port until something kills it. Adopting it
      * silently would resurrect old, already-fixed bugs. A bridge from before protocol 63 never
      * authenticates, so it is neither adopted nor told anything: it goes with its config
-     * ([BridgePayload] deletes that on first touch) or with the respawn's start.sh.
+     * ([BridgePayload] deletes that on first touch) or with the respawn's launcher.
      */
     private suspend fun freshBridgeStatus(): BridgeStatus? = probeLock.withLock {
         val status = client()?.probe() ?: return null
@@ -248,6 +248,9 @@ object BridgeController {
         }
         return false
     }
+
+    /** After adbd restarted (a switch to TCP): lets a dying bridge go before [start] probes, so it is not adopted. */
+    suspend fun awaitGone(): Boolean = portStoppedAnswering()
 
     /** Adopts an already-running bridge without restarting it, unless its payload is stale. */
     suspend fun detectExistingBridge(): Boolean {

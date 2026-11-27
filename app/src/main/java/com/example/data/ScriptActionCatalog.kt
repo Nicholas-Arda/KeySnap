@@ -229,7 +229,11 @@ object ScriptActionCatalog {
         ActionDescriptor("enable_bluetooth", R.string.action_enable_bluetooth, ActionCategory.CONNECTIVITY, ActionAvailability.AVAILABLE),
         ActionDescriptor("disable_bluetooth", R.string.action_disable_bluetooth, ActionCategory.CONNECTIVITY, ActionAvailability.AVAILABLE),
         ActionDescriptor("toggle_mobile_data", R.string.action_toggle_mobile_data, ActionCategory.CONNECTIVITY, ActionAvailability.AVAILABLE),
+        ActionDescriptor("enable_mobile_data", R.string.action_enable_mobile_data, ActionCategory.CONNECTIVITY, ActionAvailability.AVAILABLE),
+        ActionDescriptor("disable_mobile_data", R.string.action_disable_mobile_data, ActionCategory.CONNECTIVITY, ActionAvailability.AVAILABLE),
         ActionDescriptor("toggle_nfc", R.string.action_toggle_nfc, ActionCategory.CONNECTIVITY, ActionAvailability.AVAILABLE),
+        ActionDescriptor("enable_nfc", R.string.action_enable_nfc, ActionCategory.CONNECTIVITY, ActionAvailability.AVAILABLE),
+        ActionDescriptor("disable_nfc", R.string.action_disable_nfc, ActionCategory.CONNECTIVITY, ActionAvailability.AVAILABLE),
         ActionDescriptor("toggle_airplane_mode", R.string.action_toggle_airplane_mode, ActionCategory.CONNECTIVITY, ActionAvailability.AVAILABLE),
         ActionDescriptor("toggle_location", R.string.action_toggle_location, ActionCategory.CONNECTIVITY, ActionAvailability.AVAILABLE),
         // Opens the page so the user flips the switch; toggle_hotspot flips it itself through
@@ -434,6 +438,7 @@ object ScriptActionCatalog {
      */
     val NEW: Set<String> = setOf(
         "toggle_hotspot", "secure_lock_device",
+        "enable_mobile_data", "disable_mobile_data", "enable_nfc", "disable_nfc",
         OemActions.MIND_SPACE_CAPTURE, OemActions.OPEN_MIND_SPACE, OemActions.BUILT_IN_ASSISTANT,
         OemActions.TRANSLATE_SCREEN, OemActions.RECORD_AUDIO, OemActions.OPEN_OSEE,
     )

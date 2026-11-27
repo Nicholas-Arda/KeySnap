@@ -45,4 +45,25 @@ class ShortcutReviewDialogTest {
             "https://example.net/tap",
         ).forEach { rule.onNodeWithText(it, substring = true).assertExists() }
     }
+
+    @Test fun whenItEndsStepsAreShownLiterallyToo() {
+        rule.setContent {
+            MyApplicationTheme(themeMode = ThemeMode.DARK) {
+                ShortcutReviewDialog(
+                    title = "Import this shortcut?",
+                    name = "Ends",
+                    automation = true,
+                    actions = listOf(ScriptAction("toggle_flashlight")),
+                    note = "note",
+                    confirmLabel = "Import",
+                    onConfirm = {},
+                    onDismiss = {},
+                    endActions = listOf(ScriptAction("shell_command", mapOf("command" to "svc wifi disable"))),
+                )
+            }
+        }
+        rule.waitForIdle()
+        rule.onNodeWithText("When it ends").assertExists()
+        rule.onNodeWithText("svc wifi disable", substring = true).assertExists()
+    }
 }

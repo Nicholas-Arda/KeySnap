@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_wifi_free_title_134">Berjalan tanpa Wi-Fi</string>
+    <string name="whats_new_wifi_free_description_134">Mode Lanjutan tetap aktif, bahkan saat Wi-Fi mati.</string>
+    <string name="whats_new_computer_title_134">Mulai dari komputer</string>
+    <string name="whats_new_computer_description_134">Siapkan Mode Lanjutan dengan kabel USB.</string>
+    <string name="whats_new_fix_switch_actions_134">Tindakan baru: Aktifkan/nonaktifkan data seluler dan NFC</string>
+    <string name="whats_new_fix_security_134">File Mode Lanjutan kini lebih terlindungi</string>
+    <string name="whats_new_external_title_134">Kontrol dari aplikasi lain</string>
+    <string name="whats_new_external_description_134">Aplikasi lain bisa menjeda dan melanjutkan KeySnap.</string>
+    <string name="whats_new_fix_teach_134">Ajarkan setelan melewati sakelar yang hanya bisa diterapkan ponsel</string>
+    <string name="whats_new_end_title_134">Saat berakhir</string>
+    <string name="whats_new_end_description_134">Otomatisasi juga bisa bertindak saat kondisinya berakhir.</string>
+</resources>

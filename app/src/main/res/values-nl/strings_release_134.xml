@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_wifi_free_title_134">Werkt zonder wifi</string>
+    <string name="whats_new_wifi_free_description_134">De geavanceerde modus blijft aan, ook zonder wifi.</string>
+    <string name="whats_new_computer_title_134">Starten vanaf een computer</string>
+    <string name="whats_new_computer_description_134">Stel de geavanceerde modus in met een USB-kabel.</string>
+    <string name="whats_new_fix_switch_actions_134">Nieuwe acties: mobiele data en NFC in-/uitschakelen</string>
+    <string name="whats_new_fix_security_134">Bestanden van de geavanceerde modus zijn beter beschermd</string>
+    <string name="whats_new_external_title_134">Bediening door andere apps</string>
+    <string name="whats_new_external_description_134">Andere apps kunnen KeySnap pauzeren en hervatten.</string>
+    <string name="whats_new_fix_teach_134">Instelling aanleren slaat schakelaars over die alleen je telefoon kan toepassen</string>
+    <string name="whats_new_end_title_134">Als het stopt</string>
+    <string name="whats_new_end_description_134">Automatiseringen kunnen ook iets doen als hun voorwaarde stopt.</string>
+</resources>

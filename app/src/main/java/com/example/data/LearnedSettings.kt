@@ -20,6 +20,8 @@ sealed interface TeachOutcome {
     data object NoChange : TeachOutcome
     data object TooMany : TeachOutcome
     data object Blocked : TeachOutcome
+    /** Only a record: the phone's own app applies the change, so writing the key changes nothing ([TeachRules.RECORD_ONLY]). */
+    data object RecordOnly : TeachOutcome
     /** The bridge forgot the run (10 minutes passed, or it restarted), or did not answer. */
     data object Lost : TeachOutcome
 }
@@ -28,6 +30,13 @@ sealed interface TeachOutcome {
 object TeachRules {
     private val TRUE = setOf("1", "true", "on", "enabled", "enable", "yes")
     private val FALSE = setOf("0", "false", "off", "disabled", "disable", "no")
+
+    /**
+     * Keys the phone only records: its own app applies the change through a service no app or shell
+     * can reach, so a learned switch would flip in Settings and change nothing. Grows with reports.
+     * `system_dolby*`: OPPO/OnePlus sound effects (checked on ColorOS 17, 25 Nov 2026).
+     */
+    val RECORD_ONLY = listOf("system_dolby")
 
     /** The bridge's answer to TEACH back. */
     fun parseBack(reply: String?): TeachOutcome = runCatching {
@@ -40,7 +49,9 @@ object TeachRules {
                         val c = changes.getJSONObject(i)
                         TaughtKey(c.getString("ns"), c.getString("key"), c.getString("changed"), c.getString("back"))
                     },
-                ).takeIf { it.keys.isNotEmpty() } ?: TeachOutcome.NoChange
+                ).takeIf { it.keys.isNotEmpty() }
+                    ?.let { learned -> if (learned.keys.any { k -> RECORD_ONLY.any(k.key::startsWith) }) TeachOutcome.RecordOnly else learned }
+                    ?: TeachOutcome.NoChange
             }
             "none" -> TeachOutcome.NoChange
             "too-many" -> TeachOutcome.TooMany

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_wifi_free_title_134">يعمل دون Wi-Fi</string>
+    <string name="whats_new_wifi_free_description_134">يبقى الوضع المتقدم مفعّلًا حتى مع إيقاف Wi-Fi.</string>
+    <string name="whats_new_computer_title_134">البدء من كمبيوتر</string>
+    <string name="whats_new_computer_description_134">اضبط الوضع المتقدم باستخدام كابل USB.</string>
+    <string name="whats_new_fix_switch_actions_134">إجراءات جديدة: تشغيل/إيقاف بيانات الجوال وNFC</string>
+    <string name="whats_new_fix_security_134">ملفات الوضع المتقدم محمية بشكل أفضل</string>
+    <string name="whats_new_external_title_134">التحكم من تطبيقات أخرى</string>
+    <string name="whats_new_external_description_134">يمكن لتطبيقات أخرى إيقاف KeySnap مؤقتًا واستئنافه.</string>
+    <string name="whats_new_fix_teach_134">علِّم إعدادًا يتخطى المفاتيح التي لا يطبّقها إلا هاتفك</string>
+    <string name="whats_new_end_title_134">عند الانتهاء</string>
+    <string name="whats_new_end_description_134">يمكن للأتمتة أن تعمل أيضًا عندما ينتهي شرطها.</string>
+</resources>

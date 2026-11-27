@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="external_control_title">दूसरे ऐप्स से नियंत्रण</string>
+    <string name="external_control_description">किसी दूसरे ऐप या adb से KeySnap को रोकें और फिर शुरू करें।</string>
+    <string name="external_control_can">रोक सकता है, फिर शुरू कर सकता है, बदल सकता है</string>
+    <string name="external_control_cannot">शॉर्टकट नहीं चला सकता</string>
+    <string name="external_control_package">पैकेज</string>
+    <string name="external_control_class">क्लास</string>
+    <string name="external_control_pause">रोकें</string>
+    <string name="external_control_resume">फिर शुरू करें</string>
+    <string name="external_control_toggle">बदलें</string>
+    <string name="external_control_try_adb">adb से आज़माएँ</string>
+    <string name="external_control_paused">किसी दूसरे ऐप ने KeySnap रोका</string>
+    <string name="external_control_resumed">किसी दूसरे ऐप ने KeySnap फिर शुरू किया</string>
+    <string name="external_control_names">दूसरे ऐप्स के लिए नाम</string>
+</resources>

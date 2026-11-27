@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="external_control_title">Controllo da altre app</string>
+    <string name="external_control_description">Metti in pausa e riprendi KeySnap da un’altra app o con adb.</string>
+    <string name="external_control_can">Può mettere in pausa, riprendere, alternare</string>
+    <string name="external_control_cannot">Non può eseguire una scorciatoia</string>
+    <string name="external_control_package">Pacchetto</string>
+    <string name="external_control_class">Classe</string>
+    <string name="external_control_pause">Pausa</string>
+    <string name="external_control_resume">Riprendi</string>
+    <string name="external_control_toggle">Alterna</string>
+    <string name="external_control_try_adb">Prova con adb</string>
+    <string name="external_control_paused">KeySnap messo in pausa da un’altra app</string>
+    <string name="external_control_resumed">KeySnap ripreso da un’altra app</string>
+    <string name="external_control_names">Nomi per altre app</string>
+</resources>

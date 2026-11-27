@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="external_control_title">Управление из других приложений</string>
+    <string name="external_control_description">Приостанавливайте и возобновляйте KeySnap из другого приложения или через adb.</string>
+    <string name="external_control_can">Может приостановить, возобновить, переключить</string>
+    <string name="external_control_cannot">Не может запустить сценарий</string>
+    <string name="external_control_package">Пакет</string>
+    <string name="external_control_class">Класс</string>
+    <string name="external_control_pause">Пауза</string>
+    <string name="external_control_resume">Возобновить</string>
+    <string name="external_control_toggle">Переключить</string>
+    <string name="external_control_try_adb">Проверить через adb</string>
+    <string name="external_control_paused">KeySnap приостановлен другим приложением</string>
+    <string name="external_control_resumed">KeySnap возобновлён другим приложением</string>
+    <string name="external_control_names">Имена для других приложений</string>
+</resources>

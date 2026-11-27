@@ -247,6 +247,29 @@ public class SensitiveAppsTest {
     }
 
     @Test
+    public void overTcpTheBridgeStaysAndKeepsGuarding() {
+        SensitiveApps state = new SensitiveApps();
+        step(state, state.onLaunch(BANKID, withBankId(DEV | A11Y | WIFI), true));
+        assertEquals(BANKID, state.leavingFor());
+        state.stayed();
+        assertNull(state.leavingFor());
+        assertArrayEquals("leaving the bank puts its switches back as usual", new int[] {0, DEV | A11Y},
+                step(state, state.onFront(LAUNCHER, LAUNCHER, withBankId(DEV | A11Y | WIFI))));
+        state.onFront(BANKID, BANKID, withBankId(DEV | A11Y | WIFI));
+        assertEquals("the next visit turns it off again", BANKID, state.leavingFor());
+    }
+
+    @Test
+    public void adbOverTcpOnlyForARealPort() {
+        assertTrue(SensitiveApps.adbOverTcp("41555\n"));
+        assertFalse(SensitiveApps.adbOverTcp(""));
+        assertFalse(SensitiveApps.adbOverTcp("0"));
+        assertFalse(SensitiveApps.adbOverTcp("-1"));
+        assertFalse(SensitiveApps.adbOverTcp(null));
+        assertFalse(SensitiveApps.adbOverTcp("getprop: permission denied"));
+    }
+
+    @Test
     public void wirelessDebuggingAloneStillPutsBackWhatAnotherAppHad() {
         SensitiveApps state = new SensitiveApps();
         step(state, state.onLaunch(BANK, withBankId(WIFI), true));

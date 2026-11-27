@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_wifi_free_title_134">Funktioniert ohne WLAN</string>
+    <string name="whats_new_wifi_free_description_134">Der erweiterte Modus bleibt an, auch ohne WLAN.</string>
+    <string name="whats_new_computer_title_134">Vom Computer starten</string>
+    <string name="whats_new_computer_description_134">Erweiterten Modus per USB-Kabel einrichten.</string>
+    <string name="whats_new_fix_switch_actions_134">Neue Aktionen: Mobile Daten und NFC aktivieren/deaktivieren</string>
+    <string name="whats_new_fix_security_134">Dateien des erweiterten Modus sind besser geschützt</string>
+    <string name="whats_new_external_title_134">Steuerung durch andere Apps</string>
+    <string name="whats_new_external_description_134">Andere Apps können KeySnap pausieren und fortsetzen.</string>
+    <string name="whats_new_fix_teach_134">„Einstellung beibringen“ überspringt Schalter, die nur dein Handy anwenden kann</string>
+    <string name="whats_new_end_title_134">Wenn es endet</string>
+    <string name="whats_new_end_description_134">Automationen können auch handeln, wenn ihre Bedingung endet.</string>
+</resources>

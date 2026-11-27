@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_wifi_free_title_134">Wi-Fi 없이도 작동</string>
+    <string name="whats_new_wifi_free_description_134">Wi-Fi가 꺼져도 고급 모드가 계속 켜져 있어요.</string>
+    <string name="whats_new_computer_title_134">컴퓨터에서 시작</string>
+    <string name="whats_new_computer_description_134">USB 케이블로 고급 모드를 설정하세요.</string>
+    <string name="whats_new_fix_switch_actions_134">새 작업: 모바일 데이터와 NFC 켜기/끄기</string>
+    <string name="whats_new_fix_security_134">고급 모드 파일이 더 안전하게 보호돼요</string>
+    <string name="whats_new_external_title_134">다른 앱에서 제어</string>
+    <string name="whats_new_external_description_134">다른 앱이 KeySnap을 일시중지하고 다시 시작할 수 있어요.</string>
+    <string name="whats_new_fix_teach_134">설정 가르치기가 휴대폰만 적용할 수 있는 스위치를 건너뛰어요</string>
+    <string name="whats_new_end_title_134">끝나면</string>
+    <string name="whats_new_end_description_134">조건이 끝날 때도 자동화가 작업을 실행할 수 있어요.</string>
+</resources>

@@ -35,6 +35,8 @@ enum class WhatsNewDestination {
     KEY_CAPSULE,
     SHORTCUTS,
     NEW_SHORTCUT,
+    /** A new shortcut already switched to Automation. */
+    NEW_AUTOMATION,
     SENSITIVE_APPS,
     /** A new shortcut with the action picker open on its New tile. */
     ACTION_PICKER_NEW,
@@ -251,6 +253,40 @@ val whatsNewReleases = mapOf(
             R.string.whats_new_fix_pairing_133,
             R.string.whats_new_fix_app_automation_133,
             R.string.whats_new_fix_large_text_133,
+        ),
+        fixesTitle = R.string.whats_new_more_133,
+    ),
+    27L to WhatsNewRelease(
+        features = listOf(
+            WhatsNewFeature(
+                R.string.whats_new_wifi_free_title_134,
+                R.string.whats_new_wifi_free_description_134,
+                R.string.whats_new_turn_on,
+                WhatsNewDestination.ADVANCED_MODE,
+            ),
+            WhatsNewFeature(
+                R.string.whats_new_computer_title_134,
+                R.string.whats_new_computer_description_134,
+                R.string.whats_new_open,
+                WhatsNewDestination.ADVANCED_MODE,
+            ),
+            WhatsNewFeature(
+                R.string.whats_new_external_title_134,
+                R.string.whats_new_external_description_134,
+                R.string.whats_new_open,
+                WhatsNewDestination.ADVANCED_MODE,
+            ),
+            WhatsNewFeature(
+                R.string.whats_new_end_title_134,
+                R.string.whats_new_end_description_134,
+                R.string.whats_new_open,
+                WhatsNewDestination.NEW_AUTOMATION,
+            ),
+        ),
+        fixes = listOf(
+            R.string.whats_new_fix_switch_actions_134,
+            R.string.whats_new_fix_security_134,
+            R.string.whats_new_fix_teach_134,
         ),
         fixesTitle = R.string.whats_new_more_133,
     ),

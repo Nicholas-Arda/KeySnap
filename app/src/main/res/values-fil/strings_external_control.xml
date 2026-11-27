@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="external_control_title">Kontrol mula sa ibang app</string>
+    <string name="external_control_description">I-pause at ituloy ang KeySnap mula sa ibang app o gamit ang adb.</string>
+    <string name="external_control_can">Puwedeng mag-pause, magtuloy, mag-toggle</string>
+    <string name="external_control_cannot">Hindi makakapagpatakbo ng shortcut</string>
+    <string name="external_control_package">Package</string>
+    <string name="external_control_class">Class</string>
+    <string name="external_control_pause">I-pause</string>
+    <string name="external_control_resume">Ituloy</string>
+    <string name="external_control_toggle">I-toggle</string>
+    <string name="external_control_try_adb">Subukan gamit ang adb</string>
+    <string name="external_control_paused">Na-pause ng ibang app ang KeySnap</string>
+    <string name="external_control_resumed">Itinuloy ng ibang app ang KeySnap</string>
+    <string name="external_control_names">Mga pangalan para sa ibang app</string>
+</resources>

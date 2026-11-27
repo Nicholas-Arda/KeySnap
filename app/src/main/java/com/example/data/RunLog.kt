@@ -83,11 +83,12 @@ data class RunEnvironment(
 // ScriptActionHandler if users find that too vague.
 internal val ADVANCED_MODE_TYPES = setOf(
     "input_key_code", "open_menu",
-    "toggle_wifi", "enable_wifi", "disable_wifi", "toggle_mobile_data", "toggle_airplane_mode", "toggle_location",
+    "toggle_wifi", "enable_wifi", "disable_wifi", "toggle_mobile_data", "enable_mobile_data", "disable_mobile_data",
+    "toggle_airplane_mode", "toggle_location",
     "toggle_bluetooth", "enable_bluetooth", "disable_bluetooth",
     "toggle_battery_saver", "enable_battery_saver", "disable_battery_saver",
     "always_on_display", "grayscale", "charge_limit", "bedtime", "learned_setting", "set_payment_app",
-    "dark_mode", "night_light", "extra_dim", "screen_timeout", "toggle_nfc",
+    "dark_mode", "night_light", "extra_dim", "screen_timeout", "toggle_nfc", "enable_nfc", "disable_nfc",
     "toggle_notification_drawer", "toggle_quick_settings",
     "switch_keyboard", "force_stop_app", "close_and_clear_app", "launch_app_shortcut", "modify_setting", "shell_command",
     "screen_on", "screen_off", "toggle_screen", "answer_call", "end_call",

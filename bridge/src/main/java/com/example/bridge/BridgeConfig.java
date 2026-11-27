@@ -46,6 +46,8 @@ public final class BridgeConfig {
     public static final String ACTION_ENABLE_WIFI = "enable_wifi";
     public static final String ACTION_DISABLE_WIFI = "disable_wifi";
     public static final String ACTION_TOGGLE_MOBILE_DATA = "toggle_mobile_data";
+    public static final String ACTION_ENABLE_MOBILE_DATA = "enable_mobile_data";
+    public static final String ACTION_DISABLE_MOBILE_DATA = "disable_mobile_data";
     public static final String ACTION_TOGGLE_AIRPLANE_MODE = "toggle_airplane_mode";
     public static final String ACTION_TOGGLE_LOCATION = "toggle_location";
     public static final String ACTION_TOGGLE_BLUETOOTH = "toggle_bluetooth";
@@ -70,6 +72,8 @@ public final class BridgeConfig {
     public static final String ACTION_EXTRA_DIM = "extra_dim";
     public static final String ACTION_SCREEN_TIMEOUT = "screen_timeout";
     public static final String ACTION_TOGGLE_NFC = "toggle_nfc";
+    public static final String ACTION_ENABLE_NFC = "enable_nfc";
+    public static final String ACTION_DISABLE_NFC = "disable_nfc";
     public static final String ACTION_TOGGLE_NOTIFICATION_DRAWER = "toggle_notification_drawer";
     public static final String ACTION_TOGGLE_QUICK_SETTINGS = "toggle_quick_settings";
     public static final String ACTION_DISMISS_ALL_NOTIFICATIONS = "dismiss_all_notifications";
@@ -268,7 +272,6 @@ public final class BridgeConfig {
     public static final String PARAM_INSIDE = "inside";
 
     public final int port;
-    public final String token;
     /** The app's package, used for the battery-optimisation whitelist. */
     public final String packageName;
     public final boolean globallyEnabled;
@@ -360,7 +363,7 @@ public final class BridgeConfig {
         }
     }
 
-    private BridgeConfig(int port, String token, String packageName, boolean globallyEnabled,
+    private BridgeConfig(int port, String packageName, boolean globallyEnabled,
                          long doublePressWindowMs, long longPressThresholdMs, List<Script> scripts,
                          boolean vibrateOnTrigger, long hapticDurationMs, boolean capsuleFeedbackEnabled,
                          boolean foregroundReadable, Map<String, Integer> sensitiveApps, long sensitiveRestoreNonce) {
@@ -371,7 +374,6 @@ public final class BridgeConfig {
         this.vibrateOnTrigger = vibrateOnTrigger;
         this.hapticDurationMs = hapticDurationMs;
         this.port = port;
-        this.token = token;
         this.packageName = packageName;
         this.globallyEnabled = globallyEnabled;
         this.doublePressWindowMs = doublePressWindowMs;
@@ -546,17 +548,33 @@ public final class BridgeConfig {
     }
 
     public static BridgeConfig read(File file) throws Exception {
+        return parse(readFully(file));
+    }
+
+    /**
+     * The bridge's read: [file] taken only when the {@link BridgeProtocol#CONFIG_MAC_NAME} beside it
+     * is its {@link BridgeAuth#configMac} under [token]. One read of the document is both checked and
+     * parsed, so a rewrite in between cannot slip through.
+     */
+    public static BridgeConfig readSigned(File file, String token) throws Exception {
         String json = readFully(file);
+        String mac = readFully(new File(file.getParentFile(), BridgeProtocol.CONFIG_MAC_NAME)).trim();
+        if (!BridgeAuth.matches(BridgeAuth.configMac(token, json), mac)) {
+            throw new java.io.IOException("Config signature does not match");
+        }
+        return parse(json);
+    }
+
+    private static BridgeConfig parse(String json) throws Exception {
         JSONObject root;
         try {
             root = new JSONObject(json);
         } catch (org.json.JSONException e) {
-            // Its message quotes the whole document: the control token and the user's commands.
+            // Its message quotes the whole document: the user's commands.
             throw new java.io.IOException("Config is not valid JSON");
         }
 
         int port = root.optInt("port", 0);
-        String token = root.optString("token", "");
         String packageName = root.optString("packageName", "");
         boolean globallyEnabled = root.optBoolean("globallyEnabled", true);
         long doubleWindow = root.optLong("doublePressWindowMs", 300L);
@@ -572,7 +590,7 @@ public final class BridgeConfig {
                 }
             }
         }
-        return new BridgeConfig(port, token, packageName, globallyEnabled, doubleWindow, longThreshold,
+        return new BridgeConfig(port, packageName, globallyEnabled, doubleWindow, longThreshold,
                 Collections.unmodifiableList(scripts),
                 root.optBoolean("vibrateOnTrigger", true), root.optLong("hapticDurationMs", 60L),
                 root.optBoolean("capsuleFeedbackEnabled", false),

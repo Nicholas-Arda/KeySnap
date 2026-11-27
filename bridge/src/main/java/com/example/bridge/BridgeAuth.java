@@ -28,6 +28,7 @@ public final class BridgeAuth {
     public static final String ROLE_CLIENT = "client";
 
     private static final String LABEL = "keysnap-bridge-auth-v1";
+    private static final String CONFIG_LABEL = "keysnap-bridge-config-v1";
     private static final int NONCE_BYTES = 16;
     private static final SecureRandom RANDOM = new SecureRandom();
 
@@ -66,6 +67,26 @@ public final class BridgeAuth {
         } catch (Exception e) {
             throw new IllegalStateException("Cannot compute the handshake proof", e);
         }
+    }
+
+    /**
+     * HMAC-SHA256 of the config document, keyed with the token, which reaches the bridge only on its
+     * command line. The config sits where both UIDs can reach it, and on Android 11–12 an app the
+     * user granted that folder could too: without the token it cannot write a config the bridge takes.
+     */
+    public static String configMac(String token, String json) {
+        try {
+            Mac mac = Mac.getInstance("HmacSHA256");
+            mac.init(new SecretKeySpec(token.getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
+            return hex(mac.doFinal((CONFIG_LABEL + "\n" + json).getBytes(StandardCharsets.UTF_8)));
+        } catch (Exception e) {
+            throw new IllegalStateException("Cannot compute the config signature", e);
+        }
+    }
+
+    /** What {@code BridgePayload} generates: 16 random bytes as lowercase hex. */
+    public static boolean isToken(String value) {
+        return value != null && value.matches("[0-9a-f]{32}");
     }
 
     /** Constant-time comparison of a received proof with the expected one. */

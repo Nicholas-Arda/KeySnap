@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="external_control_title">Điều khiển từ ứng dụng khác</string>
+    <string name="external_control_description">Tạm dừng và tiếp tục KeySnap từ ứng dụng khác hoặc adb.</string>
+    <string name="external_control_can">Có thể tạm dừng, tiếp tục, bật/tắt</string>
+    <string name="external_control_cannot">Không thể chạy phím tắt</string>
+    <string name="external_control_package">Gói</string>
+    <string name="external_control_class">Lớp</string>
+    <string name="external_control_pause">Tạm dừng</string>
+    <string name="external_control_resume">Tiếp tục</string>
+    <string name="external_control_toggle">Bật/tắt</string>
+    <string name="external_control_try_adb">Thử bằng adb</string>
+    <string name="external_control_paused">Ứng dụng khác đã tạm dừng KeySnap</string>
+    <string name="external_control_resumed">Ứng dụng khác đã tiếp tục KeySnap</string>
+    <string name="external_control_names">Tên cho ứng dụng khác</string>
+</resources>
